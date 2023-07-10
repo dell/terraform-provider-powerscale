@@ -1,0 +1,122 @@
+---
+name: 🐛 Bug report
+description: Create a report to help us improve.
+title: "[BUG]: "
+labels: ["type/bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to create this bug report. To better help us investigate this bug, provide the following information.
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: Provide a clear and concise description about the bug.
+    validations:
+      required: true
+  - type: input
+    id: component
+    attributes:
+      label: Resource or DataSource Name
+      description: Enter the Resource or DataSource Name.
+      placeholder: resource_template
+    validations:
+      required: true
+  - type: input
+    id: terraform
+    attributes:
+      label: Terraform Version
+      description: Enter the Terraform version.
+      placeholder: |
+        Terraform 1.3.2
+    validations:
+      required: true
+  - type: input
+    id: go
+    attributes:
+      label: go Version
+      description: Enter the go version.
+      placeholder: |
+        go 1.19
+    validations:
+      required: true
+  - type: textarea
+    id: unisphereversion
+    attributes:
+      label: Unisphere Version
+      description: Enter the Unisphere API version in which the bug is observed.
+      placeholder: |
+        10.0
+    validations:
+      required: true
+  - type: textarea
+    id: os
+    attributes:
+      label: Operating System
+      description: Enter the operating system and version in which the bug is observed.
+      placeholder: |
+        Red Hat Enterprise Linux (RHEL) 8.5 and 8.4
+        SUSE Linux Enterprise Server (SLES) 15 SP2 and 15 SP1
+        Ubuntu 20.04.2 and 20.04.1
+    validations:
+      required: true
+  - type: textarea
+    id: terraformfile
+    attributes:
+      label: Terraform File Used
+      description: Enter the Terraform File data used to run.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Logs
+      description: Copy any relevant log output here or drop the log files in the text area.
+        Please be sure to remove all sensitive data such as IP addresses, host names, credentials, etc.
+    validations:
+      required: true    
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Provide the steps to reproduce this bug.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: Enter the clear and concise description about the expected behaviour.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: Enter the clear and concise description about the actual behaviour.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drop any relevant screenshots in the text area.
+    validations:
+      required: false
+  - type: input
+    id: ainfo
+    attributes:
+      label: Additional Information
+      description: Provide any additional information about the bug.
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        Community Note
+        * Please vote on this issue by adding a 👍 [reaction](https://blog.github.com/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/) 
+          to the original issue to help the community and maintainers prioritize this request
+        * Please do not leave "+1" or other comments that do not add relevant new information or questions, 
+          they generate extra noise for issue followers and do not help prioritize the request
+        * If you are interested in working on this issue or have submitted a pull request, please leave a comment
