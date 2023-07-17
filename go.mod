@@ -3,6 +3,7 @@ module terraform-provider-powerscale
 go 1.19
 
 require (
+	dell/powerscale-go-client v0.0.0
 	github.com/dell/goisilon v1.12.0
 	github.com/hashicorp/terraform-plugin-docs v0.15.0
 	github.com/hashicorp/terraform-plugin-framework v1.3.1
@@ -11,6 +12,14 @@ require (
 	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-testing v1.3.0
 	github.com/joho/godotenv v1.5.1
+)
+
+require (
+	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
+	github.com/jtolds/gls v4.20.0+incompatible // indirect
+	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
+	github.com/smartystreets/goconvey v1.6.4 // indirect
+	golang.org/x/arch v0.0.0-20201008161808-52c3e6f60cff // indirect
 )
 
 require (
@@ -23,6 +32,7 @@ require (
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
+	github.com/bytedance/mockey v1.2.4
 	github.com/cloudflare/circl v1.3.3 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -76,3 +86,5 @@ require (
 	google.golang.org/grpc v1.56.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 )
+
+replace dell/powerscale-go-client => ./powerscale-go-client

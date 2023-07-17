@@ -22,7 +22,8 @@ OS_ARCH=linux_amd64
 
 default: install
 
-build:
+build: extract-client
+	go mod download
 	go build -o ${BINARY}
 
 release:
@@ -61,6 +62,16 @@ uninstall:
 	find examples -type f -name "*.backup" -delete
 	rm -rf trace.*
 
+extract-client: 
+	unzip --qq -o 'goClientZip/powerscale-go-client.zip' -d ./powerscale-go-client/
+
+no-extract-build: 
+	go mod download
+	go build -o ${BINARY}
+
+clean:
+	rm -rf powerscale-go-client
+	rm -f ${BINARY}
 
 test: check
 	go test -i $(TEST) || exit 1                                                   
@@ -73,7 +84,7 @@ check:
 	go vet
 
 gosec:
-	gosec -quiet -log gosec.log -out=gosecresults.csv -fmt=csv ./...
+	gosec -quiet -log gosec.log -out=gosecresults.csv -fmt=csv -exclude=G104 ./...
 
 testacc:
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m   

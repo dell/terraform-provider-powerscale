@@ -19,9 +19,10 @@ package provider
 
 import (
 	"context"
+	"terraform-provider-powerscale/client"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"terraform-provider-powerscale/client"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -186,6 +187,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewExampleDataSource,
+		NewAccessZoneDataSource,
 	}
 }
 
