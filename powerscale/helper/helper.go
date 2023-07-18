@@ -98,9 +98,53 @@ func CopyFields(ctx context.Context, source, destination interface{}) error {
 			case reflect.Bool:
 				destinationFieldValue = types.BoolValue(sourceField.Bool())
 			case reflect.Array, reflect.Slice:
-				destinationFieldValue = copySliceToTargetField(ctx, sourceField.Interface())
+				if destinationField.Type().Kind() == reflect.Slice {
+					arr := reflect.ValueOf(sourceField.Interface())
+					slice := reflect.MakeSlice(destinationField.Type(), arr.Len(), arr.Cap())
+					for index := 0; index < arr.Len(); index++ {
+						value := arr.Index(index)
+						v := slice.Index(index)
+						switch v.Kind() {
+						case reflect.Ptr:
+							newDes := reflect.New(v.Type().Elem()).Interface()
+							err := CopyFields(ctx, value.Interface(), newDes)
+							if err != nil {
+								return err
+							}
+							slice.Index(index).Set(reflect.ValueOf(newDes))
+						case reflect.Struct:
+							newDes := reflect.New(v.Type()).Interface()
+							err := CopyFields(ctx, value.Interface(), newDes)
+							if err != nil {
+								return err
+							}
+							slice.Index(index).Set(reflect.ValueOf(newDes).Elem())
+						}
+					}
+					destinationField.Set(slice)
+				} else {
+					destinationFieldValue = copySliceToTargetField(ctx, sourceField.Interface())
+				}
 			case reflect.Struct:
 				// placeholder for improvement, need to consider both go struct and types.Object
+				switch destinationField.Kind() {
+				case reflect.Ptr:
+					newDes := reflect.New(destinationField.Type().Elem()).Interface()
+					err := CopyFields(ctx, sourceField.Interface(), newDes)
+					if err != nil {
+						return err
+					}
+					destinationField.Set(reflect.ValueOf(newDes))
+				case reflect.Struct:
+					newDes := reflect.New(destinationField.Type()).Interface()
+					err := CopyFields(ctx, sourceField.Interface(), newDes)
+					if err != nil {
+						return err
+					}
+					destinationField.Set(reflect.ValueOf(newDes).Elem())
+				}
+				continue
+
 			default:
 				tflog.Error(ctx, "unsupported source field type", map[string]interface{}{
 					"sourceField": sourceField,

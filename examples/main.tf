@@ -43,11 +43,11 @@ variable "group" {
   type = string
 }
 
-variable "volumes_path" {
+variable "volume_path" {
   type = string
 }
 
-variable "volumes_path_permissions" {
+variable "volume_path_permissions" {
   type = string
 }
 
@@ -69,8 +69,8 @@ provider "powerscale" {
   endpoint                  = var.endpoint
   insecure                  = var.insecure
   group                     = var.group
-  volumes_path              = var.volumes_path
-  volumes_path_permissions  = var.volumes_path_permissions
+  volume_path               = var.volume_path
+  volume_path_permissions   = var.volume_path_permissions
   ignore_unresolvable_hosts = var.ignore_unresolvable_hosts
   auth_type                 = var.auth_type
   verbose_logging           = var.verbose_logging
