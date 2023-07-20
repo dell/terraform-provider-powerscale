@@ -137,7 +137,7 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, verbo
 		OperationServers: map[string]powerscale.ServerConfigurations{},
 	}
 	cfg.DefaultHeader = getHeaders()
-	fmt.Printf("config %+v header %+v", cfg, cfg.DefaultHeader)
+	fmt.Printf("config %+v header %+v\n", cfg, cfg.DefaultHeader)
 	cfg.AddDefaultHeader("Authorization", "Basic "+basicAuthString)
 	apiClient := powerscale.NewAPIClient(&cfg)
 	return apiClient, nil
