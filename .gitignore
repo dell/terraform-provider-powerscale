@@ -33,6 +33,6 @@ website/vendor
 
 # Keep windows files with windows line endings
 *.winfile eol=crlf
-
+*coverage.out*
 *powerscale-go-client
 terraform-provider-powerscale

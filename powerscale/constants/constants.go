@@ -20,4 +20,13 @@ package constants
 const (
 	// ReadAccessZoneErrorMsg specifies error details occurred while reading Access Zones.
 	ReadAccessZoneErrorMsg = "Could not read access zones "
+
+	// CreateAccessZoneErrorMsg specifies error details occurred while creating an Access Zones.
+	CreateAccessZoneErrorMsg = "Could not create access zones "
+
+	// UpdateAccessZoneErrorMsg specifies error details occurred while updating an Access Zones.
+	UpdateAccessZoneErrorMsg = "Could not update access zones "
+
+	// DeleteAccessZoneErrorMsg specifies error details occurred while deleting an Access Zones.
+	DeleteAccessZoneErrorMsg = "Could not delete access zones "
 )

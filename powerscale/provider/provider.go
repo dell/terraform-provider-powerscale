@@ -178,7 +178,9 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 // Resources describes the provider resources.
 func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{}
+	return []func() resource.Resource{
+		NewAccessZoneResource,
+	}
 }
 
 // DataSources describes the provider data sources.

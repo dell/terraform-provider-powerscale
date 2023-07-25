@@ -1,0 +1,259 @@
+/*
+Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+
+Licensed under the Mozilla Public License Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://mozilla.org/MPL/2.0/
+
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+package provider
+
+import (
+	"fmt"
+	"regexp"
+	"terraform-provider-powerscale/powerscale/helper"
+	"testing"
+
+	. "github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+)
+
+var mocker *Mocker
+var createMocker *Mocker
+
+func TestAccAccessZoneA(t *testing.T) {
+	var accessZoneResourceName = "powerscale_accesszone.zone"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				Config: ProviderConfig + AccessZoneResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(accessZoneResourceName, "name", "tfaccTestAccessZone3"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "id", "tfaccTestAccessZone3"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "groupnet", "groupnet0"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "path", "/ifs"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "auth_providers.#", "2"),
+				),
+			},
+			// ImportState testing
+			{
+				ResourceName:      accessZoneResourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			// Update name, path and auth providers, then Read testing
+			{
+				Config: ProviderConfig + AccessZoneUpdateResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(accessZoneResourceName, "name", "tfaccTestAccessZone4"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "id", "tfaccTestAccessZone4"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "groupnet", "groupnet0"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "path", "/ifs/home"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "auth_providers.#", "1"),
+				),
+			},
+			// Update to error state
+			{
+				Config:      ProviderConfig + AccessZoneUpdateResourceConfigError,
+				ExpectError: regexp.MustCompile(".*Error editing access zone*."),
+			},
+			// Delete testing automatically occurs in TestCase
+		},
+	})
+}
+
+func TestAccAccessZoneError(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				Config:      ProviderConfig + AccessZoneErrorResourceConfig,
+				ExpectError: regexp.MustCompile(".*Error creating access zone*."),
+			},
+		},
+	})
+}
+
+func TestAccAccessZoneResourceAfterCreateGetErr(t *testing.T) {
+	var accessZoneResourceName = "powerscale_accesszone.zone"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				Config: ProviderConfig + AccessZoneResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(accessZoneResourceName, "name", "tfaccTestAccessZone3"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "id", "tfaccTestAccessZone3"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "groupnet", "groupnet0"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "path", "/ifs"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "auth_providers.#", "2"),
+				),
+			},
+			{
+				PreConfig: func() {
+					mocker = Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
+				},
+				Config:      ProviderConfig + AccessZoneResourceConfig,
+				ExpectError: regexp.MustCompile(`.*access zone read mock error*.`),
+			},
+		},
+	})
+}
+
+func TestAccAccessZoneResourceGetErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				PreConfig: func() {
+					if mocker != nil {
+						mocker.UnPatch()
+					}
+					createMocker = Mock(helper.CreateAccessZones).Return(nil).Build()
+					mocker = Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
+				},
+				Config:      ProviderConfig + AccessZoneResourceConfig,
+				ExpectError: regexp.MustCompile(`.*access zone read mock error*.`),
+			},
+		},
+	})
+}
+
+func TestAccAccessZoneResourceGetImportErr(t *testing.T) {
+	var accessZoneResourceName = "powerscale_accesszone.zone"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if mocker != nil {
+						mocker.UnPatch()
+					}
+					if createMocker != nil {
+						createMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + AccessZoneResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(accessZoneResourceName, "name", "tfaccTestAccessZone3"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "id", "tfaccTestAccessZone3"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "groupnet", "groupnet0"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "path", "/ifs"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "auth_providers.#", "2"),
+				),
+			},
+			{
+				PreConfig: func() {
+					mocker = Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
+				},
+				ResourceName:      accessZoneResourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ExpectError:       regexp.MustCompile(`.*access zone read mock error*.`),
+			},
+		},
+	})
+}
+
+func TestAccAccessZoneResourceGetImportSpecificErr(t *testing.T) {
+	var accessZoneResourceName = "powerscale_accesszone.zone"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if mocker != nil {
+						mocker.UnPatch()
+					}
+					if createMocker != nil {
+						createMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + AccessZoneResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(accessZoneResourceName, "name", "tfaccTestAccessZone3"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "id", "tfaccTestAccessZone3"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "groupnet", "groupnet0"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "path", "/ifs"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "auth_providers.#", "2"),
+				),
+			},
+			{
+				PreConfig: func() {
+					mocker = Mock(helper.GetSpecificZone).Return(nil, fmt.Errorf("access zone read specific mock error")).Build()
+				},
+				ResourceName:      accessZoneResourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ExpectError:       regexp.MustCompile(`.*access zone read specific mock error*.`),
+			},
+		},
+	})
+}
+
+var AccessZoneResourceConfig = `
+resource "powerscale_accesszone" "zone" {
+	# Required fields
+	name = "tfaccTestAccessZone3"
+	groupnet = "groupnet0"
+	path = "/ifs"
+  
+	# Optional to apply Auth Providers
+	custom_auth_providers = ["System"]
+  }
+`
+
+var AccessZoneUpdateResourceConfig = `
+resource "powerscale_accesszone" "zone" {
+	# Required fields
+	name = "tfaccTestAccessZone4"
+	groupnet = "groupnet0"
+	path = "/ifs/home"
+  
+	# Optional to apply Auth Providers
+	custom_auth_providers = []
+  }
+`
+
+var AccessZoneErrorResourceConfig = `
+resource "powerscale_accesszone" "zone" {
+	# Required fields
+	name = "tfaccAccessZoneError"
+	groupnet = "groupnet0"
+	path = "/ifs"
+  
+	# Optional to apply Auth Providers
+	custom_auth_providers = ["System"]
+  }
+`
+var AccessZoneUpdateResourceConfigError = `
+resource "powerscale_accesszone" "zone" {
+	# Required fields
+	name = "tfaccTestAccessZone6"
+	groupnet = "groupnet0"
+	path = "/some/bad/path/lol"
+  
+	# Optional to apply Auth Providers
+	custom_auth_providers = ["fakeAuthProvider"]
+  }
+`

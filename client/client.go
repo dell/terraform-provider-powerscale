@@ -21,7 +21,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"dell/powerscale-go-client"
+	powerscale "dell/powerscale-go-client"
 	"encoding/base64"
 	"errors"
 	"fmt"

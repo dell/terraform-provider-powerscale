@@ -87,4 +87,8 @@ func testAccPreCheck(t *testing.T) {
 	}
 
 	t.Log(ProviderConfig)
+	// Before each test clear out the mocker
+	if FunctionMocker != nil {
+		FunctionMocker.UnPatch()
+	}
 }

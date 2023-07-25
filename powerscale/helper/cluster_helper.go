@@ -2,10 +2,11 @@ package helper
 
 import (
 	"context"
-	"dell/powerscale-go-client"
+	powerscale "dell/powerscale-go-client"
+	"terraform-provider-powerscale/client"
+
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"terraform-provider-powerscale/client"
 )
 
 // GetClusterConfigSchema Get cluster config schema

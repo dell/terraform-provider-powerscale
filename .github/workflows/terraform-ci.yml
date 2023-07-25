@@ -53,7 +53,7 @@ jobs:
       - name: Run the forbidden words scan
         uses: dell/common-github-actions/code-sanitizer@main
         with:
-          args: /github/workspace
+          args: /github/workspace/powerscale
 
   build:
     name: Build

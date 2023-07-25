@@ -25,7 +25,6 @@ import (
 
 	. "github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 func TestAccAccessZoneDataSource(t *testing.T) {
@@ -107,12 +106,6 @@ func TestAccAccessZoneDataSourceGetErr(t *testing.T) {
 				Config:      ProviderConfig + AzAllDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
-		},
-		CheckDestroy: func(_ *terraform.State) error {
-			if FunctionMocker != nil {
-				FunctionMocker.UnPatch()
-			}
-			return nil
 		},
 	})
 }

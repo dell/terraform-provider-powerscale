@@ -19,12 +19,13 @@ package provider
 
 import (
 	"fmt"
-	. "github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	. "github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 func TestAccClusterDataSource(t *testing.T) {
@@ -67,7 +68,6 @@ func TestAccClusterConfigError(t *testing.T) {
 			// Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker.Release()
 					FunctionMocker = Mock(helper.GetClusterConfig).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
@@ -91,7 +91,6 @@ func TestAccClusterIdentityError(t *testing.T) {
 			// Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker.Release()
 					FunctionMocker = Mock(helper.GetClusterIdentity).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
@@ -115,7 +114,6 @@ func TestAccClusterNodesError(t *testing.T) {
 			// Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker.Release()
 					FunctionMocker = Mock(helper.GetClusterNodes).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
@@ -139,7 +137,6 @@ func TestAccClusterInternalNetworksError(t *testing.T) {
 			// Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker.Release()
 					FunctionMocker = Mock(helper.GetClusterInternalNetworks).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,

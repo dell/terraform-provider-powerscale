@@ -19,7 +19,7 @@ package helper
 
 import (
 	"context"
-	"dell/powerscale-go-client"
+	powerscale "dell/powerscale-go-client"
 	"encoding/json"
 	"fmt"
 	"math/big"
