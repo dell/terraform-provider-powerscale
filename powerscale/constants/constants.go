@@ -29,4 +29,16 @@ const (
 
 	// DeleteAccessZoneErrorMsg specifies error details occurred while deleting an Access Zones.
 	DeleteAccessZoneErrorMsg = "Could not delete access zones "
+
+	// ReadFileSystemErrorMsg specifies error details occurred while reading File Systems.
+	ReadFileSystemErrorMsg = "Could not read file systems "
+
+	// CreateFileSystemErrorMsg specifies error details occurred while creating an File Systems.
+	CreateFileSystemErrorMsg = "Could not create file systems "
+
+	// UpdateFileSystemErrorMsg specifies error details occurred while updating an File Systems.
+	UpdateFileSystemErrorMsg = "Could not update file systems "
+
+	// DeleteFileSystemErrorMsg specifies error details occurred while deleting an File Systems.
+	DeleteFileSystemErrorMsg = "Could not delete file systems "
 )

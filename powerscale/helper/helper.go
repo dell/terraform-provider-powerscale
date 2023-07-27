@@ -247,7 +247,10 @@ func GetErrorString(err error, errStr string) string {
 	message := ""
 	msgStr := ""
 	if ok {
-		message, _ := ParseBody(err1.Body())
+		message, err := ParseBody(err1.Body())
+		if err != nil {
+			msgStr = errStr + err.Error()
+		}
 		errStr = errStr + message
 	}
 	if message == "" {
