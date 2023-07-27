@@ -9,9 +9,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// GetClusterConfigSchema Get cluster config schema
+// GetClusterConfigSchema Get cluster config schema.
 func GetClusterConfigSchema() schema.Attribute {
-	config := schema.SingleNestedAttribute{
+	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The configuration information of cluster.",
 		Description:         "The configuration information of cluster.",
 		Computed:            true,
@@ -142,10 +142,9 @@ func GetClusterConfigSchema() schema.Attribute {
 			},
 		},
 	}
-	return config
 }
 
-// GetClusterIdentitySchema Get cluster identity schema
+// GetClusterIdentitySchema Get cluster identity schema.
 func GetClusterIdentitySchema() schema.Attribute {
 	identity := schema.SingleNestedAttribute{
 		MarkdownDescription: "Unprivileged cluster information for display when logging in.",
@@ -184,9 +183,9 @@ func GetClusterIdentitySchema() schema.Attribute {
 	return identity
 }
 
-// GetClusterNodeSchema get cluster node schema
+// GetClusterNodeSchema get cluster node schema.
 func GetClusterNodeSchema() schema.Attribute {
-	attribute := schema.SingleNestedAttribute{
+	return schema.SingleNestedAttribute{
 		MarkdownDescription: "IsiClusterNodes struct for IsiClusterNodes",
 		Description:         "IsiClusterNodes struct for IsiClusterNodes",
 		Computed:            true,
@@ -1083,12 +1082,11 @@ func GetClusterNodeSchema() schema.Attribute {
 			},
 		},
 	}
-	return attribute
 }
 
-// GetClusterInternalNetworksSchema get cluster internal network schema
+// GetClusterInternalNetworksSchema get cluster internal network schema.
 func GetClusterInternalNetworksSchema() schema.Attribute {
-	networks := schema.SingleNestedAttribute{
+	return schema.SingleNestedAttribute{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "V7ClusterInternalNetworks Configuration fields for internal networks.",
 		Description:         "V7ClusterInternalNetworks Configuration fields for internal networks.",
@@ -1193,29 +1191,77 @@ func GetClusterInternalNetworksSchema() schema.Attribute {
 			},
 		},
 	}
-	return networks
 }
 
-// GetClusterConfig retrieve the cluster information
+// GetClusterAcsSchema get cluster internal network schema.
+func GetClusterAcsSchema() schema.Attribute {
+	return schema.SingleNestedAttribute{
+		MarkdownDescription: "V14ClusterAcs Cluster ACS status.",
+		Description:         "V14ClusterAcs Cluster ACS status.",
+		Computed:            true,
+		Attributes: map[string]schema.Attribute{
+			"failed_nodes_sn": schema.ListAttribute{
+				Description:         "list of failed nodes serial number.",
+				MarkdownDescription: "list of failed nodes serial number.",
+				Computed:            true,
+				ElementType:         types.StringType,
+			},
+			"joined_nodes": schema.Int64Attribute{
+				Description:         "the number of joined nodes.",
+				MarkdownDescription: "the number of joined nodes.",
+				Computed:            true,
+			},
+			"license_status": schema.StringAttribute{
+				Description:         "the status of license activation.",
+				MarkdownDescription: "the status of license activation.",
+				Computed:            true,
+			},
+			"srs_status": schema.StringAttribute{
+				Description:         "the status of SRS enablement.",
+				MarkdownDescription: "the status of SRS enablement.",
+				Computed:            true,
+			},
+			"total_nodes": schema.Int64Attribute{
+				Description:         "total nodes number of the cluster.",
+				MarkdownDescription: "total nodes number of the cluster.",
+				Computed:            true,
+			},
+			"unresponsive_sn": schema.ListAttribute{
+				Description:         "list of unresponsive nodes serial number.",
+				MarkdownDescription: "list of unresponsive nodes serial number.",
+				Computed:            true,
+				ElementType:         types.StringType,
+			},
+		},
+	}
+}
+
+// GetClusterConfig retrieve the cluster information.
 func GetClusterConfig(ctx context.Context, client *client.Client) (*powerscale.V3ClusterConfig, error) {
 	config, _, err := client.PscaleOpenAPIClient.ClusterApi.GetClusterv3ClusterConfig(ctx).Execute()
 	return config, err
 }
 
-// GetClusterIdentity retrieve the login information
+// GetClusterIdentity retrieve the login information.
 func GetClusterIdentity(ctx context.Context, client *client.Client) (*powerscale.V1ClusterIdentity, error) {
 	identity, _, err := client.PscaleOpenAPIClient.ClusterApi.GetClusterv3ClusterIdentity(ctx).Execute()
 	return identity, err
 }
 
-// GetClusterNodes list the nodes on this cluster
+// GetClusterNodes list the nodes on this cluster.
 func GetClusterNodes(ctx context.Context, client *client.Client) (*powerscale.V3ClusterNodes, error) {
 	nodes, _, err := client.PscaleOpenAPIClient.ClusterApi.GetClusterv3ClusterNodes(ctx).Execute()
 	return nodes, err
 }
 
-// GetClusterInternalNetworks list internal networks settings
+// GetClusterInternalNetworks list internal networks settings.
 func GetClusterInternalNetworks(ctx context.Context, client *client.Client) (*powerscale.V7ClusterInternalNetworks, error) {
 	networks, _, err := client.PscaleOpenAPIClient.ClusterApi.GetClusterv7ClusterInternalNetworks(ctx).Execute()
 	return networks, err
+}
+
+// ListClusterAcs get the cluster acs status.
+func ListClusterAcs(ctx context.Context, client *client.Client) (*powerscale.V14ClusterAcs, error) {
+	acs, _, err := client.PscaleOpenAPIClient.ClusterApi.ListClusterv14ClusterAcs(ctx).Execute()
+	return acs, err
 }

@@ -292,7 +292,7 @@ func (r *AccessZoneResource) Read(ctx context.Context, req resource.ReadRequest,
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
-// Update updates the resource state Path, Name, AuthProviders
+// Update updates the resource state Path, Name, AuthProviders.
 func (r *AccessZoneResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Info(ctx, "updating access zone")
 	var plan *models.AccessZoneResourceModel

@@ -2,13 +2,14 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// ClusterDataSource returns the overall cluster details
+// ClusterDataSource returns the overall cluster details.
 type ClusterDataSource struct {
 	ID               types.String             `tfsdk:"id"`
 	Config           *ClusterConfig           `tfsdk:"config"`
 	Identity         *ClusterIdentity         `tfsdk:"identity"`
 	Nodes            *ClusterNodes            `tfsdk:"nodes"`
 	InternalNetworks *ClusterInternalNetworks `tfsdk:"internal_networks"`
+	ACS              *ClusterAcs              `tfsdk:"acs"`
 }
 
 // ClusterConfig returns the configuration information of cluster.
@@ -25,7 +26,7 @@ type ClusterConfig struct {
 	Timezone     *ClusterConfigTimezone     `tfsdk:"timezone"`
 }
 
-// ClusterConfigOnefsVersion struct for ClusterConfigOnefsVersion
+// ClusterConfigOnefsVersion struct for ClusterConfigOnefsVersion.
 type ClusterConfigOnefsVersion struct {
 	// OneFS build string.
 	Build types.String `tfsdk:"build"`
@@ -51,7 +52,7 @@ type ClusterConfigTimezone struct {
 	Path types.String `tfsdk:"path"`
 }
 
-// ClusterConfigDevice refers to device information of a cluster
+// ClusterConfigDevice refers to device information of a cluster.
 type ClusterConfigDevice struct {
 	// Device ID.
 	DevID types.Int64 `tfsdk:"devid"`
@@ -83,7 +84,7 @@ type ClusterIdentityLogon struct {
 	MotdHeader types.String `tfsdk:"motd_header"`
 }
 
-// ClusterNodes struct for ClusterNodes
+// ClusterNodes struct for ClusterNodes.
 type ClusterNodes struct {
 	// A list of errors encountered by the individual nodes involved in this request, or an empty list if there were no errors.
 	Errors []NodeStatusError `tfsdk:"errors"`
@@ -541,4 +542,20 @@ type ClusterInternalNetworksFailoverIPAddresse struct {
 	High types.String `tfsdk:"high"`
 	// IPv4 address in the format: xxx.xxx.xxx.xxx
 	Low types.String `tfsdk:"low"`
+}
+
+// ClusterAcs Cluster ACS status.
+type ClusterAcs struct {
+	// list of failed nodes serial number.
+	FailedNodesSn types.List `tfsdk:"failed_nodes_sn"`
+	// the number of joined nodes.
+	JoinedNodes types.Int64 `tfsdk:"joined_nodes"`
+	// the status of license activation.
+	LicenseStatus types.String `tfsdk:"license_status"`
+	// the status of SRS enablement.
+	SrsStatus types.String `tfsdk:"srs_status"`
+	// total nodes number of the cluster.
+	TotalNodes types.Int64 `tfsdk:"total_nodes"`
+	// list of unresponsive nodes serial number.
+	UnresponsiveSn types.List `tfsdk:"unresponsive_sn"`
 }

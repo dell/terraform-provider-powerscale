@@ -33,11 +33,25 @@ The cluster attributes and cluster node information.
 
 ### Read-Only
 
+- `acs` (Attributes) V14ClusterAcs Cluster ACS status. (see [below for nested schema](#nestedatt--acs))
 - `config` (Attributes) The configuration information of cluster. (see [below for nested schema](#nestedatt--config))
 - `id` (String) Unique identifier of the cluster.
 - `identity` (Attributes) Unprivileged cluster information for display when logging in. (see [below for nested schema](#nestedatt--identity))
 - `internal_networks` (Attributes) V7ClusterInternalNetworks Configuration fields for internal networks. (see [below for nested schema](#nestedatt--internal_networks))
 - `nodes` (Attributes) IsiClusterNodes struct for IsiClusterNodes (see [below for nested schema](#nestedatt--nodes))
+
+<a id="nestedatt--acs"></a>
+### Nested Schema for `acs`
+
+Read-Only:
+
+- `failed_nodes_sn` (List of String) list of failed nodes serial number.
+- `joined_nodes` (Number) the number of joined nodes.
+- `license_status` (String) the status of license activation.
+- `srs_status` (String) the status of SRS enablement.
+- `total_nodes` (Number) total nodes number of the cluster.
+- `unresponsive_sn` (List of String) list of unresponsive nodes serial number.
+
 
 <a id="nestedatt--config"></a>
 ### Nested Schema for `config`

@@ -86,7 +86,6 @@ func testAccPreCheck(t *testing.T) {
 		t.Fatal("POWERSCALE_PASSWORD environment variable not set")
 	}
 
-	t.Log(ProviderConfig)
 	// Before each test clear out the mocker
 	if FunctionMocker != nil {
 		FunctionMocker.UnPatch()

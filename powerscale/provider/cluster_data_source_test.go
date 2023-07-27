@@ -54,6 +54,7 @@ func TestAccClusterDataSource(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.powerscale_cluster.test", "nodes.nodes.0.sensors.%"),
 					resource.TestCheckResourceAttrSet("data.powerscale_cluster.test", "nodes.nodes.0.state.%"),
 					resource.TestCheckResourceAttrSet("data.powerscale_cluster.test", "nodes.nodes.0.status.%"),
+					resource.TestCheckResourceAttrSet("data.powerscale_cluster.test", "acs.%"),
 				),
 			},
 		},
@@ -138,6 +139,29 @@ func TestAccClusterInternalNetworksError(t *testing.T) {
 			{
 				PreConfig: func() {
 					FunctionMocker = Mock(helper.GetClusterInternalNetworks).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + testAccClusterDataSourceConfig,
+				ExpectError: regexp.MustCompile(`.*Client Error*.`),
+			},
+		},
+		CheckDestroy: func(_ *terraform.State) error {
+			if FunctionMocker != nil {
+				FunctionMocker.UnPatch()
+			}
+			return nil
+		},
+	})
+}
+
+func TestAccClusterAcsError(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Read testing
+			{
+				PreConfig: func() {
+					FunctionMocker = Mock(helper.ListClusterAcs).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*Client Error*.`),

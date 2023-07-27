@@ -28,7 +28,7 @@ type AccessZoneDataSourceModel struct {
 	AccessZoneFilter *AccessZoneFilterType `tfsdk:"filter"`
 }
 
-// AccessZoneDetailModel details of the accessZone
+// AccessZoneDetailModel details of the accessZone.
 type AccessZoneDetailModel struct {
 	// Specifies an alternate system provider.
 	AlternateSystemProvider types.String `tfsdk:"alternate_system_provider"`
@@ -68,7 +68,7 @@ type AccessZoneDetailModel struct {
 	ZoneID types.Int64 `tfsdk:"zone_id"`
 }
 
-// V1AuthAccessAccessItemFileGroup IfsRestricted object
+// V1AuthAccessAccessItemFileGroup IfsRestricted object.
 type V1AuthAccessAccessItemFileGroup struct {
 	// Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
 	ID types.String `tfsdk:"id"`
