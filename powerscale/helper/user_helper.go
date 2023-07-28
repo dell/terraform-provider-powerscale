@@ -155,7 +155,7 @@ func UpdateUserResourceState(model *models.UserReourceModel, user powerscale.V1M
 	}
 }
 
-// GetAllRoles returns all roles
+// GetAllRoles returns all roles.
 func GetAllRoles(ctx context.Context, client *client.Client) (roles []powerscale.V1AuthRoleExtended, err error) {
 	roleParams := client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthRoles(ctx)
 	result, _, err := roleParams.Execute()
@@ -193,7 +193,7 @@ func GetUser(ctx context.Context, client *client.Client, userName string) (*powe
 	return result, err
 }
 
-// CreateUser Creates an User
+// CreateUser Creates an User.
 func CreateUser(ctx context.Context, client *client.Client, plan *models.UserReourceModel) error {
 
 	createParam := client.PscaleOpenAPIClient.AuthApi.CreateAuthv1AuthUser(ctx)
@@ -318,7 +318,7 @@ func UpdateUser(ctx context.Context, client *client.Client, state *models.UserRe
 	return err
 }
 
-// UpdateUserRoles Updates an User roles
+// UpdateUserRoles Updates an User roles.
 func UpdateUserRoles(ctx context.Context, client *client.Client, state *models.UserReourceModel, plan *models.UserReourceModel) (diags diag.Diagnostics) {
 
 	var duplicatedRoles []attr.Value
@@ -359,7 +359,7 @@ func UpdateUserRoles(ctx context.Context, client *client.Client, state *models.U
 	return
 }
 
-// AddUserRole Assigns role to user
+// AddUserRole Assigns role to user.
 func AddUserRole(ctx context.Context, client *client.Client, roleID, userName string) error {
 	authID := userName
 	roleParam := client.PscaleOpenAPIClient.AuthRolesApi.CreateAuthRolesv1RoleMember(ctx, roleID).
@@ -370,7 +370,7 @@ func AddUserRole(ctx context.Context, client *client.Client, roleID, userName st
 	return nil
 }
 
-// RemoveUserRole Removes role from user
+// RemoveUserRole Removes role from user.
 func RemoveUserRole(ctx context.Context, client *client.Client, roleID string, uid int64) error {
 	authID := fmt.Sprintf("UID:%d", uid)
 	roleParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1RolesRoleMember(ctx, authID, roleID)

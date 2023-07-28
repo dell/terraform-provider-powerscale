@@ -41,4 +41,7 @@ const (
 
 	// DeleteFileSystemErrorMsg specifies error details occurred while deleting an File Systems.
 	DeleteFileSystemErrorMsg = "Could not delete file systems "
+
+	// ReadAdsProviderErrorMsg specifies error details occurred while reading Ads Providers.
+	ReadAdsProviderErrorMsg = "Could not read ads providers "
 )

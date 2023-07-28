@@ -25,7 +25,7 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 )
 
-// GetNFSExport retrieve nfs export information
+// GetNFSExport retrieve nfs export information.
 func GetNFSExport(ctx context.Context, client *client.Client, nfsModel models.NfsExportResource) (*powerscale.V2NfsExportsExtended, error) {
 	queryParam := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv2NfsExport(ctx, strconv.FormatInt(nfsModel.ID.ValueInt64(), 10))
 	if !nfsModel.Zone.IsNull() {
@@ -38,14 +38,14 @@ func GetNFSExport(ctx context.Context, client *client.Client, nfsModel models.Nf
 	return exportRes, err
 }
 
-// GetNFSExportByID retrieve nfs export information by id
+// GetNFSExportByID retrieve nfs export information by id.
 func GetNFSExportByID(ctx context.Context, client *client.Client, id string) (*powerscale.V2NfsExportsExtended, error) {
 	queryParam := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv2NfsExport(ctx, id)
 	exportRes, _, err := queryParam.Execute()
 	return exportRes, err
 }
 
-// CreateNFSExport create nfs export
+// CreateNFSExport create nfs export.
 func CreateNFSExport(ctx context.Context, client *client.Client, nfsModel models.NfsExportResource) (*powerscale.Createv3EventEventResponse, error) {
 	nfsExport := powerscale.V2NfsExport{}
 	err := ReadFromState(ctx, nfsModel, &nfsExport)
@@ -75,7 +75,7 @@ func CreateNFSExport(ctx context.Context, client *client.Client, nfsModel models
 	return evenResp, err
 }
 
-// DeleteNFSExport create nfs export
+// DeleteNFSExport create nfs export.
 func DeleteNFSExport(ctx context.Context, client *client.Client, nfsModel models.NfsExportResource) error {
 	deleteParam := client.PscaleOpenAPIClient.ProtocolsApi.DeleteProtocolsv2NfsExport(ctx, strconv.FormatInt(nfsModel.ID.ValueInt64(), 10))
 	if !nfsModel.Zone.IsNull() {
@@ -85,7 +85,7 @@ func DeleteNFSExport(ctx context.Context, client *client.Client, nfsModel models
 	return err
 }
 
-// UpdateNFSExport update nfs export config
+// UpdateNFSExport update nfs export config.
 func UpdateNFSExport(ctx context.Context, client *client.Client, nfsModel models.NfsExportResource) error {
 	nfsExport := powerscale.V2NfsExportExtendedExtended{}
 	err := ReadFromState(ctx, nfsModel, &nfsExport)
