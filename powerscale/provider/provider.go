@@ -188,6 +188,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 	return []func() datasource.DataSource{
 		NewAccessZoneDataSource,
 		NewClusterDataSource,
+		NewUserDataSource,
 	}
 }
 
