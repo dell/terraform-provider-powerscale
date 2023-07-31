@@ -57,10 +57,10 @@ func CopyFields(ctx context.Context, source, destination interface{}) error {
 	// Get the type of the destination struct
 	//destinationType := destinationValue.Elem().Type()
 	for i := 0; i < sourceValue.NumField(); i++ {
-		sourceFieldName := sourceValue.Type().Field(i).Name
+		sourceFieldTag := getFieldJSONTag(sourceValue, i)
 
 		tflog.Debug(ctx, "Converting source field", map[string]interface{}{
-			"sourceFieldName": sourceFieldName,
+			"sourceFieldTag":  sourceFieldTag,
 			"sourceFieldKind": sourceValue.Field(i).Kind().String(),
 		})
 
@@ -70,13 +70,13 @@ func CopyFields(ctx context.Context, source, destination interface{}) error {
 		}
 		if !sourceField.IsValid() {
 			tflog.Error(ctx, "source field is not valid", map[string]interface{}{
-				"sourceFieldName": sourceFieldName,
-				"sourceField":     sourceField,
+				"sourceFieldTag": sourceFieldTag,
+				"sourceField":    sourceField,
 			})
 			continue
 		}
 
-		destinationField := destinationValue.Elem().FieldByName(sourceFieldName)
+		destinationField := getFieldByTfTag(destinationValue.Elem(), sourceFieldTag)
 		if destinationField.IsValid() && destinationField.CanSet() {
 
 			tflog.Debug(ctx, "debugging source field", map[string]interface{}{
@@ -161,6 +161,22 @@ func CopyFields(ctx context.Context, source, destination interface{}) error {
 	return nil
 }
 
+func getFieldJSONTag(sourceValue reflect.Value, i int) string {
+	sourceFieldTag := sourceValue.Type().Field(i).Tag.Get("json")
+	sourceFieldTag = strings.TrimSuffix(sourceFieldTag, ",omitempty")
+	return sourceFieldTag
+}
+
+func getFieldByTfTag(destinationValue reflect.Value, tagValue string) reflect.Value {
+	for j := 0; j < destinationValue.NumField(); j++ {
+		field := destinationValue.Type().Field(j)
+		if field.Tag.Get("tfsdk") == tagValue {
+			return destinationValue.Field(j)
+		}
+	}
+	return reflect.Value{}
+}
+
 func copySliceToTargetField(ctx context.Context, fields interface{}) attr.Value {
 	var objects []attr.Value
 	attrTypeMap := make(map[string]attr.Type)
@@ -211,7 +227,7 @@ func copySliceToTargetField(ctx context.Context, fields interface{}) attr.Value 
 	return nil
 }
 
-// ParseBody parses the error message from an openApi error response
+// ParseBody parses the error message from an openApi error response.
 func ParseBody(body []byte) (string, error) {
 	var parsedData map[string]string
 	err := json.Unmarshal(body, &parsedData)
@@ -225,7 +241,7 @@ func ParseBody(body []byte) (string, error) {
 	return message, nil
 }
 
-// GetErrorString extracts the error message from an openApi error response
+// GetErrorString extracts the error message from an openApi error response.
 func GetErrorString(err error, errStr string) string {
 	err1, ok := err.(*powerscale.GenericOpenAPIError)
 	message := ""

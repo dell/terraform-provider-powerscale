@@ -44,6 +44,7 @@ func (d *ClusterDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			"identity":          helper.GetClusterIdentitySchema(),
 			"nodes":             helper.GetClusterNodeSchema(),
 			"internal_networks": helper.GetClusterInternalNetworksSchema(),
+			"acs":               helper.GetClusterAcsSchema(),
 		},
 	}
 }
@@ -132,6 +133,18 @@ func (d *ClusterDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 	data.InternalNetworks = &dataNetworks
+
+	acs, err := helper.ListClusterAcs(ctx, d.client)
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read cluster acs, got error: %s", err))
+	}
+	var dataAcs models.ClusterAcs
+	err = helper.CopyFields(ctx, acs, &dataAcs)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to map cluster acs", err.Error())
+		return
+	}
+	data.ACS = &dataAcs
 
 	data.ID = types.StringValue("cluster-data-source")
 

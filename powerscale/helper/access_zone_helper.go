@@ -32,7 +32,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
-// AccessZoneDetailMapper Does the mapping from response to model
+// AccessZoneDetailMapper Does the mapping from response to model.
 func AccessZoneDetailMapper(ctx context.Context, az *powerscale.V3ZoneExtended) (models.AccessZoneDetailModel, error) {
 	model := models.AccessZoneDetailModel{}
 	err := CopyFields(ctx, az, &model)
@@ -46,7 +46,7 @@ func AccessZoneDetailMapper(ctx context.Context, az *powerscale.V3ZoneExtended) 
 	return model, nil
 }
 
-// AccessZoneResouceDetailMapper detail mapper for access zone resource
+// AccessZoneResouceDetailMapper detail mapper for access zone resource.
 func AccessZoneResouceDetailMapper(ctx context.Context, az *powerscale.V3ZoneExtended) (models.AccessZoneResourceModel, error) {
 	model := models.AccessZoneResourceModel{}
 	err := CopyFields(ctx, az, &model)
@@ -79,13 +79,13 @@ func GetAuthAccessKeyObjects(accessResponse []powerscale.V1AuthAccessAccessItemF
 	return types.ListValue(types.ObjectType{AttrTypes: accessType}, accessKeyObjects)
 }
 
-// GetAllAccessZones returns the full list of access zones
+// GetAllAccessZones returns the full list of access zones.
 func GetAllAccessZones(ctx context.Context, client *client.Client) (*powerscale.V3Zones, error) {
 	result, _, err := client.PscaleOpenAPIClient.ZonesApi.ListZonesv3Zones(ctx).Execute()
 	return result, err
 }
 
-// CreateAccessZones Creates an Access Zone
+// CreateAccessZones Creates an Access Zone.
 func CreateAccessZones(ctx context.Context, client *client.Client, authProv []string, plan *models.AccessZoneResourceModel) error {
 	forceOverlap := true
 	createPath := false
@@ -103,7 +103,7 @@ func CreateAccessZones(ctx context.Context, client *client.Client, authProv []st
 	return err
 }
 
-// GetSpecificZone returns a specific zone or an error
+// GetSpecificZone returns a specific zone or an error.
 func GetSpecificZone(ctx context.Context, matchZone string, zoneList []powerscale.V3ZoneExtended) (models.AccessZoneResourceModel, error) {
 	for _, vze := range zoneList {
 		if *vze.Name == matchZone {
@@ -122,7 +122,7 @@ func GetSpecificZone(ctx context.Context, matchZone string, zoneList []powerscal
 	return models.AccessZoneResourceModel{}, fmt.Errorf("error finding new access zone after create, Unable to create successfully")
 }
 
-// ExtractCustomAuthForInput extracts the custom auth provider from actual auth provider for input
+// ExtractCustomAuthForInput extracts the custom auth provider from actual auth provider for input.
 func ExtractCustomAuthForInput(ctx context.Context, authProv basetypes.ListValue, mainAuth string) (basetypes.ListValue, diag.Diagnostics) {
 	var filteredAuths []attr.Value
 	for _, v := range authProv.Elements() {
