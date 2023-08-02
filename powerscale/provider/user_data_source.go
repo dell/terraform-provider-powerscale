@@ -353,26 +353,10 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	// start goroutine to cache all roles
 	var eg errgroup.Group
 	var roles []powerscale.V1AuthRoleExtended
+	var roleErr error
 	eg.Go(func() error {
-		roleParams := d.client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthRoles(ctx)
-		result, _, err := roleParams.Execute()
-		if err != nil {
-			return err
-		}
-
-		for {
-			roles = append(roles, result.Roles...)
-			if result.Resume == nil || *result.Resume == "" {
-				break
-			}
-
-			roleParams = d.client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthRoles(ctx).Resume(*result.Resume)
-			if result, _, err = roleParams.Execute(); err != nil {
-				return err
-			}
-		}
-
-		return err
+		roles, roleErr = helper.GetAllRoles(ctx, d.client)
+		return roleErr
 	})
 
 	// cache all users
@@ -427,7 +411,6 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 
 	if err := eg.Wait(); err != nil {
 		resp.Diagnostics.AddError("Error getting the list of PowerScale Roles", err.Error())
-		roles = nil
 	}
 
 	// parse user response to state user model

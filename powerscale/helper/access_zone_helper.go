@@ -69,14 +69,26 @@ func GetAuthAccessKeyObjects(accessResponse []powerscale.V1AuthAccessAccessItemF
 		"type": types.StringType,
 	}
 	for _, access := range accessResponse {
-		accessMap := make(map[string]attr.Value)
-		accessMap["id"] = types.StringValue(*access.Id)
-		accessMap["name"] = types.StringValue(*access.Name)
-		accessMap["type"] = types.StringValue(*access.Type)
-		accessObject, _ := types.ObjectValue(accessType, accessMap)
-		accessKeyObjects = append(accessKeyObjects, accessObject)
+		accessKeyObjects = append(accessKeyObjects, AuthAccessKeyObjectMapper(access))
 	}
+
 	return types.ListValue(types.ObjectType{AttrTypes: accessType}, accessKeyObjects)
+}
+
+// AuthAccessKeyObjectMapper parses V1AuthAccessAccessItemFileGroup to object.
+func AuthAccessKeyObjectMapper(access powerscale.V1AuthAccessAccessItemFileGroup) types.Object {
+	accessType := map[string]attr.Type{
+		"id":   types.StringType,
+		"name": types.StringType,
+		"type": types.StringType,
+	}
+	accessMap := make(map[string]attr.Value)
+	accessMap["id"] = types.StringValue(*access.Id)
+	accessMap["name"] = types.StringValue(*access.Name)
+	accessMap["type"] = types.StringValue(*access.Type)
+	accessObject, _ := types.ObjectValue(accessType, accessMap)
+
+	return accessObject
 }
 
 // GetAllAccessZones returns the full list of access zones.

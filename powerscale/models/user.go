@@ -81,3 +81,45 @@ type UserMemberItem struct {
 	Name types.String `tfsdk:"name"`
 	UID  types.Int64  `tfsdk:"uid"`
 }
+
+// UserReourceModel describes the resource data model.
+type UserReourceModel struct {
+	QueryForce            types.Bool   `tfsdk:"query_force"`
+	QueryZone             types.String `tfsdk:"query_zone"`
+	QueryProvider         types.String `tfsdk:"query_provider"`
+	Provider              types.String `tfsdk:"provider_name"`
+	Email                 types.String `tfsdk:"email"`
+	Enabled               types.Bool   `tfsdk:"enabled"`
+	Expiry                types.Int64  `tfsdk:"expiry"`
+	Gecos                 types.String `tfsdk:"gecos"`
+	HomeDirectory         types.String `tfsdk:"home_directory"`
+	Password              types.String `tfsdk:"password"`
+	PasswordExpires       types.Bool   `tfsdk:"password_expires"`
+	PrimaryGroup          types.String `tfsdk:"primary_group"`
+	PromptPasswordChange  types.Bool   `tfsdk:"prompt_password_change"`
+	Shell                 types.String `tfsdk:"shell"`
+	UID                   types.Int64  `tfsdk:"uid"`
+	UnLock                types.Bool   `tfsdk:"unlock"`
+	Name                  types.String `tfsdk:"name"`
+	Roles                 types.List   `tfsdk:"roles"`
+	Dn                    types.String `tfsdk:"dn"`
+	DNSDomain             types.String `tfsdk:"dns_domain"`
+	Domain                types.String `tfsdk:"domain"`
+	Expired               types.Bool   `tfsdk:"expired"`
+	GeneratedGID          types.Bool   `tfsdk:"generated_gid"`
+	GeneratedUID          types.Bool   `tfsdk:"generated_uid"`
+	GeneratedUpn          types.Bool   `tfsdk:"generated_upn"`
+	GID                   types.Object `tfsdk:"gid"`
+	PrimaryGroupSID       types.Object `tfsdk:"primary_group_sid"`
+	ID                    types.String `tfsdk:"id"`
+	Locked                types.Bool   `tfsdk:"locked"`
+	MaxPasswordAge        types.Int64  `tfsdk:"max_password_age"`
+	PasswordExpired       types.Bool   `tfsdk:"password_expired"`
+	PasswordExpiry        types.Int64  `tfsdk:"password_expiry"`
+	PasswordLastSet       types.Int64  `tfsdk:"password_last_set"`
+	SamAccountName        types.String `tfsdk:"sam_account_name"`
+	SID                   types.String `tfsdk:"sid"`
+	Type                  types.String `tfsdk:"type"`
+	Upn                   types.String `tfsdk:"upn"`
+	UserCanChangePassword types.Bool   `tfsdk:"user_can_change_password"`
+}
