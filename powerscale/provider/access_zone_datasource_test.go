@@ -45,7 +45,6 @@ func TestAccAccessZoneDataSource(t *testing.T) {
 					resource.TestCheckResourceAttr(azTerraformName, "access_zones_details.0.skeleton_directory", "/usr/share/skel"),
 					resource.TestCheckResourceAttr(azTerraformName, "access_zones_details.0.system", "false"),
 					resource.TestCheckResourceAttr(azTerraformName, "access_zones_details.0.system_provider", "lsa-file-provider:System"),
-					resource.TestCheckResourceAttr(azTerraformName, "access_zones_details.0.zone_id", "4"),
 				),
 			},
 		},

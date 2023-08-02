@@ -63,7 +63,8 @@ func (d *FileSystemDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"directory_path": schema.StringAttribute{
 				MarkdownDescription: "FileSystem identifier",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"file_systems_details": schema.SingleNestedAttribute{
 				Description:         "Details of the Filesystem",
@@ -516,9 +517,14 @@ func (d *FileSystemDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	// Read Terraform configuration data into the model.
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-	// Remove the "/" infront of the beginning of the directory path for the API calls
 	usablePath := data.DirectoryPath.ValueString()
-	usablePath = usablePath[1:]
+	if usablePath == "" {
+		usablePath = "ifs"
+		data.DirectoryPath = types.StringValue("/ifs")
+	} else {
+		// Remove the "/" infront of the beginning of the directory path for the API calls
+		usablePath = usablePath[1:]
+	}
 	meta, err := helper.GetDirectoryMetadata(ctx, d.client, usablePath)
 
 	if err != nil {

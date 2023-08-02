@@ -16,7 +16,7 @@ limitations under the License.
 */
 
 data "powerscale_filesystem" "system" {
-  # Required parameter, path of the directory filesystem you would like to create a datasource out of 
+  # Required parameter, path of the directory filesystem datasource, defaults to "/ifs" if not set
   directory_path = "/ifs/tfacc_file_system_test"
 }
 

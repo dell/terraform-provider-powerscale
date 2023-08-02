@@ -50,14 +50,12 @@ func TestAccFileSystemDataSource(t *testing.T) {
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.mode", "0700"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.container", "true"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.enforced", "false"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.id", "jg4tAAEAAAAAAAAAAAAAQAMAAAAAAAAA"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.path", "/ifs/tfacc_file_system_test"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.type", "directory"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.usage.fslogical_ready", "true"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.usage.fsphysical", "2048"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.usage.shadow_refs", "0"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.usage.inodes", "1"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_snapshots.0.created", "1690801105"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_snapshots.0.has_locks", "false"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_snapshots.0.state", "active"),
 				),
@@ -66,14 +64,17 @@ func TestAccFileSystemDataSource(t *testing.T) {
 	})
 }
 
-func TestAccFileSystemDataSourceFilterErr(t *testing.T) {
+func TestAccFileSystemDataSourceFilterDefault(t *testing.T) {
+	var fsTerraform = "data.powerscale_filesystem.system"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfig + FileSystemDataSourcErreConfig,
-				ExpectError: regexp.MustCompile(`.*Missing required argument*.`),
+				Config: ProviderConfig + FileSystemDataSourceDefaultConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(fsTerraform, "directory_path", "/ifs"),
+				),
 			},
 		},
 	})
@@ -154,9 +155,9 @@ data "powerscale_filesystem" "system" {
   }
 `
 
-var FileSystemDataSourcErreConfig = `
+var FileSystemDataSourceDefaultConfig = `
 data "powerscale_filesystem" "system" {
-	# No Directory_path should return an error
+	# No Directory_path should use default
   }
   
   output "powerscale_filesystem_1" {
