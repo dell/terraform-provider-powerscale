@@ -19,15 +19,13 @@ package provider
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"testing"
-
 	. "github.com/bytedance/mockey"
-
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/joho/godotenv"
+	"log"
+	"os"
+	"testing"
 )
 
 // testAccProtoV6ProviderFactories are used to instantiate a provider during

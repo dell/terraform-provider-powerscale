@@ -180,6 +180,7 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewAccessZoneResource,
+		NewSmbShareResource,
 	}
 }
 
@@ -190,6 +191,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewAccessZoneDataSource,
 		NewClusterDataSource,
 		NewUserDataSource,
+		NewSmbShareDataSource,
 	}
 }
 
