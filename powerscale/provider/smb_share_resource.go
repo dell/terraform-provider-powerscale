@@ -520,7 +520,7 @@ func (r SmbShareResource) Read(ctx context.Context, request resource.ReadRequest
 	tflog.Info(ctx, "read smb share completed")
 }
 
-// Update updates the resource state
+// Update updates the resource state.
 func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
 	tflog.Info(ctx, "updating smb share")
 	var sharePlan models.SmbShareResource
