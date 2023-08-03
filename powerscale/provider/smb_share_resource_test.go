@@ -66,7 +66,7 @@ func TestAccSmbShareResource(t *testing.T) {
 	})
 }
 
-func Test_ErrorRead_AccSmbShareResource(t *testing.T) {
+func TestAccSmbShareResourceErrorRead(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -102,7 +102,7 @@ func Test_ErrorRead_AccSmbShareResource(t *testing.T) {
 	})
 }
 
-func Test_ErrorUpdate_AccSmbShareResource(t *testing.T) {
+func TestAccSmbShareResourceErrorUpdate(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -159,7 +159,7 @@ func Test_ErrorUpdate_AccSmbShareResource(t *testing.T) {
 	})
 }
 
-func Test_ErrorCreate_AccSmbShareResource(t *testing.T) {
+func TestAccSmbShareResourceErrorCreate(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -172,7 +172,7 @@ func Test_ErrorCreate_AccSmbShareResource(t *testing.T) {
 	})
 }
 
-func Test_ErrorCopyField_AccSmbShareResource(t *testing.T) {
+func TestAccSmbShareResourceErrorCopyField(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -206,7 +206,7 @@ func Test_ErrorCopyField_AccSmbShareResource(t *testing.T) {
 	})
 }
 
-func Test_ErrorReadState_AccSmbShareResource(t *testing.T) {
+func TestAccSmbShareResourceErrorReadState(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,

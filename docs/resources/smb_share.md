@@ -69,6 +69,7 @@ resource "powerscale_smb_share" "share_example" {
 
 ### Required
 
+- `name` (String) Share name.
 - `path` (String) Path of share within /ifs.
 - `permissions` (Attributes List) Specifies an ordered list of permission modifications. (see [below for nested schema](#nestedatt--permissions))
 
@@ -102,7 +103,6 @@ resource "powerscale_smb_share" "share_example" {
 - `inheritable_path_acl` (Boolean) Set the inheritable ACL on the share path.
 - `mangle_byte_start` (Number) Specifies the wchar_t starting point for automatic byte mangling.
 - `mangle_map` (List of String) Character mangle map.
-- `name` (String) Share name.
 - `ntfs_acl_support` (Boolean) Support NTFS ACLs on files and directories.
 - `oplocks` (Boolean) Support oplocks.
 - `run_as_root` (Attributes List) Allow account to run as root. (see [below for nested schema](#nestedatt--run_as_root))

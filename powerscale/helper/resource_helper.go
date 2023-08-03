@@ -19,6 +19,7 @@ package helper
 
 import (
 	"context"
+	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
@@ -69,15 +70,18 @@ func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interfa
 		if sourceField.Kind() == reflect.Ptr {
 			sourceField = sourceField.Elem()
 		}
+		destinationField := getFieldByTfTag(destinationValue.Elem(), sourceFieldTag)
+		structType := reflect.TypeOf(source)
+		// For zero value (nil), the object still need to pass type information into it
 		if !sourceField.IsValid() {
-			tflog.Error(ctx, "source field is not valid", map[string]interface{}{
-				"sourceFieldTag": sourceFieldTag,
-				"sourceField":    sourceField,
-			})
+			destinationField = getFieldByTfTag(destinationValue.Elem(), sourceFieldTag)
+			mapType, err := getStructAttrTypeFromType(ctx, structType.Field(i).Type)
+			if err != nil {
+				return err
+			}
+			destinationField.Set(reflect.ValueOf(types.ObjectNull(mapType)))
 			continue
 		}
-
-		destinationField := getFieldByTfTag(destinationValue.Elem(), sourceFieldTag)
 		if destinationField.IsValid() && destinationField.CanSet() {
 			tflog.Debug(ctx, "debugging source field", map[string]interface{}{
 				"sourceField Interface": sourceField.Interface(),
@@ -122,9 +126,84 @@ func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interfa
 	return nil
 }
 
+func getStructAttrTypeFromType(ctx context.Context, structType reflect.Type) (map[string]attr.Type, error) {
+	attrTypeMap := make(map[string]attr.Type)
+	if structType.Kind() == reflect.Ptr {
+		structType = structType.Elem()
+	}
+	for fieldIndex := 0; fieldIndex < structType.NumField(); fieldIndex++ {
+		structField := structType.Field(fieldIndex)
+		tag := structField.Tag.Get("json")
+		tag = strings.TrimSuffix(tag, ",omitempty")
+		structFieldKind := structField.Type.Kind()
+		if structField.Type.Kind() == reflect.Ptr {
+			structFieldKind = structField.Type.Elem().Kind()
+		}
+		switch structFieldKind {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			attrTypeMap[tag] = types.Int64Type
+		case reflect.String:
+			attrTypeMap[tag] = types.StringType
+		case reflect.Float32, reflect.Float64:
+			attrTypeMap[tag] = types.NumberType
+		case reflect.Bool:
+			attrTypeMap[tag] = types.BoolType
+		case reflect.Struct:
+			if structField.Type == reflect.TypeOf(powerscale.NullableString{}) {
+				attrTypeMap[tag] = types.StringType
+			} else {
+				structAttrType, err := getStructAttrTypeFromType(ctx, structField.Type)
+				if err != nil {
+					return nil, err
+				}
+				attrTypeMap[tag] = types.ObjectType{AttrTypes: structAttrType}
+			}
+		case reflect.Array, reflect.Slice:
+			structAttrType, err := getSliceAttrTypeFromType(ctx, structField.Type)
+			if err != nil {
+				return nil, err
+			}
+			attrTypeMap[tag] = structAttrType
+		}
+	}
+	return attrTypeMap, nil
+
+}
+
+func getSliceAttrTypeFromType(ctx context.Context, sliceType reflect.Type) (attr.Type, error) {
+	sliceType = sliceType.Elem()
+	if sliceType.Kind() == reflect.Ptr {
+		sliceType = sliceType.Elem()
+	}
+	switch sliceType.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return types.ListType{ElemType: types.Int64Type}, nil
+	case reflect.String:
+		return types.ListType{ElemType: types.StringType}, nil
+	case reflect.Float32, reflect.Float64:
+		return types.ListType{ElemType: types.NumberType}, nil
+	case reflect.Bool:
+		return types.ListType{ElemType: types.BoolType}, nil
+	case reflect.Struct:
+		structAttrType, err := getStructAttrTypeFromType(ctx, sliceType)
+		if err != nil {
+			return nil, err
+		}
+		return types.ListType{ElemType: types.ObjectType{AttrTypes: structAttrType}}, nil
+	case reflect.Array, reflect.Slice:
+		sliceAttrType, err := getSliceAttrTypeFromType(ctx, sliceType)
+		if err != nil {
+			return nil, err
+		}
+		return types.ListType{ElemType: sliceAttrType}, nil
+	default:
+		return nil, fmt.Errorf("unknown type")
+	}
+}
+
 func getStructValue(ctx context.Context, structObj interface{}) (basetypes.ObjectValue, error) {
 	elem := reflect.ValueOf(structObj)
-	attrType, err := getStructAttrType(ctx, structObj)
+	attrType, err := getStructAttrTypeFromType(ctx, reflect.TypeOf(structObj))
 	if err != nil {
 		return types.ObjectNull(nil), err
 	}
@@ -147,9 +226,17 @@ func getStructValue(ctx context.Context, structObj interface{}) (basetypes.Objec
 		case reflect.Bool:
 			valueMap[tag] = types.BoolValue(elemFieldVal.Bool())
 		case reflect.Struct:
-			valueMap[tag], err = getStructValue(ctx, elemFieldVal.Interface())
-			if err != nil {
-				return types.ObjectNull(nil), err
+			if elemFieldType == reflect.TypeOf(powerscale.NullableString{}) {
+				nullableString, ok := elemFieldVal.Interface().(powerscale.NullableString)
+				if !ok {
+					return types.ObjectNull(nil), fmt.Errorf("NullableString failed")
+				}
+				valueMap[tag] = types.StringValue(*nullableString.Get())
+			} else {
+				valueMap[tag], err = getStructValue(ctx, elemFieldVal.Interface())
+				if err != nil {
+					return types.ObjectNull(nil), err
+				}
 			}
 		case reflect.Array, reflect.Slice:
 			valueMap[tag], err = getSliceAttrValue(ctx, elemFieldVal.Interface())
@@ -160,50 +247,6 @@ func getStructValue(ctx context.Context, structObj interface{}) (basetypes.Objec
 	}
 	object, _ := types.ObjectValue(attrType, valueMap)
 	return object, nil
-}
-
-func getStructAttrType(ctx context.Context, structObj interface{}) (map[string]attr.Type, error) {
-	attrTypeMap := make(map[string]attr.Type)
-	structElemVal := reflect.ValueOf(structObj)
-	structElemType := structElemVal.Type()
-	if reflect.ValueOf(structObj).Kind() == reflect.Ptr {
-		structElemVal = reflect.ValueOf(structObj).Elem()
-		structElemType = structElemVal.Type()
-	}
-	if structElemType.Kind() != reflect.Struct {
-		return attrTypeMap, fmt.Errorf("source is not a struct")
-	}
-	for fieldIndex := 0; fieldIndex < structElemType.NumField(); fieldIndex++ {
-		structFieldVal := structElemVal.Field(fieldIndex)
-		structField := structElemType.Field(fieldIndex)
-		tag := structField.Tag.Get("json")
-		tag = strings.TrimSuffix(tag, ",omitempty")
-		structFieldType := structField.Type.Kind()
-		if structField.Type.Kind() == reflect.Ptr {
-			structFieldType = structField.Type.Elem().Kind()
-		}
-		switch structFieldType {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			attrTypeMap[tag] = types.Int64Type
-		case reflect.String:
-			attrTypeMap[tag] = types.StringType
-		case reflect.Float32, reflect.Float64:
-			attrTypeMap[tag] = types.NumberType
-		case reflect.Struct:
-			structAttrType, err := getStructAttrType(ctx, structFieldVal.Interface())
-			if err != nil {
-				return nil, err
-			}
-			attrTypeMap[tag] = types.ObjectType{AttrTypes: structAttrType}
-		case reflect.Array, reflect.Slice:
-			structAttrType, err := getSliceAttrType(ctx, structFieldVal.Interface())
-			if err != nil {
-				return nil, err
-			}
-			attrTypeMap[tag] = structAttrType
-		}
-	}
-	return attrTypeMap, nil
 }
 
 func getSliceAttrValue(ctx context.Context, sliceObject interface{}) (attr.Value, error) {
@@ -223,7 +266,7 @@ func getSliceAttrValue(ctx context.Context, sliceObject interface{}) (attr.Value
 		return listValue, nil
 	case reflect.Struct:
 		var values []attr.Value
-		sliceElemType, err := getStructAttrType(ctx, reflect.New(sliceValue.Type().Elem()).Elem().Interface())
+		sliceElemType, err := getStructAttrTypeFromType(ctx, sliceValue.Type().Elem())
 		if err != nil {
 			return nil, err
 		}
@@ -241,7 +284,7 @@ func getSliceAttrValue(ctx context.Context, sliceObject interface{}) (attr.Value
 		return returnListValue, nil
 	case reflect.Array, reflect.Slice:
 		var values []attr.Value
-		sliceAttrType, err := getSliceAttrType(ctx, reflect.MakeSlice(sliceValue.Type().Elem(), 0, 0).Interface())
+		sliceAttrType, err := getSliceAttrTypeFromType(ctx, sliceValue.Type().Elem())
 		if err != nil {
 			return nil, err
 		}
@@ -257,34 +300,6 @@ func getSliceAttrValue(ctx context.Context, sliceObject interface{}) (attr.Value
 		}
 		returnListValue, _ := types.ListValue(types.ListType{ElemType: sliceAttrType}, values)
 		return returnListValue, nil
-	default:
-		return nil, fmt.Errorf("unknown type")
-	}
-}
-
-func getSliceAttrType(ctx context.Context, sliceObject interface{}) (attr.Type, error) {
-	sliceValue := reflect.ValueOf(sliceObject)
-	switch sliceValue.Type().Elem().Kind() {
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return types.ListType{ElemType: types.Int64Type}, nil
-	case reflect.String:
-		return types.ListType{ElemType: types.StringType}, nil
-	case reflect.Float32, reflect.Float64:
-		return types.ListType{ElemType: types.NumberType}, nil
-	case reflect.Bool:
-		return types.ListType{ElemType: types.BoolType}, nil
-	case reflect.Struct:
-		structAttrType, err := getStructAttrType(ctx, reflect.New(sliceValue.Type().Elem()).Elem().Interface())
-		if err != nil {
-			return nil, err
-		}
-		return types.ListType{ElemType: types.ObjectType{AttrTypes: structAttrType}}, nil
-	case reflect.Array, reflect.Slice:
-		sliceAttrType, err := getSliceAttrType(ctx, reflect.MakeSlice(sliceValue.Type().Elem(), 0, 0).Interface())
-		if err != nil {
-			return nil, err
-		}
-		return types.ListType{ElemType: sliceAttrType}, nil
 	default:
 		return nil, fmt.Errorf("unknown type")
 	}
@@ -323,6 +338,13 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 				}
 				if destinationField.Type().Kind() == reflect.String {
 					destinationField.Set(reflect.ValueOf(targetValue))
+				}
+				if destinationField.Type() == reflect.TypeOf(powerscale.NullableString{}) {
+					addr, ok := destinationField.Addr().Interface().(*powerscale.NullableString)
+					if !ok {
+						continue
+					}
+					addr.Set(&targetValue)
 				}
 			case basetypes.Int64Value:
 				intVal, ok := sourceValue.Field(i).Interface().(basetypes.Int64Value)

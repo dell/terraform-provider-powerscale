@@ -24,7 +24,7 @@ data "powerscale_smb_share" "test" {
 }
 
 output "powerscale_smb_share" {
-  value = data.powerscale_accesszone.test
+  value = data.powerscale_smb_share.test
 }
 
 data "powerscale_smb_share" "all" {

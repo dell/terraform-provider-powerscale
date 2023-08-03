@@ -43,7 +43,7 @@ func TestAccSmbShareDatasource(t *testing.T) {
 	})
 }
 
-func Test_GetAll_AccSmbShareDatasource(t *testing.T) {
+func TestAccSmbShareDatasourceGetAll(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -59,7 +59,7 @@ func Test_GetAll_AccSmbShareDatasource(t *testing.T) {
 	})
 }
 
-func Test_Pagination_AccSmbShareDatasource(t *testing.T) {
+func TestAccSmbShareDatasourcePagination(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -101,7 +101,7 @@ func Test_Pagination_AccSmbShareDatasource(t *testing.T) {
 	})
 }
 
-func Test_Error_AccSmbShareDatasource(t *testing.T) {
+func TestAccSmbShareDatasourceErrorCopyFields(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -119,6 +119,23 @@ func Test_Error_AccSmbShareDatasource(t *testing.T) {
 }
 
 var SmbShareAllDatasourceConfig = `
+resource "powerscale_smb_share" "share_resource_test" {
+	auto_create_directory = true
+	name = "%s"
+	path = "/ifs/%s"
+	permissions = [
+		{
+			permission = "full"
+			permission_type = "allow"
+			trustee = {
+				id = "SID:S-1-1-0",
+				name = "Everyone",
+				type = "wellknown"
+			}
+		}
+	]
+}
+
 data "powerscale_smb_share" "share_datasource_test_all" {}
 `
 

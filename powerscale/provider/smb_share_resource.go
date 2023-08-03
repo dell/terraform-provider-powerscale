@@ -247,8 +247,7 @@ func (r *SmbShareResource) Schema(ctx context.Context, req resource.SchemaReques
 			"name": schema.StringAttribute{
 				Description:         "Share name.",
 				MarkdownDescription: "Share name.",
-				Optional:            true,
-				Computed:            true,
+				Required:            true,
 			},
 			"ntfs_acl_support": schema.BoolAttribute{
 				Description:         "Support NTFS ACLs on files and directories.",
@@ -591,6 +590,8 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 		)
 		return
 	}
+	// Zone need to be manually set
+	shareState.Zone = sharePlan.Zone
 	diags = response.State.Set(ctx, shareState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
