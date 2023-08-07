@@ -132,6 +132,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 	return []func() resource.Resource{
 		NewAccessZoneResource,
 		NewSmbShareResource,
+		NewUserResource,
 	}
 }
 
