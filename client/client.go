@@ -29,61 +29,36 @@ import (
 	"net/http/cookiejar"
 	"time"
 
-	"github.com/dell/goisilon"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Client type is to hold powerscale client.
 type Client struct {
 	PscaleOpenAPIClient *powerscale.APIClient
-	PscaleClient        *goisilon.Client
 }
 
-// NewClient returns the gopowerscale client.
+// NewClient returns the client.
 func NewClient(endpoint string,
-	insecure bool, verboseLogging uint,
-	user, group, pass, volumePath string, volumePathPermissions string, ignoreUnresolvableHosts bool, authType uint8) (*Client, error) {
-	pscaleClient, err := goisilon.NewClientWithArgs(
-		context.Background(),
-		endpoint,
-		insecure,
-		verboseLogging,
-		user,
-		group,
-		pass,
-		volumePath,
-		volumePathPermissions,
-		ignoreUnresolvableHosts,
-		authType,
-	)
-	if err != nil {
-		return nil, err
-	}
+	insecure bool,
+	user string, pass string) (*Client, error) {
 	openAPIClient, err := NewOpenAPIClient(
 		context.Background(),
 		endpoint,
 		insecure,
-		verboseLogging,
 		user,
-		group,
 		pass,
-		volumePath,
-		volumePathPermissions,
-		ignoreUnresolvableHosts,
-		authType,
 	)
 	if err != nil {
 		return nil, err
 	}
 	client := Client{
-		PscaleClient:        pscaleClient,
 		PscaleOpenAPIClient: openAPIClient,
 	}
 	return &client, nil
 }
 
 // NewOpenAPIClient returns the OpenApi Client.
-func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, verboseLogging uint, user, group, pass, volumePath string, volumePathPermissions string, ignoreUnresolvableHosts bool, authType uint8) (*powerscale.APIClient, error) {
+func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user string, pass string) (*powerscale.APIClient, error) {
 	// Setup a User-Agent for your API client (replace the provider name for yours):
 	userAgent := "terraform-powermax-provider/1.0.0"
 	jar, err := cookiejar.New(nil)

@@ -32,7 +32,7 @@ import (
 )
 
 // CopyFieldsToNonNestedModel copy OpenAPI struct source to destination of struct with terraform types.
-// use this function when model struct contains only types.List/Object
+// use this function when model struct contains only types.List/Object.
 func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interface{}) error {
 	tflog.Debug(ctx, "Copy fields", map[string]interface{}{
 		"source":      source,
@@ -305,7 +305,7 @@ func getSliceAttrValue(ctx context.Context, sliceObject interface{}) (attr.Value
 	}
 }
 
-// ReadFromState read from model to openapi struct, model should not contain nested struct
+// ReadFromState read from model to openapi struct, model should not contain nested struct.
 func ReadFromState(ctx context.Context, source, destination interface{}) error {
 	sourceValue := reflect.ValueOf(source)
 	destinationValue := reflect.ValueOf(destination)
@@ -533,7 +533,7 @@ func assignListToField(ctx context.Context, source basetypes.ListValue, destinat
 	return nil
 }
 
-// getFieldByJSONTag get field by tag, input destination is pointer
+// getFieldByJSONTag get field by tag, input destination is pointer.
 func getFieldByJSONTag(destination interface{}, tag string) (reflect.Value, error) {
 	destElemVal := reflect.ValueOf(destination).Elem()
 	destElemType := destElemVal.Type()

@@ -126,7 +126,7 @@ type SmbShareDatasource struct {
 	SmbSharesFilter *SmbShareDatasourceFilter  `tfsdk:"filter"`
 }
 
-// SmbShareDatasourceFilter holds filter conditions
+// SmbShareDatasourceFilter holds filter conditions.
 type SmbShareDatasourceFilter struct {
 	// supported by api
 	Sort         types.String `tfsdk:"sort"`
@@ -141,7 +141,7 @@ type SmbShareDatasourceFilter struct {
 	Names []types.String `tfsdk:"names"`
 }
 
-// SmbShareDatasourceEntity struct for SmbShareDatasource
+// SmbShareDatasourceEntity struct for SmbShareDatasource.
 type SmbShareDatasourceEntity struct {
 	// Only enumerate files and folders the requesting user has access to.
 	AccessBasedEnumeration types.Bool `tfsdk:"access_based_enumeration"`

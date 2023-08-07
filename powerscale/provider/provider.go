@@ -21,7 +21,6 @@ import (
 	"context"
 	"terraform-provider-powerscale/client"
 
-	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -49,16 +48,10 @@ type PscaleProvider struct {
 
 // Data describes the provider data model.
 type Data struct {
-	Endpoint                types.String `tfsdk:"endpoint"`
-	Username                types.String `tfsdk:"username"`
-	Group                   types.String `tfsdk:"group"`
-	Password                types.String `tfsdk:"password"`
-	Insecure                types.Bool   `tfsdk:"insecure"`
-	VolumePath              types.String `tfsdk:"volume_path"`
-	VolumePathPermissions   types.String `tfsdk:"volume_path_permissions"`
-	AuthType                types.Int64  `tfsdk:"auth_type"`
-	VerboseLogging          types.Int64  `tfsdk:"verbose_logging"`
-	IgnoreUnresolvableHosts types.Bool   `tfsdk:"ignore_unresolvable_hosts"`
+	Endpoint types.String `tfsdk:"endpoint"`
+	Username types.String `tfsdk:"username"`
+	Password types.String `tfsdk:"password"`
+	Insecure types.Bool   `tfsdk:"insecure"`
 }
 
 // Metadata describes the provider arguments.
@@ -84,11 +77,6 @@ func (p *PscaleProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
-			"group": schema.StringAttribute{
-				MarkdownDescription: "The user's group",
-				Description:         "The user's group",
-				Optional:            true,
-			},
 			"password": schema.StringAttribute{
 				MarkdownDescription: "The password",
 				Description:         "The password",
@@ -102,37 +90,6 @@ func (p *PscaleProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 				MarkdownDescription: "whether to skip SSL validation",
 				Description:         "whether to skip SSL validation",
 				Required:            true,
-			},
-			"volume_path": schema.StringAttribute{
-				MarkdownDescription: "which base path to use when looking for volume directories",
-				Description:         "which base path to use when looking for volume directories",
-				Optional:            true,
-			},
-			"volume_path_permissions": schema.StringAttribute{
-				MarkdownDescription: "permissions for new volume directory",
-				Description:         "permissions for new volume directory",
-				Optional:            true,
-			},
-			"auth_type": schema.Int64Attribute{
-				MarkdownDescription: "what should be the auth type, 0 for basic and 1 for session-based",
-				Description:         "what should be the auth type, 0 for basic and 1 for session-based",
-				Required:            true,
-				Validators: []validator.Int64{
-					int64validator.OneOf(0, 1),
-				},
-			},
-			"verbose_logging": schema.Int64Attribute{
-				MarkdownDescription: "what verbose level should be used for logging, high(0), medium(1) or low(2)",
-				Description:         "what verbose level should be used for logging, high(0), medium(1) or low(2)",
-				Optional:            true,
-				Validators: []validator.Int64{
-					int64validator.OneOf(0, 1, 2),
-				},
-			},
-			"ignore_unresolvable_hosts": schema.BoolAttribute{
-				MarkdownDescription: "whether to ignore unresolvable hosts",
-				Description:         "whether to ignore unresolvable hosts",
-				Optional:            true,
 			},
 		},
 	}
@@ -152,14 +109,8 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	pscaleClient, err := client.NewClient(
 		data.Endpoint.ValueString(),
 		data.Insecure.ValueBool(),
-		uint(data.VerboseLogging.ValueInt64()),
 		data.Username.ValueString(),
-		data.Group.ValueString(),
 		data.Password.ValueString(),
-		data.VolumePath.ValueString(),
-		data.VolumePathPermissions.ValueString(),
-		data.IgnoreUnresolvableHosts.ValueBool(),
-		uint8(data.AuthType.ValueInt64()),
 	)
 
 	if err != nil {

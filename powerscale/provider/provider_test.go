@@ -49,12 +49,6 @@ func init() {
 	username := os.Getenv("POWERSCALE_USERNAME")
 	password := os.Getenv("POWERSCALE_PASSWORD")
 	endpoint := os.Getenv("POWERSCALE_ENDPOINT")
-	group := os.Getenv("POWERSCALE_GROUP")
-	volumePath := os.Getenv("POWERSCALE_VOLUME_PATH")
-	volumePathPermissions := os.Getenv("POWERSCALE_VOLUME_PATH_PERMISSIONS")
-	ignoreUnresolvableHosts := os.Getenv("POWERSCALE_IGNORE_UNRESOLVABLE_HOSTS")
-	authType := os.Getenv("POWERSCALE_AUTH_TYPE")
-	verboseLogging := os.Getenv("POWERSCALE_VERBOSE_LOGGING")
 
 	ProviderConfig = fmt.Sprintf(`
 		provider "powerscale" {
@@ -62,14 +56,8 @@ func init() {
 			password      = "%s"
   			endpoint      = "%s"
   			insecure      = true
-			group		 = "%s"
-			volume_path = "%s"
-			volume_path_permissions = "%s"
-			ignore_unresolvable_hosts = "%s"
-			auth_type = "%s"
-			verbose_logging = "%s"
 		}
-	`, username, password, endpoint, group, volumePath, volumePathPermissions, ignoreUnresolvableHosts, authType, verboseLogging)
+	`, username, password, endpoint)
 }
 
 func testAccPreCheck(t *testing.T) {

@@ -23,25 +23,25 @@ import (
 	"terraform-provider-powerscale/client"
 )
 
-// DeleteSmbShare delete smb share
+// DeleteSmbShare delete smb share.
 func DeleteSmbShare(ctx context.Context, client *client.Client, shareID string) error {
 	_, err := client.PscaleOpenAPIClient.ProtocolsApi.DeleteProtocolsv7SmbShare(ctx, shareID).Execute()
 	return err
 }
 
-// CreateSmbShare create smb share
+// CreateSmbShare create smb share.
 func CreateSmbShare(ctx context.Context, client *client.Client, share powerscale.V7SmbShare) (*powerscale.Createv12SmbShareResponse, error) {
 	shareID, _, err := client.PscaleOpenAPIClient.ProtocolsApi.CreateProtocolsv7SmbShare(ctx).V7SmbShare(share).Execute()
 	return shareID, err
 }
 
-// GetSmbShare get smb share
+// GetSmbShare get smb share.
 func GetSmbShare(ctx context.Context, client *client.Client, shareID string) (*powerscale.V7SmbSharesExtended, error) {
 	response, _, err := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv7SmbShare(ctx, shareID).Execute()
 	return response, err
 }
 
-// UpdateSmbShare update smb share
+// UpdateSmbShare update smb share.
 func UpdateSmbShare(ctx context.Context, client *client.Client, shareID string, shareToUpdate powerscale.V7SmbShareExtendedExtended) error {
 	updateParam := client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv7SmbShare(ctx, shareID)
 	_, err := updateParam.V7SmbShare(shareToUpdate).Execute()
