@@ -60,7 +60,7 @@ func NewClient(endpoint string,
 // NewOpenAPIClient returns the OpenApi Client.
 func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user string, pass string) (*powerscale.APIClient, error) {
 	// Setup a User-Agent for your API client (replace the provider name for yours):
-	userAgent := "terraform-powermax-provider/1.0.0"
+	userAgent := "terraform-powerscale-provider/1.0.0"
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		tflog.Error(ctx, "Got error while creating cookie jar")

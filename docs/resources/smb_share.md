@@ -169,7 +169,7 @@ Import is supported using the following syntax:
 # limitations under the License.
 
 # The command is
-# terraform import powermax_host.example_share <name>
+# terraform import powerscale_smb_share.example_share <name>
 # Example:
 terraform import powerscale_smb_share.example_share example_share
 # after running this command, populate the name field in the config file to start managing this resource
