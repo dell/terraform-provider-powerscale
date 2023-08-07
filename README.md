@@ -41,14 +41,28 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 ## Prerequisites
 
-| **Terraform Provider** | **PowerScale Version** | **OS**                                | **Terraform** | **Golang** |
-|------------------------|------------------------|:--------------------------------------|---------------|------------|
-| v1.0.0                 | 9.4 <br> 9.5 <br> 9.6  | ubuntu22.04 <br> rhel8.x <br> rhel7.x | 1.3.2         | 1.19.x     |
+| **Terraform Provider** | **PowerScale Version** | **OS**                                | **Terraform**    | **Golang** |
+|------------------------|:-----------------------|:--------------------------------------|------------------|------------|
+| v1.0.0                 | 9.4 <br> 9.5           | ubuntu22.04 <br> rhel8.x <br> rhel9.x | 1.3.x <br> 1.4.x | 1.20       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
+* Cluster
+* Access Zone
+* Active Directory
+* File System
+* NFS Export
+* SMB Share
+* User
+* User Group
 
 ## List of Resources in Terraform Provider for Dell PowerScale
-
+* Access Zone
+* Active Directory
+* File System
+* NFS Export
+* SMB Share
+* User
+* User Group
 
 ## Installation and execution of Terraform Provider for Dell PowerScale
 The installation and execution steps of Terraform Provider for Dell PowerScale can be found [here](about/INSTALLATION.md).

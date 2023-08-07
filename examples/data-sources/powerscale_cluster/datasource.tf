@@ -14,34 +14,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
-terraform {
-  required_providers {
-    powerscale = {
-      source = "registry.terraform.io/dell/powerscale"
-    }
-  }
+data "powerscale_cluster" "test" {
 }
 
-variable "username" {
-  type = string
-}
-
-variable "password" {
-  type = string
-}
-
-variable "endpoint" {
-  type = string
-}
-
-variable "insecure" {
-  type = bool
-}
-
-provider "powerscale" {
-  username = var.username
-  password = var.password
-  endpoint = var.endpoint
-  insecure = var.insecure
+output "powerscale_cluster" {
+  value = data.powerscale_cluster.test
 }
