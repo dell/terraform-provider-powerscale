@@ -148,7 +148,7 @@ type NfsExportDatasource struct {
 	NfsExportsFilter *NfsExportDatasourceFilter  `tfsdk:"filter"`
 }
 
-// NfsExportDatasourceFilter holds filter conditions
+// NfsExportDatasourceFilter holds filter conditions.
 type NfsExportDatasourceFilter struct {
 	// supported by api
 	Sort   types.String `tfsdk:"sort"`

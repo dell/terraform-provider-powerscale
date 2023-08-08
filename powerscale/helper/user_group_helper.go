@@ -74,7 +74,7 @@ func UpdateUserGroupDataSourceState(model *models.UserGroupModel, groupResponse 
 	model.Members = members
 }
 
-// GetAllGroupMembers returns all group members
+// GetAllGroupMembers returns all group members.
 func GetAllGroupMembers(ctx context.Context, client *client.Client, groupName string) (members []powerscale.V1AuthAccessAccessItemFileGroup, err error) {
 	memberParams := client.PscaleOpenAPIClient.AuthGroupsApi.ListAuthGroupsv1GroupMembers(ctx, groupName)
 	result, _, err := memberParams.Execute()

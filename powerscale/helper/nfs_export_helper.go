@@ -116,7 +116,7 @@ func UpdateNFSExport(ctx context.Context, client *client.Client, nfsModel models
 	return err
 }
 
-// ListNFSExports list nfs export entities
+// ListNFSExports list nfs export entities.
 func ListNFSExports(ctx context.Context, client *client.Client, nfsFilter *models.NfsExportDatasourceFilter) (*[]powerscale.V2NfsExportExtended, error) {
 	listNfsParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv4NfsExports(ctx)
 	if nfsFilter != nil {
@@ -150,7 +150,7 @@ func ListNFSExports(ctx context.Context, client *client.Client, nfsFilter *model
 	return &totalNfsExports, nil
 }
 
-// FilterExports list nfs export en tities
+// FilterExports list nfs export en tities.
 func FilterExports(paths []types.String, ids []types.Int64, exports *[]powerscale.V2NfsExportExtended) (*[]powerscale.V2NfsExportExtended, error) {
 	// if names are specified filter locally
 	if len(paths) == 0 && len(ids) == 0 {
