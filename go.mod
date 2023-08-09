@@ -5,7 +5,6 @@ go 1.20
 require (
 	dell/powerscale-go-client v0.0.0
 	github.com/bytedance/mockey v1.2.4
-	github.com/dell/goisilon v1.12.0
 	github.com/hashicorp/terraform-plugin-docs v0.15.0
 	github.com/hashicorp/terraform-plugin-framework v1.3.1
 	github.com/hashicorp/terraform-plugin-framework-validators v0.10.0
@@ -34,7 +33,6 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8 // indirect
 	github.com/agext/levenshtein v1.2.2 // indirect
-	github.com/akutz/gournal v0.5.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
@@ -75,7 +73,6 @@ require (
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
-	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect

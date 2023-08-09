@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -155,12 +156,65 @@ func UpdateUserResourceState(model *models.UserReourceModel, user powerscale.V1M
 	}
 }
 
+// GetUsersWithFilter returns all filtered users.
+func GetUsersWithFilter(ctx context.Context, client *client.Client, filter *models.UserFilterType) (users []powerscale.V1MappingUsersLookupMappingItemUser, err error) {
+	userParams := client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthUsers(ctx)
+
+	if filter != nil {
+		if !filter.NamePrefix.IsNull() {
+			userParams = userParams.Filter(filter.NamePrefix.ValueString())
+		}
+		if !filter.Domain.IsNull() {
+			userParams = userParams.Domain(filter.Domain.ValueString())
+		}
+		if !filter.Zone.IsNull() {
+			userParams = userParams.Zone(filter.Zone.ValueString())
+		}
+		if !filter.Provider.IsNull() {
+			userParams = userParams.Provider(filter.Provider.ValueString())
+		}
+		if !filter.Cached.IsNull() {
+			userParams = userParams.Cached(filter.Cached.ValueBool())
+		}
+		if !filter.ResolveNames.IsNull() {
+			userParams = userParams.ResolveNames(filter.ResolveNames.ValueBool())
+		}
+		if !filter.MemberOf.IsNull() {
+			userParams = userParams.QueryMemberOf(filter.MemberOf.ValueBool())
+		}
+	}
+
+	result, _, err := userParams.Execute()
+	if err != nil {
+		errStr := constants.ReadRoleErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return nil, fmt.Errorf("error getting users: %s", message)
+	}
+
+	for {
+		users = append(users, result.Users...)
+		if result.Resume == nil || *result.Resume == "" {
+			break
+		}
+
+		userParams = client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthUsers(ctx).Resume(*result.Resume)
+		if result, _, err = userParams.Execute(); err != nil {
+			errStr := constants.ReadRoleErrorMsg + "with error: "
+			message := GetErrorString(err, errStr)
+			return nil, fmt.Errorf("error getting users with resume: %s", message)
+		}
+	}
+	return
+}
+
 // GetAllRoles returns all roles.
 func GetAllRoles(ctx context.Context, client *client.Client) (roles []powerscale.V1AuthRoleExtended, err error) {
 	roleParams := client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthRoles(ctx)
 	result, _, err := roleParams.Execute()
 	if err != nil {
-		return
+		errStr := constants.ReadRoleErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return nil, fmt.Errorf("error getting roles : %s", message)
 	}
 
 	for {
@@ -171,7 +225,9 @@ func GetAllRoles(ctx context.Context, client *client.Client) (roles []powerscale
 
 		roleParams = client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthRoles(ctx).Resume(*result.Resume)
 		if result, _, err = roleParams.Execute(); err != nil {
-			return nil, err
+			errStr := constants.ReadRoleErrorMsg + "with error: "
+			message := GetErrorString(err, errStr)
+			return nil, fmt.Errorf("error getting roles with resume: %s", message)
 		}
 	}
 
@@ -183,13 +239,12 @@ func GetUser(ctx context.Context, client *client.Client, userName string) (*powe
 	authID := fmt.Sprintf("USER:%s", userName)
 	getParam := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, userName)
 	result, _, err := getParam.Execute()
-	if err != nil {
-		return nil, err
+	if err != nil || len(result.Users) < 1 {
+		errStr := constants.ReadUserErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return nil, fmt.Errorf("error getting user - %s : %s", authID, message)
 	}
 
-	if len(result.Users) < 1 {
-		return nil, fmt.Errorf("error getting the User - %s", authID)
-	}
 	return result, err
 }
 
@@ -244,9 +299,13 @@ func CreateUser(ctx context.Context, client *client.Client, plan *models.UserReo
 	}
 
 	createParam = createParam.V1AuthUser(*body)
-	_, _, err := createParam.Execute()
+	if _, _, err := createParam.Execute(); err != nil {
+		errStr := constants.CreateUserErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return fmt.Errorf("error creating user: %s", message)
+	}
 
-	return err
+	return nil
 }
 
 // UpdateUser Updates an User parameters,
@@ -309,13 +368,30 @@ func UpdateUser(ctx context.Context, client *client.Client, state *models.UserRe
 		body.Sid = plan.SID.ValueStringPointer()
 	}
 	if !state.PrimaryGroup.Equal(plan.PrimaryGroup) && plan.PrimaryGroup.ValueString() != "" {
-		body.Sid = plan.SID.ValueStringPointer()
+		primaryGroupName := plan.PrimaryGroup.ValueString()
+		body.PrimaryGroup = &powerscale.V1AuthAccessAccessItemFileGroup{Name: &primaryGroupName}
 	}
 
 	updateParam = updateParam.V1AuthUser(*body)
-	_, err := updateParam.Execute()
+	if _, err := updateParam.Execute(); err != nil {
+		errStr := constants.UpdateUserErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return fmt.Errorf("error updating user - %s : %s", authID, message)
+	}
 
-	return err
+	return nil
+}
+
+// DeleteUser Deletes an User.
+func DeleteUser(ctx context.Context, client *client.Client, userName string) error {
+	authID := fmt.Sprintf("USER:%s", userName)
+	deleteParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1AuthUser(ctx, authID)
+	if _, err := deleteParam.Execute(); err != nil {
+		errStr := constants.DeleteUserErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return fmt.Errorf("error deleting user - %s : %s", authID, message)
+	}
+	return nil
 }
 
 // UpdateUserRoles Updates an User roles.
@@ -365,7 +441,9 @@ func AddUserRole(ctx context.Context, client *client.Client, roleID, userName st
 	roleParam := client.PscaleOpenAPIClient.AuthRolesApi.CreateAuthRolesv1RoleMember(ctx, roleID).
 		V1RoleMember(powerscale.V1AuthAccessAccessItemFileGroup{Name: &authID})
 	if _, _, err := roleParam.Execute(); err != nil {
-		return err
+		errStr := constants.AddRoleMemberErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return fmt.Errorf("error assign user - %s to role - %s: %s", authID, roleID, message)
 	}
 	return nil
 }
@@ -375,7 +453,9 @@ func RemoveUserRole(ctx context.Context, client *client.Client, roleID string, u
 	authID := fmt.Sprintf("UID:%d", uid)
 	roleParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1RolesRoleMember(ctx, authID, roleID)
 	if _, err := roleParam.Execute(); err != nil {
-		return err
+		errStr := constants.DeleteRoleMemberErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return fmt.Errorf("error remove user - %s from role - %s: %s", authID, roleID, message)
 	}
 	return nil
 }
