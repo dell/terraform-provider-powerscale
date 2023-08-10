@@ -19,6 +19,7 @@ package provider
 
 import (
 	"context"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"terraform-provider-powerscale/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -52,6 +53,8 @@ type Data struct {
 	Username types.String `tfsdk:"username"`
 	Password types.String `tfsdk:"password"`
 	Insecure types.Bool   `tfsdk:"insecure"`
+	AuthType types.Int64  `tfsdk:"auth_type"`
+	Timeout  types.Int64  `tfsdk:"timeout"`
 }
 
 // Metadata describes the provider arguments.
@@ -91,6 +94,19 @@ func (p *PscaleProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 				Description:         "whether to skip SSL validation",
 				Required:            true,
 			},
+			"auth_type": schema.Int64Attribute{
+				MarkdownDescription: "what should be the auth type, 0 for basic and 1 for session-based",
+				Description:         "what should be the auth type, 0 for basic and 1 for session-based",
+				Required:            true,
+				Validators: []validator.Int64{
+					int64validator.OneOf(0, 1),
+				},
+			},
+			"timeout": schema.Int64Attribute{
+				MarkdownDescription: "specifies a time limit for requests",
+				Description:         "specifies a time limit for requests",
+				Optional:            true,
+			},
 		},
 	}
 }
@@ -105,12 +121,18 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
+	// if timeout is not set. use default value 2000
+	if data.Timeout.IsNull() || data.Timeout.IsUnknown() {
+		data.Timeout = types.Int64Value(2000)
+	}
 	// Configuration values are now available.
 	pscaleClient, err := client.NewClient(
 		data.Endpoint.ValueString(),
 		data.Insecure.ValueBool(),
 		data.Username.ValueString(),
 		data.Password.ValueString(),
+		data.AuthType.ValueInt64(),
+		data.Timeout.ValueInt64(),
 	)
 
 	if err != nil {

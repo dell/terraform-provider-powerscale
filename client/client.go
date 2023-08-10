@@ -27,10 +27,24 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/cookiejar"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
+
+const (
+	SessionEndpoint = "session/1/session"
+	AuthType        = "auth_type"
+	BasicAuthType   = 0
+	SessionAuthType = 1
+)
+
+var mutex sync.Mutex
+
+// AuthContextKey define own type for context key to avoid collisions between packages using context.
+type AuthContextKey string
 
 // Client type is to hold powerscale client.
 type Client struct {
@@ -40,13 +54,15 @@ type Client struct {
 // NewClient returns the client.
 func NewClient(endpoint string,
 	insecure bool,
-	user string, pass string) (*Client, error) {
+	user string, pass string, authType, timeout int64) (*Client, error) {
 	openAPIClient, err := NewOpenAPIClient(
 		context.Background(),
 		endpoint,
 		insecure,
 		user,
 		pass,
+		authType,
+		timeout,
 	)
 	if err != nil {
 		return nil, err
@@ -58,7 +74,7 @@ func NewClient(endpoint string,
 }
 
 // NewOpenAPIClient returns the OpenApi Client.
-func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user string, pass string) (*powerscale.APIClient, error) {
+func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user string, pass string, authType int64, timeout int64) (*powerscale.APIClient, error) {
 	// Setup a User-Agent for your API client (replace the provider name for yours):
 	userAgent := "terraform-powerscale-provider/1.0.0"
 	jar, err := cookiejar.New(nil)
@@ -67,11 +83,13 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user 
 	}
 
 	httpclient := &http.Client{
-		Timeout: 2000 * time.Second,
+		Timeout: time.Duration(timeout) * time.Second,
 		Jar:     jar,
 	}
+
+	var transport *http.Transport
 	if insecure {
-		httpclient.Transport = &http.Transport{
+		transport = &http.Transport{
 			// This is done intentionally if the user sets the skipVerify to true
 			/* #nosec */
 			TLSClientConfig: &tls.Config{
@@ -88,7 +106,7 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user 
 			errSysCerts := errors.New("unable to initialize cert pool from system")
 			return nil, errSysCerts
 		}
-		httpclient.Transport = &http.Transport{
+		transport = &http.Transport{
 			TLSClientConfig: &tls.Config{
 				MinVersion:         tls.VersionTLS12,
 				RootCAs:            pool,
@@ -96,7 +114,6 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user 
 			},
 		}
 	}
-	basicAuthString := basicAuth(user, pass)
 
 	cfg := powerscale.Configuration{
 		HTTPClient:    httpclient,
@@ -113,15 +130,32 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user 
 	}
 	cfg.DefaultHeader = getHeaders()
 	fmt.Printf("config %+v header %+v\n", cfg, cfg.DefaultHeader)
-	cfg.AddDefaultHeader("Authorization", "Basic "+basicAuthString)
+
+	if authType == BasicAuthType {
+		httpclient.Transport = transport
+		basicAuth(user, pass, &cfg)
+	} else if authType == SessionAuthType {
+		httpclient.Transport = &TokenTransport{Ctx: ctx, Username: user, Password: pass, RoundTripper: transport}
+		err := sessionAuth(ctx, user, pass, &cfg)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, errors.New("Auth type is not valid. Should be 0 or 1. ")
+	}
+
 	apiClient := powerscale.NewAPIClient(&cfg)
+	if tr, ok := cfg.HTTPClient.Transport.(*TokenTransport); ok {
+		tr.Client = apiClient
+	}
 	return apiClient, nil
 }
 
-// Generate the base 64 Authorization string from username / password.
-func basicAuth(username, password string) string {
+// Generate the base 64 Authorization string from username / password and add to header.
+func basicAuth(username, password string, cfg *powerscale.Configuration) {
 	auth := username + ":" + password
-	return base64.StdEncoding.EncodeToString([]byte(auth))
+	basicAuthString := base64.StdEncoding.EncodeToString([]byte(auth))
+	cfg.AddDefaultHeader("Authorization", "Basic "+basicAuthString)
 }
 
 func getHeaders() map[string]string {
@@ -131,4 +165,105 @@ func getHeaders() map[string]string {
 	header["Accept"] = "application/json; charset=utf-8"
 	return header
 
+}
+
+func sessionAuth(ctx context.Context, user string, pass string, cfg *powerscale.Configuration) error {
+	mutex.Lock()
+	defer mutex.Unlock()
+	ctx = context.WithValue(ctx, AuthContextKey(AuthType), SessionAuthType)
+	host, err := cfg.ServerURLWithContext(ctx, "")
+	if err != nil {
+		return err
+	}
+	resp, err := RequestSession(host, user, pass, cfg)
+	if err != nil {
+		return err
+	}
+	if resp == nil {
+		return errors.New("authentication failed. empty response")
+	}
+	tflog.Debug(ctx, fmt.Sprintf("response code: %d, response body: %s", resp.StatusCode, resp.Body))
+	if resp.Body == nil || resp.StatusCode != http.StatusCreated {
+		return fmt.Errorf("authentication failed. response code: %d", resp.StatusCode)
+	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			tflog.Error(ctx, fmt.Sprintf("Error closing HTTP response: %s", err.Error()))
+		}
+	}()
+	isisessid := getCookie(resp.Cookies(), "isisessid")
+	isicsrf := getCookie(resp.Cookies(), "isicsrf")
+	if len(isisessid) == 0 || len(isicsrf) == 0 {
+		return errors.New("authentication failed. isisessid or isicsrf cookie invalid")
+	}
+	cfg.AddDefaultHeader("Cookie", fmt.Sprintf("isisessid=%s", isisessid))
+	cfg.AddDefaultHeader("X-CSRF-Token", isicsrf)
+	cfg.AddDefaultHeader("Referer", host)
+	return nil
+}
+
+func getCookie(cookies []*http.Cookie, cookieName string) string {
+	for _, cookie := range cookies {
+		if strings.EqualFold(cookie.Name, cookieName) {
+			return cookie.Value
+		}
+	}
+	return ""
+}
+
+func RequestSession(host string, user string, pass string, cfg *powerscale.Configuration) (*http.Response, error) {
+	sessionUrl := concatUrl(host, SessionEndpoint)
+	json := fmt.Sprintf(`{"username":"%s", "password":"%s", "services":["platform", "namespace"]}`, user, pass)
+
+	request, err := http.NewRequest("POST", sessionUrl, strings.NewReader(json))
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("User-Agent", cfg.UserAgent)
+	resp, err := cfg.HTTPClient.Do(request)
+	return resp, err
+}
+
+func concatUrl(endpoint string, s string) string {
+	endpoint = strings.TrimSuffix(endpoint, "/")
+	return fmt.Sprintf("%s/%s", endpoint, s)
+}
+
+type TokenTransport struct {
+	http.RoundTripper
+	Ctx      context.Context
+	Username string
+	Password string
+	Client   *powerscale.APIClient
+}
+
+func (t *TokenTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	resp, err := t.RoundTripper.RoundTrip(req)
+	if t.Ctx.Value(AuthContextKey(AuthType)) != SessionAuthType || req.URL.Path == SessionEndpoint {
+		return resp, err
+	}
+	if err != nil {
+		return resp, err
+	}
+	if resp == nil {
+		return nil, fmt.Errorf("got empty response for request [%s]", req.URL.Path)
+	}
+	if resp.StatusCode == http.StatusUnauthorized {
+		config := t.Client.GetConfig()
+		err := sessionAuth(t.Ctx, t.Username, t.Password, config)
+		if err != nil {
+			return nil, err
+		}
+		newReq := req.Clone(req.Context()) // per RoundTrip contract
+		for key, value := range config.DefaultHeader {
+			newReq.Header.Set(key, value)
+		}
+		trip, err := t.RoundTripper.RoundTrip(newReq)
+		if err != nil {
+			return nil, err
+		}
+		return trip, nil
+	}
+	return resp, err
 }

@@ -35,7 +35,12 @@ description: |-
 
 ### Required
 
+- `auth_type` (Number) what should be the auth type, 0 for basic and 1 for session-based
 - `endpoint` (String) The API endpoint, ex. https://172.17.177.230:8080
 - `insecure` (Boolean) whether to skip SSL validation
 - `password` (String, Sensitive) The password
 - `username` (String) The username
+
+### Optional
+
+- `timeout` (Number) specifies a time limit for requests

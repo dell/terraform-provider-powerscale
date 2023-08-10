@@ -278,7 +278,7 @@ func BuildFilesystemDatasource(ctx context.Context, state *models.FileSystemData
 	return nil
 }
 
-// UpdateFileSystemResourceState Updates File System Resource State
+// UpdateFileSystemResourceState Updates File System Resource State.
 func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemResource, state *models.FileSystemResource, acl *powerscale.NamespaceAcl, meta *powerscale.NamespaceMetadataList) {
 
 	for _, attribute := range meta.Attrs {
@@ -318,7 +318,7 @@ func UpdateFileSystemResourcePlanData(plan *models.FileSystemResource, state *mo
 	state.AccessControl = plan.AccessControl
 }
 
-// GetDirectoryPath Gets the final directory path(dirPath+dirName)
+// GetDirectoryPath Gets the final directory path(dirPath+dirName).
 func GetDirectoryPath(dirPath string, dirName string) string {
 	directoryPath := filepath.Join(dirPath, dirName)
 	directoryPath = filepath.ToSlash(directoryPath)
