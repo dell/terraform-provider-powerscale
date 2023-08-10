@@ -59,13 +59,13 @@ func (r *UserResource) Metadata(ctx context.Context, req resource.MetadataReques
 // Schema describes the resource arguments.
 func (r *UserResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Resource for managing Users in PowerScale cluster. Updates are supported for the following parameters: 'uid', 'sid', 'password', 'enabled', 'home_directory', 'primary_group', 'unlock', 'email', 'expiry', 'gecos', 'shell', 'prompt_password_change', 'password_expires'.",
-		Description:         "Resource for managing Users in PowerScale cluster. Updates are supported for the following parameters: 'uid', 'sid', 'password', 'enabled', 'home_directory', 'primary_group', 'unlock', 'email', 'expiry', 'gecos', 'shell', 'prompt_password_change', 'password_expires'.",
+		MarkdownDescription: "Resource for managing Users in PowerScale cluster. Updates are supported for the following parameters: 'uid', 'roles', 'sid', 'password', 'enabled', 'home_directory', 'primary_group', 'unlock', 'email', 'expiry', 'gecos', 'shell', 'prompt_password_change', 'password_expires'.",
+		Description:         "Resource for managing Users in PowerScale cluster. Updates are supported for the following parameters: 'uid', 'roles', 'sid', 'password', 'enabled', 'home_directory', 'primary_group', 'unlock', 'email', 'expiry', 'gecos', 'shell', 'prompt_password_change', 'password_expires'.",
 
 		Attributes: map[string]schema.Attribute{
 			"query_force": schema.BoolAttribute{
-				Description:         "If true, skip validation checks when creating user. Need to be true, when changing user ID.",
-				MarkdownDescription: "If true, skip validation checks when creating user. Need to be true, when changing user ID.",
+				Description:         "If true, skip validation checks when creating user. Need to be true, when changing user UID.",
+				MarkdownDescription: "If true, skip validation checks when creating user. Need to be true, when changing user UID.",
 				Optional:            true,
 			},
 			"query_zone": schema.StringAttribute{
@@ -223,6 +223,7 @@ func (r *UserResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Description:         "Specifies a security identifier.",
 				MarkdownDescription: "Specifies a security identifier.",
 				Computed:            true,
+				Optional:            true,
 			},
 			"type": schema.StringAttribute{
 				Description:         "Specifies the object type.",
@@ -443,18 +444,15 @@ func (r *UserResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 	}
 
 	// remove user from roles
-	authID := fmt.Sprintf("USER:%s", state.Name.ValueString())
 	var roleList []string
 	state.Roles.ElementsAs(ctx, &roleList, false)
-
 	for _, role := range roleList {
 		_ = helper.RemoveUserRole(ctx, r.client, role, state.UID.ValueInt64())
 	}
 
-	deleteParam := r.client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1AuthUser(ctx, authID)
-	if _, err := deleteParam.Execute(); err != nil {
+	if err := helper.DeleteUser(ctx, r.client, state.Name.ValueString()); err != nil {
 		resp.Diagnostics.AddError(
-			fmt.Sprintf("Error deleting the User - %s", authID),
+			fmt.Sprintf("Error deleting the User - %s", state.Name.ValueString()),
 			err.Error(),
 		)
 		return

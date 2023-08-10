@@ -44,4 +44,46 @@ const (
 
 	// ReadAdsProviderErrorMsg specifies error details occurred while reading Ads Providers.
 	ReadAdsProviderErrorMsg = "Could not read ads providers "
+
+	// ReadUserErrorMsg specifies error details occurred while reading Users.
+	ReadUserErrorMsg = "Could not read users "
+
+	// CreateUserErrorMsg specifies error details occurred while creating an User.
+	CreateUserErrorMsg = "Could not create user "
+
+	// UpdateUserErrorMsg specifies error details occurred while updating an User.
+	UpdateUserErrorMsg = "Could not update user "
+
+	// DeleteUserErrorMsg specifies error details occurred while deleting an User.
+	DeleteUserErrorMsg = "Could not delete user "
+
+	// ReadRoleErrorMsg specifies error details occurred while reading Roles.
+	ReadRoleErrorMsg = "Could not read roles "
+
+	// AddRoleMemberErrorMsg specifies error details occurred while adding member to role.
+	AddRoleMemberErrorMsg = "Could not add member to role "
+
+	// DeleteRoleMemberErrorMsg specifies error details occurred while deleting member from role.
+	DeleteRoleMemberErrorMsg = "Could not delete memeber from role "
+
+	// ReadUserGroupErrorMsg specifies error details occurred while reading User Groups.
+	ReadUserGroupErrorMsg = "Could not read user groups "
+
+	// CreateUserGroupErrorMsg specifies error details occurred while creating an User Group.
+	CreateUserGroupErrorMsg = "Could not create user group "
+
+	// UpdateUserGroupErrorMsg specifies error details occurred while updating an User Group.
+	UpdateUserGroupErrorMsg = "Could not update user group "
+
+	// DeleteUserGroupErrorMsg specifies error details occurred while deleting an User Group.
+	DeleteUserGroupErrorMsg = "Could not delete user group "
+
+	// ReadUserGroupMemberErrorMsg specifies error details occurred while reading UserGroup Members.
+	ReadUserGroupMemberErrorMsg = "Could not read User Group Members "
+
+	// AddUserGroupMemberErrorMsg specifies error details occurred while adding member to user group.
+	AddUserGroupMemberErrorMsg = "Could not add member to user group "
+
+	// DeleteUserGroupMemberErrorMsg specifies error details occurred while deleting member from user group.
+	DeleteUserGroupMemberErrorMsg = "Could not delete memeber from user group "
 )

@@ -359,54 +359,10 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		return roleErr
 	})
 
-	// cache all users
-	var users []powerscale.V1MappingUsersLookupMappingItemUser
-	userParams := d.client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthUsers(ctx)
-
-	if state.Filter != nil {
-		if !state.Filter.NamePrefix.IsNull() {
-			userParams = userParams.Filter(state.Filter.NamePrefix.ValueString())
-		}
-		if !state.Filter.Domain.IsNull() {
-			userParams = userParams.Domain(state.Filter.Domain.ValueString())
-		}
-		if !state.Filter.Zone.IsNull() {
-			userParams = userParams.Zone(state.Filter.Zone.ValueString())
-		}
-		if !state.Filter.Provider.IsNull() {
-			userParams = userParams.Provider(state.Filter.Provider.ValueString())
-		}
-		if !state.Filter.Cached.IsNull() {
-			userParams = userParams.Cached(state.Filter.Cached.ValueBool())
-		}
-		if !state.Filter.ResolveNames.IsNull() {
-			userParams = userParams.ResolveNames(state.Filter.ResolveNames.ValueBool())
-		}
-		if !state.Filter.MemberOf.IsNull() {
-			userParams = userParams.QueryMemberOf(state.Filter.MemberOf.ValueBool())
-		}
-	}
-
-	result, _, err := userParams.Execute()
+	users, err := helper.GetUsersWithFilter(ctx, d.client, state.Filter)
 	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error getting the list of PowerScale Users",
-			err.Error(),
-		)
+		resp.Diagnostics.AddError("Error getting the list of PowerScale Users.", err.Error())
 		return
-	}
-
-	for {
-		users = append(users, result.Users...)
-		if result.Resume == nil || *result.Resume == "" {
-			break
-		}
-
-		userParams = d.client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthUsers(ctx).Resume(*result.Resume)
-		if result, _, err = userParams.Execute(); err != nil {
-			resp.Diagnostics.AddError("Error getting the list of PowerScale Users with resume", err.Error())
-			return
-		}
 	}
 
 	if err := eg.Wait(); err != nil {

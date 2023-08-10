@@ -86,7 +86,7 @@ func TestAccUserDataSourceInvalidFilter(t *testing.T) {
 			// filter with invalid filter read testing
 			{
 				Config:      ProviderConfig + userInvalidFilterDataSourceConfig,
-				ExpectError: regexp.MustCompile(`.*Error getting the list of PowerScale Users*.`),
+				ExpectError: regexp.MustCompile(`.*error getting users*.`),
 			},
 		},
 	})

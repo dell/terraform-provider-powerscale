@@ -19,12 +19,12 @@ linkTitle: "powerscale_user"
 page_title: "powerscale_user Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Resource for managing Users in PowerScale cluster. Updates are supported for the following parameters: 'uid', 'sid', 'password', 'enabled', 'homedirectory', 'primarygroup', 'unlock', 'email', 'expiry', 'gecos', 'shell', 'promptpasswordchange', 'password_expires'.
+  Resource for managing Users in PowerScale cluster. Updates are supported for the following parameters: 'uid', 'roles', 'sid', 'password', 'enabled', 'homedirectory', 'primarygroup', 'unlock', 'email', 'expiry', 'gecos', 'shell', 'promptpasswordchange', 'password_expires'.
 ---
 
 # powerscale_user (Resource)
 
-Resource for managing Users in PowerScale cluster. Updates are supported for the following parameters: 'uid', 'sid', 'password', 'enabled', 'home_directory', 'primary_group', 'unlock', 'email', 'expiry', 'gecos', 'shell', 'prompt_password_change', 'password_expires'.
+Resource for managing Users in PowerScale cluster. Updates are supported for the following parameters: 'uid', 'roles', 'sid', 'password', 'enabled', 'home_directory', 'primary_group', 'unlock', 'email', 'expiry', 'gecos', 'shell', 'prompt_password_change', 'password_expires'.
 
 
 ## Example Usage
@@ -93,11 +93,12 @@ resource "powerscale_user" "testUser" {
 - `password_expires` (Boolean) If true, the password is allowed to expire.
 - `primary_group` (String) Specifies the name of the primary group.
 - `prompt_password_change` (Boolean) If true, Prompts the user to change their password at the next login.
-- `query_force` (Boolean) If true, skip validation checks when creating user. Need to be true, when changing user ID.
+- `query_force` (Boolean) If true, skip validation checks when creating user. Need to be true, when changing user UID.
 - `query_provider` (String) Specifies the provider type.
 - `query_zone` (String) Specifies the zone that the object belongs to.
 - `roles` (List of String) List of roles, the user is assigned
 - `shell` (String) Specifies a path to the shell for the user.
+- `sid` (String) Specifies a security identifier.
 - `uid` (Number) Specifies a numeric user identifier.
 - `unlock` (Boolean) If true, the user account should be unlocked.
 
@@ -119,7 +120,6 @@ resource "powerscale_user" "testUser" {
 - `primary_group_sid` (Object) Specifies the persona of the primary group. (see [below for nested schema](#nestedatt--primary_group_sid))
 - `provider_name` (String) Specifies the authentication provider that the object belongs to.
 - `sam_account_name` (String) Specifies a user name.
-- `sid` (String) Specifies a security identifier.
 - `type` (String) Specifies the object type.
 - `upn` (String) Specifies a principal name for the user.
 - `user_can_change_password` (Boolean) Specifies whether the password for the user can be changed.
@@ -143,3 +143,29 @@ Read-Only:
 - `name` (String)
 - `type` (String)
 
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+
+# Licensed under the Mozilla Public License Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://mozilla.org/MPL/2.0/
+
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# The command is
+# terraform import powerscale_user.example_user <name>
+# Example:
+terraform import powerscale_user.example_user userName
+# after running this command, populate the name field in the config file to start managing this resource
+```
