@@ -49,10 +49,16 @@ Then follow [installation from public repo](#installation-from-public-repository
 ## Usage
 Once you have installed the PowerScale provider, you can start using it in your Terraform configuration files. The provider has a number of resources that you can use to manage your PowerScale storage arrays.
 
-For example, you can use the `powerscale_` resource to create a new storage group:
+For example, you can use the `powerscale_accesszone` resource to create a new access zone:
 ```terraform
-resource "powerscale_" "test" {
+resource "powerscale_accesszone" "zone" {
+  # Required fields
+  name     = "testAccessZone"
+  groupnet = "groupnet0"
+  path     = "/ifs"
 
+  # Optional to apply Auth Providers
+  custom_auth_providers = ["System"]
 }
 ```
 
