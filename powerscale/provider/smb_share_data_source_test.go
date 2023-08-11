@@ -118,7 +118,7 @@ func TestAccSmbShareDatasourceErrorCopyFields(t *testing.T) {
 	})
 }
 
-var SmbShareAllDatasourceConfig = `
+var SmbShareAllDatasourceConfig = fmt.Sprintf(`
 resource "powerscale_smb_share" "share_resource_test" {
 	auto_create_directory = true
 	name = "%s"
@@ -137,7 +137,7 @@ resource "powerscale_smb_share" "share_resource_test" {
 }
 
 data "powerscale_smb_share" "share_datasource_test_all" {}
-`
+`, shareName, shareName)
 
 var SmbShareDatasourceConfig = fmt.Sprintf(`
 resource "powerscale_smb_share" "share_resource_test" {

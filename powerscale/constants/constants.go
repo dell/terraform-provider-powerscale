@@ -86,4 +86,7 @@ const (
 
 	// DeleteUserGroupMemberErrorMsg specifies error details occurred while deleting member from user group.
 	DeleteUserGroupMemberErrorMsg = "Could not delete memeber from user group "
+
+	// ListNfsExportErrorMsg specifies error details occurred while listing nfs exports.
+	ListNfsExportErrorMsg = "Could not list nfs exports "
 )

@@ -75,11 +75,42 @@ func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interfa
 		// For zero value (nil), the object still need to pass type information into it
 		if !sourceField.IsValid() {
 			destinationField = getFieldByTfTag(destinationValue.Elem(), sourceFieldTag)
-			mapType, err := getStructAttrTypeFromType(ctx, structType.Field(i).Type)
-			if err != nil {
-				return err
+			fieldType := structType.Field(i).Type
+			if fieldType.Kind() == reflect.Ptr {
+				fieldType = fieldType.Elem()
 			}
-			destinationField.Set(reflect.ValueOf(types.ObjectNull(mapType)))
+			switch fieldType.Kind() {
+			case reflect.String:
+				destinationField.Set(reflect.ValueOf(types.StringNull()))
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				destinationField.Set(reflect.ValueOf(types.Int64Null()))
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				destinationField.Set(reflect.ValueOf(types.Int64Null()))
+			case reflect.Float32, reflect.Float64:
+				//destinationFieldValue = types.Float64Value(sourceField.Float())
+				destinationField.Set(reflect.ValueOf(types.NumberNull()))
+			case reflect.Bool:
+				destinationField.Set(reflect.ValueOf(types.BoolNull()))
+			case reflect.Array, reflect.Slice:
+				mapType, err := getSliceAttrTypeFromType(ctx, structType.Field(i).Type)
+				if err != nil {
+					return err
+				}
+				destinationField.Set(reflect.ValueOf(types.ListNull(mapType)))
+				if err != nil {
+					return err
+				}
+			case reflect.Struct:
+				mapType, err := getStructAttrTypeFromType(ctx, structType.Field(i).Type)
+				if err != nil {
+					return err
+				}
+				destinationField.Set(reflect.ValueOf(types.ObjectNull(mapType)))
+			default:
+				tflog.Error(ctx, "unsupported source field type", map[string]interface{}{
+					"sourceField": sourceField,
+				})
+			}
 			continue
 		}
 		if destinationField.IsValid() && destinationField.CanSet() {

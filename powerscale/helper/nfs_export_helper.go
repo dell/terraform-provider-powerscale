@@ -20,6 +20,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"strconv"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
@@ -113,4 +114,71 @@ func UpdateNFSExport(ctx context.Context, client *client.Client, nfsModel models
 	}
 	_, err = updateParam.V2NfsExport(nfsExport).Execute()
 	return err
+}
+
+// ListNFSExports list nfs export entities
+func ListNFSExports(ctx context.Context, client *client.Client, nfsFilter *models.NfsExportDatasourceFilter) (*[]powerscale.V2NfsExportExtended, error) {
+	listNfsParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv4NfsExports(ctx)
+	if nfsFilter != nil {
+		listNfsParam.Resume(nfsFilter.Resume.ValueString())
+		listNfsParam.Zone(nfsFilter.Zone.ValueString())
+		listNfsParam.Scope(nfsFilter.Scope.ValueString())
+		listNfsParam.Sort(nfsFilter.Sort.ValueString())
+		listNfsParam.Path(nfsFilter.Path.ValueString())
+		listNfsParam.Dir(nfsFilter.Dir.ValueString())
+		listNfsParam.Check(nfsFilter.Check.ValueBool())
+		if !nfsFilter.Limit.IsNull() {
+			listNfsParam.Limit(int32(nfsFilter.Limit.ValueInt64()))
+		}
+		if !nfsFilter.Offset.IsNull() {
+			listNfsParam.Offset(int32(nfsFilter.Offset.ValueInt64()))
+		}
+	}
+	NfsExports, _, err := listNfsParam.Execute()
+	if err != nil {
+		return nil, err
+	}
+	totalNfsExports := NfsExports.Exports
+	for NfsExports.Resume != nil && (nfsFilter == nil || nfsFilter.Limit.IsNull()) {
+		resumeNfsParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv4NfsExports(ctx).Resume(*NfsExports.Resume)
+		NfsExports, _, err = resumeNfsParam.Execute()
+		if err != nil {
+			return &totalNfsExports, err
+		}
+		totalNfsExports = append(totalNfsExports, NfsExports.Exports...)
+	}
+	return &totalNfsExports, nil
+}
+
+// FilterExports list nfs export en tities
+func FilterExports(paths []types.String, ids []types.Int64, exports *[]powerscale.V2NfsExportExtended) (*[]powerscale.V2NfsExportExtended, error) {
+	// if names are specified filter locally
+	if len(paths) == 0 && len(ids) == 0 {
+		return exports, nil
+	}
+	var idFilteredExports []powerscale.V2NfsExportExtended
+	idMap := make(map[int64]powerscale.V2NfsExportExtended)
+	for _, export := range *exports {
+		idMap[*export.Id] = export
+	}
+	for _, id := range ids {
+		if specifiedExport, ok := idMap[id.ValueInt64()]; ok {
+			idFilteredExports = append(idFilteredExports, specifiedExport)
+		}
+	}
+	// filter path
+	pathMap := make(map[string]bool)
+	for _, path := range paths {
+		pathMap[path.ValueString()] = true
+	}
+	var filteredExports []powerscale.V2NfsExportExtended
+	for _, export := range idFilteredExports {
+		for _, exportPath := range export.Paths {
+			if pathMap[exportPath] {
+				filteredExports = append(filteredExports, export)
+			}
+		}
+	}
+
+	return &filteredExports, nil
 }
