@@ -21,14 +21,15 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"math/big"
+	"reflect"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"math/big"
-	"reflect"
-	"strings"
 )
 
 // CopyFieldsToNonNestedModel copy OpenAPI struct source to destination of struct with terraform types.
@@ -581,4 +582,49 @@ func getFieldByJSONTag(destination interface{}, tag string) (reflect.Value, erro
 	}
 
 	return reflect.Value{}, fmt.Errorf("field with tag %s not found in destination", tag)
+}
+
+// GetElementsChanges Returns element list changes between plan and state.
+func GetElementsChanges(stateElements, planElements []attr.Value) (toAdd, toRemove []attr.Value) {
+
+	// Note: the attr.Value's string value, attr.Value.String(), will be like "\"value\"",
+	// please firstly use strings.Trim(attr.Value.String(), "\"").
+
+	var duplicatedMembers []attr.Value
+	for _, i := range stateElements {
+		for _, j := range planElements {
+			if i.Equal(j) {
+				duplicatedMembers = append(duplicatedMembers, i)
+			}
+		}
+	}
+
+	for _, i := range stateElements {
+		duplicated := false
+		for _, member := range duplicatedMembers {
+			if member.Equal(i) {
+				duplicated = true
+				break
+			}
+		}
+		if duplicated {
+			continue
+		}
+		toRemove = append(toRemove, i)
+	}
+
+	for _, i := range planElements {
+		duplicated := false
+		for _, member := range duplicatedMembers {
+			if member.Equal(i) {
+				duplicated = true
+				break
+			}
+		}
+		if duplicated {
+			continue
+		}
+		toAdd = append(toAdd, i)
+	}
+	return
 }

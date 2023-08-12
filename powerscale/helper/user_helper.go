@@ -239,10 +239,15 @@ func GetUser(ctx context.Context, client *client.Client, userName string) (*powe
 	authID := fmt.Sprintf("USER:%s", userName)
 	getParam := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, userName)
 	result, _, err := getParam.Execute()
-	if err != nil || len(result.Users) < 1 {
+	if err != nil {
 		errStr := constants.ReadUserErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
 		return nil, fmt.Errorf("error getting user - %s : %s", authID, message)
+	}
+
+	if len(result.Users) < 1 {
+		message := constants.ReadUserErrorMsg + "with error: "
+		return nil, fmt.Errorf("got empty user - %s : %s", authID, message)
 	}
 
 	return result, err
@@ -397,22 +402,17 @@ func DeleteUser(ctx context.Context, client *client.Client, userName string) err
 // UpdateUserRoles Updates an User roles.
 func UpdateUserRoles(ctx context.Context, client *client.Client, state *models.UserReourceModel, plan *models.UserReourceModel) (diags diag.Diagnostics) {
 
-	var duplicatedRoles []attr.Value
-	for _, i := range state.Roles.Elements() {
-		for _, j := range plan.Roles.Elements() {
-			if i.Equal(j) {
-				duplicatedRoles = append(duplicatedRoles, i)
-			}
-		}
+	// get roles list changes
+	toAdd, toRemove := GetElementsChanges(state.Roles.Elements(), plan.Roles.Elements())
+
+	// if uid updated, should remove all roles firstly, then assign all roles.
+	if !plan.UID.Equal(state.UID) {
+		toAdd = plan.Roles.Elements()
+		toRemove = state.Roles.Elements()
 	}
 
 	// remove roles from user
-	for _, i := range state.Roles.Elements() {
-		for _, role := range duplicatedRoles {
-			if role.Equal(i) {
-				continue
-			}
-		}
+	for _, i := range toRemove {
 		roleID := strings.Trim(i.String(), "\"")
 		if err := RemoveUserRole(ctx, client, roleID, state.UID.ValueInt64()); err != nil {
 			diags.AddError(fmt.Sprintf("Error remove User from Role - %s", roleID), err.Error())
@@ -420,12 +420,7 @@ func UpdateUserRoles(ctx context.Context, client *client.Client, state *models.U
 	}
 
 	// assign roles to user
-	for _, i := range plan.Roles.Elements() {
-		for _, role := range duplicatedRoles {
-			if role.Equal(i) {
-				continue
-			}
-		}
+	for _, i := range toAdd {
 		roleID := strings.Trim(i.String(), "\"")
 		if err := AddUserRole(ctx, client, roleID, plan.Name.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error assign User to Role - %s", roleID), err.Error())

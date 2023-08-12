@@ -134,6 +134,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewSmbShareResource,
 		NewUserResource,
 		NewNfsExportResource,
+		NewUserGroupResource,
 	}
 }
 

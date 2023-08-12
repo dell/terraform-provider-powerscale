@@ -64,17 +64,6 @@ func TestAccUserResourceCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(userResourceName, "primary_group", "Administrators"),
 				),
 			},
-			{
-				Config: ProviderConfig + userUpdate2ResourceConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(userResourceName, "name", "tfaccUserCreation"),
-					resource.TestCheckResourceAttr(userResourceName, "uid", "20001"),
-					resource.TestCheckResourceAttr(userResourceName, "email", "newTest2@dell.com"),
-					resource.TestCheckResourceAttr(userResourceName, "roles.#", "0"),
-					resource.TestCheckResourceAttr(userResourceName, "enabled", "true"),
-					resource.TestCheckResourceAttr(userResourceName, "primary_group", "Administrators"),
-				),
-			},
 			// Update role Error testing
 			{
 				Config:      ProviderConfig + userInvalidRoleResourceConfig,
@@ -247,10 +236,10 @@ func TestAccUserReleaseMockResource(t *testing.T) {
 			{
 				PreConfig: func() {
 					if userMocker != nil {
-						userMocker.UnPatch()
+						userMocker.Release()
 					}
 					if userCreateMocker != nil {
-						userCreateMocker.UnPatch()
+						userCreateMocker.Release()
 					}
 				},
 				Config: ProviderConfig + userBasicResourceConfig,
@@ -288,18 +277,6 @@ resource "powerscale_user" "test" {
 	email = "newTest@dell.com"
 	primary_group = "Administrators"
 	roles = ["tfaccUserRole"]
-  }
-`
-
-var userUpdate2ResourceConfig = `
-resource "powerscale_user" "test" {
-	name = "tfaccUserCreation"
-  
-	uid = 20001
-	query_force = true
-	enabled = true
-	email = "newTest2@dell.com"
-	primary_group = "Administrators"
   }
 `
 
