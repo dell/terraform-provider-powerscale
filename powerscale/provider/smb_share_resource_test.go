@@ -129,7 +129,7 @@ func TestAccSmbShareResourceErrorUpdate(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker.Release()
 					FunctionMocker = Mock(helper.GetSmbShare).Return(&powerscale.V7SmbSharesExtended{}, nil).Build().
-						When(func(ctx context.Context, client *client.Client, shareID string) bool {
+						When(func(ctx context.Context, client *client.Client, shareID string, zone *string) bool {
 							return FunctionMocker.Times() == 2
 						})
 				},
@@ -142,7 +142,7 @@ func TestAccSmbShareResourceErrorUpdate(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker.Release()
 					FunctionMocker = Mock(helper.GetSmbShare).Return(nil, fmt.Errorf("mock error")).Build().
-						When(func(ctx context.Context, client *client.Client, shareID string) bool {
+						When(func(ctx context.Context, client *client.Client, shareID string, zone *string) bool {
 							return FunctionMocker.Times() == 2
 						})
 				},

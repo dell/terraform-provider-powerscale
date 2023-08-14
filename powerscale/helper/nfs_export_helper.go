@@ -80,7 +80,7 @@ func CreateNFSExport(ctx context.Context, client *client.Client, nfsModel models
 func DeleteNFSExport(ctx context.Context, client *client.Client, nfsModel models.NfsExportResource) error {
 	deleteParam := client.PscaleOpenAPIClient.ProtocolsApi.DeleteProtocolsv2NfsExport(ctx, strconv.FormatInt(nfsModel.ID.ValueInt64(), 10))
 	if !nfsModel.Zone.IsNull() {
-		deleteParam.Zone(nfsModel.Zone.ValueString())
+		deleteParam = deleteParam.Zone(nfsModel.Zone.ValueString())
 	}
 	_, err := deleteParam.Execute()
 	return err

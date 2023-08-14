@@ -435,7 +435,7 @@ func (r SmbShareResource) Create(ctx context.Context, request resource.CreateReq
 		"smbShareResponse": shareID,
 	})
 
-	getShareResponse, err := helper.GetSmbShare(ctx, r.client, shareID.Id)
+	getShareResponse, err := helper.GetSmbShare(ctx, r.client, shareID.Id, shareToCreate.Zone)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error creating smb share",
@@ -484,7 +484,7 @@ func (r SmbShareResource) Read(ctx context.Context, request resource.ReadRequest
 	tflog.Debug(ctx, "calling get smb share by ID", map[string]interface{}{
 		"smbShareID": shareID,
 	})
-	shareResponse, err := helper.GetSmbShare(ctx, r.client, shareID.ValueString())
+	shareResponse, err := helper.GetSmbShare(ctx, r.client, shareID.ValueString(), shareState.Zone.ValueStringPointer())
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error reading smb share",
@@ -553,7 +553,7 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 		)
 		return
 	}
-	err = helper.UpdateSmbShare(ctx, r.client, shareID, shareToUpdate)
+	err = helper.UpdateSmbShare(ctx, r.client, shareID, shareState.Zone.ValueStringPointer(), shareToUpdate)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error updating smb share",
@@ -566,7 +566,7 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 	tflog.Debug(ctx, "calling get smb share by ID on pscale client", map[string]interface{}{
 		"smbShareID": shareID,
 	})
-	updatedShare, err := helper.GetSmbShare(ctx, r.client, shareID)
+	updatedShare, err := helper.GetSmbShare(ctx, r.client, shareID, shareToUpdate.Zone)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error updating smb share",
@@ -619,7 +619,7 @@ func (r SmbShareResource) Delete(ctx context.Context, request resource.DeleteReq
 	tflog.Debug(ctx, "calling delete smb share on pscale client", map[string]interface{}{
 		"smbShareID": shareID,
 	})
-	err := helper.DeleteSmbShare(ctx, r.client, shareID)
+	err := helper.DeleteSmbShare(ctx, r.client, shareID, shareState.Zone.ValueStringPointer())
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error deleting smb share",

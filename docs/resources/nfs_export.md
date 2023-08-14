@@ -118,7 +118,7 @@ resource "powerscale_nfs_export" "example_export" {
 - `write_transfer_size` (Number) Specifies the preferred multiple size for NFS write requests. This value is used to advise the client of optimal settings for the server, but is not enforced.
 - `write_unstable_action` (String) Specifies the action to be taken when an NFSv3+ unstable write is requested.
 - `write_unstable_reply` (String) Specifies the stability disposition returned when an NFSv3+ unstable write is processed.
-- `zone` (String) Specifies the zone in which the export is valid.
+- `zone` (String) Specifies the zone in which the export is valid. Cannot be changed once set
 
 <a id="nestedatt--map_all"></a>
 ### Nested Schema for `map_all`
