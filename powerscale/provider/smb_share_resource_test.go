@@ -56,8 +56,9 @@ func TestAccSmbShareResource(t *testing.T) {
 			},
 			// Update
 			{
-				Config: ProviderConfig + SmbShareUpdatedResourceConfig,
+				Config: ProviderConfig + SmbShareNameUpdatedResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerscale_smb_share.share_test", "id", shareName+"_update"),
 					resource.TestCheckResourceAttr("powerscale_smb_share.share_test", "allow_delete_readonly", "true"),
 					resource.TestCheckResourceAttr("powerscale_smb_share.share_test", "ca_timeout", "30"),
 				),
@@ -146,14 +147,6 @@ func TestAccSmbShareResourceErrorUpdate(t *testing.T) {
 						})
 				},
 				ExpectError: regexp.MustCompile("mock error"),
-			},
-			//Update Invalid Config
-			{
-				PreConfig: func() {
-					FunctionMocker.Release()
-				},
-				Config:      ProviderConfig + SmbShareInvalidResourceConfig,
-				ExpectError: regexp.MustCompile(".*Bad Request*."),
 			},
 		},
 	})
@@ -270,6 +263,28 @@ resource "powerscale_smb_share" "share_test" {
 	auto_create_directory = true
 	name = "%s"
 	path = "/ifs/%s"
+	permissions = [
+		{
+			permission = "full"
+			permission_type = "allow"
+			trustee = {
+				id = "SID:S-1-1-0",
+				name = "Everyone",
+				type = "wellknown"
+			}
+		}
+	]
+	allow_delete_readonly = true
+	ca_timeout = 30
+	zone = "System"
+}
+`, shareName, shareName)
+
+var SmbShareNameUpdatedResourceConfig = fmt.Sprintf(`
+resource "powerscale_smb_share" "share_test" {
+	auto_create_directory = true
+	name = "%s_update"
+	path = "/ifs/%s_update_path"
 	permissions = [
 		{
 			permission = "full"

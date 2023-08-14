@@ -561,7 +561,8 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 		)
 		return
 	}
-
+	// Share plan must have the field name, update if updated
+	shareID = sharePlan.Name.ValueString()
 	tflog.Debug(ctx, "calling get smb share by ID on pscale client", map[string]interface{}{
 		"smbShareID": shareID,
 	})
