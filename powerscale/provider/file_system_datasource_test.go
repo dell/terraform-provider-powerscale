@@ -39,7 +39,7 @@ func TestAccFileSystemDataSource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(fsTerraform, "directory_path", "/ifs/tfacc_file_system_test"),
 					resource.TestCheckResourceAttrSet(fsTerraform, "file_systems_details.file_system_attributes.#"),
-					resource.TestCheckResourceAttrSet(fsTerraform, "file_systems_details.file_system_namespace_acl.acl.0.accessrights.#"),
+					resource.TestCheckResourceAttrSet(fsTerraform, "file_systems_details.file_system_namespace_acl.acl.0.access_rights.#"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.authoritative", "mode"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.group.id", "GID:0"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.group.name", "wheel"),

@@ -257,14 +257,14 @@ func (d *FileSystemDataSource) Schema(ctx context.Context, req datasource.Schema
 								Optional:            true,
 								NestedObject: schema.NestedAttributeObject{
 									Attributes: map[string]schema.Attribute{
-										"accessrights": schema.ListAttribute{
+										"access_rights": schema.ListAttribute{
 											Description:         "Access rights",
 											MarkdownDescription: "Access rights",
 											Computed:            true,
 											Optional:            true,
 											ElementType:         types.StringType,
 										},
-										"accesstype": schema.StringAttribute{
+										"access_type": schema.StringAttribute{
 											Description:         "Access type",
 											MarkdownDescription: "Access type",
 											Computed:            true,
