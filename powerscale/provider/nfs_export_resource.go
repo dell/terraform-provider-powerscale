@@ -746,8 +746,8 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed:            true,
 			},
 			"zone": schema.StringAttribute{
-				Description:         "Specifies the zone in which the export is valid.",
-				MarkdownDescription: "Specifies the zone in which the export is valid.",
+				Description:         "Specifies the zone in which the export is valid. Cannot be changed once set",
+				MarkdownDescription: "Specifies the zone in which the export is valid. Cannot be changed once set",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -901,6 +901,11 @@ func (r NfsExportResource) Update(ctx context.Context, request resource.UpdateRe
 		"exportPlan":  exportPlan,
 		"exportState": exportState,
 	})
+
+	if !exportPlan.Zone.IsUnknown() && exportPlan.Zone.ValueString() != exportState.Zone.ValueString() {
+		response.Diagnostics.AddError("Error updating nfs export", "Do not change access zone once set")
+		return
+	}
 
 	exportID := exportState.ID.ValueInt64()
 	exportPlan.ID = exportState.ID
