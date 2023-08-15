@@ -61,3 +61,23 @@ type UserGroupIdentityItem struct {
 	Name types.String `tfsdk:"name"`
 	GID  types.Int64  `tfsdk:"gid"`
 }
+
+// UserGroupReourceModel describes the resource data model.
+type UserGroupReourceModel struct {
+	QueryForce     types.Bool   `tfsdk:"query_force"`
+	QueryZone      types.String `tfsdk:"query_zone"`
+	QueryProvider  types.String `tfsdk:"query_provider"`
+	GID            types.Int64  `tfsdk:"gid"`
+	Name           types.String `tfsdk:"name"`
+	SID            types.String `tfsdk:"sid"`
+	Roles          types.List   `tfsdk:"roles"`
+	Users          types.List   `tfsdk:"users"`
+	Dn             types.String `tfsdk:"dn"`
+	DNSDomain      types.String `tfsdk:"dns_domain"`
+	Domain         types.String `tfsdk:"domain"`
+	GeneratedGID   types.Bool   `tfsdk:"generated_gid"`
+	ID             types.String `tfsdk:"id"`
+	Provider       types.String `tfsdk:"provider_name"`
+	SamAccountName types.String `tfsdk:"sam_account_name"`
+	Type           types.String `tfsdk:"type"`
+}
