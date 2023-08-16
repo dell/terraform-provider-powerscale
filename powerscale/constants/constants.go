@@ -45,6 +45,15 @@ const (
 	// ReadAdsProviderErrorMsg specifies error details occurred while reading Ads Providers.
 	ReadAdsProviderErrorMsg = "Could not read ads providers "
 
+	// CreateAdsProviderErrorMsg specifies error details occurred while creating an Ads Provider.
+	CreateAdsProviderErrorMsg = "Could not create ads providers "
+
+	// UpdateAdsProviderErrorMsg specifies error details occurred while updating an Ads Provider.
+	UpdateAdsProviderErrorMsg = "Could not update ads providers "
+
+	// DeleteAdsProviderErrorMsg specifies error details occurred while deleting an Ads Provider.
+	DeleteAdsProviderErrorMsg = "Could not delete ads providers "
+
 	// ReadUserErrorMsg specifies error details occurred while reading Users.
 	ReadUserErrorMsg = "Could not read users "
 
@@ -64,7 +73,7 @@ const (
 	AddRoleMemberErrorMsg = "Could not add member to role "
 
 	// DeleteRoleMemberErrorMsg specifies error details occurred while deleting member from role.
-	DeleteRoleMemberErrorMsg = "Could not delete memeber from role "
+	DeleteRoleMemberErrorMsg = "Could not delete member from role "
 
 	// ReadUserGroupErrorMsg specifies error details occurred while reading User Groups.
 	ReadUserGroupErrorMsg = "Could not read user groups "
@@ -85,7 +94,7 @@ const (
 	AddUserGroupMemberErrorMsg = "Could not add member to user group "
 
 	// DeleteUserGroupMemberErrorMsg specifies error details occurred while deleting member from user group.
-	DeleteUserGroupMemberErrorMsg = "Could not delete memeber from user group "
+	DeleteUserGroupMemberErrorMsg = "Could not delete member from user group "
 
 	// ListNfsExportErrorMsg specifies error details occurred while listing nfs exports.
 	ListNfsExportErrorMsg = "Could not list nfs exports "

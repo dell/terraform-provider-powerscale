@@ -131,38 +131,83 @@ func TestAccAdsProviderDataSourceMappingErr(t *testing.T) {
 }
 
 var AdsDataSourceNamesConfig = `
+resource "powerscale_adsprovider" "ads_test" {
+	name = "PIE.LAB.EMC.COM"
+	user = "administrator"
+	password = "Password123!"
+}
+
 data "powerscale_adsprovider" "test" {
-  filter {
-    names = ["PIE.LAB.EMC.COM"]
-  }
+	filter {
+		names = ["PIE.LAB.EMC.COM"]
+	}
+	depends_on = [
+		powerscale_adsprovider.ads_test
+	]
 }
 `
 
 var AdsDataSourceFilterConfig = `
+resource "powerscale_adsprovider" "ads_test" {
+	name = "PIE.LAB.EMC.COM"
+	user = "administrator"
+	password = "Password123!"
+}
+
 data "powerscale_adsprovider" "test" {
-  filter {
-    scope = "user"
-  }
+	filter {
+		scope = "user"
+	}
+	depends_on = [
+		powerscale_adsprovider.ads_test
+	]
 }
 `
 
 var AdsAllDataSourceConfig = `
+resource "powerscale_adsprovider" "ads_test" {
+	name = "PIE.LAB.EMC.COM"
+	user = "administrator"
+	password = "Password123!"
+}
+
 data "powerscale_adsprovider" "all" {
+	depends_on = [
+		powerscale_adsprovider.ads_test
+	]
 }
 `
 
 var AdsDataSourceNameConfigErr = `
+resource "powerscale_adsprovider" "ads_test" {
+	name = "PIE.LAB.EMC.COM"
+	user = "administrator"
+	password = "Password123!"
+}
+
 data "powerscale_adsprovider" "test" {
-  filter {
-    names = ["BadName"]
-  }
+	filter {
+		names = ["BadName"]
+	}
+	depends_on = [
+		powerscale_adsprovider.ads_test
+	]
 }
 `
 
 var AdsDataSourceFilterConfigErr = `
+resource "powerscale_adsprovider" "ads_test" {
+	name = "PIE.LAB.EMC.COM"
+	user = "administrator"
+	password = "Password123!"
+}
+
 data "powerscale_adsprovider" "test" {
-  filter {
-	invalidFilter = "badFilter"
-  }
+	filter {
+		invalidFilter = "badFilter"
+	}
+	depends_on = [
+		powerscale_adsprovider.ads_test
+	]
 }
 `

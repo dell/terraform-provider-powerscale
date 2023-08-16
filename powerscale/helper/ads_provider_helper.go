@@ -20,6 +20,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
 
@@ -30,4 +31,36 @@ func AdsProviderDetailMapper(ctx context.Context, adsProvider *powerscale.V14Pro
 	model := models.AdsProviderDetailModel{}
 	err := CopyFields(ctx, adsProvider, &model)
 	return model, err
+}
+
+// CreateAdsProvider Create an Ads Provider.
+func CreateAdsProvider(ctx context.Context, client *client.Client, ads powerscale.V14ProvidersAdsItem) (*powerscale.CreateResponse, error) {
+	adsID, _, err := client.PscaleOpenAPIClient.AuthApi.CreateAuthv14ProvidersAdsItem(ctx).V14ProvidersAdsItem(ads).Execute()
+	return adsID, err
+}
+
+// GetAdsProvider retrieve Ads Provider information.
+func GetAdsProvider(ctx context.Context, client *client.Client, adsModel models.AdsProviderResourceModel) (*powerscale.V14ProvidersAdsExtended, error) {
+	queryParam := client.PscaleOpenAPIClient.AuthApi.GetAuthv14ProvidersAdsById(ctx, adsModel.ID.ValueString())
+	if !adsModel.Scope.IsNull() {
+		queryParam = queryParam.Scope(adsModel.Scope.ValueString())
+	}
+	if !adsModel.CheckDuplicates.IsNull() {
+		queryParam = queryParam.CheckDuplicates(adsModel.CheckDuplicates.ValueBool())
+	}
+	adsRes, _, err := queryParam.Execute()
+	return adsRes, err
+}
+
+// UpdateAdsProvider Update an Ads Provider.
+func UpdateAdsProvider(ctx context.Context, client *client.Client, adsID string, adsToUpdate powerscale.V14ProvidersAdsIdParams) error {
+	updateParam := client.PscaleOpenAPIClient.AuthApi.UpdateAuthv14ProvidersAdsById(ctx, adsID)
+	_, err := updateParam.V14ProvidersAdsIdParams(adsToUpdate).Execute()
+	return err
+}
+
+// DeleteAdsProvider Delete an Ads Provider.
+func DeleteAdsProvider(ctx context.Context, client *client.Client, adsID string) error {
+	_, err := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv14ProvidersAdsById(ctx, adsID).Execute()
+	return err
 }
