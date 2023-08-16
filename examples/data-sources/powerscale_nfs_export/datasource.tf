@@ -14,17 +14,30 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-terraform {
-  required_providers {
-    powerscale = {
-      source = "registry.terraform.io/dell/powerscale"
-    }
+
+data "powerscale_nfs_export" "test" {
+  filter = {
+    ids   = [1, 2, 3]
+    paths = ["/ifs/primary", "/ifs/secondary"]
+    # check = true
+    # dir   = ASC
+    # limit = 10
+    # offset= 1
+    # path  = "/ifs/primary"
+    # resume= "resume_token"
+    # scope = "user"
+    # sort  = "id"
+    # zone  = "System"
   }
 }
 
-provider "powerscale" {
-  username = var.username
-  password = var.password
-  endpoint = var.endpoint
-  insecure = var.insecure
+output "powerscale_nfs_export" {
+  value = data.powerscale_nfs_export.test
+}
+
+data "powerscale_nfs_export" "all" {
+}
+
+output "powerscale_nfs_export" {
+  value = data.powerscale_nfs_export.all
 }

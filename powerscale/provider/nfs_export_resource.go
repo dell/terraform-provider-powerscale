@@ -777,7 +777,9 @@ func (r NfsExportResource) Create(ctx context.Context, request resource.CreateRe
 
 	var exportPlan models.NfsExportResource
 	diags := request.Plan.Get(ctx, &exportPlan)
-
+	response.Diagnostics.Append(diags...)
+	var exportPlanBackUp models.NfsExportResource
+	diags = request.Plan.Get(ctx, &exportPlanBackUp)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
@@ -822,6 +824,7 @@ func (r NfsExportResource) Create(ctx context.Context, request resource.CreateRe
 		return
 	}
 
+	helper.ResolvePersonaDiff(ctx, exportPlanBackUp, &exportPlan)
 	diags = response.State.Set(ctx, exportPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -835,6 +838,9 @@ func (r NfsExportResource) Read(ctx context.Context, request resource.ReadReques
 	tflog.Info(ctx, "reading nfs export")
 	var exportState models.NfsExportResource
 	diags := request.State.Get(ctx, &exportState)
+	response.Diagnostics.Append(diags...)
+	var exportStateBackUp models.NfsExportResource
+	diags = request.State.Get(ctx, &exportStateBackUp)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
@@ -872,6 +878,8 @@ func (r NfsExportResource) Read(ctx context.Context, request resource.ReadReques
 		)
 		return
 	}
+
+	helper.ResolvePersonaDiff(ctx, exportStateBackUp, &exportState)
 	diags = response.State.Set(ctx, exportState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -947,6 +955,7 @@ func (r NfsExportResource) Update(ctx context.Context, request resource.UpdateRe
 		)
 		return
 	}
+	helper.ResolvePersonaDiff(ctx, exportPlan, &exportState)
 	diags = response.State.Set(ctx, exportState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {

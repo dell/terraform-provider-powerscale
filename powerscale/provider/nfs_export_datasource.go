@@ -544,7 +544,7 @@ func (d *NfsExportDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 						"paths": schema.ListAttribute{
 							Description:         "Specifies the paths under /ifs that are exported.",
 							MarkdownDescription: "Specifies the paths under /ifs that are exported.",
-							Required:            true,
+							Computed:            true,
 							ElementType:         types.StringType,
 						},
 						"read_only": schema.BoolAttribute{
@@ -801,7 +801,7 @@ func (d *NfsExportDataSource) Read(ctx context.Context, req datasource.ReadReque
 		exportsIDs = exportsPlan.NfsExportsFilter.IDs
 		paths = exportsPlan.NfsExportsFilter.Paths
 	}
-	filteredExports, err := helper.FilterExports(paths, exportsIDs, totalNfsExports)
+	filteredExports, err := helper.FilterExports(paths, exportsIDs, *totalNfsExports)
 	if err != nil {
 		errStr := constants.ListNfsExportErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -810,7 +810,7 @@ func (d *NfsExportDataSource) Read(ctx context.Context, req datasource.ReadReque
 		return
 	}
 
-	for _, export := range *filteredExports {
+	for _, export := range filteredExports {
 		entity := models.NfsExportDatasourceEntity{}
 		err := helper.CopyFields(ctx, export, &entity)
 		if err != nil {
