@@ -74,8 +74,8 @@ Optional:
 
 Optional:
 
-- `accessrights` (List of String) Access rights
-- `accesstype` (String) Access type
+- `access_rights` (List of String) Access rights
+- `access_type` (String) Access type
 - `inherit_flags` (List of String) Inherit flags
 - `op` (String) Op
 - `trustee` (Attributes) Trustee (see [below for nested schema](#nestedatt--file_systems_details--file_system_namespace_acl--acl--trustee))

@@ -91,9 +91,9 @@ type MemberObject struct {
 
 // ACLObject Access Control List object.
 type ACLObject struct {
-	Accessrights types.ListType `tfsdk:"accessrights"`
-	Accesstype   types.String   `tfsdk:"accesstype"`
-	InheritFlags types.ListType `tfsdk:"inherit_flags"`
+	Accessrights types.ListType `tfsdk:"access_rights"`
+	Accesstype   types.String   `tfsdk:"access_type"`
+	InheritFlags types.List     `tfsdk:"inherit_flags"`
 	Op           types.String   `tfsdk:"op"`
 	Trustee      *MemberObject  `tfsdk:"trustee"`
 }
@@ -159,4 +159,25 @@ type FileSystemAttribues struct {
 // FileSystemFilterType describes the filter data model.
 type FileSystemFilterType struct {
 	Names []types.String `tfsdk:"names"`
+}
+
+// FileSystemResource Defines the File System Resource Model.
+type FileSystemResource struct {
+	ID            types.String `tfsdk:"id"`
+	Name          types.String `tfsdk:"name"`
+	DirectoryPath types.String `tfsdk:"directory_path"`
+	Owner         MemberObject `tfsdk:"owner"`
+	Group         MemberObject `tfsdk:"group"`
+	Type          types.String `tfsdk:"type"`
+	CreationTime  types.String `tfsdk:"creation_time"`
+	// The ACL value for the directory. Users can either provide access rights input such as 'private_read' , 'private' ,
+	//'public_read', 'public_read_write', 'public' or permissions in POSIX format as '0550', '0770', '0775','0777' or 0700. The Default value is (0700).Modification of ACL is only supported from POSIX to POSIX mode.",
+	AccessControl types.String `tfsdk:"access_control"`
+	// If the directory has access rights set, then this field should be acl. Otherwise this field should be mode.",
+	Authoritative types.String `tfsdk:"authoritative"`
+	Mode          types.String `tfsdk:"mode"`
+	// Creates intermediate folders recursively when set to true.
+	Recursive types.Bool `tfsdk:"recursive"`
+	// Deletes and replaces the existing user attributes and ACLs of the directory with user-specified attributes if set to true.
+	Overwrite types.Bool `tfsdk:"overwrite"`
 }

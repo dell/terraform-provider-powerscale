@@ -23,6 +23,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"path/filepath"
 	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
@@ -148,8 +149,8 @@ func GetACLKeyObjects(listObject []powerscale.AclObject) (types.List, diag.Diagn
 		"type": types.StringType,
 	}
 	newType := map[string]attr.Type{
-		"accessrights":  types.ListType{ElemType: types.StringType},
-		"accesstype":    types.StringType,
+		"access_rights": types.ListType{ElemType: types.StringType},
+		"access_type":   types.StringType,
 		"inherit_flags": types.ListType{ElemType: types.StringType},
 		"op":            types.StringType,
 		"trustee": types.ObjectType{
@@ -159,8 +160,8 @@ func GetACLKeyObjects(listObject []powerscale.AclObject) (types.List, diag.Diagn
 
 	for _, value := range listObject {
 		newMap := make(map[string]attr.Value)
-		newMap["accessrights"], _ = types.ListValue(types.StringType, getStringList(value.Accessrights))
-		newMap["accesstype"] = types.StringValue(*value.Accesstype)
+		newMap["access_rights"], _ = types.ListValue(types.StringType, getStringList(value.Accessrights))
+		newMap["access_type"] = types.StringValue(*value.Accesstype)
 		newMap["inherit_flags"], _ = types.ListValue(types.StringType, getStringList(value.InheritFlags))
 		if value.Op != nil {
 			newMap["op"] = types.StringValue(*value.Op)
@@ -275,4 +276,49 @@ func BuildFilesystemDatasource(ctx context.Context, state *models.FileSystemData
 		FileSystemQuota:     quotaModel,
 	}
 	return nil
+}
+
+// UpdateFileSystemResourceState Updates File System Resource State
+func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemResource, state *models.FileSystemResource, acl *powerscale.NamespaceAcl, meta *powerscale.NamespaceMetadataList) {
+
+	for _, attribute := range meta.Attrs {
+		switch *attribute.Name {
+		case "type":
+			state.Type = types.StringValue(*attribute.Value)
+		case "create_time":
+			state.CreationTime = types.StringValue(*attribute.Value)
+		}
+	}
+
+	if owner, ok := acl.GetOwnerOk(); ok {
+		state.Owner.ID = types.StringValue(*owner.Id)
+		state.Owner.Name = types.StringValue(*owner.Name)
+		state.Owner.Type = types.StringValue(*owner.Type)
+	}
+	if group, ok := acl.GetGroupOk(); ok {
+		state.Group.ID = types.StringValue(*group.Id)
+		state.Group.Name = types.StringValue(*group.Name)
+		state.Group.Type = types.StringValue(*group.Type)
+	}
+	if authoritative, ok := acl.GetAuthoritativeOk(); ok {
+		state.Authoritative = types.StringValue(*authoritative)
+	}
+	if mode, ok := acl.GetModeOk(); ok {
+		state.Mode = types.StringValue(*mode)
+	}
+	state.ID = types.StringValue(GetDirectoryPath(plan.DirectoryPath.ValueString(), plan.Name.ValueString()))
+	state.Name = plan.Name
+	state.DirectoryPath = plan.DirectoryPath
+	state.Overwrite = plan.Overwrite
+	state.Recursive = plan.Recursive
+	state.AccessControl = plan.AccessControl
+
+}
+
+// GetDirectoryPath Gets the final directory path(dirPath+dirName)
+func GetDirectoryPath(dirPath string, dirName string) string {
+	directoryPath := filepath.Join(dirPath, dirName)
+	directoryPath = filepath.ToSlash(directoryPath)
+	directoryPath = strings.TrimLeft(directoryPath, "/")
+	return directoryPath
 }
