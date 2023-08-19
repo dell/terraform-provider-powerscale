@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"path/filepath"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -30,6 +31,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -282,6 +284,7 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	// Update resource state
 	var state models.FileSystemResource
 	helper.UpdateFileSystemResourceState(ctx, &plan, &state, acl, meta)
+	helper.UpdateFileSystemResourcePlanData(&plan, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	tflog.Info(ctx, "Done with Create File System resource")
 }
@@ -327,6 +330,7 @@ func (r *FileSystemResource) Read(ctx context.Context, req resource.ReadRequest,
 	//copy to model
 	var state models.FileSystemResource
 	helper.UpdateFileSystemResourceState(ctx, &plan, &state, acl, meta)
+	helper.UpdateFileSystemResourcePlanData(&plan, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	tflog.Info(ctx, "Read File System Resource Complete.")
 }
@@ -357,12 +361,112 @@ func (r *FileSystemResource) Delete(ctx context.Context, req resource.DeleteRequ
 	tflog.Info(ctx, "Delete File system complete")
 }
 
-// ImportState imports the resource state.
-func (r *FileSystemResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	//TODO
-}
-
 // Update updates the resource state.
 func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	//TODO
+	tflog.Info(ctx, "Updating File System.")
+	// Read Terraform plan into the model
+	var plan models.FileSystemResource
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Read Terraform state into the model
+	var state models.FileSystemResource
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	planDirName := helper.GetDirectoryPath(plan.DirectoryPath.ValueString(), plan.Name.ValueString())
+	stateDirName := helper.GetDirectoryPath(state.DirectoryPath.ValueString(), state.Name.ValueString())
+	if planDirName != stateDirName {
+		resp.Diagnostics.AddError(constants.UpdateFileSystemErrorMsg, "Renaming Directory is not supported")
+		return
+	}
+
+	if err := helper.UpdateFileSystem(ctx, *r.client, planDirName, &plan, &state); err != nil {
+		resp.Diagnostics.AddError(
+			fmt.Sprintf("Error updating the File system Resource - %s", planDirName),
+			err.Error(),
+		)
+		return
+	}
+
+	// Get metadata
+	meta, err := helper.GetDirectoryMetadata(ctx, r.client, planDirName)
+	if err != nil {
+		errStr := constants.ReadFileSystemErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError(
+			"Error getting the metadata for the filesystem",
+			message,
+		)
+		return
+	}
+
+	// GetAcl
+	acl, err := helper.GetDirectoryACL(ctx, r.client, planDirName)
+	if err != nil {
+		errStr := constants.ReadFileSystemErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError(
+			"Error getting the acl for the filesystem",
+			message,
+		)
+		return
+	}
+
+	//copy to model
+	helper.UpdateFileSystemResourceState(ctx, &plan, &state, acl, meta)
+	helper.UpdateFileSystemResourcePlanData(&plan, &state)
+
+	// Save updated data into Terraform state
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	tflog.Info(ctx, "Updating File System complete.")
+}
+
+// ImportState imports the resource state.
+func (r *FileSystemResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Info(ctx, "Importing File System resource")
+	var state models.FileSystemResource
+	var id = req.ID
+	// Get metadata
+	meta, err := helper.GetDirectoryMetadata(ctx, r.client, id)
+	if err != nil {
+		errStr := constants.ReadFileSystemErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError(
+			"Error getting the metadata for the filesystem",
+			message,
+		)
+		return
+	}
+
+	// GetAcl
+	acl, err := helper.GetDirectoryACL(ctx, r.client, id)
+	if err != nil {
+		errStr := constants.ReadFileSystemErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError(
+			"Error getting the acl for the filesystem",
+			message,
+		)
+		return
+	}
+
+	//copy to model
+	helper.UpdateFileSystemResourceState(ctx, nil, &state, acl, meta)
+	state.ID = types.StringValue(id)
+	dir, name := filepath.Split(id)
+	dir = filepath.Clean(dir)
+	state.Name = types.StringValue(name)
+	state.DirectoryPath = types.StringValue(dir)
+	state.Overwrite = types.BoolValue(false)
+	state.Recursive = types.BoolValue(true)
+	state.AccessControl = state.Mode
+
+	// Save updated data into Terraform state
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	tflog.Info(ctx, "Done with Import File System resource")
 }
