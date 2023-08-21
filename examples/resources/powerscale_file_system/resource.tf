@@ -19,7 +19,7 @@ resource "powerscale_filesystem" "file_system_test" {
   # directory_path         = "/ifs"
 
   # Required
-  name = "DirTFAcl"
+  name = "DirTf"
 
   recursive = true
   overwrite = false
@@ -36,5 +36,5 @@ resource "powerscale_filesystem" "file_system_test" {
 
   # Optional : The ACL value for the directory. Users can either provide access rights input such as 'private_read' , 'private' ,
   # 'public_read', 'public_read_write', 'public' or permissions in POSIX format as '0550', '0770', '0775','0777' or 0700. The Default value is (0700). 
-  # access_control = "private"
+  # access_control = "0777"
 }

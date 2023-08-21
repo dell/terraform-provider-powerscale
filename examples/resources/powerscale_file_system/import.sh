@@ -16,5 +16,5 @@
 # The command is
 # terraform import powerscale_filesystem.file_system_test <name>
 # Example:
-terraform import powerscale_filesystem.file_system_test file_system_test
+terraform import powerscale_filesystem.file_system_test ifs/DirTf
 # after running this command, populate the name field in the config file to start managing this resource

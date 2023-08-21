@@ -306,13 +306,16 @@ func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemR
 	if mode, ok := acl.GetModeOk(); ok {
 		state.Mode = types.StringValue(*mode)
 	}
+}
+
+// UpdateFileSystemResourcePlanData Updates File System Resource State from plan data
+func UpdateFileSystemResourcePlanData(plan *models.FileSystemResource, state *models.FileSystemResource) {
 	state.ID = types.StringValue(GetDirectoryPath(plan.DirectoryPath.ValueString(), plan.Name.ValueString()))
 	state.Name = plan.Name
 	state.DirectoryPath = plan.DirectoryPath
 	state.Overwrite = plan.Overwrite
 	state.Recursive = plan.Recursive
 	state.AccessControl = plan.AccessControl
-
 }
 
 // GetDirectoryPath Gets the final directory path(dirPath+dirName)
@@ -321,4 +324,78 @@ func GetDirectoryPath(dirPath string, dirName string) string {
 	directoryPath = filepath.ToSlash(directoryPath)
 	directoryPath = strings.TrimLeft(directoryPath, "/")
 	return directoryPath
+}
+
+const acl = "acl"
+const mode = "mode"
+
+// UpdateFileSystem Updates the file system attributes
+func UpdateFileSystem(ctx context.Context, client client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) error {
+
+	// Update Owner / Group if modified
+	if plan.Owner.Name.ValueString() != state.Owner.Name.ValueString() || plan.Group.Name.ValueString() != state.Group.Name.ValueString() {
+		setACLUpdReq := client.PscaleOpenAPIClient.NamespaceApi.SetAcl(ctx, dirPath)
+		setACLUpdReq = setACLUpdReq.Acl(true)
+
+		namespaceUpdateUser := *powerscale.NewNamespaceAcl()
+		namespaceUpdateUser.SetAuthoritative(mode)
+
+		owner := *powerscale.NewMemberObject()
+		owner.Id = plan.Owner.ID.ValueStringPointer()
+		owner.Name = plan.Owner.Name.ValueStringPointer()
+		owner.Type = plan.Owner.Type.ValueStringPointer()
+		namespaceUpdateUser.SetOwner(owner)
+
+		group := *powerscale.NewMemberObject()
+		group.Id = plan.Group.ID.ValueStringPointer()
+		group.Name = plan.Group.Name.ValueStringPointer()
+		group.Type = plan.Group.Type.ValueStringPointer()
+		namespaceUpdateUser.SetGroup(group)
+
+		setACLUpdReq = setACLUpdReq.NamespaceAcl(namespaceUpdateUser)
+
+		_, _, err := setACLUpdReq.Execute()
+		if err != nil {
+			return fmt.Errorf("Error Updating User / Groups for the filesystem: %s", err)
+		}
+	}
+	// Update Access Control if modified and supported
+	if !plan.AccessControl.IsNull() && plan.AccessControl.ValueString() != "" && plan.AccessControl.ValueString() != state.AccessControl.ValueString() {
+
+		setACLUpdReq := client.PscaleOpenAPIClient.NamespaceApi.SetAcl(ctx, dirPath)
+		setACLUpdReq = setACLUpdReq.Acl(true)
+		namespaceUpdateACL := *powerscale.NewNamespaceAcl()
+
+		newMode, newAuthoritative := getNewAccessControlParams(plan.AccessControl.ValueString())
+
+		if newAuthoritative == acl {
+			return fmt.Errorf("Error updating access control for File System. Modifying through the Provider only supports to POSIX format(authoritative = mode) but new authoritative is: %s", newAuthoritative)
+		}
+		namespaceUpdateACL.SetAuthoritative(newAuthoritative)
+		namespaceUpdateACL.SetMode(newMode)
+		setACLUpdReq = setACLUpdReq.NamespaceAcl(namespaceUpdateACL)
+
+		_, _, err := setACLUpdReq.Execute()
+		if err != nil {
+			return fmt.Errorf("Error Updating AccesControl for the filesystem: %s", err)
+		}
+	}
+	return nil
+}
+
+func getNewAccessControlParams(accessControl string) (string, string) {
+	switch accessControl {
+	case "private_read":
+		return "0550", acl
+	case "private":
+		return "0770", acl
+	case "public_read":
+		return "0775", acl
+	case "public_read_write":
+		return "0777", acl
+	case "public":
+		return "0777", acl
+	default:
+		return accessControl, mode
+	}
 }
