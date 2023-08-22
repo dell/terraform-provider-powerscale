@@ -21,13 +21,14 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/helper"
+	"terraform-provider-powerscale/powerscale/models"
+
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"terraform-provider-powerscale/client"
-	"terraform-provider-powerscale/powerscale/helper"
-	"terraform-provider-powerscale/powerscale/models"
 )
 
 var (
@@ -360,11 +361,6 @@ func (d *SmbShareDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 							"(token should come from the previous call, resume cannot be used with other options).",
 						Optional: true,
 					},
-					"resolve_names": schema.BoolAttribute{
-						Description:         "If true, resolve group and user names in personas.",
-						MarkdownDescription: "If true, resolve group and user names in personas.",
-						Optional:            true,
-					},
 					"limit": schema.Int64Attribute{
 						Description:         "Return no more than this many results at once (see resume).",
 						MarkdownDescription: "Return no more than this many results at once (see resume).",
@@ -437,9 +433,6 @@ func (d *SmbShareDataSource) Read(ctx context.Context, req datasource.ReadReques
 		listSmbParam.Dir(sharesPlan.SmbSharesFilter.Dir.ValueString())
 		listSmbParam.Scope(sharesPlan.SmbSharesFilter.Scope.ValueString())
 		listSmbParam.Sort(sharesPlan.SmbSharesFilter.Sort.ValueString())
-		if !sharesPlan.SmbSharesFilter.ResolveNames.IsNull() {
-			listSmbParam.ResolveNames(sharesPlan.SmbSharesFilter.ResolveNames.ValueBool())
-		}
 		if !sharesPlan.SmbSharesFilter.Limit.IsNull() {
 			listSmbParam.Limit(int32(sharesPlan.SmbSharesFilter.Limit.ValueInt64()))
 		}

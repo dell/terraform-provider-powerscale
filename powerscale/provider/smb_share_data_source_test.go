@@ -20,11 +20,12 @@ package provider
 import (
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	. "github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	. "github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccSmbShareDatasource(t *testing.T) {
@@ -159,7 +160,6 @@ resource "powerscale_smb_share" "share_resource_test" {
 
 data "powerscale_smb_share" "share_datasource_test" {
 	filter {
-		resolve_names = true
 		names = ["%s"]
 		limit = 1
 	}

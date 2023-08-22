@@ -29,9 +29,8 @@ data "powerscale_user_group" "test_user_group" {
         gid  = 10000
       }
     ]
-    cached        = false
-    name_prefix   = "tfacc"
-    resolve_names = false
+    cached      = false
+    name_prefix = "tfacc"
     # domain = "testDomain"
     # zone = "testZone"
     # provider = "testProvider"

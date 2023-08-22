@@ -127,7 +127,6 @@ var userFilterDataSourceConfig = `
 data "powerscale_user" "test" {
   filter {
 	cached = false
-	resolve_names = false
 	member_of = false
 	# domain = ""
 	# zone = ""
@@ -147,7 +146,6 @@ data "powerscale_user" "test" {
 	]
 	cached = false
 	name_prefix = "tfacc"
-	resolve_names = false
 	member_of = false
 	# domain = "testDomain"
 	# zone = "testZone"
@@ -185,7 +183,6 @@ data "powerscale_user" "test" {
 	  ]
 	  cached = false
 	  name_prefix = "tfacc"
-	  resolve_names = false
 	  member_of = false
 	  domain = " "
 	  zone = " "

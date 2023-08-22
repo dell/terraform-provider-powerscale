@@ -223,11 +223,6 @@ func (d *UserGroupDataSource) Schema(ctx context.Context, req datasource.SchemaR
 						Description:         "If true, only return cached objects.",
 						MarkdownDescription: "If true, only return cached objects.",
 					},
-					"resolve_names": schema.BoolAttribute{
-						Optional:            true,
-						Description:         "Resolve names of personas.",
-						MarkdownDescription: "Resolve names of personas.",
-					},
 				},
 			},
 		},

@@ -66,14 +66,13 @@ type UserModel struct {
 
 // UserFilterType holds filter attribute for user.
 type UserFilterType struct {
-	Names        []UserMemberItem `tfsdk:"names"`
-	NamePrefix   types.String     `tfsdk:"name_prefix"`
-	Domain       types.String     `tfsdk:"domain"`
-	Zone         types.String     `tfsdk:"zone"`
-	Provider     types.String     `tfsdk:"provider"`
-	Cached       types.Bool       `tfsdk:"cached"`
-	ResolveNames types.Bool       `tfsdk:"resolve_names"`
-	MemberOf     types.Bool       `tfsdk:"member_of"`
+	Names      []UserMemberItem `tfsdk:"names"`
+	NamePrefix types.String     `tfsdk:"name_prefix"`
+	Domain     types.String     `tfsdk:"domain"`
+	Zone       types.String     `tfsdk:"zone"`
+	Provider   types.String     `tfsdk:"provider"`
+	Cached     types.Bool       `tfsdk:"cached"`
+	MemberOf   types.Bool       `tfsdk:"member_of"`
 }
 
 // UserMemberItem holds identity attribute for a auth member.
@@ -82,8 +81,8 @@ type UserMemberItem struct {
 	UID  types.Int64  `tfsdk:"uid"`
 }
 
-// UserReourceModel describes the resource data model.
-type UserReourceModel struct {
+// UserResourceModel describes the resource data model.
+type UserResourceModel struct {
 	QueryForce            types.Bool   `tfsdk:"query_force"`
 	QueryZone             types.String `tfsdk:"query_zone"`
 	QueryProvider         types.String `tfsdk:"query_provider"`

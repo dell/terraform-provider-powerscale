@@ -308,7 +308,7 @@ func (r *UserResource) Configure(ctx context.Context, req resource.ConfigureRequ
 // Create allocates the resource.
 func (r *UserResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Info(ctx, "Creating User resource...")
-	var plan models.UserReourceModel
+	var plan models.UserResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
@@ -335,7 +335,7 @@ func (r *UserResource) Create(ctx context.Context, req resource.CreateRequest, r
 		return
 	}
 
-	if diags := helper.UpdateUserRoles(ctx, r.client, &models.UserReourceModel{}, &plan); diags.HasError() {
+	if diags := helper.UpdateUserRoles(ctx, r.client, &models.UserResourceModel{}, &plan); diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 	}
 
@@ -358,7 +358,7 @@ func (r *UserResource) Create(ctx context.Context, req resource.CreateRequest, r
 // Read reads the resource state.
 func (r *UserResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Info(ctx, "Reading User resource")
-	var plan models.UserReourceModel
+	var plan models.UserResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &plan)...)
@@ -389,14 +389,14 @@ func (r *UserResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 func (r *UserResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Info(ctx, "Updating User resource...")
 	// Read Terraform plan into the model
-	var plan models.UserReourceModel
+	var plan models.UserResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Read Terraform state into the model
-	var state models.UserReourceModel
+	var state models.UserResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -434,7 +434,7 @@ func (r *UserResource) Update(ctx context.Context, req resource.UpdateRequest, r
 // Delete deletes the resource.
 func (r *UserResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Info(ctx, "Deleting User resource")
-	var state models.UserReourceModel
+	var state models.UserResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -465,7 +465,7 @@ func (r *UserResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 // ImportState imports the resource state.
 func (r *UserResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Info(ctx, "Importing User resource")
-	var state models.UserReourceModel
+	var state models.UserResourceModel
 
 	// start goroutine to cache all roles
 	var eg errgroup.Group

@@ -19,12 +19,12 @@ linkTitle: "powerscale_user_group"
 page_title: "powerscale_user_group Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users'.
+  Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users', 'groups', 'well_knowns'.
 ---
 
 # powerscale_user_group (Resource)
 
-Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users'.
+Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users', 'groups', 'well_knowns'.
 
 
 ## Example Usage
@@ -60,6 +60,8 @@ resource "powerscale_user_group" "testUserGroup" {
   # gid      = 11000
   # roles    = ["SystemAdmin"]
   # users    = ["MemberOfUser"]
+  # groups   = ["MemberOfGroup"]
+  # well_knowns    = ["MemberOfWellKnown"]
   # sid = "SID:XXXX"
 }
 ```
@@ -75,12 +77,14 @@ resource "powerscale_user_group" "testUserGroup" {
 
 - `domain` (String) Specifies the domain that the object is part of.
 - `gid` (Number) Specifies a numeric user group identifier.
+- `groups` (List of String) Specifies list members of group within the group.
 - `query_force` (Boolean) If true, skip validation checks when creating user group. Need to be true, when changing group GID.
 - `query_provider` (String) Specifies the provider type.
 - `query_zone` (String) Specifies the zone that the object belongs to.
 - `roles` (List of String) List of roles, the user is assigned.
 - `sid` (String) Specifies a security identifier.
-- `users` (List of String) Specifies list of user members within the group.
+- `users` (List of String) Specifies list members of user within the group.
+- `well_knowns` (List of String) Specifies list members of well_known within the group.
 
 ### Read-Only
 

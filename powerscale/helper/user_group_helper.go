@@ -119,9 +119,6 @@ func GetUserGroupsWithFilter(ctx context.Context, client *client.Client, filter 
 		if !filter.Cached.IsNull() {
 			groupParams = groupParams.Cached(filter.Cached.ValueBool())
 		}
-		if !filter.ResolveNames.IsNull() {
-			groupParams = groupParams.ResolveNames(filter.ResolveNames.ValueBool())
-		}
 	}
 
 	result, _, err := groupParams.Execute()
@@ -154,7 +151,7 @@ func GetUserGroupsWithFilter(ctx context.Context, client *client.Client, filter 
 					(!name.GID.IsNull() && fmt.Sprintf("GID:%d", name.GID.ValueInt64()) == *group.Gid.Id) {
 					filteredUserGroups = append(filteredUserGroups, group)
 					validUserGroups = append(validUserGroups, fmt.Sprintf("Name: %s, GID: %s", group.Name, *group.Gid.Id))
-					continue
+					break
 				}
 			}
 		}
@@ -189,7 +186,7 @@ func GetUserGroup(ctx context.Context, client *client.Client, groupName string) 
 }
 
 // UpdateUserGroupResourceState updates resource state.
-func UpdateUserGroupResourceState(model *models.UserGroupReourceModel, group powerscale.V1AuthGroupExtended,
+func UpdateUserGroupResourceState(model *models.UserGroupResourceModel, group powerscale.V1AuthGroupExtended,
 	groupMembers []powerscale.V1AuthAccessAccessItemFileGroup, roles []powerscale.V1AuthRoleExtended) {
 	model.Dn = types.StringValue(group.Dn)
 	model.Domain = types.StringValue(group.Domain)
@@ -223,16 +220,27 @@ func UpdateUserGroupResourceState(model *models.UserGroupReourceModel, group pow
 	}
 	if groupMembers != nil {
 		var users []attr.Value
+		var groups []attr.Value
+		var wellKnowns []attr.Value
 		for _, m := range groupMembers {
-			users = append(users, types.StringValue(*m.Name))
+			switch *m.Type {
+			case "user":
+				users = append(users, types.StringValue(*m.Name))
+			case "group":
+				groups = append(groups, types.StringValue(*m.Name))
+			case "wellknown":
+				wellKnowns = append(wellKnowns, types.StringValue(*m.Name))
+			}
 		}
 		model.Users, _ = types.ListValue(types.StringType, users)
+		model.Groups, _ = types.ListValue(types.StringType, groups)
+		model.WellKnowns, _ = types.ListValue(types.StringType, wellKnowns)
 	}
 
 }
 
 // CreateUserGroup Creates an User Group.
-func CreateUserGroup(ctx context.Context, client *client.Client, plan *models.UserGroupReourceModel) error {
+func CreateUserGroup(ctx context.Context, client *client.Client, plan *models.UserGroupResourceModel) error {
 
 	createParam := client.PscaleOpenAPIClient.AuthApi.CreateAuthv1AuthGroup(ctx)
 	if !plan.QueryForce.IsNull() {
@@ -258,6 +266,16 @@ func CreateUserGroup(ctx context.Context, client *client.Client, plan *models.Us
 		body.Members = append(body.Members, powerscale.V1AuthAccessAccessItemFileGroup{Name: &name})
 	}
 
+	for _, m := range plan.Groups.Elements() {
+		name := strings.Trim(m.String(), "\"")
+		body.Members = append(body.Members, powerscale.V1AuthAccessAccessItemFileGroup{Name: &name})
+	}
+
+	for _, m := range plan.WellKnowns.Elements() {
+		name := getWellKnownName(strings.Trim(m.String(), "\""))
+		body.Members = append(body.Members, powerscale.V1AuthAccessAccessItemFileGroup{Name: &name})
+	}
+
 	createParam = createParam.V1AuthGroup(*body)
 	if _, _, err := createParam.Execute(); err != nil {
 		errStr := constants.CreateUserGroupErrorMsg + "with error: "
@@ -269,7 +287,7 @@ func CreateUserGroup(ctx context.Context, client *client.Client, plan *models.Us
 }
 
 // UpdateUserGroup Updates an User Group GID.
-func UpdateUserGroup(ctx context.Context, client *client.Client, state *models.UserGroupReourceModel, plan *models.UserGroupReourceModel) error {
+func UpdateUserGroup(ctx context.Context, client *client.Client, state *models.UserGroupResourceModel, plan *models.UserGroupResourceModel) error {
 	authID := fmt.Sprintf("GROUP:%s", plan.Name.ValueString())
 	updateParam := client.PscaleOpenAPIClient.AuthApi.UpdateAuthv1AuthGroup(ctx, authID)
 
@@ -305,7 +323,7 @@ func UpdateUserGroup(ctx context.Context, client *client.Client, state *models.U
 }
 
 // UpdateUserGroupRoles Updates an User Group roles.
-func UpdateUserGroupRoles(ctx context.Context, client *client.Client, state *models.UserGroupReourceModel, plan *models.UserGroupReourceModel) (diags diag.Diagnostics) {
+func UpdateUserGroupRoles(ctx context.Context, client *client.Client, state *models.UserGroupResourceModel, plan *models.UserGroupResourceModel) (diags diag.Diagnostics) {
 
 	// get roles list changes
 	toAdd, toRemove := GetElementsChanges(state.Roles.Elements(), plan.Roles.Elements())
@@ -361,11 +379,10 @@ func RemoveUserGroupRole(ctx context.Context, client *client.Client, roleID stri
 }
 
 // UpdateUserGroupMembers Updates an User Group members.
-func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *models.UserGroupReourceModel, plan *models.UserGroupReourceModel) (diags diag.Diagnostics) {
+func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *models.UserGroupResourceModel, plan *models.UserGroupResourceModel) (diags diag.Diagnostics) {
 
-	// get members list changes
+	// update users in members
 	toAdd, toRemove := GetElementsChanges(state.Users.Elements(), plan.Users.Elements())
-
 	// remove users from user group by memberAuthID
 	for _, i := range toRemove {
 		memberAuthID := fmt.Sprintf("USER:%s", strings.Trim(i.String(), "\""))
@@ -373,7 +390,6 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 			diags.AddError(fmt.Sprintf("Error remove User - %s from User Group.", memberAuthID), err.Error())
 		}
 	}
-
 	// add users to user group by memberID
 	for _, i := range toAdd {
 		memberID := strings.Trim(i.String(), "\"")
@@ -382,10 +398,51 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 		}
 	}
 
+	// update groups in members
+	toAdd, toRemove = GetElementsChanges(state.Groups.Elements(), plan.Groups.Elements())
+	// remove groups from user group by memberAuthID
+	for _, i := range toRemove {
+		memberAuthID := fmt.Sprintf("GROUP:%s", strings.Trim(i.String(), "\""))
+		if err := RemoveUserGroupMember(ctx, client, memberAuthID, plan.Name.ValueString()); err != nil {
+			diags.AddError(fmt.Sprintf("Error remove Group - %s from User Group.", memberAuthID), err.Error())
+		}
+	}
+	// add groups to user group by memberID
+	for _, i := range toAdd {
+		memberID := strings.Trim(i.String(), "\"")
+		if err := AddUserGroupMember(ctx, client, memberID, plan.Name.ValueString()); err != nil {
+			diags.AddError(fmt.Sprintf("Error add Group - %s to User Group.", memberID), err.Error())
+		}
+	}
+
+	// update well_konwns in members
+	toAdd, toRemove = GetElementsChanges(state.WellKnowns.Elements(), plan.WellKnowns.Elements())
+	// remove well-knowns from user group by wellKnownSID
+	for _, i := range toRemove {
+		wellKnownName := getWellKnownName(strings.Trim(i.String(), "\""))
+		wellKnownSID := ""
+		if wellKnowns, err := GetWellKnown(ctx, client, wellKnownName); err == nil {
+			wellKnownSID = *wellKnowns.Wellknowns[0].Id
+		} else {
+			diags.AddError(fmt.Sprintf("Error remove Well-Known from User Group. Not found Well-Known - %s.", wellKnownName), err.Error())
+			continue
+		}
+		if err := RemoveUserGroupMember(ctx, client, wellKnownSID, plan.Name.ValueString()); err != nil {
+			diags.AddError(fmt.Sprintf("Error remove Well-Known - %s from User Group.", wellKnownName), err.Error())
+		}
+	}
+	// add well-knowns to user group by wellKnownName
+	for _, i := range toAdd {
+		wellKnownName := getWellKnownName(strings.Trim(i.String(), "\""))
+		if err := AddUserGroupMember(ctx, client, wellKnownName, plan.Name.ValueString()); err != nil {
+			diags.AddError(fmt.Sprintf("Error add Well-Known - %s to User Group.", wellKnownName), err.Error())
+		}
+	}
+
 	return
 }
 
-// RemoveUserGroupMember Removes member from user group by memberAuthID, like GROUP:groupName and USER:userName.
+// RemoveUserGroupMember Removes member from user group by memberAuthID, like GROUP:groupName, USER:userName and SID:well-known-sid.
 func RemoveUserGroupMember(ctx context.Context, client *client.Client, memberAuthID, userGroupName string) error {
 	memberParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1GroupsGroupMember(ctx, memberAuthID, userGroupName)
 	if _, err := memberParam.Execute(); err != nil {
@@ -420,4 +477,26 @@ func DeleteUserGroup(ctx context.Context, client *client.Client, groupName strin
 	}
 
 	return nil
+}
+
+// GetWellKnown Returns the well-known by well-known name.
+func GetWellKnown(ctx context.Context, client *client.Client, wellKnownName string) (*powerscale.V1AuthWellknowns, error) {
+	result, _, err := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthWellknown(ctx, wellKnownName).Execute()
+	if err != nil {
+		errStr := constants.ReadWellKnownErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return nil, fmt.Errorf("error getting well known - %s : %s", wellKnownName, message)
+	}
+	if len(result.Wellknowns) < 1 {
+		message := constants.ReadWellKnownErrorMsg + "with error: "
+		return nil, fmt.Errorf("got empty well known - %s : %s", wellKnownName, message)
+	}
+
+	return result, err
+}
+
+// getWellKnownName returns Well-Known suffix name. 'NT AUTHORITY\\DIALUP' will return 'DIALUP'.
+func getWellKnownName(name string) string {
+	groups := strings.Split(name, "\\")
+	return groups[len(groups)-1]
 }
