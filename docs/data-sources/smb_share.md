@@ -49,7 +49,6 @@ Optional:
 - `limit` (Number) Return no more than this many results at once (see resume).
 - `names` (Set of String) Names to filter smb shares.
 - `offset` (Number) The position of the first item returned for a paginated query within the full result set.
-- `resolve_names` (Boolean) If true, resolve group and user names in personas.
 - `resume` (String) Continue returning results from previous call using this token (token should come from the previous call, resume cannot be used with other options).
 - `scope` (String) If specified as "effective" or not specified, all fields are returned. If specified as "user", only fields with non-default values are shown. If specified as "default", the original values are returned.
 - `sort` (String) The field that will be used for sorting.

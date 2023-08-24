@@ -300,11 +300,6 @@ func (d *UserDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 						Description:         "If true, only return cached objects.",
 						MarkdownDescription: "If true, only return cached objects.",
 					},
-					"resolve_names": schema.BoolAttribute{
-						Optional:            true,
-						Description:         "Resolve names of personas.",
-						MarkdownDescription: "Resolve names of personas.",
-					},
 					"member_of": schema.BoolAttribute{
 						Optional:            true,
 						Description:         "Enumerate all users that a group is a member of.",
@@ -383,7 +378,7 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 					(!name.UID.IsNull() && fmt.Sprintf("UID:%d", name.UID.ValueInt64()) == user.UID.ValueString()) {
 					filteredUsers = append(filteredUsers, user)
 					validUsers = append(validUsers, fmt.Sprintf("Name: %s, UID: %s", user.Name, user.UID))
-					continue
+					break
 				}
 			}
 		}

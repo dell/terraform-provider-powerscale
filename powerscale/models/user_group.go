@@ -47,13 +47,12 @@ type UserGroupModel struct {
 
 // UserGroupFilterType holds filter attribute for user group.
 type UserGroupFilterType struct {
-	Names        []UserGroupIdentityItem `tfsdk:"names"`
-	NamePrefix   types.String            `tfsdk:"name_prefix"`
-	Domain       types.String            `tfsdk:"domain"`
-	Zone         types.String            `tfsdk:"zone"`
-	Provider     types.String            `tfsdk:"provider"`
-	Cached       types.Bool              `tfsdk:"cached"`
-	ResolveNames types.Bool              `tfsdk:"resolve_names"`
+	Names      []UserGroupIdentityItem `tfsdk:"names"`
+	NamePrefix types.String            `tfsdk:"name_prefix"`
+	Domain     types.String            `tfsdk:"domain"`
+	Zone       types.String            `tfsdk:"zone"`
+	Provider   types.String            `tfsdk:"provider"`
+	Cached     types.Bool              `tfsdk:"cached"`
 }
 
 // UserGroupIdentityItem holds identity attribute for a auth group.
@@ -62,8 +61,8 @@ type UserGroupIdentityItem struct {
 	GID  types.Int64  `tfsdk:"gid"`
 }
 
-// UserGroupReourceModel describes the resource data model.
-type UserGroupReourceModel struct {
+// UserGroupResourceModel describes the resource data model.
+type UserGroupResourceModel struct {
 	QueryForce     types.Bool   `tfsdk:"query_force"`
 	QueryZone      types.String `tfsdk:"query_zone"`
 	QueryProvider  types.String `tfsdk:"query_provider"`
@@ -72,6 +71,8 @@ type UserGroupReourceModel struct {
 	SID            types.String `tfsdk:"sid"`
 	Roles          types.List   `tfsdk:"roles"`
 	Users          types.List   `tfsdk:"users"`
+	Groups         types.List   `tfsdk:"groups"`
+	WellKnowns     types.List   `tfsdk:"well_knowns"`
 	Dn             types.String `tfsdk:"dn"`
 	DNSDomain      types.String `tfsdk:"dns_domain"`
 	Domain         types.String `tfsdk:"domain"`

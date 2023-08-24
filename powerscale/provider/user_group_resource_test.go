@@ -47,6 +47,10 @@ func TestAccUserGroupResourceCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(userGroupResourceName, "roles.0", "SystemAdmin"),
 					resource.TestCheckResourceAttr(userGroupResourceName, "users.#", "1"),
 					resource.TestCheckResourceAttr(userGroupResourceName, "users.0", "tfaccMemberUser"),
+					resource.TestCheckResourceAttr(userGroupResourceName, "groups.#", "1"),
+					resource.TestCheckResourceAttr(userGroupResourceName, "groups.0", "wheel"),
+					resource.TestCheckResourceAttr(userGroupResourceName, "well_knowns.#", "1"),
+					resource.TestCheckResourceAttr(userGroupResourceName, "well_knowns.0", "Everyone"),
 				),
 			},
 			// Update and Read testing
@@ -57,6 +61,10 @@ func TestAccUserGroupResourceCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(userGroupResourceName, "gid", "20001"),
 					resource.TestCheckResourceAttr(userGroupResourceName, "roles.#", "2"),
 					resource.TestCheckResourceAttr(userGroupResourceName, "users.#", "2"),
+					resource.TestCheckResourceAttr(userGroupResourceName, "groups.#", "1"),
+					resource.TestCheckResourceAttr(userGroupResourceName, "groups.0", "admin"),
+					resource.TestCheckResourceAttr(userGroupResourceName, "well_knowns.#", "1"),
+					resource.TestCheckResourceAttr(userGroupResourceName, "well_knowns.0", "NT AUTHORITY\\NETWORK"),
 				),
 			},
 			// Update member Error testing
@@ -119,6 +127,10 @@ func TestAccUserGroupResourceImport(t *testing.T) {
 					assert.Equal(t, "tfaccUserGroupCreation", s[0].Attributes["name"])
 					assert.Equal(t, "1", s[0].Attributes["roles.#"])
 					assert.Equal(t, "1", s[0].Attributes["users.#"])
+					assert.Equal(t, "1", s[0].Attributes["groups.#"])
+					assert.Equal(t, "wheel", s[0].Attributes["groups.0"])
+					assert.Equal(t, "1", s[0].Attributes["well_knowns.#"])
+					assert.Equal(t, "Everyone", s[0].Attributes["well_knowns.0"])
 					return nil
 				},
 			},
@@ -250,49 +262,53 @@ func TestAccUserGroupReleaseMockResource(t *testing.T) {
 
 var userGroupBasicResourceConfig = `
 resource "powerscale_user_group" "test" {
-	name = "tfaccUserGroupCreation"
+    name = "tfaccUserGroupCreation"
   }
 `
 
 var userGroupResourceConfig = `
 resource "powerscale_user_group" "test" {
-	name = "tfaccUserGroupCreation"
+    name = "tfaccUserGroupCreation"
 
     # query_force = true
     # query_zone = "testZone"
     # query_provider = "testProvider"
 
     # sid = "SID:testSID"
-	roles = ["SystemAdmin"]
+    roles = ["SystemAdmin"]
     users = ["tfaccMemberUser"]
+    groups    = ["wheel"]
+    well_knowns    = ["Everyone"]
   }
 `
 
 var userGroupUpdateResourceConfig = `
 resource "powerscale_user_group" "test" {
-	name = "tfaccUserGroupCreation"
+    name = "tfaccUserGroupCreation"
 
     query_force = true
 
-	gid = 20001
-	roles = ["SystemAdmin","tfaccUserRole"]
+    gid = 20001
+    roles = ["SystemAdmin","tfaccUserRole"]
     users = ["tfaccMemberUser","tfaccMemberUser2"]
+    groups    = ["admin"]
+    well_knowns    = ["NT AUTHORITY\\NETWORK"]
   }
 `
 
 var userGroupInvalidMemberResourceConfig = `
 resource "powerscale_user_group" "test" {
-	name = "tfaccUserGroupCreation"
+    name = "tfaccUserGroupCreation"
 
     query_force = true
-	gid = 20001
-	users = ["invalidUserMember"]
+    gid = 20001
+    users = ["invalidUserMember"]
   }
 `
 
 var userGroupErrCreateResourceConfig = `
 resource "powerscale_user_group" "test" {
-	name = "tfaccUserGroupCreation"
+    name = "tfaccUserGroupCreation"
 
     users = ["invalidUserMember"]
   }
@@ -300,10 +316,10 @@ resource "powerscale_user_group" "test" {
 
 var userGroupInvalidRoleResourceConfig = `
 resource "powerscale_user_group" "test" {
-	name = "tfaccUserGroupCreation"
+    name = "tfaccUserGroupCreation"
 
     query_force = true
-	gid = 20001
+    gid = 20001
     roles = ["invalidRole"]
   }
 `

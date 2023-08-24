@@ -98,4 +98,7 @@ const (
 
 	// ListNfsExportErrorMsg specifies error details occurred while listing nfs exports.
 	ListNfsExportErrorMsg = "Could not list nfs exports "
+
+	// ReadWellKnownErrorMsg specifies error details occurred while reading Well-Knowns.
+	ReadWellKnownErrorMsg = "Could not read well-knowns "
 )

@@ -29,10 +29,9 @@ data "powerscale_user" "test_user" {
         uid  = 10000
       }
     ]
-    cached        = false
-    name_prefix   = "tfacc"
-    resolve_names = false
-    member_of     = false
+    cached      = false
+    name_prefix = "tfacc"
+    member_of   = false
     # domain = "testDomain"
     # zone = "testZone"
     # provider = "testProvider"

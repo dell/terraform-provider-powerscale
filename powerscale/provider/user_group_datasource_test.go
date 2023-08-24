@@ -115,7 +115,6 @@ data "powerscale_user_group" "test" {
   filter {
 	names = []
 	cached = false
-	resolve_names = false
 	# name_prefix = ""
 	# domain = ""
 	# zone = ""

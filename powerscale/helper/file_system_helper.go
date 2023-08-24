@@ -356,7 +356,7 @@ func UpdateFileSystem(ctx context.Context, client client.Client, dirPath string,
 
 		_, _, err := setACLUpdReq.Execute()
 		if err != nil {
-			return fmt.Errorf("Error Updating User / Groups for the filesystem: %s", err)
+			return fmt.Errorf("error Updating User / Groups for the filesystem: %s", err)
 		}
 	}
 	// Update Access Control if modified and supported
@@ -369,7 +369,7 @@ func UpdateFileSystem(ctx context.Context, client client.Client, dirPath string,
 		newMode, newAuthoritative := getNewAccessControlParams(plan.AccessControl.ValueString())
 
 		if newAuthoritative == acl {
-			return fmt.Errorf("Error updating access control for File System. Modifying through the Provider only supports to POSIX format(authoritative = mode) but new authoritative is: %s", newAuthoritative)
+			return fmt.Errorf("error updating access control for File System. Modifying through the Provider only supports to POSIX format(authoritative = mode) but new authoritative is: %s", newAuthoritative)
 		}
 		namespaceUpdateACL.SetAuthoritative(newAuthoritative)
 		namespaceUpdateACL.SetMode(newMode)
@@ -377,7 +377,7 @@ func UpdateFileSystem(ctx context.Context, client client.Client, dirPath string,
 
 		_, _, err := setACLUpdReq.Execute()
 		if err != nil {
-			return fmt.Errorf("Error Updating AccesControl for the filesystem: %s", err)
+			return fmt.Errorf("error Updating AccesControl for the filesystem: %s", err)
 		}
 	}
 	return nil

@@ -57,8 +57,8 @@ func (r *UserGroupResource) Metadata(ctx context.Context, req resource.MetadataR
 // Schema describes the resource arguments.
 func (r *UserGroupResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users'.",
-		Description:         "Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users'.",
+		MarkdownDescription: "Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users', 'groups', 'well_knowns'.",
+		Description:         "Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users', 'groups', 'well_knowns'.",
 		Attributes: map[string]schema.Attribute{
 			"query_force": schema.BoolAttribute{
 				Description:         "If true, skip validation checks when creating user group. Need to be true, when changing group GID.",
@@ -99,8 +99,20 @@ func (r *UserGroupResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 			},
 			"users": schema.ListAttribute{
-				Description:         "Specifies list of user members within the group.",
-				MarkdownDescription: "Specifies list of user members within the group.",
+				Description:         "Specifies list members of user within the group.",
+				MarkdownDescription: "Specifies list members of user within the group.",
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+			"groups": schema.ListAttribute{
+				Description:         "Specifies list members of group within the group.",
+				MarkdownDescription: "Specifies list members of group within the group.",
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+			"well_knowns": schema.ListAttribute{
+				Description:         "Specifies list members of well_known within the group.",
+				MarkdownDescription: "Specifies list members of well_known within the group.",
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
@@ -173,7 +185,7 @@ func (r *UserGroupResource) Configure(ctx context.Context, req resource.Configur
 // Create allocates the resource.
 func (r *UserGroupResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Info(ctx, "Creating User Group resource...")
-	var plan models.UserGroupReourceModel
+	var plan models.UserGroupResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
@@ -197,7 +209,7 @@ func (r *UserGroupResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	if diags := helper.UpdateUserGroupRoles(ctx, r.client, &models.UserGroupReourceModel{}, &plan); diags.HasError() {
+	if diags := helper.UpdateUserGroupRoles(ctx, r.client, &models.UserGroupResourceModel{}, &plan); diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 	}
 
@@ -217,7 +229,7 @@ func (r *UserGroupResource) Create(ctx context.Context, req resource.CreateReque
 // Read reads the resource state.
 func (r *UserGroupResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Info(ctx, "Reading User Group resource")
-	var plan models.UserGroupReourceModel
+	var plan models.UserGroupResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &plan)...)
@@ -245,14 +257,14 @@ func (r *UserGroupResource) Read(ctx context.Context, req resource.ReadRequest, 
 func (r *UserGroupResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Info(ctx, "Updating User Group resource...")
 	// Read Terraform plan into the model
-	var plan models.UserGroupReourceModel
+	var plan models.UserGroupResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Read Terraform state into the model
-	var state models.UserGroupReourceModel
+	var state models.UserGroupResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -289,7 +301,7 @@ func (r *UserGroupResource) Update(ctx context.Context, req resource.UpdateReque
 // Delete deletes the resource.
 func (r *UserGroupResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Info(ctx, "Deleting User Group resource")
-	var state models.UserGroupReourceModel
+	var state models.UserGroupResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -321,7 +333,7 @@ func (r *UserGroupResource) Delete(ctx context.Context, req resource.DeleteReque
 // ImportState imports the resource state.
 func (r *UserGroupResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Info(ctx, "Importing User Group resource")
-	var state models.UserGroupReourceModel
+	var state models.UserGroupResourceModel
 
 	// start goroutine to cache all roles
 	var eg errgroup.Group

@@ -46,8 +46,8 @@ func AccessZoneDetailMapper(ctx context.Context, az *powerscale.V3ZoneExtended) 
 	return model, nil
 }
 
-// AccessZoneResouceDetailMapper detail mapper for access zone resource.
-func AccessZoneResouceDetailMapper(ctx context.Context, az *powerscale.V3ZoneExtended) (models.AccessZoneResourceModel, error) {
+// AccessZoneResourceDetailMapper detail mapper for access zone resource.
+func AccessZoneResourceDetailMapper(ctx context.Context, az *powerscale.V3ZoneExtended) (models.AccessZoneResourceModel, error) {
 	model := models.AccessZoneResourceModel{}
 	err := CopyFields(ctx, az, &model)
 	model.IfsRestricted, _ = GetAuthAccessKeyObjects(az.IfsRestricted)
@@ -120,7 +120,7 @@ func GetSpecificZone(ctx context.Context, matchZone string, zoneList []powerscal
 	for _, vze := range zoneList {
 		if *vze.Name == matchZone {
 			zone := vze
-			state, err := AccessZoneResouceDetailMapper(ctx, &zone)
+			state, err := AccessZoneResourceDetailMapper(ctx, &zone)
 			if err != nil {
 				errStr := constants.ReadAccessZoneErrorMsg + "with error: "
 				message := GetErrorString(err, errStr)

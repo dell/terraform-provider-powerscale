@@ -129,14 +129,13 @@ type SmbShareDatasource struct {
 // SmbShareDatasourceFilter holds filter conditions.
 type SmbShareDatasourceFilter struct {
 	// supported by api
-	Sort         types.String `tfsdk:"sort"`
-	Zone         types.String `tfsdk:"zone"`
-	Resume       types.String `tfsdk:"resume"`
-	ResolveNames types.Bool   `tfsdk:"resolve_names"`
-	Limit        types.Int64  `tfsdk:"limit"`
-	Offset       types.Int64  `tfsdk:"offset"`
-	Scope        types.String `tfsdk:"scope"`
-	Dir          types.String `tfsdk:"dir"`
+	Sort   types.String `tfsdk:"sort"`
+	Zone   types.String `tfsdk:"zone"`
+	Resume types.String `tfsdk:"resume"`
+	Limit  types.Int64  `tfsdk:"limit"`
+	Offset types.Int64  `tfsdk:"offset"`
+	Scope  types.String `tfsdk:"scope"`
+	Dir    types.String `tfsdk:"dir"`
 	// custom name list
 	Names []types.String `tfsdk:"names"`
 }

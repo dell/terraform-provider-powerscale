@@ -51,7 +51,6 @@ Optional:
 - `name_prefix` (String) Filter users by name prefix.
 - `names` (Attributes List) List of user identity. (see [below for nested schema](#nestedatt--filter--names))
 - `provider` (String) Filter users by provider.
-- `resolve_names` (Boolean) Resolve names of personas.
 - `zone` (String) Filter users by zone.
 
 <a id="nestedatt--filter--names"></a>

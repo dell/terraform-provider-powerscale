@@ -98,7 +98,7 @@ func updateUserState(model *models.UserModel, user powerscale.V1MappingUsersLook
 }
 
 // UpdateUserResourceState updates resource state.
-func UpdateUserResourceState(model *models.UserReourceModel, user powerscale.V1MappingUsersLookupMappingItemUser, roles []powerscale.V1AuthRoleExtended) {
+func UpdateUserResourceState(model *models.UserResourceModel, user powerscale.V1MappingUsersLookupMappingItemUser, roles []powerscale.V1AuthRoleExtended) {
 	model.Dn = types.StringValue(user.Dn)
 	model.DNSDomain = types.StringValue(user.DnsDomain)
 	model.Domain = types.StringValue(user.Domain)
@@ -176,9 +176,6 @@ func GetUsersWithFilter(ctx context.Context, client *client.Client, filter *mode
 		if !filter.Cached.IsNull() {
 			userParams = userParams.Cached(filter.Cached.ValueBool())
 		}
-		if !filter.ResolveNames.IsNull() {
-			userParams = userParams.ResolveNames(filter.ResolveNames.ValueBool())
-		}
 		if !filter.MemberOf.IsNull() {
 			userParams = userParams.QueryMemberOf(filter.MemberOf.ValueBool())
 		}
@@ -254,7 +251,7 @@ func GetUser(ctx context.Context, client *client.Client, userName string) (*powe
 }
 
 // CreateUser Creates an User.
-func CreateUser(ctx context.Context, client *client.Client, plan *models.UserReourceModel) error {
+func CreateUser(ctx context.Context, client *client.Client, plan *models.UserResourceModel) error {
 
 	createParam := client.PscaleOpenAPIClient.AuthApi.CreateAuthv1AuthUser(ctx)
 	if !plan.QueryForce.IsNull() {
@@ -315,7 +312,7 @@ func CreateUser(ctx context.Context, client *client.Client, plan *models.UserReo
 
 // UpdateUser Updates an User parameters,
 // including uid, sid, roles, password, enabled, home_directory, primary_group, unlock, email, expiry, gecos, shell, prompt_password_change, password_expires.
-func UpdateUser(ctx context.Context, client *client.Client, state *models.UserReourceModel, plan *models.UserReourceModel) error {
+func UpdateUser(ctx context.Context, client *client.Client, state *models.UserResourceModel, plan *models.UserResourceModel) error {
 	authID := fmt.Sprintf("USER:%s", plan.Name.ValueString())
 	updateParam := client.PscaleOpenAPIClient.AuthApi.UpdateAuthv1AuthUser(ctx, authID)
 
@@ -400,7 +397,7 @@ func DeleteUser(ctx context.Context, client *client.Client, userName string) err
 }
 
 // UpdateUserRoles Updates an User roles.
-func UpdateUserRoles(ctx context.Context, client *client.Client, state *models.UserReourceModel, plan *models.UserReourceModel) (diags diag.Diagnostics) {
+func UpdateUserRoles(ctx context.Context, client *client.Client, state *models.UserResourceModel, plan *models.UserResourceModel) (diags diag.Diagnostics) {
 
 	// get roles list changes
 	toAdd, toRemove := GetElementsChanges(state.Roles.Elements(), plan.Roles.Elements())

@@ -28,5 +28,7 @@ resource "powerscale_user_group" "testUserGroup" {
   # gid      = 11000
   # roles    = ["SystemAdmin"]
   # users    = ["MemberOfUser"]
+  # groups   = ["MemberOfGroup"]
+  # well_knowns    = ["MemberOfWellKnown"]
   # sid = "SID:XXXX"
 }
