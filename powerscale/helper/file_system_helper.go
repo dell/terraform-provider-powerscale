@@ -308,7 +308,7 @@ func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemR
 	}
 }
 
-// UpdateFileSystemResourcePlanData Updates File System Resource State from plan data
+// UpdateFileSystemResourcePlanData Updates File System Resource State from plan data.
 func UpdateFileSystemResourcePlanData(plan *models.FileSystemResource, state *models.FileSystemResource) {
 	state.ID = types.StringValue(GetDirectoryPath(plan.DirectoryPath.ValueString(), plan.Name.ValueString()))
 	state.Name = plan.Name
@@ -329,7 +329,7 @@ func GetDirectoryPath(dirPath string, dirName string) string {
 const acl = "acl"
 const mode = "mode"
 
-// UpdateFileSystem Updates the file system attributes
+// UpdateFileSystem Updates the file system attributes.
 func UpdateFileSystem(ctx context.Context, client client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) error {
 
 	// Update Owner / Group if modified

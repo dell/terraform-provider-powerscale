@@ -66,6 +66,9 @@ func init() {
 	if len(timeout) == 0 {
 		timeout = "2000"
 	}
+	if len(authType) == 0 {
+		authType = "1"
+	}
 
 	ProviderConfig = fmt.Sprintf(`
 		provider "powerscale" {

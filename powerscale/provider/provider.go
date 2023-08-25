@@ -97,7 +97,7 @@ func (p *PscaleProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 			"auth_type": schema.Int64Attribute{
 				MarkdownDescription: "what should be the auth type, 0 for basic and 1 for session-based",
 				Description:         "what should be the auth type, 0 for basic and 1 for session-based",
-				Required:            true,
+				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.OneOf(0, 1),
 				},
@@ -124,6 +124,10 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	// if timeout is not set. use default value 2000
 	if data.Timeout.IsNull() || data.Timeout.IsUnknown() {
 		data.Timeout = types.Int64Value(2000)
+	}
+	// If auth type is not set, use session based auth by default
+	if data.AuthType.IsNull() || data.AuthType.IsUnknown() {
+		data.AuthType = types.Int64Value(1)
 	}
 	// Configuration values are now available.
 	pscaleClient, err := client.NewClient(
