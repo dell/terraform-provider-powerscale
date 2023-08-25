@@ -55,7 +55,7 @@ func CopyFields(ctx context.Context, source, destination interface{}) error {
 	}
 
 	// Get the type of the destination struct
-	//destinationType := destinationValue.Elem().Type()
+	// destinationType := destinationValue.Elem().Type()
 	for i := 0; i < sourceValue.NumField(); i++ {
 		sourceFieldTag := getFieldJSONTag(sourceValue, i)
 
@@ -93,7 +93,7 @@ func CopyFields(ctx context.Context, source, destination interface{}) error {
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 				destinationFieldValue = types.Int64Value(sourceField.Int())
 			case reflect.Float32, reflect.Float64:
-				//destinationFieldValue = types.Float64Value(sourceField.Float())
+				// destinationFieldValue = types.Float64Value(sourceField.Float())
 				destinationFieldValue = types.NumberValue(big.NewFloat(sourceField.Float()))
 			case reflect.Bool:
 				destinationFieldValue = types.BoolValue(sourceField.Bool())
@@ -229,16 +229,20 @@ func copySliceToTargetField(ctx context.Context, fields interface{}) attr.Value 
 
 // ParseBody parses the error message from an openApi error response.
 func ParseBody(body []byte) (string, error) {
-	var parsedData map[string]string
+	var parsedData map[string][]map[string]string
 	err := json.Unmarshal(body, &parsedData)
 	if err != nil {
 		return "", err
 	}
-	message, ok := parsedData["message"]
-	if !ok {
-		return "", fmt.Errorf("no message field found in body")
+
+	var message string
+	if errors, ok := parsedData["errors"]; ok {
+		for _, e := range errors {
+			message = message + e["message"] + " "
+		}
+		return message + " ", nil
 	}
-	return message, nil
+	return "", fmt.Errorf("no message field found in body")
 }
 
 // GetErrorString extracts the error message from an openApi error response.
