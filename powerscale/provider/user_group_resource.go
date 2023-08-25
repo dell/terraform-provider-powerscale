@@ -209,6 +209,11 @@ func (r *UserGroupResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
+	// add user group members
+	if diags := helper.UpdateUserGroupMembers(ctx, r.client, &models.UserGroupResourceModel{}, &plan); diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+	}
+
 	if diags := helper.UpdateUserGroupRoles(ctx, r.client, &models.UserGroupResourceModel{}, &plan); diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 	}

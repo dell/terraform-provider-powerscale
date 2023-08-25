@@ -261,21 +261,6 @@ func CreateUserGroup(ctx context.Context, client *client.Client, plan *models.Us
 		body.Sid = plan.SID.ValueStringPointer()
 	}
 
-	for _, m := range plan.Users.Elements() {
-		name := strings.Trim(m.String(), "\"")
-		body.Members = append(body.Members, powerscale.V1AuthAccessAccessItemFileGroup{Name: &name})
-	}
-
-	for _, m := range plan.Groups.Elements() {
-		name := strings.Trim(m.String(), "\"")
-		body.Members = append(body.Members, powerscale.V1AuthAccessAccessItemFileGroup{Name: &name})
-	}
-
-	for _, m := range plan.WellKnowns.Elements() {
-		name := getWellKnownName(strings.Trim(m.String(), "\""))
-		body.Members = append(body.Members, powerscale.V1AuthAccessAccessItemFileGroup{Name: &name})
-	}
-
 	createParam = createParam.V1AuthGroup(*body)
 	if _, _, err := createParam.Execute(); err != nil {
 		errStr := constants.CreateUserGroupErrorMsg + "with error: "
