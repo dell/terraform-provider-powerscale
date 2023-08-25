@@ -89,7 +89,7 @@ func TestAccUserGroupResourceCreateErr(t *testing.T) {
 			// Create Error testing
 			{
 				Config:      ProviderConfig + userGroupErrCreateResourceConfig,
-				ExpectError: regexp.MustCompile(`.*Error creating the User Group*.`),
+				ExpectError: regexp.MustCompile(`.*Could not add member to user group*.`),
 			},
 		},
 	})
