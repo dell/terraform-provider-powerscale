@@ -26,7 +26,6 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -203,7 +202,11 @@ func getStructAttrTypeFromType(ctx context.Context, structType reflect.Type) (ma
 }
 
 func getSliceAttrTypeFromType(ctx context.Context, sliceType reflect.Type) (attr.Type, error) {
+	if sliceType.Kind() == reflect.Ptr {
+		sliceType = sliceType.Elem()
+	}
 	sliceType = sliceType.Elem()
+	// if a list of pointer
 	if sliceType.Kind() == reflect.Ptr {
 		sliceType = sliceType.Elem()
 	}
@@ -252,26 +255,54 @@ func getStructValue(ctx context.Context, structObj interface{}) (basetypes.Objec
 		}
 		switch elemFieldType.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			valueMap[tag] = types.Int64Value(elemFieldVal.Int())
+			if elemFieldVal.IsValid() {
+				valueMap[tag] = types.Int64Value(elemFieldVal.Int())
+			} else {
+				valueMap[tag] = types.Int64Null()
+			}
 		case reflect.String:
-			valueMap[tag] = types.StringValue(elemFieldVal.String())
+			if elemFieldVal.IsValid() {
+				valueMap[tag] = types.StringValue(elemFieldVal.String())
+			} else {
+				valueMap[tag] = types.StringNull()
+			}
 		case reflect.Bool:
-			valueMap[tag] = types.BoolValue(elemFieldVal.Bool())
+			if elemFieldVal.IsValid() {
+				valueMap[tag] = types.BoolValue(elemFieldVal.Bool())
+			} else {
+				valueMap[tag] = types.BoolNull()
+			}
 		case reflect.Struct:
 			if elemFieldType == reflect.TypeOf(powerscale.NullableString{}) {
 				nullableString, ok := elemFieldVal.Interface().(powerscale.NullableString)
 				if !ok {
 					return types.ObjectNull(nil), fmt.Errorf("NullableString failed")
 				}
-				valueMap[tag] = types.StringValue(*nullableString.Get())
+				if !nullableString.IsSet() {
+					valueMap[tag] = types.StringNull()
+				} else {
+					valueMap[tag] = types.StringValue(*nullableString.Get())
+				}
 			} else {
-				valueMap[tag], err = getStructValue(ctx, elemFieldVal.Interface())
+				if !elemFieldVal.IsValid() {
+					mapType, err := getStructAttrTypeFromType(ctx, elemFieldType)
+					if err != nil {
+						return types.ObjectNull(nil), err
+					}
+					valueMap[tag] = types.ObjectNull(mapType)
+				} else {
+					valueMap[tag], err = getStructValue(ctx, elemFieldVal.Interface())
+				}
 				if err != nil {
 					return types.ObjectNull(nil), err
 				}
 			}
 		case reflect.Array, reflect.Slice:
-			valueMap[tag], err = getSliceAttrValue(ctx, elemFieldVal.Interface())
+			if !elemFieldVal.IsValid() {
+				valueMap[tag], err = getSliceAttrValue(ctx, reflect.Zero(reflect.TypeOf(elem.Field(fieldIndex).Interface()).Elem()).Interface())
+			} else {
+				valueMap[tag], err = getSliceAttrValue(ctx, elemFieldVal.Interface())
+			}
 			if err != nil {
 				return types.ObjectNull(nil), err
 			}
@@ -328,9 +359,9 @@ func getSliceAttrValue(ctx context.Context, sliceObject interface{}) (attr.Value
 			values = append(values, sliceElemValue)
 		}
 		if len(values) == 0 {
-			return types.ListNull(types.ListType{ElemType: sliceAttrType}), nil
+			return types.ListNull(sliceAttrType), nil
 		}
-		returnListValue, _ := types.ListValue(types.ListType{ElemType: sliceAttrType}, values)
+		returnListValue, _ := types.ListValue(sliceAttrType, values)
 		return returnListValue, nil
 	default:
 		return nil, fmt.Errorf("unknown type")
@@ -420,9 +451,15 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 				if !ok || listVal.IsNull() || listVal.IsUnknown() {
 					continue
 				}
-				err := assignListToField(ctx, listVal, destinationField.Addr().Interface())
+				list, err := getFieldListVal(ctx, listVal, destinationField.Interface())
 				if err != nil {
 					return err
+				}
+				if reflect.TypeOf(destinationField.Interface()).Kind() == reflect.Ptr {
+					destinationField.Set(reflect.New(destinationField.Type().Elem()))
+					destinationField.Elem().Set(list)
+				} else {
+					destinationField.Set(list)
 				}
 			}
 		}
@@ -431,15 +468,13 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 }
 
 func assignObjectToField(ctx context.Context, source basetypes.ObjectValue, destination interface{}) error {
-	destElemVal := reflect.ValueOf(destination).Elem()
-	destElemType := destElemVal.Type()
-	targetObject := reflect.New(destElemType).Elem()
-	// if target is pointer to a pointer
-	if destElemVal.Kind() == reflect.Ptr {
-		destElemVal = reflect.ValueOf(destination).Elem().Elem()
-		destElemType = destElemVal.Type()
-		targetObject = reflect.New(destElemType).Elem()
+	destElemType := reflect.TypeOf(destination).Elem()
+	isPtr := false
+	if destElemType.Kind() == reflect.Ptr {
+		isPtr = true
+		destElemType = destElemType.Elem()
 	}
+	targetObject := reflect.New(destElemType).Elem()
 	attrMap := source.Attributes()
 	for key, val := range attrMap {
 		destinationField, err := getFieldByJSONTag(targetObject.Addr().Interface(), key)
@@ -460,6 +495,13 @@ func assignObjectToField(ctx context.Context, source basetypes.ObjectValue, dest
 				}
 				if destinationField.Type().Kind() == reflect.String {
 					destinationField.Set(reflect.ValueOf(targetValue))
+				}
+				if destinationField.Type() == reflect.TypeOf(powerscale.NullableString{}) {
+					addr, ok := destinationField.Addr().Interface().(*powerscale.NullableString)
+					if !ok {
+						continue
+					}
+					addr.Set(&targetValue)
 				}
 			case basetypes.Int64Type{}:
 				intVal, ok := val.(basetypes.Int64Value)
@@ -505,49 +547,84 @@ func assignObjectToField(ctx context.Context, source basetypes.ObjectValue, dest
 					if !ok || listVal.IsNull() || listVal.IsUnknown() {
 						continue
 					}
-					err := assignListToField(ctx, listVal, destinationField.Addr().Interface())
+					list, err := getFieldListVal(ctx, listVal, destinationField.Interface())
 					if err != nil {
 						return err
+					}
+					if reflect.TypeOf(destinationField.Interface()).Kind() == reflect.Ptr {
+						destinationField.Set(reflect.New(destinationField.Type().Elem()))
+						destinationField.Elem().Set(list)
+					} else {
+						destinationField.Set(list)
 					}
 				}
 			}
 		}
 	}
-	destElemVal.Set(targetObject)
+	if isPtr {
+		reflect.ValueOf(destination).Elem().Set(targetObject.Addr())
+	} else {
+		reflect.ValueOf(destination).Elem().Set(targetObject)
+	}
 	return nil
 }
 
-func assignListToField(ctx context.Context, source basetypes.ListValue, destination interface{}) error {
-	destVal := reflect.ValueOf(destination).Elem()
-	// type of element of slice
-	destType := destVal.Type()
-	// if target is pointer to a pointer
-	if destVal.Kind() == reflect.Ptr {
-		destVal = destVal.Elem()
-		destType = destVal.Type()
+func getFieldListVal(ctx context.Context, source basetypes.ListValue, destination interface{}) (reflect.Value, error) {
+	destType := reflect.TypeOf(destination)
+	if destType.Kind() == reflect.Ptr {
+		destType = destType.Elem()
 	}
 	listLen := len(source.Elements())
-
+	targetList := reflect.MakeSlice(destType, listLen, listLen)
 	listElemType := source.ElementType(ctx)
-	switch listElemType {
-	case basetypes.StringType{}:
-		tfsdk.ValueAs(ctx, source, destination)
-	case basetypes.Int64Type{}:
-		tfsdk.ValueAs(ctx, source, destination)
-	case basetypes.BoolType{}:
-		tfsdk.ValueAs(ctx, source, destination)
-	default:
-		targetList := reflect.MakeSlice(destType, listLen, listLen)
-		typeString := listElemType.String()
-		for i, listElem := range source.Elements() {
+	for i, listElem := range source.Elements() {
+		switch listElemType {
+		case basetypes.StringType{}:
+			strVal, ok := listElem.(basetypes.StringValue)
+			if !ok || strVal.IsNull() || strVal.IsUnknown() {
+				continue
+			}
+			if destType.Elem().Kind() == reflect.Ptr {
+				targetList.Index(i).Elem().Set(reflect.ValueOf(strVal.ValueStringPointer()))
+			} else {
+				targetList.Index(i).Set(reflect.ValueOf(strVal.ValueString()))
+			}
+		case basetypes.Int64Type{}:
+			strVal, ok := listElem.(basetypes.Int64Value)
+			if !ok || strVal.IsNull() || strVal.IsUnknown() {
+				continue
+			}
+			if destType.Elem().Kind() == reflect.Ptr {
+				targetList.Index(i).Elem().Set(reflect.ValueOf(strVal.ValueInt64Pointer()))
+			} else {
+				targetList.Index(i).Set(reflect.ValueOf(strVal.ValueInt64()))
+			}
+		case basetypes.BoolType{}:
+			strVal, ok := listElem.(basetypes.BoolValue)
+			if !ok || strVal.IsNull() || strVal.IsUnknown() {
+				continue
+			}
+			if destType.Elem().Kind() == reflect.Ptr {
+				targetList.Index(i).Elem().Set(reflect.ValueOf(strVal.ValueBoolPointer()))
+			} else {
+				targetList.Index(i).Set(reflect.ValueOf(strVal.ValueBool()))
+			}
+		default:
+			typeString := listElemType.String()
 			if strings.HasPrefix(typeString, "types.ListType") {
 				listVal, ok := listElem.(basetypes.ListValue)
 				if !ok || listVal.IsNull() || listVal.IsUnknown() {
 					continue
 				}
-				err := assignListToField(ctx, listVal, targetList.Index(i).Addr().Interface())
+				val, err := getFieldListVal(ctx, listVal, targetList.Index(i).Interface())
 				if err != nil {
-					return err
+					return targetList, err
+				}
+				if reflect.TypeOf(targetList.Index(i).Interface()).Kind() == reflect.Ptr {
+					targetList.Index(i).Set(reflect.New(targetList.Index(i).Type().Elem()))
+					targetList.Index(i).Elem().Set(val)
+				} else {
+					targetList.Index(i).Set(val)
 				}
 			} else if strings.HasPrefix(typeString, "types.ObjectType") {
 				objVal, ok := listElem.(basetypes.ObjectValue)
@@ -556,13 +633,12 @@ func assignListToField(ctx context.Context, source basetypes.ListValue, destinat
 				}
 				err := assignObjectToField(ctx, objVal, targetList.Index(i).Addr().Interface())
 				if err != nil {
-					return err
+					return targetList, err
 				}
 			}
 		}
-		destVal.Set(targetList)
 	}
-	return nil
+	return targetList, nil
 }
 
 // getFieldByJSONTag get field by tag, input destination is pointer.

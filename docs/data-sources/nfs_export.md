@@ -61,10 +61,6 @@ Optional:
 <a id="nestedatt--nfs_exports"></a>
 ### Nested Schema for `nfs_exports`
 
-Required:
-
-- `paths` (List of String) Specifies the paths under /ifs that are exported.
-
 Read-Only:
 
 - `all_dirs` (Boolean) True if all directories under the specified paths are mountable.
@@ -91,6 +87,7 @@ Read-Only:
 - `max_file_size` (Number) Specifies the maximum file size for any file accessed from the export. This parameter does not affect server behavior, but is included to accommodate legacy client requirements.
 - `name_max_size` (Number) Specifies the reported maximum length of a file name. This parameter does not affect server behavior, but is included to accommodate legacy client requirements.
 - `no_truncate` (Boolean) True if long file names result in an error. This parameter does not affect server behavior, but is included to accommodate legacy client requirements.
+- `paths` (List of String) Specifies the paths under /ifs that are exported.
 - `read_only` (Boolean) True if the export is set to read-only.
 - `read_only_clients` (List of String) Specifies the clients with read-only access to the export.
 - `read_transfer_max_size` (Number) Specifies the maximum buffer size that clients should use on NFS read requests. This value is used to advise the client of optimal settings for the server, but is not enforced.
