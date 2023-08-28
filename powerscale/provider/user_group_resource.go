@@ -21,12 +21,15 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golang.org/x/sync/errgroup"
@@ -91,6 +94,11 @@ func (r *UserGroupResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: "Specifies a security identifier.",
 				Optional:            true,
 				Computed:            true,
+				Validators: []validator.String{
+					stringvalidator.RegexMatches(
+						regexp.MustCompile(`^SID`), "must start with 'SID:'",
+					),
+				},
 			},
 			"roles": schema.ListAttribute{
 				Description:         "List of roles, the user is assigned.",

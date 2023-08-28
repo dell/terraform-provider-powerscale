@@ -206,12 +206,15 @@ func GetUsersWithFilter(ctx context.Context, client *client.Client, filter *mode
 
 // GetAllRoles returns all roles.
 func GetAllRoles(ctx context.Context, client *client.Client) (roles []powerscale.V1AuthRoleExtended, err error) {
+	roles = make([]powerscale.V1AuthRoleExtended, 0)
+	emptyRoles := make([]powerscale.V1AuthRoleExtended, 0)
+
 	roleParams := client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthRoles(ctx)
 	result, _, err := roleParams.Execute()
 	if err != nil {
 		errStr := constants.ReadRoleErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
-		return nil, fmt.Errorf("error getting roles : %s", message)
+		return emptyRoles, fmt.Errorf("error getting roles : %s", message)
 	}
 
 	for {
@@ -224,7 +227,7 @@ func GetAllRoles(ctx context.Context, client *client.Client) (roles []powerscale
 		if result, _, err = roleParams.Execute(); err != nil {
 			errStr := constants.ReadRoleErrorMsg + "with error: "
 			message := GetErrorString(err, errStr)
-			return nil, fmt.Errorf("error getting roles with resume: %s", message)
+			return emptyRoles, fmt.Errorf("error getting roles with resume: %s", message)
 		}
 	}
 
@@ -250,7 +253,7 @@ func GetUser(ctx context.Context, client *client.Client, userName string) (*powe
 	return result, err
 }
 
-// CreateUser Creates an User.
+// CreateUser Creates a User.
 func CreateUser(ctx context.Context, client *client.Client, plan *models.UserResourceModel) error {
 
 	createParam := client.PscaleOpenAPIClient.AuthApi.CreateAuthv1AuthUser(ctx)
@@ -310,7 +313,7 @@ func CreateUser(ctx context.Context, client *client.Client, plan *models.UserRes
 	return nil
 }
 
-// UpdateUser Updates an User parameters,
+// UpdateUser Updates a User parameters,
 // including uid, sid, roles, password, enabled, home_directory, primary_group, unlock, email, expiry, gecos, shell, prompt_password_change, password_expires.
 func UpdateUser(ctx context.Context, client *client.Client, state *models.UserResourceModel, plan *models.UserResourceModel) error {
 	authID := fmt.Sprintf("USER:%s", plan.Name.ValueString())
@@ -384,7 +387,7 @@ func UpdateUser(ctx context.Context, client *client.Client, state *models.UserRe
 	return nil
 }
 
-// DeleteUser Deletes an User.
+// DeleteUser Deletes a User.
 func DeleteUser(ctx context.Context, client *client.Client, userName string) error {
 	authID := fmt.Sprintf("USER:%s", userName)
 	deleteParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1AuthUser(ctx, authID)
@@ -396,7 +399,7 @@ func DeleteUser(ctx context.Context, client *client.Client, userName string) err
 	return nil
 }
 
-// UpdateUserRoles Updates an User roles.
+// UpdateUserRoles Updates a User roles.
 func UpdateUserRoles(ctx context.Context, client *client.Client, state *models.UserResourceModel, plan *models.UserResourceModel) (diags diag.Diagnostics) {
 
 	// get roles list changes
