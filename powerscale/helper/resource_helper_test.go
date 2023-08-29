@@ -22,7 +22,6 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/stretchr/testify/assert"
-	"reflect"
 	"testing"
 )
 
@@ -140,5 +139,5 @@ func Test_ResourceHelper(t *testing.T) {
 	var openapiTarget = OpenapiStruct{}
 	err = ReadFromState(context.Background(), testCopyTfObj, &openapiTarget)
 	assert.Nil(t, err)
-	assert.True(t, reflect.DeepEqual(openapiStructObj, openapiTarget))
+	assert.Equal(t, openapiStructObj, openapiTarget)
 }
