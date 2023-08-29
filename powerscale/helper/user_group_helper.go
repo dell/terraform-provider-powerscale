@@ -76,12 +76,14 @@ func UpdateUserGroupDataSourceState(model *models.UserGroupModel, groupResponse 
 
 // GetAllGroupMembers returns all group members.
 func GetAllGroupMembers(ctx context.Context, client *client.Client, groupName string) (members []powerscale.V1AuthAccessAccessItemFileGroup, err error) {
+	members = make([]powerscale.V1AuthAccessAccessItemFileGroup, 0)
+	emptyMembers := make([]powerscale.V1AuthAccessAccessItemFileGroup, 0)
 	memberParams := client.PscaleOpenAPIClient.AuthGroupsApi.ListAuthGroupsv1GroupMembers(ctx, groupName)
 	result, _, err := memberParams.Execute()
 	if err != nil {
 		errStr := constants.ReadUserGroupMemberErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
-		return nil, fmt.Errorf("error getting user group members: %s", message)
+		return emptyMembers, fmt.Errorf("error getting user group members: %s", message)
 	}
 
 	for {
@@ -93,7 +95,7 @@ func GetAllGroupMembers(ctx context.Context, client *client.Client, groupName st
 		if result, _, err = memberParams.Execute(); err != nil {
 			errStr := constants.ReadUserGroupMemberErrorMsg + "with error: "
 			message := GetErrorString(err, errStr)
-			return nil, fmt.Errorf("error getting user group members with resume: %s", message)
+			return emptyMembers, fmt.Errorf("error getting user group members with resume: %s", message)
 		}
 	}
 
@@ -239,7 +241,7 @@ func UpdateUserGroupResourceState(model *models.UserGroupResourceModel, group po
 
 }
 
-// CreateUserGroup Creates an User Group.
+// CreateUserGroup Creates a User Group.
 func CreateUserGroup(ctx context.Context, client *client.Client, plan *models.UserGroupResourceModel) error {
 
 	createParam := client.PscaleOpenAPIClient.AuthApi.CreateAuthv1AuthGroup(ctx)
@@ -271,7 +273,7 @@ func CreateUserGroup(ctx context.Context, client *client.Client, plan *models.Us
 	return nil
 }
 
-// UpdateUserGroup Updates an User Group GID.
+// UpdateUserGroup Updates a User Group GID.
 func UpdateUserGroup(ctx context.Context, client *client.Client, state *models.UserGroupResourceModel, plan *models.UserGroupResourceModel) error {
 	authID := fmt.Sprintf("GROUP:%s", plan.Name.ValueString())
 	updateParam := client.PscaleOpenAPIClient.AuthApi.UpdateAuthv1AuthGroup(ctx, authID)
@@ -287,8 +289,8 @@ func UpdateUserGroup(ctx context.Context, client *client.Client, state *models.U
 	}
 
 	body := &powerscale.V1AuthGroupExtendedExtended{}
-	if !state.Name.Equal(plan.Name) {
-		return fmt.Errorf("may not change user group's name")
+	if !state.Name.Equal(plan.Name) || plan.SID.ValueString() != "" && !state.SID.Equal(plan.SID) {
+		return fmt.Errorf("may not change user group's name or sid")
 	}
 	if !state.GID.Equal(plan.GID) && plan.GID.ValueInt64() > 0 {
 		if !plan.QueryForce.ValueBool() {
@@ -307,7 +309,7 @@ func UpdateUserGroup(ctx context.Context, client *client.Client, state *models.U
 	return nil
 }
 
-// UpdateUserGroupRoles Updates an User Group roles.
+// UpdateUserGroupRoles Updates a User Group roles.
 func UpdateUserGroupRoles(ctx context.Context, client *client.Client, state *models.UserGroupResourceModel, plan *models.UserGroupResourceModel) (diags diag.Diagnostics) {
 
 	// get roles list changes
@@ -363,7 +365,7 @@ func RemoveUserGroupRole(ctx context.Context, client *client.Client, roleID stri
 	return nil
 }
 
-// UpdateUserGroupMembers Updates an User Group members.
+// UpdateUserGroupMembers Updates a User Group members.
 func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *models.UserGroupResourceModel, plan *models.UserGroupResourceModel) (diags diag.Diagnostics) {
 
 	// update users in members
@@ -451,7 +453,7 @@ func AddUserGroupMember(ctx context.Context, client *client.Client, memberID, us
 	return nil
 }
 
-// DeleteUserGroup Deletes an User Group.
+// DeleteUserGroup Deletes a User Group.
 func DeleteUserGroup(ctx context.Context, client *client.Client, groupName string) error {
 	authID := fmt.Sprintf("GROUP:%s", groupName)
 	deleteParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1AuthGroup(ctx, authID)
