@@ -20,9 +20,6 @@ resource "powerscale_filesystem" "file_system_test" {
 
   # Required
   name = "DirTf"
-
-  recursive = true
-  overwrite = false
   group = {
     id   = "GID:0"
     name = "wheel"
@@ -34,7 +31,15 @@ resource "powerscale_filesystem" "file_system_test" {
     type = "user"
   }
 
-  # Optional : The ACL value for the directory. Users can either provide access rights input such as 'private_read' , 'private' ,
-  # 'public_read', 'public_read_write', 'public' or permissions in POSIX format as '0550', '0770', '0775','0777' or 0700. The Default value is (0700). 
+  # Optional. Default values set.
+  recursive = true
+  overwrite = false
+
+
+  /* Optional : The ACL value for the directory. Users can either provide access rights input such as 'private_read' , 'private' ,
+    'public_read', 'public_read_write', 'public' or permissions in POSIX format as '0550', '0770', '0775','0777' or 0700. The Default value is (0700). 
+     Modification of ACL is only supported from POSIX to POSIX mode. 
+  */
+
   # access_control = "0777"
 }
