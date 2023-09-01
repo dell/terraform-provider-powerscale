@@ -209,7 +209,7 @@ func FilterExports(paths []types.String, ids []types.Int64, exports []powerscale
 
 // ResolvePersonaDiff implement state
 // For nfs export persona info, response may only contain UID while type/username is given
-// Need to manually copy plan info to state, or state would keep the type/username as null, which is inconsistent
+// Need to manually copy plan info to state, or state would keep the type/username as null, which is inconsistent.
 func ResolvePersonaDiff(ctx context.Context, plan models.NfsExportResource, state *models.NfsExportResource) {
 	state.MapAll = assignKnownObjectToUnknown(ctx, plan.MapAll, state.MapAll)
 	state.MapFailure = assignKnownObjectToUnknown(ctx, plan.MapAll, state.MapAll)

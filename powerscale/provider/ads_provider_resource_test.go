@@ -154,6 +154,10 @@ func TestAccAdsProviderResourceErrorUpdate(t *testing.T) {
 				Config:      ProviderConfig + AdsProviderInvalidResourceConfig,
 				ExpectError: regexp.MustCompile(".*Bad Request*."),
 			},
+			{
+				Config:      ProviderConfig + AdsProviderUpdatePreCheckConfig,
+				ExpectError: regexp.MustCompile(".*Should not provide parameters for creating*."),
+			},
 		},
 	})
 }
@@ -166,6 +170,10 @@ func TestAccAdsProviderResourceErrorCreate(t *testing.T) {
 			{
 				Config:      ProviderConfig + AdsProviderInvalidResourceConfig,
 				ExpectError: regexp.MustCompile(".*Bad Request*."),
+			},
+			{
+				Config:      ProviderConfig + AdsProviderCreatePreCheckConfig,
+				ExpectError: regexp.MustCompile(".*Should not provide parameters for updating*."),
 			},
 		},
 	})
@@ -244,6 +252,15 @@ resource "powerscale_adsprovider" "ads_test" {
 }
 `, adsName)
 
+var AdsProviderCreatePreCheckConfig = fmt.Sprintf(`
+resource "powerscale_adsprovider" "ads_test" {
+	name = "%s"
+	user = "administrator"
+	password = "Password123!"
+	reset_schannel = true
+}
+`, adsName)
+
 var AdsProviderUpdatedResourceConfig = fmt.Sprintf(`
 resource "powerscale_adsprovider" "ads_test" {
 	name = "%s"
@@ -260,5 +277,14 @@ resource "powerscale_adsprovider" "ads_test" {
 	user = "administrator"
 	password = "Password123!"
 	check_online_interval = 290
+}
+`, adsName)
+
+var AdsProviderUpdatePreCheckConfig = fmt.Sprintf(`
+resource "powerscale_adsprovider" "ads_test" {
+	name = "%s"
+	user = "administrator"
+	password = "Password123!"
+	kerberos_hdfs_spn = true
 }
 `, adsName)
