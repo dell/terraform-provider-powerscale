@@ -72,7 +72,7 @@ func TestAccClusterConfigError(t *testing.T) {
 					FunctionMocker = Mock(helper.GetClusterConfig).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
-				ExpectError: regexp.MustCompile(`.*Client Error*.`),
+				ExpectError: regexp.MustCompile(`.*Error reading cluster*.`),
 			},
 		},
 		CheckDestroy: func(_ *terraform.State) error {
@@ -95,7 +95,7 @@ func TestAccClusterIdentityError(t *testing.T) {
 					FunctionMocker = Mock(helper.GetClusterIdentity).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
-				ExpectError: regexp.MustCompile(`.*Client Error*.`),
+				ExpectError: regexp.MustCompile(`.*Error reading cluster*.`),
 			},
 		},
 		CheckDestroy: func(_ *terraform.State) error {
@@ -118,7 +118,7 @@ func TestAccClusterNodesError(t *testing.T) {
 					FunctionMocker = Mock(helper.GetClusterNodes).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
-				ExpectError: regexp.MustCompile(`.*Client Error*.`),
+				ExpectError: regexp.MustCompile(`.*Error reading cluster*.`),
 			},
 		},
 		CheckDestroy: func(_ *terraform.State) error {
@@ -141,7 +141,7 @@ func TestAccClusterInternalNetworksError(t *testing.T) {
 					FunctionMocker = Mock(helper.GetClusterInternalNetworks).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
-				ExpectError: regexp.MustCompile(`.*Client Error*.`),
+				ExpectError: regexp.MustCompile(`.*Error reading cluster*.`),
 			},
 		},
 		CheckDestroy: func(_ *terraform.State) error {
@@ -164,7 +164,7 @@ func TestAccClusterAcsError(t *testing.T) {
 					FunctionMocker = Mock(helper.ListClusterAcs).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
-				ExpectError: regexp.MustCompile(`.*Client Error*.`),
+				ExpectError: regexp.MustCompile(`.*Error reading cluster*.`),
 			},
 		},
 		CheckDestroy: func(_ *terraform.State) error {

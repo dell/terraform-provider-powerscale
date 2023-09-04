@@ -18,11 +18,14 @@ limitations under the License.
 package helper
 
 import (
+	"bytes"
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/net/html"
 	"math/big"
+	"net/http"
 	"reflect"
 	"strings"
 
@@ -229,6 +232,12 @@ func copySliceToTargetField(ctx context.Context, fields interface{}) attr.Value 
 
 // ParseBody parses the error message from an openApi error response.
 func ParseBody(body []byte) (string, error) {
+	contentType := http.DetectContentType(body)
+
+	if strings.Contains(contentType, "text/html") {
+		return parseHTMLBody(body)
+	}
+
 	var parsedData map[string][]map[string]string
 	err := json.Unmarshal(body, &parsedData)
 	if err != nil {
@@ -261,4 +270,49 @@ func GetErrorString(err error, errStr string) string {
 		msgStr = errStr + err.Error()
 	}
 	return msgStr
+}
+
+func parseHTMLBody(body []byte) (string, error) {
+	doc, err := html.Parse(bytes.NewReader(body))
+	if err != nil {
+		return "", err
+	}
+
+	var message string
+	titleNode := findNode(doc, "title")
+	if titleNode != nil {
+		extractText(titleNode, &message)
+	} else {
+		return "", fmt.Errorf("no title element found in HTML body")
+	}
+
+	if message == "" {
+		return "", fmt.Errorf("no message found in HTML title")
+	}
+
+	return message, nil
+}
+
+func findNode(n *html.Node, data string) *html.Node {
+	if n.Type == html.ElementNode && n.Data == data {
+		return n
+	}
+
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		if bodyNode := findNode(c, data); bodyNode != nil {
+			return bodyNode
+		}
+	}
+
+	return nil
+}
+
+func extractText(n *html.Node, message *string) {
+	if n.Type == html.TextNode {
+		*message += strings.TrimSpace(n.Data) + " "
+	}
+
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		extractText(c, message)
+	}
 }
