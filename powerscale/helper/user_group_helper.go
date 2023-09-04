@@ -380,7 +380,9 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 	// add users to user group by memberID
 	for _, i := range toAdd {
 		memberID := strings.Trim(i.String(), "\"")
-		if err := AddUserGroupMember(ctx, client, memberID, plan.Name.ValueString()); err != nil {
+		memberType := "user"
+		memberIdentity := powerscale.V1AuthAccessAccessItemFileGroup{Name: &memberID, Type: &memberType}
+		if err := AddUserGroupMember(ctx, client, memberIdentity, plan.Name.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error add User - %s to User Group.", memberID), err.Error())
 		}
 	}
@@ -397,7 +399,9 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 	// add groups to user group by memberID
 	for _, i := range toAdd {
 		memberID := strings.Trim(i.String(), "\"")
-		if err := AddUserGroupMember(ctx, client, memberID, plan.Name.ValueString()); err != nil {
+		memberType := "group"
+		memberIdentity := powerscale.V1AuthAccessAccessItemFileGroup{Name: &memberID, Type: &memberType}
+		if err := AddUserGroupMember(ctx, client, memberIdentity, plan.Name.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error add Group - %s to User Group.", memberID), err.Error())
 		}
 	}
@@ -421,7 +425,9 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 	// add well-knowns to user group by wellKnownName
 	for _, i := range toAdd {
 		wellKnownName := getWellKnownName(strings.Trim(i.String(), "\""))
-		if err := AddUserGroupMember(ctx, client, wellKnownName, plan.Name.ValueString()); err != nil {
+		memberType := "wellknown"
+		memberIdentity := powerscale.V1AuthAccessAccessItemFileGroup{Name: &wellKnownName, Type: &memberType}
+		if err := AddUserGroupMember(ctx, client, memberIdentity, plan.Name.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error add Well-Known - %s to User Group.", wellKnownName), err.Error())
 		}
 	}
@@ -440,15 +446,13 @@ func RemoveUserGroupMember(ctx context.Context, client *client.Client, memberAut
 	return nil
 }
 
-// AddUserGroupMember Adds member to user group by memberID.
-func AddUserGroupMember(ctx context.Context, client *client.Client, memberID, userGroupName string) error {
-	authID := memberID
-	memberParam := client.PscaleOpenAPIClient.AuthGroupsApi.CreateAuthGroupsv1GroupMember(ctx, userGroupName).
-		V1GroupMember(powerscale.V1AuthAccessAccessItemFileGroup{Name: &authID})
+// AddUserGroupMember Adds member to user group by memberIdentity.
+func AddUserGroupMember(ctx context.Context, client *client.Client, memberIdentity powerscale.V1AuthAccessAccessItemFileGroup, userGroupName string) error {
+	memberParam := client.PscaleOpenAPIClient.AuthGroupsApi.CreateAuthGroupsv1GroupMember(ctx, userGroupName).V1GroupMember(memberIdentity)
 	if _, _, err := memberParam.Execute(); err != nil {
 		errStr := constants.AddUserGroupMemberErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
-		return fmt.Errorf("error add member - %s to user group - %s: %s", memberID, userGroupName, message)
+		return fmt.Errorf("error add member - %s:%s to user group - %s: %s", *memberIdentity.Type, *memberIdentity.Name, userGroupName, message)
 	}
 	return nil
 }
