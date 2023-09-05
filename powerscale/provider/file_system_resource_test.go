@@ -104,10 +104,10 @@ func TestFileSystemResourceUpdateUserErr(t *testing.T) {
 			//Update owner/group/accessControl, then Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error Updating User / Groups for the filesystem")).Build()
+					FunctionMocker = Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error updating user")).Build()
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
-				ExpectError: regexp.MustCompile(`.*Error Updating User / Groups for the filesystem*.`),
+				ExpectError: regexp.MustCompile(`.*Error updating user*.`),
 			},
 		},
 	})
@@ -124,10 +124,10 @@ func TestFileSystemResourceUpdateACLErr(t *testing.T) {
 			//Update owner/group/accessControl, then Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error Updating AccesControl for the filesystem")).Build()
+					FunctionMocker = Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error updating acl")).Build()
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
-				ExpectError: regexp.MustCompile(`.*Error Updating AccesControl for the filesystem*.`),
+				ExpectError: regexp.MustCompile(`.*Error updating acl*.`),
 			},
 		},
 	})
