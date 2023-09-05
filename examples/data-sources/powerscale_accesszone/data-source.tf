@@ -15,7 +15,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# Returns all of the PowerScale access zones and their details
+# PowerScale access zones allow you to isolate data and control who can access data in each zone.
+data "powerscale_accesszone" "all" {
+}
+
+output "powerscale_accesszone_data_all" {
+  value = data.powerscale_accesszone.all
+}
+
+# Returns a subset of the PowerScale access zones based on the names provided in the `names` filter block and their details
 data "powerscale_accesszone" "test" {
+  # Optional list of names to filter upon
   filter {
     names = ["tfaccAccessZone"]
   }
@@ -23,11 +34,4 @@ data "powerscale_accesszone" "test" {
 
 output "powerscale_accesszone" {
   value = data.powerscale_accesszone.test
-}
-
-data "powerscale_accesszone" "all" {
-}
-
-output "powerscale_accesszone_data_all" {
-  value = data.powerscale_accesszone.all
 }

@@ -53,11 +53,12 @@ func (d *AccessZoneDataSource) Metadata(ctx context.Context, req datasource.Meta
 func (d *AccessZoneDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Access Zone Datasource",
-
+		MarkdownDescription: "Access Zone Datasource. PowerScale access zones allow you to isolate data and control who can access data in each zone.",
+		Description:         "Access Zone Datasource. PowerScale access zones allow you to isolate data and control who can access data in each zone.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				MarkdownDescription: "Example identifier",
+				Description:         "Identifier",
+				MarkdownDescription: "Identifier",
 				Computed:            true,
 			},
 			"access_zones_details": schema.ListNestedAttribute{

@@ -19,12 +19,12 @@ linkTitle: "powerscale_accesszone"
 page_title: "powerscale_accesszone Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Access Zone resource
+  Access Zone resource. Supported Update (path, name, customauthproviders). PowerScale access zones allow you to isolate data and control who can access data in each zone.
 ---
 
 # powerscale_accesszone (Resource)
 
-Access Zone resource
+Access Zone resource. Supported Update (path, name, custom_auth_providers). PowerScale access zones allow you to isolate data and control who can access data in each zone.
 
 
 ## Example Usage
@@ -47,13 +47,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-resource "powerscale_accesszone" "zone" {
-  # Required fields
-  name     = "testAccessZone3"
-  groupnet = "groupnet0"
-  path     = "/ifs"
+# Available actions: Create, Update (name, path, custom_auth_providers), Delete and Import
+# After `terraform apply` of this example file it will create a new access zone with the name set in `name` attribute on the PowerScale
 
-  # Optional to apply Auth Providers
+# PowerScale access zones allow you to isolate data and control who can access data in each zone.
+resource "powerscale_accesszone" "zone" {
+
+  # Required name of the new access zone
+  name = "testAccessZone3"
+
+  # Required Groupnet identifier to be assoicated with this access zone
+  # Note can not be changed after the access zone is created
+  groupnet = "groupnet0"
+
+  # Required Specifies the access zone base directory path
+  path = "/ifs"
+
+  # Optional pecifies the list of authentication providers available on this access zon
   custom_auth_providers = ["System"]
 }
 ```
@@ -64,12 +74,12 @@ resource "powerscale_accesszone" "zone" {
 ### Required
 
 - `groupnet` (String) Groupnet identifier
-- `name` (String) Specifies the access zone name.
-- `path` (String) Specifies the access zone base directory path.
+- `name` (String) Specifies the access zone name. (Update Supported)
+- `path` (String) Specifies the access zone base directory path. (Update Supported)
 
 ### Optional
 
-- `custom_auth_providers` (List of String) An optional parameter which adds new auth_providers to the access zone
+- `custom_auth_providers` (List of String) An optional parameter which adds new auth_providers to the access zone. (Update Supported)
 
 ### Read-Only
 

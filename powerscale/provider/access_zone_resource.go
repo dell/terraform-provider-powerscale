@@ -57,7 +57,8 @@ func (r *AccessZoneResource) Metadata(ctx context.Context, req resource.Metadata
 func (r *AccessZoneResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Access Zone resource",
+		MarkdownDescription: "Access Zone resource. Supported Update (path, name, custom_auth_providers). PowerScale access zones allow you to isolate data and control who can access data in each zone.",
+		Description:         "Access Zone resource. Supported Update (path, name, custom_auth_providers).PowerScale access zones allow you to isolate data and control who can access data in each zone.",
 
 		Attributes: map[string]schema.Attribute{
 			"alternate_system_provider": schema.StringAttribute{
@@ -66,8 +67,8 @@ func (r *AccessZoneResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Computed:            true,
 			},
 			"custom_auth_providers": schema.ListAttribute{
-				Description:         "An optional parameter which adds new auth_providers to the access zone",
-				MarkdownDescription: "An optional parameter which adds new auth_providers to the access zone",
+				Description:         "An optional parameter which adds new auth_providers to the access zone. (Update Supported)",
+				MarkdownDescription: "An optional parameter which adds new auth_providers to the access zone. (Update Supported)",
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
@@ -134,8 +135,8 @@ func (r *AccessZoneResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Computed:            true,
 			},
 			"name": schema.StringAttribute{
-				Description:         "Specifies the access zone name.",
-				MarkdownDescription: "Specifies the access zone name.",
+				Description:         "Specifies the access zone name. (Update Supported)",
+				MarkdownDescription: "Specifies the access zone name. (Update Supported)",
 				Required:            true,
 			},
 			"negative_cache_entry_expiry": schema.Int64Attribute{
@@ -149,8 +150,8 @@ func (r *AccessZoneResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Computed:            true,
 			},
 			"path": schema.StringAttribute{
-				Description:         "Specifies the access zone base directory path.",
-				MarkdownDescription: "Specifies the access zone base directory path.",
+				Description:         "Specifies the access zone base directory path. (Update Supported)",
+				MarkdownDescription: "Specifies the access zone base directory path. (Update Supported)",
 				Required:            true,
 			},
 			"skeleton_directory": schema.StringAttribute{
