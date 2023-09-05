@@ -446,7 +446,13 @@ func (r *AdsProviderResource) Create(ctx context.Context, req resource.CreateReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
+	if helper.IsCreateAdsProviderParamInvalid(plan) {
+		resp.Diagnostics.AddError(
+			"Error creating ads provider",
+			"Should not provide parameters for updating",
+		)
+		return
+	}
 	adsToCreate := powerscale.V14ProvidersAdsItem{}
 	// Get param from tf input
 	err := helper.ReadFromState(ctx, plan, &adsToCreate)
@@ -593,6 +599,13 @@ func (r *AdsProviderResource) Update(ctx context.Context, req resource.UpdateReq
 		"adsState": adsState,
 	})
 
+	if helper.IsUpdateAdsProviderParamInvalid(adsPlan, adsState) {
+		resp.Diagnostics.AddError(
+			"Error updating ads provider",
+			"Should not provide parameters for creating",
+		)
+		return
+	}
 	adsID := adsState.ID.ValueString()
 	adsPlan.ID = adsState.ID
 	var adsToUpdate powerscale.V14ProvidersAdsIdParams
@@ -640,7 +653,7 @@ func (r *AdsProviderResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	err = helper.CopyFieldsToNonNestedModel(ctx, updatedAds.Ads[0], &adsState)
+	err = helper.CopyFieldsToNonNestedModel(ctx, updatedAds.Ads[0], &adsPlan)
 	if err != nil {
 		errStr := constants.ReadAdsProviderErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -650,7 +663,7 @@ func (r *AdsProviderResource) Update(ctx context.Context, req resource.UpdateReq
 		)
 		return
 	}
-	diags = resp.State.Set(ctx, adsState)
+	diags = resp.State.Set(ctx, adsPlan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
