@@ -101,4 +101,7 @@ const (
 
 	// ReadWellKnownErrorMsg specifies error details occurred while reading Well-Knowns.
 	ReadWellKnownErrorMsg = "Could not read well-knowns "
+
+	// ReadClusterErrorMsg specifies error details occurred while reading cluster.
+	ReadClusterErrorMsg = "Could not read cluster "
 )

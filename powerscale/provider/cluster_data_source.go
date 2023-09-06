@@ -24,6 +24,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -103,7 +104,9 @@ func (d *ClusterDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	// Read and map cluster config data
 	config, err := helper.GetClusterConfig(ctx, d.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read cluster config, got error: %s", err))
+		errStr := constants.ReadClusterErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError("Error reading cluster config", message)
 		return
 	}
 	var dataConfig models.ClusterConfig
@@ -117,7 +120,9 @@ func (d *ClusterDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	// Read and map cluster identity data
 	identity, err := helper.GetClusterIdentity(ctx, d.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read cluster identity, got error: %s", err))
+		errStr := constants.ReadClusterErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError("Error reading cluster config", message)
 		return
 	}
 	var dataIdentity models.ClusterIdentity
@@ -130,7 +135,9 @@ func (d *ClusterDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	nodes, err := helper.GetClusterNodes(ctx, d.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read cluster nodes, got error: %s", err))
+		errStr := constants.ReadClusterErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError("Error reading cluster nodes", message)
 		return
 	}
 	var dataNodes models.ClusterNodes
@@ -143,7 +150,10 @@ func (d *ClusterDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	networks, err := helper.GetClusterInternalNetworks(ctx, d.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read cluster internal networks, got error: %s", err))
+		errStr := constants.ReadClusterErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError("Error reading cluster networks", message)
+		return
 	}
 	var dataNetworks models.ClusterInternalNetworks
 	err = helper.CopyFields(ctx, networks, &dataNetworks)
@@ -155,7 +165,10 @@ func (d *ClusterDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	acs, err := helper.ListClusterAcs(ctx, d.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read cluster acs, got error: %s", err))
+		errStr := constants.ReadClusterErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError("Error reading cluster acs", message)
+		return
 	}
 	var dataAcs models.ClusterAcs
 	err = helper.CopyFields(ctx, acs, &dataAcs)
