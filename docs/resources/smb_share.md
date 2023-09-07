@@ -19,12 +19,12 @@ linkTitle: "powerscale_smb_share"
 page_title: "powerscale_smb_share Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Resource for managing SMB Shares in PowerScale array.
+  Resource for managing SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.
 ---
 
 # powerscale_smb_share (Resource)
 
-Resource for managing SMB Shares in PowerScale array.
+Resource for managing SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.
 
 
 ## Example Usage
@@ -46,10 +46,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+# Available actions: Create, Update, Delete and Import
+# After `terraform apply` of this example file it will create NFS export on specified paths on the PowerScale
+
+# PowerScale SMB shares provide clients network access to file system resources on the cluster
 resource "powerscale_smb_share" "share_example" {
-  auto_create_directory = true
-  name                  = "smb_share_example"
-  path                  = "/ifs/smb_share_example"
+  # Required information for creating
+  name = "smb_share_example"
+  path = "/ifs/smb_share_example"
   permissions = [
     {
       permission      = "full"
@@ -61,6 +66,54 @@ resource "powerscale_smb_share" "share_example" {
       }
     }
   ]
+
+  # Zone is optional while creating and updating
+  # zone = "System"
+
+  # Optional attributes, can be updated
+  # access_based_enumeration = false
+  # access_based_enumeration_root_only = false
+  # allow_delete_readonly = false
+  # allow_execute_always = false
+  # allow_variable_expansion = false
+  # auto_create_directory = true
+  # browsable = true
+  # ca_timeout = 120
+  # ca_write_integrity = "write-read-coherent"
+  # change_notify = "norecurse"
+  # create_path = false
+  # create_permissions = "default acl"
+  # csc_policy = "manual"
+  # description = "description"
+  # directory_create_mask = 448
+  # directory_create_mode = 0
+  # file_create_mask = 448
+  # file_create_mode = 64
+  # file_filter_extensions = ["ext"]
+  # file_filter_type = "deny"
+  # file_filtering_enabled = false
+  # hide_dot_files = false
+  # host_acl = ["example_host"]
+  # impersonate_guest = "never"
+  # impersonate_user = ""
+  # inheritable_path_acl = false
+  # mangle_byte_start = 60672
+  # mangle_map = ["0x22:-1"]
+  # ntfs_acl_support = true
+  # oplocks = true
+  # run_as_root = [{
+  #   id   = "SID:S-1-1-0",
+  #   name = "Everyone",
+  #   type = "wellknown"
+  # }]
+  # smb3_encryption_enabled = false
+  # sparse_file = false
+  # strict_ca_lockout = true
+  # strict_flush = true
+  # strict_locking = false
+
+  # zid should be computed according to zone
+  # zid = 1
 }
 ```
 
@@ -111,13 +164,13 @@ resource "powerscale_smb_share" "share_example" {
 - `strict_ca_lockout` (Boolean) Specifies if persistent opens would do strict lockout on the share.
 - `strict_flush` (Boolean) Handle SMB flush operations.
 - `strict_locking` (Boolean) Specifies whether byte range locks contend against SMB I/O.
-- `zid` (Number) Numeric ID of the access zone which contains this SMB share.
 - `zone` (String) Name of the access zone to which to move this SMB share.
 
 ### Read-Only
 
 - `continuously_available` (Boolean) Specify if persistent opens are allowed on the share.
 - `id` (String) The ID of the smb share.
+- `zid` (Number) Numeric ID of the access zone which contains this SMB share.
 
 <a id="nestedatt--permissions"></a>
 ### Nested Schema for `permissions`
