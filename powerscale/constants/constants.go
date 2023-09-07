@@ -96,8 +96,35 @@ const (
 	// DeleteUserGroupMemberErrorMsg specifies error details occurred while deleting member from user group.
 	DeleteUserGroupMemberErrorMsg = "Could not delete member from user group "
 
+	// GetNfsExportErrorMsg specifies error details occurred while getting nfs export.
+	GetNfsExportErrorMsg = "Could not get nfs export "
+
+	// UpdateNfsExportErrorMsg specifies error details occurred while updating nfs export.
+	UpdateNfsExportErrorMsg = "Could not update nfs export "
+
+	// DeleteNfsExportErrorMsg specifies error details occurred while deleting nfs export.
+	DeleteNfsExportErrorMsg = "Could not delete nfs export "
+
+	// CreateNfsExportErrorMsg specifies error details occurred while creating nfs export.
+	CreateNfsExportErrorMsg = "Could not create nfs export "
+
 	// ListNfsExportErrorMsg specifies error details occurred while listing nfs exports.
 	ListNfsExportErrorMsg = "Could not list nfs exports "
+
+	// GetSmbShareErrorMsg specifies error details occurred while getting smb share.
+	GetSmbShareErrorMsg = "Could not get smb share "
+
+	// UpdateSmbShareErrorMsg specifies error details occurred while updating smb share.
+	UpdateSmbShareErrorMsg = "Could not update smb share "
+
+	// DeleteSmbShareErrorMsg specifies error details occurred while deleting smb share.
+	DeleteSmbShareErrorMsg = "Could not delete smb share "
+
+	// CreateSmbShareErrorMsg specifies error details occurred while creating smb share.
+	CreateSmbShareErrorMsg = "Could not create smb share "
+
+	// ListSmbShareErrorMsg specifies error details occurred while listing smb shares.
+	ListSmbShareErrorMsg = "Could not list smb shares "
 
 	// ReadWellKnownErrorMsg specifies error details occurred while reading Well-Knowns.
 	ReadWellKnownErrorMsg = "Could not read well-knowns "

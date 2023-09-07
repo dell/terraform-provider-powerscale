@@ -815,10 +815,8 @@ func (d *NfsExportDataSource) Read(ctx context.Context, req datasource.ReadReque
 		entity := models.NfsExportDatasourceEntity{}
 		err := helper.CopyFields(ctx, export, &entity)
 		if err != nil {
-			errStr := constants.ListNfsExportErrorMsg + "with error: "
-			message := helper.GetErrorString(err, errStr)
-			resp.Diagnostics.AddError("Error transform nfs export datasource plan",
-				message)
+			resp.Diagnostics.AddError("Error reading nfs export datasource plan",
+				fmt.Sprintf("Could not list nfs exports with error: %s", err.Error()))
 			return
 		}
 		exportsState.NfsExports = append(exportsState.NfsExports, entity)

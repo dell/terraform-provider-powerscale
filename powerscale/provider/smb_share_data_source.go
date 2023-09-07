@@ -22,6 +22,7 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
@@ -440,8 +441,10 @@ func (d *SmbShareDataSource) Read(ctx context.Context, req datasource.ReadReques
 	}
 	smbShares, _, err := listSmbParam.Execute()
 	if err != nil {
-		resp.Diagnostics.AddError("Error reading smb share datasource",
-			fmt.Sprintf("Could not list smb shares with error: %s", err.Error()))
+		errStr := constants.ListSmbShareErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError("Error reading smb shares ",
+			message)
 		return
 	}
 	totalSmbShares := smbShares.Shares
@@ -449,8 +452,10 @@ func (d *SmbShareDataSource) Read(ctx context.Context, req datasource.ReadReques
 		resumeSmbParam := d.client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv7SmbShares(ctx).Resume(*smbShares.Resume)
 		smbShares, _, err = resumeSmbParam.Execute()
 		if err != nil {
-			resp.Diagnostics.AddError("Error reading smb share datasource plan",
-				fmt.Sprintf("Could not list smb shares with error: %s", err.Error()))
+			errStr := constants.ListSmbShareErrorMsg + "with error: "
+			message := helper.GetErrorString(err, errStr)
+			resp.Diagnostics.AddError("Error reading resuming smb shares ",
+				message)
 			return
 		}
 		totalSmbShares = append(totalSmbShares, smbShares.Shares...)
