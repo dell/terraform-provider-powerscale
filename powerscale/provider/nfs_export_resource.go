@@ -53,8 +53,8 @@ func (r NfsExportResource) Metadata(ctx context.Context, req resource.MetadataRe
 func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "V2NfsExportExtended Specifies configuration values for NFS exports.",
-		Description:         "V2NfsExportExtended Specifies configuration values for NFS exports.",
+		MarkdownDescription: "Resource for managing NFS exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster",
+		Description:         "Resource for managing NFS exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster",
 		Attributes: map[string]schema.Attribute{
 			"scope": schema.StringAttribute{
 				Description:         "When specified as 'effective', or not specified, all fields are returned. When specified as 'user', only fields with non-default values are shown. When specified as 'default', the original values are returned.",
@@ -164,7 +164,6 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 			"id": schema.Int64Attribute{
 				Description:         "Specifies the system-assigned ID for the export. This ID is returned when an export is created through the POST method.",
 				MarkdownDescription: "Specifies the system-assigned ID for the export. This ID is returned when an export is created through the POST method.",
-				Optional:            true,
 				Computed:            true,
 			},
 			"link_max": schema.Int64Attribute{

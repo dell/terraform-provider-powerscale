@@ -19,12 +19,12 @@ linkTitle: "powerscale_smb_share"
 page_title: "powerscale_smb_share Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Data source for reading SMB Shares in PowerScale array.
+  Data source for reading SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.
 ---
 
 # powerscale_smb_share (Data Source)
 
-Data source for reading SMB Shares in PowerScale array.
+Data source for reading SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.
 
 ## Example Usage
 
@@ -46,23 +46,39 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-data "powerscale_smb_share" "test" {
+# PowerScale SMB shares provide clients network access to file system resources on the cluster
+
+# Returns a list of PowerScale SMB shares based on name filter block
+data "powerscale_smb_share" "example_smb_shares" {
   filter {
-    zone  = "System"
-    limit = 1
+    # Used for specify names of SMB shares
     names = ["tfacc_smb_share"]
+
+    # Used for query parameter, supported by PowerScale Platform API
+    # dir = "ASC"
+    # limit = 1
+    # offset = "0"
+    # resume = "resume-token"
+    # scope = "default"
+    # sort = "id"
+    # zone = System
   }
 }
 
+# Output value of above block by executing 'terraform output' command
+# The user can use the fetched information by the variable data.powerscale_smb_share.example_smb_shares
 output "powerscale_smb_share" {
-  value = data.powerscale_smb_share.test
+  value = data.powerscale_smb_share.example_smb_shares
 }
 
+# Returns all of the PowerScale SMB shares in default zone
 data "powerscale_smb_share" "all" {
 }
 
+# Output value of above block by executing 'terraform output' command
+# The user can use the fetched information by the variable data.powerscale_smb_share.all_smb_shares
 output "powerscale_smb_share_data_all" {
-  value = data.powerscale_smb_share.all
+  value = data.powerscale_smb_share.all_smb_shares
 }
 ```
 
@@ -75,7 +91,7 @@ output "powerscale_smb_share_data_all" {
 
 ### Read-Only
 
-- `id` (String) Placeholder for acc testing
+- `id` (String) Identifier
 - `smb_shares` (Attributes List) List of smb shares (see [below for nested schema](#nestedatt--smb_shares))
 
 <a id="nestedblock--filter"></a>

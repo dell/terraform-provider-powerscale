@@ -19,12 +19,12 @@ linkTitle: "powerscale_nfs_export"
 page_title: "powerscale_nfs_export Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  V2NfsExportExtended Specifies configuration values for NFS exports.
+  Resource for managing NFS exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster
 ---
 
 # powerscale_nfs_export (Resource)
 
-V2NfsExportExtended Specifies configuration values for NFS exports.
+Resource for managing NFS exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster
 
 
 ## Example Usage
@@ -46,11 +46,93 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+# Available actions: Create, Update, Delete and Import
+# After `terraform apply` of this example file it will create NFS export on specified paths on the PowerScale
+
+# PowerScale provides an NFS server so you can share files on your cluster
 resource "powerscale_nfs_export" "example_export" {
-  paths         = ["/ifs/example_export"]
-  force         = true
-  block_size    = 4096
-  name_max_size = 127
+  # Required path for creating
+  paths = ["/ifs/example_export"]
+
+  # Computed identifier for export
+  # id = 1
+
+  # Optional parameter when creating
+  # ignore_bad_auth = true
+  # ignore_bad_paths= true
+  # ignore_conflicts = true
+  # ignore_unresolvable_hosts = true
+  # zone = "System"
+
+  # Optional parameter when creating and updating. Will ignore the conflict when set true
+  # force = true
+
+  # Optional query. Will return the information according to scope
+  # scope = "default"
+
+  # Computed attributes, can be updated
+  # all_dirs = false
+  # block_size = 8192
+  # can_set_time = true
+  # case_insensitive = true
+  # case_preserving = false
+  # chown_restricted = false
+  # clients = ["client1"]
+  # commit_asynchronous = false
+  # conflicting_paths = ["/ifs/conflicting_path"]
+  # description = "Example path"
+  # directory_transfer_size = 131072
+  # encoding = "DEFAULT"
+  # link_max = 32767
+  # map_all = {
+  #   enabled = false,
+  #   primary_group = {
+  #       id = "GROUP:nobody"
+  #   }
+  #   secondary_groups = [
+  #     {
+  #       id   = "GROUP:Users"
+  #     }
+  #   ]
+  #   user = {
+  #       id = "USER:nobody"
+  #   }
+  # }
+  # map_failure = {}
+  # map_full = true
+  # map_lookup_uid = false
+  # map_non_root = {}
+  # map_retry = true
+  # map_root = {}
+  # max_file_size = 9223372036854775807
+  # name_max_size = 255
+  # no_truncate = false
+  # read_only = false
+  # read_only_clients = []
+  # read_transfer_max_size = 1048576
+  # read_transfer_multiple = 4194304
+  # read_transfer_size = 131072
+  # read_write_clients = []
+  # readdirplus = true
+  # readdirplus_prefetch = 10
+  # return_32bit_file_ids = false
+  # root_clients = []
+  # security_flavors = ["unix"]
+  # setattr_asynchronous = false
+  # snapshot = "-"
+  # symlinks = true
+  # time_delta = 0.0000000009999999717180685
+  # unresolved_clients = []
+  # write_datasync_action = "DATASYNC"
+  # write_datasync_reply = "DATASYNC"
+  # write_filesync_action = "FILESYNC"
+  # write_filesync_reply = "FILESYNC"
+  # write_transfer_max_size = 1048576
+  # write_transfer_multiple = 512
+  # write_transfer_size = 524288
+  # write_unstable_action = "UNSTABLE"
+  # write_unstable_reply = "UNSTABLE"
 }
 ```
 
@@ -76,7 +158,6 @@ resource "powerscale_nfs_export" "example_export" {
 - `directory_transfer_size` (Number) Specifies the preferred size for directory read operations. This value is used to advise the client of optimal settings for the server, but is not enforced.
 - `encoding` (String) Specifies the default character set encoding of the clients connecting to the export, unless otherwise specified.
 - `force` (Boolean) If true, the export will be created even if it conflicts with another export.
-- `id` (Number) Specifies the system-assigned ID for the export. This ID is returned when an export is created through the POST method.
 - `ignore_bad_auth` (Boolean) Ignore invalid users.
 - `ignore_bad_paths` (Boolean) Ignore nonexistent or otherwise bad paths.
 - `ignore_conflicts` (Boolean) Ignore conflicts with existing exports.
@@ -119,6 +200,10 @@ resource "powerscale_nfs_export" "example_export" {
 - `write_unstable_action` (String) Specifies the action to be taken when an NFSv3+ unstable write is requested.
 - `write_unstable_reply` (String) Specifies the stability disposition returned when an NFSv3+ unstable write is processed.
 - `zone` (String) Specifies the zone in which the export is valid. Cannot be changed once set
+
+### Read-Only
+
+- `id` (Number) Specifies the system-assigned ID for the export. This ID is returned when an export is created through the POST method.
 
 <a id="nestedatt--map_all"></a>
 ### Nested Schema for `map_all`

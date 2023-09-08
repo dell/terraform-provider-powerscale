@@ -19,12 +19,12 @@ linkTitle: "powerscale_nfs_export"
 page_title: "powerscale_nfs_export Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Data source for reading NFS Exports in PowerScale array.
+  Data source for reading NFS Exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster
 ---
 
 # powerscale_nfs_export (Data Source)
 
-Data source for reading NFS Exports in PowerScale array.
+Data source for reading NFS Exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster
 
 ## Example Usage
 
@@ -46,12 +46,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# PowerScale provides an NFS server so you can share files on your cluster
+
+# Returns a list of PowerScale NFS exports based on id and path filter block
 data "powerscale_nfs_export" "test" {
   filter = {
+    # Used for locally filtering id and path
     ids   = [1, 2, 3]
     paths = ["/ifs/primary", "/ifs/secondary"]
+
+    # Used for query parameter, supported by PowerScale Platform API
     # check = true
-    # dir   = ASC
+    # dir   = "ASC"
     # limit = 10
     # offset= 1
     # path  = "/ifs/primary"
@@ -62,13 +68,18 @@ data "powerscale_nfs_export" "test" {
   }
 }
 
+# Output value of above block by executing 'terraform output' command
+# The user can use the fetched information by the variable data.powerscale_nfs_export.example_nfs_exports
 output "powerscale_nfs_export" {
-  value = data.powerscale_nfs_export.test
+  value = data.powerscale_nfs_export.example_nfs_exports
 }
 
+# Returns all of the PowerScale SMB shares in default zone
 data "powerscale_nfs_export" "all" {
 }
 
+# Output value of above block by executing 'terraform output' command
+# The user can use the fetched information by the variable data.powerscale_nfs_export.all
 output "powerscale_nfs_export" {
   value = data.powerscale_nfs_export.all
 }
@@ -83,7 +94,7 @@ output "powerscale_nfs_export" {
 
 ### Read-Only
 
-- `id` (String) Placeholder
+- `id` (String) Identifier
 - `nfs_exports` (Attributes List) List of nfs exports (see [below for nested schema](#nestedatt--nfs_exports))
 
 <a id="nestedblock--filter"></a>

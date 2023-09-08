@@ -54,12 +54,13 @@ func (d *NfsExportDataSource) Metadata(_ context.Context, req datasource.Metadat
 func (d *NfsExportDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Data source for reading NFS Exports in PowerScale array.",
-		Description:         "Data source for reading NFS Exports in PowerScale array.",
+		MarkdownDescription: "Data source for reading NFS Exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster",
+		Description:         "Data source for reading NFS Exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description: "Placeholder",
-				Computed:    true,
+				Description:         "Identifier",
+				MarkdownDescription: "Identifier",
+				Computed:            true,
 			},
 			"nfs_exports": schema.ListNestedAttribute{
 				Computed:            true,

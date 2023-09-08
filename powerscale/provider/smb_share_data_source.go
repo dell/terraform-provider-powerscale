@@ -55,12 +55,13 @@ func (d *SmbShareDataSource) Metadata(_ context.Context, req datasource.Metadata
 func (d *SmbShareDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Data source for reading SMB Shares in PowerScale array.",
-		Description:         "Data source for reading SMB Shares in PowerScale array.",
+		MarkdownDescription: "Data source for reading SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.",
+		Description:         "Data source for reading SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description: "Placeholder for acc testing",
-				Computed:    true,
+				Description:         "Identifier",
+				MarkdownDescription: "Identifier",
+				Computed:            true,
 			},
 			"smb_shares": schema.ListNestedAttribute{
 				Computed:            true,
