@@ -14,7 +14,8 @@
 # limitations under the License.
 
 # The command is
-# terraform import powerscale_smb_share.example_share <name>
+# terraform import powerscale_smb_share.share_example <name>
 # Example:
-terraform import powerscale_smb_share.example_share example_share
-# after running this command, populate the name field in the config file to start managing this resource
+terraform import powerscale_smb_share.share_example example_share
+# after running this command, populate the name field and other required parameters in the config file to start managing this resource.
+# Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.

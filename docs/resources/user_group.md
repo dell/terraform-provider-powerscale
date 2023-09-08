@@ -117,8 +117,9 @@ Import is supported using the following syntax:
 # limitations under the License.
 
 # The command is
-# terraform import powerscale_user_group.example_user_group <name>
+# terraform import powerscale_user_group.testUserGroup <name>
 # Example:
-terraform import powerscale_user_group.example_user_group userGroupName
-# after running this command, populate the name field in the config file to start managing this resource
+terraform import powerscale_user_group.testUserGroup userGroupName
+# after running this command, populate the name field and other required parameters in the config file to start managing this resource.
+# Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```
