@@ -26,6 +26,7 @@ import (
 	"path/filepath"
 	"strings"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -333,7 +334,14 @@ const mode = "mode"
 func UpdateFileSystem(ctx context.Context, client client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) error {
 
 	// Update Owner / Group if modified
-	if plan.Owner.Name.ValueString() != state.Owner.Name.ValueString() || plan.Group.Name.ValueString() != state.Group.Name.ValueString() {
+	if plan.Owner.Name.ValueString() != state.Owner.Name.ValueString() || plan.Group.Name.ValueString() != state.Group.Name.ValueString() ||
+		plan.Owner.ID.ValueString() != state.Owner.ID.ValueString() || plan.Group.ID.ValueString() != state.Group.ID.ValueString() {
+		errAuth := ValidateUserAndGroup(ctx, client, plan.Owner, plan.Group)
+		if errAuth != nil {
+			errStr := constants.UpdateFileSystemErrorMsg
+			message := GetErrorString(errAuth, errStr)
+			return fmt.Errorf(message)
+		}
 		setACLUpdReq := client.PscaleOpenAPIClient.NamespaceApi.SetAcl(ctx, dirPath)
 		setACLUpdReq = setACLUpdReq.Acl(true)
 
@@ -356,7 +364,9 @@ func UpdateFileSystem(ctx context.Context, client client.Client, dirPath string,
 
 		_, _, err := setACLUpdReq.Execute()
 		if err != nil {
-			return fmt.Errorf("error Updating User / Groups for the filesystem: %s", err)
+			errStr := constants.UpdateFileSystemErrorMsg + "Error Updating User / Groups for the filesystem with error: "
+			message := GetErrorString(err, errStr)
+			return fmt.Errorf(message)
 		}
 	}
 	// Update Access Control if modified and supported
@@ -377,7 +387,9 @@ func UpdateFileSystem(ctx context.Context, client client.Client, dirPath string,
 
 		_, _, err := setACLUpdReq.Execute()
 		if err != nil {
-			return fmt.Errorf("error Updating AccesControl for the filesystem: %s", err)
+			errStr := constants.UpdateFileSystemErrorMsg + "Error Updating AccessControl for the filesystem with error: "
+			message := GetErrorString(err, errStr)
+			return fmt.Errorf(message)
 		}
 	}
 	return nil
@@ -398,4 +410,44 @@ func getNewAccessControlParams(accessControl string) (string, string) {
 	default:
 		return accessControl, mode
 	}
+}
+
+// ValidateUserAndGroup check if owner/group information is correct
+func ValidateUserAndGroup(ctx context.Context, client client.Client, owner models.MemberObject, group models.MemberObject) error {
+	// Validate owner information
+	userReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, owner.Name.ValueString())
+	users, _, err := userReq.Execute()
+	if err != nil {
+		errStr := "unable to validate user information with error: "
+		message := GetErrorString(err, errStr)
+		return fmt.Errorf(message)
+	}
+	user, ok := users.GetUsersOk()
+	if ok && len(user) > 0 {
+		userEntity := user[0].OnDiskUserIdentity
+		if *userEntity.Id != *owner.ID.ValueStringPointer() || *userEntity.Name != *owner.Name.ValueStringPointer() || *userEntity.Type != *owner.Type.ValueStringPointer() {
+			return fmt.Errorf("Incorrect owner information. Please make sure owner id, name, and type are valid")
+		}
+	} else {
+		return fmt.Errorf("unable to retrieve user information")
+	}
+
+	// Validate group information
+	groupReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthGroup(ctx, group.Name.ValueString())
+	groups, _, err := groupReq.Execute()
+	if err != nil {
+		errStr := "unable to validate group information with error: "
+		message := GetErrorString(err, errStr)
+		return fmt.Errorf(message)
+	}
+	grp, okGroup := groups.GetGroupsOk()
+	if okGroup && len(grp) > 0 {
+		grpEntity := grp[0].Gid
+		if *grpEntity.Id != *group.ID.ValueStringPointer() || *grpEntity.Name != *group.Name.ValueStringPointer() || *grpEntity.Type != *group.Type.ValueStringPointer() {
+			return fmt.Errorf("incorrect group information. Please make sure group id, name, and type are valid")
+		}
+	} else {
+		return fmt.Errorf("unable to retrieve group information")
+	}
+	return nil
 }

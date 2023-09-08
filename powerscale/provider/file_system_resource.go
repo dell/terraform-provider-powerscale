@@ -22,15 +22,18 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"path/filepath"
+	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -98,6 +101,9 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 						Description:         "Owner identifier",
 						MarkdownDescription: "Owner identifier",
 						Required:            true,
+						Validators: []validator.String{stringvalidator.RegexMatches(
+							regexp.MustCompile(`^UID:`), "must start with 'UID:'",
+						)},
 					},
 					"name": schema.StringAttribute{
 						Description:         "Owner name",
@@ -108,6 +114,9 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 						Description:         "Owner type",
 						MarkdownDescription: "Owner type",
 						Required:            true,
+						Validators: []validator.String{
+							stringvalidator.OneOf("user"),
+						},
 					},
 				},
 			},
@@ -120,6 +129,9 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 						Description:         "group identifier",
 						MarkdownDescription: "group identifier",
 						Required:            true,
+						Validators: []validator.String{stringvalidator.RegexMatches(
+							regexp.MustCompile(`^GID:`), "must start with 'GID:'",
+						)},
 					},
 					"name": schema.StringAttribute{
 						Description:         "group name",
@@ -130,6 +142,9 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 						Description:         "group type",
 						MarkdownDescription: "group type",
 						Required:            true,
+						Validators: []validator.String{
+							stringvalidator.OneOf("group"),
+						},
 					},
 				},
 			},
@@ -211,6 +226,16 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	createReq = createReq.Recursive(plan.Recursive.ValueBool())
 	if !plan.AccessControl.IsNull() && (plan.AccessControl.ValueString() != "") {
 		createReq = createReq.XIsiIfsAccessControl(plan.AccessControl.ValueString())
+	}
+	errAuth := helper.ValidateUserAndGroup(ctx, *r.client, plan.Owner, plan.Group)
+	if errAuth != nil {
+		errStr := constants.CreateFileSystemErrorMsg
+		message := helper.GetErrorString(errAuth, errStr)
+		resp.Diagnostics.AddError(
+			"Error creating File System",
+			message,
+		)
+		return
 	}
 
 	_, _, errCR := createReq.Execute()
@@ -396,7 +421,7 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 	// Get metadata
 	meta, err := helper.GetDirectoryMetadata(ctx, r.client, planDirName)
 	if err != nil {
-		errStr := constants.ReadFileSystemErrorMsg + "with error: "
+		errStr := constants.UpdateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
 			"Error getting the metadata for the filesystem",
@@ -408,7 +433,7 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 	// GetAcl
 	acl, err := helper.GetDirectoryACL(ctx, r.client, planDirName)
 	if err != nil {
-		errStr := constants.ReadFileSystemErrorMsg + "with error: "
+		errStr := constants.UpdateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
 			"Error getting the acl for the filesystem",
