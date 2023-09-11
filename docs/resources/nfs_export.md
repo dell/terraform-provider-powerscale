@@ -391,5 +391,6 @@ Import is supported using the following syntax:
 # terraform import powerscale_nfs_export.example_export <name>
 # Example:
 terraform import powerscale_nfs_export.example_export example_export
-# after running this command, populate the name field in the config file to start managing this resource
+# after running this command, populate the name field and other required parameters in the config file to start managing this resource.
+# Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```
