@@ -19,12 +19,12 @@ linkTitle: "powerscale_user"
 page_title: "powerscale_user Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Resource for managing Users in PowerScale cluster. Updates are supported for the following parameters: 'uid', 'roles', 'sid', 'password', 'enabled', 'homedirectory', 'primarygroup', 'unlock', 'email', 'expiry', 'gecos', 'shell', 'promptpasswordchange', 'password_expires'.
+  Resource for managing Users in PowerScale cluster. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
 ---
 
 # powerscale_user (Resource)
 
-Resource for managing Users in PowerScale cluster. Updates are supported for the following parameters: 'uid', 'roles', 'sid', 'password', 'enabled', 'home_directory', 'primary_group', 'unlock', 'email', 'expiry', 'gecos', 'shell', 'prompt_password_change', 'password_expires'.
+Resource for managing Users in PowerScale cluster. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
 
 
 ## Example Usage
@@ -47,16 +47,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# Available actions: Create, Update, Delete and Import.
+# After `terraform apply` of this example file it will create a new user with the name set in `name` attribute on the PowerScale.
+
+# PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
 resource "powerscale_user" "testUser" {
-  # Required field
+  # Required name for creating
   name = "testUserResourceSample"
 
-  # Optional Query
+  # Optional query_force. If true, skip validation checks when creating user. The force option is required for user ID changes.
   # query_force = false
+
+  # Optional query parameters when creating and updating. Will return the information according to zone and provder.
   # query_zone = "testZone"
   # query_provider = "testProvider"
 
-  # Optional fields
+  # Optional parameters when creating and updating. 
   # uid      = 11000
   # password = "testPassword"
   # roles    = ["SystemAdmin"]
@@ -85,23 +91,23 @@ After the execution of above resource block, a powerscale_user would have been c
 ### Optional
 
 - `domain` (String) Specifies the domain that the object is part of.
-- `email` (String) Specifies an email address.
-- `enabled` (Boolean) If true, the authenticated user is enabled.
-- `expiry` (Number) Specifies the Unix Epoch time at which the authenticated user will expire.
-- `gecos` (String) Specifies the GECOS value, which is usually the full name.
-- `home_directory` (String) Specifies a home directory for the user.
-- `password` (String, Sensitive) Sets or Changes the password for the user.
-- `password_expires` (Boolean) If true, the password is allowed to expire.
-- `primary_group` (String) Specifies the name of the primary group.
-- `prompt_password_change` (Boolean) If true, Prompts the user to change their password at the next login.
+- `email` (String) Specifies an email address. (Update Supported)
+- `enabled` (Boolean) If true, the authenticated user is enabled. (Update Supported)
+- `expiry` (Number) Specifies the Unix Epoch time at which the authenticated user will expire. (Update Supported)
+- `gecos` (String) Specifies the GECOS value, which is usually the full name. (Update Supported)
+- `home_directory` (String) Specifies a home directory for the user. (Update Supported)
+- `password` (String, Sensitive) Sets or Changes the password for the user. (Update Supported)
+- `password_expires` (Boolean) If true, the password is allowed to expire. (Update Supported)
+- `primary_group` (String) Specifies the name of the primary group. (Update Supported)
+- `prompt_password_change` (Boolean) If true, Prompts the user to change their password at the next login. (Update Supported)
 - `query_force` (Boolean) If true, skip validation checks when creating user. Need to be true, when changing user UID.
 - `query_provider` (String) Specifies the provider type.
 - `query_zone` (String) Specifies the zone that the object belongs to.
-- `roles` (List of String) List of roles, the user is assigned
-- `shell` (String) Specifies a path to the shell for the user.
-- `sid` (String) Specifies a security identifier.
-- `uid` (Number) Specifies a numeric user identifier.
-- `unlock` (Boolean) If true, the user account should be unlocked.
+- `roles` (List of String) List of roles, the user is assigned. (Update Supported)
+- `shell` (String) Specifies a path to the shell for the user. (Update Supported)
+- `sid` (String) Specifies a security identifier. (Update Supported)
+- `uid` (Number) Specifies a numeric user identifier. (Update Supported)
+- `unlock` (Boolean) If true, the user account should be unlocked. (Update Supported)
 
 ### Read-Only
 

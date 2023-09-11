@@ -19,12 +19,12 @@ linkTitle: "powerscale_user"
 page_title: "powerscale_user Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Data source for reading Users in PowerScale cluster.
+  Data source for reading Users in PowerScale cluster. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
 ---
 
 # powerscale_user (Data Source)
 
-Data source for reading Users in PowerScale cluster.
+Data source for reading Users in PowerScale cluster. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
 
 ## Example Usage
 
@@ -46,8 +46,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
+
+# Returns a list of PowerScale Users based on uid or name in names filter block. 
 data "powerscale_user" "test_user" {
   filter {
+    # Optional list of names to filter upon
     names = [
       # {
       #   uid = 0
@@ -60,6 +64,8 @@ data "powerscale_user" "test_user" {
         uid  = 10000
       }
     ]
+
+    # Optional query parameters.
     cached      = false
     name_prefix = "tfacc"
     member_of   = false
@@ -69,15 +75,10 @@ data "powerscale_user" "test_user" {
   }
 }
 
+# Output value of above block by executing 'terraform output' command.
+# The user can use the fetched information by the variable data.powerscale_user.test_user
 output "powerscale_user_filter" {
   value = data.powerscale_user.test_user
-}
-
-data "powerscale_user" "test_all_user" {
-}
-
-output "powerscale_user_all" {
-  value = data.powerscale_user.test_all_user
 }
 ```
 

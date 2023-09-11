@@ -15,16 +15,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# Available actions: Create, Update, Delete and Import.
+# After `terraform apply` of this example file it will create a new user with the name set in `name` attribute on the PowerScale.
+
+# PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
 resource "powerscale_user" "testUser" {
-  # Required field
+  # Required name for creating
   name = "testUserResourceSample"
 
-  # Optional Query
+  # Optional query_force. If true, skip validation checks when creating user. The force option is required for user ID changes.
   # query_force = false
+
+  # Optional query parameters when creating and updating. Will return the information according to zone and provder.
   # query_zone = "testZone"
   # query_provider = "testProvider"
 
-  # Optional fields
+  # Optional parameters when creating and updating. 
   # uid      = 11000
   # password = "testPassword"
   # roles    = ["SystemAdmin"]

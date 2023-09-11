@@ -60,8 +60,8 @@ func (r *UserGroupResource) Metadata(ctx context.Context, req resource.MetadataR
 // Schema describes the resource arguments.
 func (r *UserGroupResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users', 'groups', 'well_knowns'.",
-		Description:         "Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users', 'groups', 'well_knowns'.",
+		MarkdownDescription: "Resource for managing User Groups in PowerScale cluster. PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.",
+		Description:         "Resource for managing User Groups in PowerScale cluster. PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.",
 		Attributes: map[string]schema.Attribute{
 			"query_force": schema.BoolAttribute{
 				Description:         "If true, skip validation checks when creating user group. Need to be true, when changing group GID.",
@@ -84,8 +84,8 @@ func (r *UserGroupResource) Schema(ctx context.Context, req resource.SchemaReque
 				Required:            true,
 			},
 			"gid": schema.Int64Attribute{
-				Description:         "Specifies a numeric user group identifier.",
-				MarkdownDescription: "Specifies a numeric user group identifier.",
+				Description:         "Specifies a numeric user group identifier. (Update Supported)",
+				MarkdownDescription: "Specifies a numeric user group identifier. (Update Supported)",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -101,26 +101,26 @@ func (r *UserGroupResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 			},
 			"roles": schema.ListAttribute{
-				Description:         "List of roles, the user is assigned.",
-				MarkdownDescription: "List of roles, the user is assigned.",
+				Description:         "List of roles, the user is assigned. (Update Supported)",
+				MarkdownDescription: "List of roles, the user is assigned. (Update Supported)",
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
 			"users": schema.ListAttribute{
-				Description:         "Specifies list members of user within the group.",
-				MarkdownDescription: "Specifies list members of user within the group.",
+				Description:         "Specifies list members of user within the group. (Update Supported)",
+				MarkdownDescription: "Specifies list members of user within the group. (Update Supported)",
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
 			"groups": schema.ListAttribute{
-				Description:         "Specifies list members of group within the group.",
-				MarkdownDescription: "Specifies list members of group within the group.",
+				Description:         "Specifies list members of group within the group. (Update Supported)",
+				MarkdownDescription: "Specifies list members of group within the group. (Update Supported)",
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
 			"well_knowns": schema.ListAttribute{
-				Description:         "Specifies list members of well_known within the group.",
-				MarkdownDescription: "Specifies list members of well_known within the group.",
+				Description:         "Specifies list members of well_known within the group. (Update Supported)",
+				MarkdownDescription: "Specifies list members of well_known within the group. (Update Supported)",
 				ElementType:         types.StringType,
 				Optional:            true,
 			},

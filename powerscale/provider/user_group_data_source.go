@@ -58,8 +58,8 @@ func (d *UserGroupDataSource) Metadata(ctx context.Context, req datasource.Metad
 // Schema describes the data source arguments.
 func (d *UserGroupDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Data source for reading User Groups in PowerScale cluster.",
-		Description:         "Data source for reading User Groups in PowerScale cluster.",
+		MarkdownDescription: "Data source for reading User Groups in PowerScale cluster. PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.",
+		Description:         "Data source for reading User Groups in PowerScale cluster. PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
