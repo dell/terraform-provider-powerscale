@@ -203,8 +203,8 @@ func GetClusterIdentitySchema() schema.Attribute {
 // GetClusterNodeSchema get cluster node schema.
 func GetClusterNodeSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		MarkdownDescription: "IsiClusterNodes struct for IsiClusterNodes",
-		Description:         "IsiClusterNodes struct for IsiClusterNodes",
+		MarkdownDescription: "Cluster node information",
+		Description:         "Cluster node information",
 		Computed:            true,
 		Attributes: map[string]schema.Attribute{
 			"errors": schema.ListNestedAttribute{
@@ -1105,8 +1105,8 @@ func GetClusterNodeSchema() schema.Attribute {
 func GetClusterInternalNetworksSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "V7ClusterInternalNetworks Configuration fields for internal networks.",
-		Description:         "V7ClusterInternalNetworks Configuration fields for internal networks.",
+		MarkdownDescription: "Configuration fields for internal networks.",
+		Description:         "Configuration fields for internal networks.",
 		Computed:            true,
 		Attributes: map[string]schema.Attribute{
 			"failover_ip_addresses": schema.ListNestedAttribute{
@@ -1213,8 +1213,8 @@ func GetClusterInternalNetworksSchema() schema.Attribute {
 // GetClusterAcsSchema get cluster internal network schema.
 func GetClusterAcsSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		MarkdownDescription: "V14ClusterAcs Cluster ACS status.",
-		Description:         "V14ClusterAcs Cluster ACS status.",
+		MarkdownDescription: "Cluster ACS status.",
+		Description:         "Cluster ACS status.",
 		Computed:            true,
 		Attributes: map[string]schema.Attribute{
 			"failed_nodes_sn": schema.ListAttribute{

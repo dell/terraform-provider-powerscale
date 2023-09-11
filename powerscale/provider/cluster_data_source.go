@@ -50,10 +50,8 @@ func (d *ClusterDataSource) Metadata(ctx context.Context, req datasource.Metadat
 // Schema describes the data source arguments.
 func (d *ClusterDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "The cluster attributes - config, identity, nodes, internal_networks and ACS. `config` includes OneFS version and time zone information. " +
-			"`identity` displays login information. `nodes` shows the node drives, node hardware, node partition and node status information. " +
-			"`internal_network` provides information about a cluster internal network. `ACS` provides information about ACS(Auto Cluster Setup)",
-		Description: "The cluster attributes and cluster node information.",
+		MarkdownDescription: "This terraform DataSource is used to query the existing cluster from PowerScale array. The information fetched from this data source can be used for getting the details, including `config`, `identity`, `nodes`, `internal_networks` and `acs`.",
+		Description:         "This terraform DataSource is used to query the existing cluster from PowerScale array. The information fetched from this data source can be used for getting the details, including `config`, `identity`, `nodes`, `internal_networks` and `acs`.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "Unique identifier of the cluster.",

@@ -31,6 +31,8 @@ description: |-
 ## Example Usage
 
 {{ printf "{{tffile %q}}" .ExampleFile }}
+After the execution of above resource block, a {{.Name }} would have been created at PowerScale array
+
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
