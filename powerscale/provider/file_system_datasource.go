@@ -53,16 +53,19 @@ func (d *FileSystemDataSource) Metadata(ctx context.Context, req datasource.Meta
 func (d *FileSystemDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "FileSystem data source",
+		MarkdownDescription: "FileSystem data source.This is used to query the existing FileSystem(Namespace Directory) from PowerScale array.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.",
+		Description:         "FileSystem data source.This is used to query the existing FileSystem(Namespace Directory) from PowerScale array.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				MarkdownDescription: "FileSystem identifier",
+				MarkdownDescription: "FileSystem identifier. Unique identifier for the FileSystem(Namespace directory)",
+				Description:         "FileSystem identifier. Unique identifier for the FileSystem(Namespace directory)",
 				Computed:            true,
 				Optional:            true,
 			},
 			"directory_path": schema.StringAttribute{
-				MarkdownDescription: "FileSystem identifier",
+				MarkdownDescription: "FileSystem directory path.This specifies the path to the FileSystem(Namespace directory) which we are trying to query. Default path is `/ifs` ",
+				Description:         "FileSystem directory path.This specifies the path to the FileSystem(Namespace directory) which we are trying to query. Default path is `/ifs` ",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -245,8 +248,8 @@ func (d *FileSystemDataSource) Schema(ctx context.Context, req datasource.Schema
 						},
 					},
 					"file_system_namespace_acl": schema.SingleNestedAttribute{
-						Description:         "Filesystem acl",
-						MarkdownDescription: "Filesystem acl",
+						Description:         "Filesystem acl. Shows the access control list for the FileSystem(Namespace directory)",
+						MarkdownDescription: "Filesystem acl. Shows the access control list for the FileSystem(Namespace directory)",
 						Computed:            true,
 						Optional:            true,
 						Attributes: map[string]schema.Attribute{
@@ -386,7 +389,7 @@ func (d *FileSystemDataSource) Schema(ctx context.Context, req datasource.Schema
 					},
 					"file_system_snapshots": schema.ListNestedAttribute{
 						Description:         "Filesystem snapshots",
-						MarkdownDescription: "Filesystem shots",
+						MarkdownDescription: "Filesystem snapshots",
 						Computed:            true,
 						Optional:            true,
 						NestedObject: schema.NestedAttributeObject{
