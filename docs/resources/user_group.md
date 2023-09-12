@@ -19,12 +19,12 @@ linkTitle: "powerscale_user_group"
 page_title: "powerscale_user_group Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users', 'groups', 'well_knowns'.
+  Resource for managing User Groups in PowerScale cluster. PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.
 ---
 
 # powerscale_user_group (Resource)
 
-Resource for managing User Groups in PowerScale cluster. Updates are supported for the following parameters: 'gid', 'roles', 'users', 'groups', 'well_knowns'.
+Resource for managing User Groups in PowerScale cluster. PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.
 
 
 ## Example Usage
@@ -47,22 +47,30 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# Available actions: Create, Update, Delete and Import.
+# After `terraform apply` of this example file it will create a new user group with the name set in `name` attribute on the PowerScale.
+
+# PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.
 resource "powerscale_user_group" "testUserGroup" {
-  # Required field
+  # Required name for creating
   name = "testUserGroupResourceSample"
 
-  # Optional Query
+  # Optional query_force. If true, skip validation checks when creating user group. The force option is required for user group ID changes.
   # query_force = false
+
+  # Optional query parameters when creating and updating. Will return the information according to zone and provider. 
   # query_zone = "testZone"
   # query_provider = "testProvider"
 
-  # Optional fields
+  # Optional parameters when creating
+  # sid = "SID:XXXX"
+
+  # Optional parameters when creating and updating. 
   # gid      = 11000
   # roles    = ["SystemAdmin"]
   # users    = ["MemberOfUser"]
   # groups   = ["MemberOfGroup"]
   # well_knowns    = ["MemberOfWellKnown"]
-  # sid = "SID:XXXX"
 }
 ```
 After the execution of above resource block, a powerscale_user_group would have been created at PowerScale array
@@ -77,15 +85,15 @@ After the execution of above resource block, a powerscale_user_group would have 
 ### Optional
 
 - `domain` (String) Specifies the domain that the object is part of.
-- `gid` (Number) Specifies a numeric user group identifier.
-- `groups` (List of String) Specifies list members of group within the group.
+- `gid` (Number) Specifies a numeric user group identifier. (Update Supported)
+- `groups` (List of String) Specifies list members of group within the group. (Update Supported)
 - `query_force` (Boolean) If true, skip validation checks when creating user group. Need to be true, when changing group GID.
 - `query_provider` (String) Specifies the provider type.
 - `query_zone` (String) Specifies the zone that the object belongs to.
-- `roles` (List of String) List of roles, the user is assigned.
+- `roles` (List of String) List of roles, the user is assigned. (Update Supported)
 - `sid` (String) Specifies a security identifier.
-- `users` (List of String) Specifies list members of user within the group.
-- `well_knowns` (List of String) Specifies list members of well_known within the group.
+- `users` (List of String) Specifies list members of user within the group. (Update Supported)
+- `well_knowns` (List of String) Specifies list members of well_known within the group. (Update Supported)
 
 ### Read-Only
 

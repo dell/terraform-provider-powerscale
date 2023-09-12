@@ -19,12 +19,12 @@ linkTitle: "powerscale_user_group"
 page_title: "powerscale_user_group Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Data source for reading User Groups in PowerScale cluster.
+  Data source for reading User Groups in PowerScale cluster. PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.
 ---
 
 # powerscale_user_group (Data Source)
 
-Data source for reading User Groups in PowerScale cluster.
+Data source for reading User Groups in PowerScale cluster. PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.
 
 ## Example Usage
 
@@ -46,8 +46,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.
+
+# Returns a list of PowerScale User Groups based on gid or name in names filter block. 
 data "powerscale_user_group" "test_user_group" {
   filter {
+    # Optional list of names to filter upon
     names = [
       # {
       #   gid = 0
@@ -60,6 +64,8 @@ data "powerscale_user_group" "test_user_group" {
         gid  = 10000
       }
     ]
+
+    # Optional query parameters.
     cached      = false
     name_prefix = "tfacc"
     # domain = "testDomain"
@@ -68,15 +74,10 @@ data "powerscale_user_group" "test_user_group" {
   }
 }
 
+# Output value of above block by executing 'terraform output' command.
+# The user can use the fetched information by the variable data.powerscale_user_group.test_user_group
 output "powerscale_user_group_filter" {
   value = data.powerscale_user_group.test_user_group
-}
-
-data "powerscale_user_group" "test_all_user_groups" {
-}
-
-output "powerscale_user_group_all" {
-  value = data.powerscale_user_group.test_all_user_groups
 }
 ```
 
