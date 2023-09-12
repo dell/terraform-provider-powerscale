@@ -26,8 +26,10 @@ resource "powerscale_user" "testUser" {
   # Optional query_force. If true, skip validation checks when creating user. The force option is required for user ID changes.
   # query_force = false
 
-  # Optional query parameters when creating and updating. Will return the information according to zone and provder.
+  # Optional query_zone, will return user according to zone. Specifies the zone that the user will belong to when creating. Once user is created, its zone cannot be changed.
   # query_zone = "testZone"
+
+  # Optional query_provider, will return user according to provider. Specifies the provider that the user will belong to when creating. Once user is created, its provider cannot be changed.
   # query_provider = "testProvider"
 
   # Optional parameters when creating and updating. 

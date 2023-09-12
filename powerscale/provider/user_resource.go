@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
@@ -339,7 +340,7 @@ func (r *UserResource) Create(ctx context.Context, req resource.CreateRequest, r
 		resp.Diagnostics.Append(diags...)
 	}
 
-	result, err := helper.GetUser(ctx, r.client, userName)
+	result, err := helper.GetUserWithZone(ctx, r.client, userName, plan.QueryZone.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("Error getting the User - %s", userName),
@@ -368,7 +369,7 @@ func (r *UserResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 	}
 
 	userName := plan.Name.ValueString()
-	result, err := helper.GetUser(ctx, r.client, userName)
+	result, err := helper.GetUserWithZone(ctx, r.client, userName, plan.QueryZone.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("Error getting the User - %s", userName),
@@ -415,7 +416,7 @@ func (r *UserResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		resp.Diagnostics.Append(diags...)
 	}
 
-	result, err := helper.GetUser(ctx, r.client, userName)
+	result, err := helper.GetUserWithZone(ctx, r.client, userName, plan.QueryZone.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("Error getting the User - %s", userName),
@@ -447,10 +448,10 @@ func (r *UserResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 	var roleList []string
 	state.Roles.ElementsAs(ctx, &roleList, false)
 	for _, role := range roleList {
-		_ = helper.RemoveUserRole(ctx, r.client, role, state.UID.ValueInt64())
+		_ = helper.RemoveUserRoleWithZone(ctx, r.client, role, state.UID.ValueInt64(), state.QueryZone.ValueString())
 	}
 
-	if err := helper.DeleteUser(ctx, r.client, state.Name.ValueString()); err != nil {
+	if err := helper.DeleteUserWithZone(ctx, r.client, state.Name.ValueString(), state.QueryZone.ValueString()); err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("Error deleting the User - %s", state.Name.ValueString()),
 			err.Error(),
@@ -467,19 +468,28 @@ func (r *UserResource) ImportState(ctx context.Context, req resource.ImportState
 	tflog.Info(ctx, "Importing User resource")
 	var state models.UserResourceModel
 
+	var zoneID string
+	userName := req.ID
+	//requestID format is zoneID:userName
+	if strings.Contains(userName, ":") {
+		params := strings.Split(userName, ":")
+		userName = strings.Trim(params[1], " ")
+		zoneID = strings.Trim(params[0], " ")
+	}
+
 	// start goroutine to cache all roles
 	var eg errgroup.Group
 	var roles []powerscale.V1AuthRoleExtended
 	var roleErr error
 	eg.Go(func() error {
-		roles, roleErr = helper.GetAllRoles(ctx, r.client)
+		roles, roleErr = helper.GetAllRolesWithZone(ctx, r.client, zoneID)
 		return roleErr
 	})
 
-	result, err := helper.GetUser(ctx, r.client, req.ID)
+	result, err := helper.GetUserWithZone(ctx, r.client, userName, zoneID)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			fmt.Sprintf("Error getting the User - %s", req.ID),
+			fmt.Sprintf("Error getting the User - %s", userName),
 			err.Error(),
 		)
 		return
@@ -491,6 +501,9 @@ func (r *UserResource) ImportState(ctx context.Context, req resource.ImportState
 
 	// parse user response to state user model
 	helper.UpdateUserResourceState(&state, result.Users[0], roles)
+	if zoneID != "" {
+		state.QueryZone = types.StringValue(zoneID)
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)

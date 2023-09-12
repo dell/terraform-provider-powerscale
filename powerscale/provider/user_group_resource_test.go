@@ -153,7 +153,7 @@ func TestAccUserGroupResourceCreateMockErr(t *testing.T) {
 						userGroupCreateMocker.UnPatch()
 					}
 					userGroupCreateMocker = Mock(helper.CreateUserGroup).Return(nil).Build()
-					userGroupMocker = Mock(helper.GetUserGroup).Return(nil, fmt.Errorf("user group read mock error")).Build()
+					userGroupMocker = Mock(helper.GetUserGroupWithZone).Return(nil, fmt.Errorf("user group read mock error")).Build()
 				},
 				Config:      ProviderConfig + userGroupBasicResourceConfig,
 				ExpectError: regexp.MustCompile(`.*user group read mock error*.`),
@@ -188,7 +188,7 @@ func TestAccUserGroupRolesResourceImportRolesErr(t *testing.T) {
 					if userGroupCreateMocker != nil {
 						userGroupCreateMocker.UnPatch()
 					}
-					userGroupMocker = Mock(helper.GetAllRoles).Return(nil, fmt.Errorf("roles read mock error")).Build()
+					userGroupMocker = Mock(helper.GetAllRolesWithZone).Return(nil, fmt.Errorf("roles read mock error")).Build()
 				},
 				ResourceName:      userGroupResourceName,
 				ImportState:       true,
@@ -225,7 +225,7 @@ func TestAccUserGroupRolesResourceImportGetErr(t *testing.T) {
 					if userGroupCreateMocker != nil {
 						userGroupCreateMocker.UnPatch()
 					}
-					userGroupMocker = Mock(helper.GetUserGroup).Return(nil, fmt.Errorf("user group read mock error")).Build()
+					userGroupMocker = Mock(helper.GetUserGroupWithZone).Return(nil, fmt.Errorf("user group read mock error")).Build()
 				},
 				ResourceName:      userGroupResourceName,
 				ImportState:       true,

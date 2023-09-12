@@ -74,11 +74,14 @@ func UpdateUserGroupDataSourceState(model *models.UserGroupModel, groupResponse 
 	model.Members = members
 }
 
-// GetAllGroupMembers returns all group members.
-func GetAllGroupMembers(ctx context.Context, client *client.Client, groupName string) (members []powerscale.V1AuthAccessAccessItemFileGroup, err error) {
+// GetAllGroupMembersWithZone returns all group members in specific zone.
+func GetAllGroupMembersWithZone(ctx context.Context, client *client.Client, groupName, zone string) (members []powerscale.V1AuthAccessAccessItemFileGroup, err error) {
 	members = make([]powerscale.V1AuthAccessAccessItemFileGroup, 0)
 	emptyMembers := make([]powerscale.V1AuthAccessAccessItemFileGroup, 0)
 	memberParams := client.PscaleOpenAPIClient.AuthGroupsApi.ListAuthGroupsv1GroupMembers(ctx, groupName)
+	if zone != "" {
+		memberParams = memberParams.Zone(zone)
+	}
 	result, _, err := memberParams.Execute()
 	if err != nil {
 		errStr := constants.ReadUserGroupMemberErrorMsg + "with error: "
@@ -169,10 +172,13 @@ func GetUserGroupsWithFilter(ctx context.Context, client *client.Client, filter 
 	return
 }
 
-// GetUserGroup Returns the User Group by user group name.
-func GetUserGroup(ctx context.Context, client *client.Client, groupName string) (*powerscale.V1AuthGroupsExtended, error) {
+// GetUserGroupWithZone Returns the User Group by user group name in specific zone.
+func GetUserGroupWithZone(ctx context.Context, client *client.Client, groupName, zone string) (*powerscale.V1AuthGroupsExtended, error) {
 	authID := fmt.Sprintf("GROUP:%s", groupName)
 	getParam := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthGroup(ctx, groupName)
+	if zone != "" {
+		getParam = getParam.Zone(zone)
+	}
 	result, _, err := getParam.Execute()
 	if err != nil {
 		errStr := constants.ReadUserGroupErrorMsg + "with error: "
@@ -324,7 +330,7 @@ func UpdateUserGroupRoles(ctx context.Context, client *client.Client, state *mod
 	// remove roles from user group
 	for _, i := range toRemove {
 		roleID := strings.Trim(i.String(), "\"")
-		if err := RemoveUserGroupRole(ctx, client, roleID, state.GID.ValueInt64()); err != nil {
+		if err := RemoveUserGroupRoleWithZone(ctx, client, roleID, state.GID.ValueInt64(), state.QueryZone.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error remove User Group from Role - %s", roleID), err.Error())
 		}
 	}
@@ -332,7 +338,7 @@ func UpdateUserGroupRoles(ctx context.Context, client *client.Client, state *mod
 	// assign roles to user group
 	for _, i := range toAdd {
 		roleID := strings.Trim(i.String(), "\"")
-		if err := AddUserGroupRole(ctx, client, roleID, plan.Name.ValueString()); err != nil {
+		if err := AddUserGroupRoleWithZone(ctx, client, roleID, plan.Name.ValueString(), plan.QueryZone.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error assign User Group to Role - %s", roleID), err.Error())
 		}
 	}
@@ -340,11 +346,14 @@ func UpdateUserGroupRoles(ctx context.Context, client *client.Client, state *mod
 	return
 }
 
-// AddUserGroupRole Assigns role to user group.
-func AddUserGroupRole(ctx context.Context, client *client.Client, roleID, userGroupName string) error {
+// AddUserGroupRoleWithZone Assigns role to user group in specific zone.
+func AddUserGroupRoleWithZone(ctx context.Context, client *client.Client, roleID, userGroupName, zone string) error {
 	authID := userGroupName
-	roleParam := client.PscaleOpenAPIClient.AuthRolesApi.CreateAuthRolesv1RoleMember(ctx, roleID).
-		V1RoleMember(powerscale.V1AuthAccessAccessItemFileGroup{Name: &authID})
+	roleParam := client.PscaleOpenAPIClient.AuthRolesApi.CreateAuthRolesv7RoleMember(ctx, roleID).
+		V7RoleMember(powerscale.V1AuthAccessAccessItemFileGroup{Name: &authID})
+	if zone != "" {
+		roleParam = roleParam.Zone(zone)
+	}
 	if _, _, err := roleParam.Execute(); err != nil {
 		errStr := constants.AddRoleMemberErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
@@ -353,10 +362,13 @@ func AddUserGroupRole(ctx context.Context, client *client.Client, roleID, userGr
 	return nil
 }
 
-// RemoveUserGroupRole Removes role from user group.
-func RemoveUserGroupRole(ctx context.Context, client *client.Client, roleID string, gid int64) error {
+// RemoveUserGroupRoleWithZone Removes role from user group in specific zone.
+func RemoveUserGroupRoleWithZone(ctx context.Context, client *client.Client, roleID string, gid int64, zone string) error {
 	authID := fmt.Sprintf("GID:%d", gid)
-	roleParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1RolesRoleMember(ctx, authID, roleID)
+	roleParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv7RolesRoleMember(ctx, authID, roleID)
+	if zone != "" {
+		roleParam = roleParam.Zone(zone)
+	}
 	if _, err := roleParam.Execute(); err != nil {
 		errStr := constants.DeleteRoleMemberErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
@@ -373,7 +385,7 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 	// remove users from user group by memberAuthID
 	for _, i := range toRemove {
 		memberAuthID := fmt.Sprintf("USER:%s", strings.Trim(i.String(), "\""))
-		if err := RemoveUserGroupMember(ctx, client, memberAuthID, plan.Name.ValueString()); err != nil {
+		if err := RemoveUserGroupMemberWithZone(ctx, client, memberAuthID, plan.Name.ValueString(), plan.QueryZone.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error remove User - %s from User Group.", memberAuthID), err.Error())
 		}
 	}
@@ -382,7 +394,7 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 		memberID := strings.Trim(i.String(), "\"")
 		memberType := "user"
 		memberIdentity := powerscale.V1AuthAccessAccessItemFileGroup{Name: &memberID, Type: &memberType}
-		if err := AddUserGroupMember(ctx, client, memberIdentity, plan.Name.ValueString()); err != nil {
+		if err := AddUserGroupMemberWithZone(ctx, client, memberIdentity, plan.Name.ValueString(), plan.QueryZone.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error add User - %s to User Group.", memberID), err.Error())
 		}
 	}
@@ -392,7 +404,7 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 	// remove groups from user group by memberAuthID
 	for _, i := range toRemove {
 		memberAuthID := fmt.Sprintf("GROUP:%s", strings.Trim(i.String(), "\""))
-		if err := RemoveUserGroupMember(ctx, client, memberAuthID, plan.Name.ValueString()); err != nil {
+		if err := RemoveUserGroupMemberWithZone(ctx, client, memberAuthID, plan.Name.ValueString(), plan.QueryZone.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error remove Group - %s from User Group.", memberAuthID), err.Error())
 		}
 	}
@@ -401,7 +413,7 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 		memberID := strings.Trim(i.String(), "\"")
 		memberType := "group"
 		memberIdentity := powerscale.V1AuthAccessAccessItemFileGroup{Name: &memberID, Type: &memberType}
-		if err := AddUserGroupMember(ctx, client, memberIdentity, plan.Name.ValueString()); err != nil {
+		if err := AddUserGroupMemberWithZone(ctx, client, memberIdentity, plan.Name.ValueString(), plan.QueryZone.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error add Group - %s to User Group.", memberID), err.Error())
 		}
 	}
@@ -418,7 +430,7 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 			diags.AddError(fmt.Sprintf("Error remove Well-Known from User Group. Not found Well-Known - %s.", wellKnownName), err.Error())
 			continue
 		}
-		if err := RemoveUserGroupMember(ctx, client, wellKnownSID, plan.Name.ValueString()); err != nil {
+		if err := RemoveUserGroupMemberWithZone(ctx, client, wellKnownSID, plan.Name.ValueString(), plan.QueryZone.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error remove Well-Known - %s from User Group.", wellKnownName), err.Error())
 		}
 	}
@@ -427,7 +439,7 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 		wellKnownName := getWellKnownName(strings.Trim(i.String(), "\""))
 		memberType := "wellknown"
 		memberIdentity := powerscale.V1AuthAccessAccessItemFileGroup{Name: &wellKnownName, Type: &memberType}
-		if err := AddUserGroupMember(ctx, client, memberIdentity, plan.Name.ValueString()); err != nil {
+		if err := AddUserGroupMemberWithZone(ctx, client, memberIdentity, plan.Name.ValueString(), plan.QueryZone.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error add Well-Known - %s to User Group.", wellKnownName), err.Error())
 		}
 	}
@@ -435,9 +447,12 @@ func UpdateUserGroupMembers(ctx context.Context, client *client.Client, state *m
 	return
 }
 
-// RemoveUserGroupMember Removes member from user group by memberAuthID, like GROUP:groupName, USER:userName and SID:well-known-sid.
-func RemoveUserGroupMember(ctx context.Context, client *client.Client, memberAuthID, userGroupName string) error {
+// RemoveUserGroupMemberWithZone Removes member from user group by memberAuthID in specific zone, like GROUP:groupName, USER:userName and SID:well-known-sid.
+func RemoveUserGroupMemberWithZone(ctx context.Context, client *client.Client, memberAuthID, userGroupName, zone string) error {
 	memberParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1GroupsGroupMember(ctx, memberAuthID, userGroupName)
+	if zone != "" {
+		memberParam = memberParam.Zone(zone)
+	}
 	if _, err := memberParam.Execute(); err != nil {
 		errStr := constants.DeleteUserGroupMemberErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
@@ -446,9 +461,12 @@ func RemoveUserGroupMember(ctx context.Context, client *client.Client, memberAut
 	return nil
 }
 
-// AddUserGroupMember Adds member to user group by memberIdentity.
-func AddUserGroupMember(ctx context.Context, client *client.Client, memberIdentity powerscale.V1AuthAccessAccessItemFileGroup, userGroupName string) error {
+// AddUserGroupMemberWithZone Adds member to user group by memberIdentity in specific zone.
+func AddUserGroupMemberWithZone(ctx context.Context, client *client.Client, memberIdentity powerscale.V1AuthAccessAccessItemFileGroup, userGroupName, zone string) error {
 	memberParam := client.PscaleOpenAPIClient.AuthGroupsApi.CreateAuthGroupsv1GroupMember(ctx, userGroupName).V1GroupMember(memberIdentity)
+	if zone != "" {
+		memberParam = memberParam.Zone(zone)
+	}
 	if _, _, err := memberParam.Execute(); err != nil {
 		errStr := constants.AddUserGroupMemberErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
@@ -457,10 +475,13 @@ func AddUserGroupMember(ctx context.Context, client *client.Client, memberIdenti
 	return nil
 }
 
-// DeleteUserGroup Deletes a User Group.
-func DeleteUserGroup(ctx context.Context, client *client.Client, groupName string) error {
+// DeleteUserGroupWithZone Deletes a User Group in specific zone.
+func DeleteUserGroupWithZone(ctx context.Context, client *client.Client, groupName, zone string) error {
 	authID := fmt.Sprintf("GROUP:%s", groupName)
 	deleteParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1AuthGroup(ctx, authID)
+	if zone != "" {
+		deleteParam = deleteParam.Zone(zone)
+	}
 	if _, err := deleteParam.Execute(); err != nil {
 		errStr := constants.DeleteUserGroupErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)

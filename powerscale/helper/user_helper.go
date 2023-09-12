@@ -204,12 +204,16 @@ func GetUsersWithFilter(ctx context.Context, client *client.Client, filter *mode
 	return
 }
 
-// GetAllRoles returns all roles.
-func GetAllRoles(ctx context.Context, client *client.Client) (roles []powerscale.V1AuthRoleExtended, err error) {
+// GetAllRolesWithZone returns all roles in specific zone.
+func GetAllRolesWithZone(ctx context.Context, client *client.Client, zone string) (roles []powerscale.V1AuthRoleExtended, err error) {
 	roles = make([]powerscale.V1AuthRoleExtended, 0)
 	emptyRoles := make([]powerscale.V1AuthRoleExtended, 0)
 
-	roleParams := client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthRoles(ctx)
+	roleParams := client.PscaleOpenAPIClient.AuthApi.ListAuthv7AuthRoles(ctx)
+	if zone != "" {
+		roleParams = roleParams.Zone(zone)
+	}
+
 	result, _, err := roleParams.Execute()
 	if err != nil {
 		errStr := constants.ReadRoleErrorMsg + "with error: "
@@ -223,7 +227,7 @@ func GetAllRoles(ctx context.Context, client *client.Client) (roles []powerscale
 			break
 		}
 
-		roleParams = client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthRoles(ctx).Resume(*result.Resume)
+		roleParams = client.PscaleOpenAPIClient.AuthApi.ListAuthv7AuthRoles(ctx).Resume(*result.Resume)
 		if result, _, err = roleParams.Execute(); err != nil {
 			errStr := constants.ReadRoleErrorMsg + "with error: "
 			message := GetErrorString(err, errStr)
@@ -234,10 +238,13 @@ func GetAllRoles(ctx context.Context, client *client.Client) (roles []powerscale
 	return
 }
 
-// GetUser Returns the User by userName.
-func GetUser(ctx context.Context, client *client.Client, userName string) (*powerscale.V1AuthUsersExtended, error) {
+// GetUserWithZone Returns the User by userName in specific zone.
+func GetUserWithZone(ctx context.Context, client *client.Client, userName, zone string) (*powerscale.V1AuthUsersExtended, error) {
 	authID := fmt.Sprintf("USER:%s", userName)
 	getParam := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, userName)
+	if zone != "" {
+		getParam = getParam.Zone(zone)
+	}
 	result, _, err := getParam.Execute()
 	if err != nil {
 		errStr := constants.ReadUserErrorMsg + "with error: "
@@ -387,10 +394,13 @@ func UpdateUser(ctx context.Context, client *client.Client, state *models.UserRe
 	return nil
 }
 
-// DeleteUser Deletes a User.
-func DeleteUser(ctx context.Context, client *client.Client, userName string) error {
+// DeleteUserWithZone Deletes a User in specific zone.
+func DeleteUserWithZone(ctx context.Context, client *client.Client, userName, zone string) error {
 	authID := fmt.Sprintf("USER:%s", userName)
 	deleteParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1AuthUser(ctx, authID)
+	if zone != "" {
+		deleteParam = deleteParam.Zone(zone)
+	}
 	if _, err := deleteParam.Execute(); err != nil {
 		errStr := constants.DeleteUserErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
@@ -414,7 +424,7 @@ func UpdateUserRoles(ctx context.Context, client *client.Client, state *models.U
 	// remove roles from user
 	for _, i := range toRemove {
 		roleID := strings.Trim(i.String(), "\"")
-		if err := RemoveUserRole(ctx, client, roleID, state.UID.ValueInt64()); err != nil {
+		if err := RemoveUserRoleWithZone(ctx, client, roleID, state.UID.ValueInt64(), state.QueryZone.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error remove User from Role - %s", roleID), err.Error())
 		}
 	}
@@ -422,7 +432,7 @@ func UpdateUserRoles(ctx context.Context, client *client.Client, state *models.U
 	// assign roles to user
 	for _, i := range toAdd {
 		roleID := strings.Trim(i.String(), "\"")
-		if err := AddUserRole(ctx, client, roleID, plan.Name.ValueString()); err != nil {
+		if err := AddUserRoleWithZone(ctx, client, roleID, plan.Name.ValueString(), plan.QueryZone.ValueString()); err != nil {
 			diags.AddError(fmt.Sprintf("Error assign User to Role - %s", roleID), err.Error())
 		}
 	}
@@ -430,11 +440,14 @@ func UpdateUserRoles(ctx context.Context, client *client.Client, state *models.U
 	return
 }
 
-// AddUserRole Assigns role to user.
-func AddUserRole(ctx context.Context, client *client.Client, roleID, userName string) error {
+// AddUserRoleWithZone Assigns role to user in specific zone.
+func AddUserRoleWithZone(ctx context.Context, client *client.Client, roleID, userName, zone string) error {
 	authID := userName
-	roleParam := client.PscaleOpenAPIClient.AuthRolesApi.CreateAuthRolesv1RoleMember(ctx, roleID).
-		V1RoleMember(powerscale.V1AuthAccessAccessItemFileGroup{Name: &authID})
+	roleParam := client.PscaleOpenAPIClient.AuthRolesApi.CreateAuthRolesv7RoleMember(ctx, roleID).
+		V7RoleMember(powerscale.V1AuthAccessAccessItemFileGroup{Name: &authID})
+	if zone != "" {
+		roleParam = roleParam.Zone(zone)
+	}
 	if _, _, err := roleParam.Execute(); err != nil {
 		errStr := constants.AddRoleMemberErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
@@ -443,10 +456,13 @@ func AddUserRole(ctx context.Context, client *client.Client, roleID, userName st
 	return nil
 }
 
-// RemoveUserRole Removes role from user.
-func RemoveUserRole(ctx context.Context, client *client.Client, roleID string, uid int64) error {
+// RemoveUserRoleWithZone Removes role from user in specific zone.
+func RemoveUserRoleWithZone(ctx context.Context, client *client.Client, roleID string, uid int64, zone string) error {
 	authID := fmt.Sprintf("UID:%d", uid)
-	roleParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv1RolesRoleMember(ctx, authID, roleID)
+	roleParam := client.PscaleOpenAPIClient.AuthApi.DeleteAuthv7RolesRoleMember(ctx, authID, roleID)
+	if zone != "" {
+		roleParam = roleParam.Zone(zone)
+	}
 	if _, err := roleParam.Execute(); err != nil {
 		errStr := constants.DeleteRoleMemberErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)

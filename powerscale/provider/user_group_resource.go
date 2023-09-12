@@ -22,6 +22,7 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"regexp"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
@@ -79,8 +80,8 @@ func (r *UserGroupResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 			},
 			"name": schema.StringAttribute{
-				Description:         "Specifies a user name.",
-				MarkdownDescription: "Specifies a user name.",
+				Description:         "Specifies a user group name.",
+				MarkdownDescription: "Specifies a user group name.",
 				Required:            true,
 			},
 			"gid": schema.Int64Attribute{
@@ -226,7 +227,7 @@ func (r *UserGroupResource) Create(ctx context.Context, req resource.CreateReque
 		resp.Diagnostics.Append(diags...)
 	}
 
-	result, err := helper.GetUserGroup(ctx, r.client, userGroupName)
+	result, err := helper.GetUserGroupWithZone(ctx, r.client, userGroupName, plan.QueryZone.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(fmt.Sprintf("Error getting the User Group - %s", userGroupName), err.Error())
 		return
@@ -252,7 +253,7 @@ func (r *UserGroupResource) Read(ctx context.Context, req resource.ReadRequest, 
 	}
 
 	groupName := plan.Name.ValueString()
-	result, err := helper.GetUserGroup(ctx, r.client, groupName)
+	result, err := helper.GetUserGroupWithZone(ctx, r.client, groupName, plan.QueryZone.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(fmt.Sprintf("Error getting the User Group - %s", groupName), err.Error())
 		return
@@ -297,7 +298,7 @@ func (r *UserGroupResource) Update(ctx context.Context, req resource.UpdateReque
 		resp.Diagnostics.Append(diags...)
 	}
 
-	result, err := helper.GetUserGroup(ctx, r.client, userGroupName)
+	result, err := helper.GetUserGroupWithZone(ctx, r.client, userGroupName, plan.QueryZone.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(fmt.Sprintf("Error getting the User Group - %s", userGroupName), err.Error())
 		return
@@ -328,10 +329,10 @@ func (r *UserGroupResource) Delete(ctx context.Context, req resource.DeleteReque
 	state.Roles.ElementsAs(ctx, &roleList, false)
 
 	for _, role := range roleList {
-		_ = helper.RemoveUserGroupRole(ctx, r.client, role, state.GID.ValueInt64())
+		_ = helper.RemoveUserGroupRoleWithZone(ctx, r.client, role, state.GID.ValueInt64(), state.QueryZone.ValueString())
 	}
 
-	if err := helper.DeleteUserGroup(ctx, r.client, state.Name.ValueString()); err != nil {
+	if err := helper.DeleteUserGroupWithZone(ctx, r.client, state.Name.ValueString(), state.QueryZone.ValueString()); err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("Error deleting the User Group - %s", state.Name.ValueString()),
 			err.Error(),
@@ -348,25 +349,33 @@ func (r *UserGroupResource) ImportState(ctx context.Context, req resource.Import
 	tflog.Info(ctx, "Importing User Group resource")
 	var state models.UserGroupResourceModel
 
+	var zoneID string
+	groupName := req.ID
+	//requestID format is zoneID:groupName
+	if strings.Contains(groupName, ":") {
+		params := strings.Split(groupName, ":")
+		groupName = strings.Trim(params[1], " ")
+		zoneID = strings.Trim(params[0], " ")
+	}
+
 	// start goroutine to cache all roles
 	var eg errgroup.Group
 	var roles []powerscale.V1AuthRoleExtended
 	var roleErr error
 	eg.Go(func() error {
-		roles, roleErr = helper.GetAllRoles(ctx, r.client)
+		roles, roleErr = helper.GetAllRolesWithZone(ctx, r.client, zoneID)
 		return roleErr
 	})
 
-	requestID := req.ID
-	result, err := helper.GetUserGroup(ctx, r.client, requestID)
+	result, err := helper.GetUserGroupWithZone(ctx, r.client, groupName, zoneID)
 	if err != nil {
-		resp.Diagnostics.AddError(fmt.Sprintf("Error getting the User Group - %s", requestID), err.Error())
+		resp.Diagnostics.AddError(fmt.Sprintf("Error getting the User Group - %s", groupName), err.Error())
 		return
 	}
 
-	members, err := helper.GetAllGroupMembers(ctx, r.client, requestID)
+	members, err := helper.GetAllGroupMembersWithZone(ctx, r.client, groupName, zoneID)
 	if err != nil {
-		resp.Diagnostics.AddError(fmt.Sprintf("Error getting the list of PowerScale Group Members of %s", requestID), err.Error())
+		resp.Diagnostics.AddError(fmt.Sprintf("Error getting the list of PowerScale Group Members of %s", groupName), err.Error())
 	}
 
 	if err := eg.Wait(); err != nil {
@@ -375,6 +384,9 @@ func (r *UserGroupResource) ImportState(ctx context.Context, req resource.Import
 
 	// parse user response to state user group model
 	helper.UpdateUserGroupResourceState(&state, result.Groups[0], members, roles)
+	if zoneID != "" {
+		state.QueryZone = types.StringValue(zoneID)
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)

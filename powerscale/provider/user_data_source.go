@@ -349,8 +349,12 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	var eg errgroup.Group
 	var roles []powerscale.V1AuthRoleExtended
 	var roleErr error
+	var zoneID string
+	if state.Filter != nil && !state.Filter.Zone.IsNull() {
+		zoneID = state.Filter.Zone.ValueString()
+	}
 	eg.Go(func() error {
-		roles, roleErr = helper.GetAllRoles(ctx, d.client)
+		roles, roleErr = helper.GetAllRolesWithZone(ctx, d.client, zoneID)
 		return roleErr
 	})
 

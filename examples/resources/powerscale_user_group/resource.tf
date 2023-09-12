@@ -26,8 +26,10 @@ resource "powerscale_user_group" "testUserGroup" {
   # Optional query_force. If true, skip validation checks when creating user group. The force option is required for user group ID changes.
   # query_force = false
 
-  # Optional query parameters when creating and updating. Will return the information according to zone and provider. 
+  # Optional query_zone, will return user group according to zone. Specifies the zone that the user group will belong to when creating. Once user group is created, its zone cannot be changed.
   # query_zone = "testZone"
+
+  # Optional query_provider, will return user group according to provider. Specifies the provider that the user group will belong to when creating. Once user group is created, its provider cannot be changed.
   # query_provider = "testProvider"
 
   # Optional parameters when creating
