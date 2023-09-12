@@ -31,6 +31,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -425,9 +426,10 @@ func (r SmbShareResource) Create(ctx context.Context, request resource.CreateReq
 	}
 	shareID, err := helper.CreateSmbShare(ctx, r.client, shareToCreate)
 	if err != nil {
-		response.Diagnostics.AddError("Error creating smb share",
-			fmt.Sprintf("Could not create smb share of Path: %s with error: %s", sharePlan.Path.ValueString(), err.Error()),
-		)
+		errStr := constants.CreateSmbShareErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error creating smb share ",
+			message)
 		return
 	}
 	tflog.Debug(ctx, fmt.Sprintf("smb share %s created", shareID.Id), map[string]interface{}{
@@ -436,10 +438,10 @@ func (r SmbShareResource) Create(ctx context.Context, request resource.CreateReq
 
 	getShareResponse, err := helper.GetSmbShare(ctx, r.client, shareID.Id, shareToCreate.Zone)
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error creating smb share",
-			fmt.Sprintf("Could not read smb share %s with error: %s", shareID, err.Error()),
-		)
+		errStr := constants.GetSmbShareErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error creating smb share ",
+			message)
 		return
 	}
 
@@ -485,10 +487,10 @@ func (r SmbShareResource) Read(ctx context.Context, request resource.ReadRequest
 	})
 	shareResponse, err := helper.GetSmbShare(ctx, r.client, shareID.ValueString(), shareState.Zone.ValueStringPointer())
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error reading smb share",
-			fmt.Sprintf("Could not read smb share %s with error: %s", shareID, err.Error()),
-		)
+		errStr := constants.GetSmbShareErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error reading smb share ",
+			message)
 		return
 	}
 
@@ -499,14 +501,14 @@ func (r SmbShareResource) Read(ctx context.Context, request resource.ReadRequest
 		)
 		return
 	}
-	tflog.Debug(ctx, "updating read smb share state", map[string]interface{}{
+	tflog.Debug(ctx, "reading read smb share state", map[string]interface{}{
 		"smbShareResponse": shareResponse,
 		"smbShareState":    shareState,
 	})
 	err = helper.CopyFieldsToNonNestedModel(ctx, shareResponse.Shares[0], &shareState)
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Error read smb share",
+			"Error reading smb share",
 			fmt.Sprintf("Could not read smb share struct %s with error: %s", shareID, err.Error()),
 		)
 		return
@@ -554,10 +556,10 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 	}
 	err = helper.UpdateSmbShare(ctx, r.client, shareID, shareState.Zone.ValueStringPointer(), shareToUpdate)
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error updating smb share",
-			fmt.Sprintf("Could not update smb share %s with error: %s", shareID, err.Error()),
-		)
+		errStr := constants.UpdateSmbShareErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error updating smb share ",
+			message)
 		return
 	}
 	// Share plan must have the field name, update if updated
@@ -567,10 +569,10 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 	})
 	updatedShare, err := helper.GetSmbShare(ctx, r.client, shareID, shareToUpdate.Zone)
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error updating smb share",
-			fmt.Sprintf("Could not read smb share %s with error: %s", shareID, err.Error()),
-		)
+		errStr := constants.GetSmbShareErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error updating smb share ",
+			message)
 		return
 	}
 
@@ -585,7 +587,7 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 	err = helper.CopyFieldsToNonNestedModel(ctx, updatedShare.Shares[0], &shareState)
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Error read smb share",
+			"Error reading smb share",
 			fmt.Sprintf("Could not read smb share struct %s with error: %s", shareID, err.Error()),
 		)
 		return
@@ -620,11 +622,11 @@ func (r SmbShareResource) Delete(ctx context.Context, request resource.DeleteReq
 	})
 	err := helper.DeleteSmbShare(ctx, r.client, shareID, shareState.Zone.ValueStringPointer())
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error deleting smb share",
-			fmt.Sprintf("Could not remove smb share ID: %s with error: %s ",
-				shareID, err.Error()),
-		)
+		errStr := constants.DeleteSmbShareErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error deleting smb share ",
+			message)
+		return
 	}
 	response.State.RemoveResource(ctx)
 	tflog.Info(ctx, "delete smb share completed")

@@ -26,6 +26,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"strconv"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -785,9 +786,10 @@ func (r NfsExportResource) Create(ctx context.Context, request resource.CreateRe
 	}
 	createResp, err := helper.CreateNFSExport(ctx, r.client, exportPlan)
 	if err != nil {
-		response.Diagnostics.AddError("Error creating nfs export",
-			fmt.Sprintf("Could not create nfs export with error: %s", err.Error()),
-		)
+		errStr := constants.CreateNfsExportErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error creating nfs export ",
+			message)
 		return
 	}
 	exportID := int64(createResp.Id)
@@ -798,10 +800,10 @@ func (r NfsExportResource) Create(ctx context.Context, request resource.CreateRe
 	exportPlan.ID = types.Int64Value(exportID)
 	getExportResponse, err := helper.GetNFSExport(ctx, r.client, exportPlan)
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error creating nfs export",
-			fmt.Sprintf("Could not read nfs export %d with error: %s", exportID, err.Error()),
-		)
+		errStr := constants.GetNfsExportErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error creating nfs export ",
+			message)
 		return
 	}
 
@@ -851,10 +853,10 @@ func (r NfsExportResource) Read(ctx context.Context, request resource.ReadReques
 	})
 	exportResponse, err := helper.GetNFSExport(ctx, r.client, exportState)
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error reading nfs export",
-			fmt.Sprintf("Could not read nfs export %d with error: %s", exportID, err.Error()),
-		)
+		errStr := constants.GetNfsExportErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error reading nfs export ",
+			message)
 		return
 	}
 
@@ -918,10 +920,10 @@ func (r NfsExportResource) Update(ctx context.Context, request resource.UpdateRe
 	exportPlan.ID = exportState.ID
 	err := helper.UpdateNFSExport(ctx, r.client, exportPlan)
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error updating nfs export",
-			fmt.Sprintf("Could not update nfs export %d with error: %s", exportID, err.Error()),
-		)
+		errStr := constants.UpdateNfsExportErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error updating nfs export ",
+			message)
 		return
 	}
 
@@ -931,10 +933,10 @@ func (r NfsExportResource) Update(ctx context.Context, request resource.UpdateRe
 	// Use export plan to query updated export
 	updatedShare, err := helper.GetNFSExport(ctx, r.client, exportPlan)
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error updating nfs export",
-			fmt.Sprintf("Could not read nfs export %d with error: %s", exportID, err.Error()),
-		)
+		errStr := constants.UpdateNfsExportErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error getting nfs export ",
+			message)
 		return
 	}
 
@@ -979,11 +981,10 @@ func (r NfsExportResource) Delete(ctx context.Context, request resource.DeleteRe
 	})
 	err := helper.DeleteNFSExport(ctx, r.client, exportState)
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error deleting nfs export",
-			fmt.Sprintf("Could not remove nfs export ID: %d with error: %s ",
-				exportID, err.Error()),
-		)
+		errStr := constants.DeleteNfsExportErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error deleting nfs export ",
+			message)
 		return
 	}
 	response.State.RemoveResource(ctx)
@@ -994,11 +995,10 @@ func (r NfsExportResource) Delete(ctx context.Context, request resource.DeleteRe
 func (r NfsExportResource) ImportState(ctx context.Context, request resource.ImportStateRequest, response *resource.ImportStateResponse) {
 	readNfsExport, err := helper.GetNFSExportByID(ctx, r.client, request.ID)
 	if err != nil {
-		response.Diagnostics.AddError(
-			"Error reading nfs export",
-			fmt.Sprintf("Could not recognize nfs export ID: %s with error: %s ",
-				request.ID, err.Error()),
-		)
+		errStr := constants.GetNfsExportErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error reading nfs export ",
+			message)
 		return
 	}
 	if len(readNfsExport.Exports) <= 0 {
