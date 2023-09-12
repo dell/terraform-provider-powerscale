@@ -19,12 +19,12 @@ linkTitle: "powerscale_filesystem"
 page_title: "powerscale_filesystem Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  FileSystem resource
+  FileSystem resource.This Resource allows you to manage the Namespace Directory on the Powerscale array
 ---
 
 # powerscale_filesystem (Resource)
 
-FileSystem resource
+FileSystem resource.This Resource allows you to manage the Namespace Directory on the Powerscale array
 
 
 ## Example Usage
@@ -46,11 +46,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+# Available actions: Create, Update (owner, group, access_control), Delete and Import existing FileSystem(Namespace directory) from Powerscale array.
+# After `terraform apply` of this example file it will create a new FileSystem(Namespace directory) with the name set in `name` attribute in the directory path provided in `directory_path`on the PowerScale array
+
+# PowerScale FileSystem Resource allows you to manage the Namespace Directory on the Powerscale array
 resource "powerscale_filesystem" "file_system_test" {
   # Default set to '/ifs'
   # directory_path         = "/ifs"
 
-  # Required
+  # Required attributes
   name = "DirTf"
   group = {
     id   = "GID:0"
@@ -63,8 +68,10 @@ resource "powerscale_filesystem" "file_system_test" {
     type = "user"
   }
 
-  # Optional. Default values set.
+  # Optional attributes. Default values set.
+  # Creates intermediate folders recursively, when set to true.
   recursive = true
+  # Deletes and replaces the existing user attributes and ACLs of the directory with user-specified attributes and ACLS, when set to true.
   overwrite = false
 
 
@@ -75,6 +82,7 @@ resource "powerscale_filesystem" "file_system_test" {
 
   # access_control = "0777"
 }
+# After the execution of above resource block, a PowerScale FileSystem(Namespace directory) would have been created at PowerScale array. You can also verify the changes made in terraform state file.
 ```
 After the execution of above resource block, a powerscale_filesystem would have been created at PowerScale array
 
@@ -83,17 +91,17 @@ After the execution of above resource block, a powerscale_filesystem would have 
 
 ### Required
 
-- `group` (Attributes) The group of the Filesystem. (see [below for nested schema](#nestedatt--group))
+- `group` (Attributes) The group of the Filesystem.(Update Supported) (see [below for nested schema](#nestedatt--group))
 - `name` (String) FileSystem directory name
-- `owner` (Attributes) The owner of the Filesystem. (see [below for nested schema](#nestedatt--owner))
+- `owner` (Attributes) The owner of the Filesystem.(Update Supported) (see [below for nested schema](#nestedatt--owner))
 
 ### Optional
 
 - `access_control` (String) The ACL value for the directory. Users can either provide access rights input such as 'private_read' , 'private' ,
 				'public_read', 'public_read_write', 'public' or permissions in POSIX format as '0550', '0770', '0775','0777' or 0700. The Default value is (0700). 
-				Modification of ACL is only supported from POSIX to POSIX mode.
-- `directory_path` (String) FileSystem directory path. If no directory path is specified, [/ifs] would be taken by default.
-- `id` (String) FileSystem identifier
+				(Update Supported but Modification of ACL is only supported from POSIX to POSIX mode)
+- `directory_path` (String) FileSystem directory path.This specifies the path to the FileSystem(Namespace directory) which we are trying to manage. If no directory path is specified, [/ifs] would be taken by default.
+- `id` (String) FileSystem identifier. Unique identifier for the FileSystem(Namespace directory)
 - `overwrite` (Boolean) Deletes and replaces the existing user attributes and ACLs of the directory with user-specified attributes if set to true.
 - `recursive` (Boolean) Creates intermediate folders recursively when set to true.
 

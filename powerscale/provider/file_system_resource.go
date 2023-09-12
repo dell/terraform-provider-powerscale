@@ -61,12 +61,12 @@ func (r *FileSystemResource) Metadata(ctx context.Context, req resource.Metadata
 func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "FileSystem resource",
+		MarkdownDescription: "FileSystem resource.This Resource allows you to manage the Namespace Directory on the Powerscale array",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "FileSystem identifier",
-				MarkdownDescription: "FileSystem identifier",
+				Description:         "FileSystem identifier. Unique identifier for the FileSystem(Namespace directory)",
+				MarkdownDescription: "FileSystem identifier. Unique identifier for the FileSystem(Namespace directory)",
 				Computed:            true,
 				Optional:            true,
 			},
@@ -76,8 +76,8 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Required:            true,
 			},
 			"directory_path": schema.StringAttribute{
-				Description:         "FileSystem directory path. If no directory path is specified, [/ifs] would be taken by default.",
-				MarkdownDescription: "FileSystem directory path. If no directory path is specified, [/ifs] would be taken by default.",
+				Description:         "FileSystem directory path.This specifies the path to the FileSystem(Namespace directory) which we are trying to manage. If no directory path is specified, [/ifs] would be taken by default.",
+				MarkdownDescription: "FileSystem directory path.This specifies the path to the FileSystem(Namespace directory) which we are trying to manage. If no directory path is specified, [/ifs] would be taken by default.",
 				Optional:            true,
 				Computed:            true,
 				Default:             stringdefault.StaticString("/ifs"),
@@ -93,8 +93,8 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Computed:            true,
 			},
 			"owner": schema.SingleNestedAttribute{
-				Description:         "The owner of the Filesystem.",
-				MarkdownDescription: "The owner of the Filesystem.",
+				Description:         "The owner of the Filesystem.(Update Supported)",
+				MarkdownDescription: "The owner of the Filesystem.(Update Supported)",
 				Required:            true,
 				Attributes: map[string]schema.Attribute{
 					"id": schema.StringAttribute{
@@ -121,8 +121,8 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 			},
 			"group": schema.SingleNestedAttribute{
-				Description:         "The group of the Filesystem.",
-				MarkdownDescription: "The group of the Filesystem.",
+				Description:         "The group of the Filesystem.(Update Supported)",
+				MarkdownDescription: "The group of the Filesystem.(Update Supported)",
 				Required:            true,
 				Attributes: map[string]schema.Attribute{
 					"id": schema.StringAttribute{
@@ -150,11 +150,11 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 			"access_control": schema.StringAttribute{
 				Description: `The ACL value for the directory. Users can either provide access rights input such as 'private_read' , 'private' ,
-				'public_read', 'public_read_write', 'public' or permissions in POSIX format as '0550', '0770', '0775','0777' or 0700. The Default value is (0700). 
-				Modification of ACL is only supported from POSIX to POSIX mode.`,
+				'public_read', 'public_read_write', 'public' or permissions in POSIX format as '0550', '0770', '0775','0777' or 0700. The Default value is (0700).
+				(Update Supported but Modification of ACL is only supported from POSIX to POSIX mode)`,
 				MarkdownDescription: `The ACL value for the directory. Users can either provide access rights input such as 'private_read' , 'private' ,
 				'public_read', 'public_read_write', 'public' or permissions in POSIX format as '0550', '0770', '0775','0777' or 0700. The Default value is (0700). 
-				Modification of ACL is only supported from POSIX to POSIX mode.`,
+				(Update Supported but Modification of ACL is only supported from POSIX to POSIX mode)`,
 				Optional: true,
 			},
 			"authoritative": schema.StringAttribute{

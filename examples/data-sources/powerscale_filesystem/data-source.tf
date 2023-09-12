@@ -15,6 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# This terraform DataSource is used to query the existing FileSystem(Namespace Directory) from PowerScale array.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.
+
+# Returns the information related to the specified PowerScale FileSystem(Namespace Directory) based on the directory path. If directory path is not set it will give details regarding the default "/ifs" directory.
 data "powerscale_filesystem" "system" {
   # Required parameter, path of the directory filesystem datasource, defaults to "/ifs" if not set
   directory_path = "/ifs/tfacc_file_system_test"
@@ -23,3 +26,5 @@ data "powerscale_filesystem" "system" {
 output "powerscale_filesystem_1" {
   value = data.powerscale_filesystem.system
 }
+# After the successful execution of above block, We can see the output value by executing 'terraform output' command.
+# Also, we can use the fetched information by the variable data.powerscale_filesystem.system"

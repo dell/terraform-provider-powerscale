@@ -19,12 +19,12 @@ linkTitle: "powerscale_filesystem"
 page_title: "powerscale_filesystem Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  FileSystem data source
+  FileSystem data source.This is used to query the existing FileSystem(Namespace Directory) from PowerScale array.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.
 ---
 
 # powerscale_filesystem (Data Source)
 
-FileSystem data source
+FileSystem data source.This is used to query the existing FileSystem(Namespace Directory) from PowerScale array.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.
 
 ## Example Usage
 
@@ -46,6 +46,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# This terraform DataSource is used to query the existing FileSystem(Namespace Directory) from PowerScale array.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.
+
+# Returns the information related to the specified PowerScale FileSystem(Namespace Directory) based on the directory path. If directory path is not set it will give details regarding the default "/ifs" directory.
 data "powerscale_filesystem" "system" {
   # Required parameter, path of the directory filesystem datasource, defaults to "/ifs" if not set
   directory_path = "/ifs/tfacc_file_system_test"
@@ -54,6 +57,8 @@ data "powerscale_filesystem" "system" {
 output "powerscale_filesystem_1" {
   value = data.powerscale_filesystem.system
 }
+# After the successful execution of above block, We can see the output value by executing 'terraform output' command.
+# Also, we can use the fetched information by the variable data.powerscale_filesystem.system"
 ```
 
 After the successful execution of above said block, We can see the output value by executing 'terraform output' command.
@@ -64,9 +69,9 @@ Also, we can use the fetched information by the variable data
 
 ### Optional
 
-- `directory_path` (String) FileSystem identifier
+- `directory_path` (String) FileSystem directory path.This specifies the path to the FileSystem(Namespace directory) which we are trying to query. Default path is `/ifs`
 - `file_systems_details` (Attributes) Details of the Filesystem (see [below for nested schema](#nestedatt--file_systems_details))
-- `id` (String) FileSystem identifier
+- `id` (String) FileSystem identifier. Unique identifier for the FileSystem(Namespace directory)
 
 <a id="nestedatt--file_systems_details"></a>
 ### Nested Schema for `file_systems_details`
@@ -74,9 +79,9 @@ Also, we can use the fetched information by the variable data
 Optional:
 
 - `file_system_attributes` (Attributes List) FileSystems Attributes (see [below for nested schema](#nestedatt--file_systems_details--file_system_attributes))
-- `file_system_namespace_acl` (Attributes) Filesystem acl (see [below for nested schema](#nestedatt--file_systems_details--file_system_namespace_acl))
+- `file_system_namespace_acl` (Attributes) Filesystem acl. Shows the access control list for the FileSystem(Namespace directory) (see [below for nested schema](#nestedatt--file_systems_details--file_system_namespace_acl))
 - `file_system_quotas` (Attributes List) Filesystem quotas (see [below for nested schema](#nestedatt--file_systems_details--file_system_quotas))
-- `file_system_snapshots` (Attributes List) Filesystem shots (see [below for nested schema](#nestedatt--file_systems_details--file_system_snapshots))
+- `file_system_snapshots` (Attributes List) Filesystem snapshots (see [below for nested schema](#nestedatt--file_systems_details--file_system_snapshots))
 
 <a id="nestedatt--file_systems_details--file_system_attributes"></a>
 ### Nested Schema for `file_systems_details.file_system_attributes`
