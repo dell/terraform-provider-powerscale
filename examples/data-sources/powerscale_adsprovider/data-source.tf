@@ -15,6 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# This Terraform DataSource is used to query the details of existing ADS providers from PowerScale array.
+
+# Returns a list of PowerScale ADS providers based on names and scope specified in the filter block.
 data "powerscale_adsprovider" "test" {
   filter {
     names = ["PIE.LAB.EMC.COM"]
@@ -22,13 +25,18 @@ data "powerscale_adsprovider" "test" {
   }
 }
 
+# Output value of above block by executing 'terraform output' command
+# You can use the the fetched information by the variable data.powerscale_adsprovider.test
 output "powerscale_adsprovider" {
   value = data.powerscale_adsprovider.test
 }
 
+# Returns all PowerScale ADS providers on PowerScale array
 data "powerscale_adsprovider" "all" {
 }
 
+# Output value of above block by executing 'terraform output' command
+# You can use the the fetched information by the variable data.powerscale_adsprovider.all
 output "powerscale_adsprovider_data_all" {
   value = data.powerscale_adsprovider.all
 }

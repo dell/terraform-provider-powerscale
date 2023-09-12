@@ -57,8 +57,8 @@ func (r *AdsProviderResource) Metadata(ctx context.Context, req resource.Metadat
 func (r *AdsProviderResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "ADS Provider resource",
-		Description:         "ADS Provider resource",
+		MarkdownDescription: "ADS Provider resource. This Terraform resource is used to manage ADS provider entities on PowerScale Array. You can create, update, delete and import PowerScale ADS providers with this resource.",
+		Description:         "ADS Provider resource. This Terraform resource is used to manage ADS provider entities on PowerScale Array. You can create, update, delete and import PowerScale ADS providers with this resource.",
 		Attributes: map[string]schema.Attribute{
 			"scope": schema.StringAttribute{
 				Description:         "When specified as 'effective', or not specified, all fields are returned. When specified as 'user', only fields with non-default values are shown. When specified as 'default', the original values are returned.",
