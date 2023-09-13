@@ -19,12 +19,12 @@ linkTitle: "powerscale_adsprovider"
 page_title: "powerscale_adsprovider Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  ADS Provider resource
+  ADS Provider resource. This Terraform resource is used to manage ADS provider entities on PowerScale Array. You can create, update, delete and import PowerScale ADS providers with this resource.
 ---
 
 # powerscale_adsprovider (Resource)
 
-ADS Provider resource
+ADS Provider resource. This Terraform resource is used to manage ADS provider entities on PowerScale Array. You can create, update, delete and import PowerScale ADS providers with this resource.
 
 
 ## Example Usage
@@ -46,17 +46,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+# Available actions: Create, Update, Delete and Import
+# After `terraform apply` of this example file for the first time, you will create an ADS provider on the PowerScale
+
+# PowerScale ADS provider allows you to authenticate users and groups
 resource "powerscale_adsprovider" "ads_test" {
-  #   required
-  name     = "ADS.PROVIDER.EXAMPLE.COM"
+  #   Required
+  #   Name should be a fully qualified domain name of an existing AD
+  name = "ADS.PROVIDER.EXAMPLE.COM"
+  #   User should have join permission
   user     = "admin"
   password = "password"
 
-  #   optional query parameters
+  #   Optional query parameters
   #   scope = "effective"
   #   check_duplicates = true
 
-  #   optional for creating
+  #   Optional fields ONLY for creating
   #   dns_domain = "testDNSDomain"
   #   groupnet = "testGroupNet"
   #   instance = "testInstance"
@@ -65,12 +72,12 @@ resource "powerscale_adsprovider" "ads_test" {
   #   machine_account = "testMachineAccount"
   #   organizational_unit = "testOrganizationalUnit"
 
-  #   optional for updating
+  #   Optional fields ONLY for updating
   #   domain_controller = "testDomainController"
   #   reset_schannel = true
   #   spns = ["testSPN"]
 
-  #   optional for creating and updating
+  #   Optional fields both for creating and updating
   #   allocate_gids = true
   #   allocate_uids = true
   #   assume_default_domain = true

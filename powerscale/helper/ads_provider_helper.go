@@ -65,7 +65,7 @@ func DeleteAdsProvider(ctx context.Context, client *client.Client, adsID string)
 	return err
 }
 
-// IsCreateAdsProviderParamInvalid Verify if create params contain params only for updating
+// IsCreateAdsProviderParamInvalid Verify if create params contain params only for updating.
 func IsCreateAdsProviderParamInvalid(plan models.AdsProviderResourceModel) bool {
 	if !plan.DomainController.IsNull() ||
 		!plan.ResetSchannel.IsNull() ||
@@ -75,7 +75,7 @@ func IsCreateAdsProviderParamInvalid(plan models.AdsProviderResourceModel) bool 
 	return false
 }
 
-// IsUpdateAdsProviderParamInvalid Verify if update params contain params only for creating
+// IsUpdateAdsProviderParamInvalid Verify if update params contain params only for creating.
 func IsUpdateAdsProviderParamInvalid(plan models.AdsProviderResourceModel, state models.AdsProviderResourceModel) bool {
 	if (!plan.DNSDomain.IsNull() && !state.DNSDomain.Equal(plan.DNSDomain)) ||
 		(!plan.Groupnet.IsUnknown() && !state.Groupnet.Equal(plan.Groupnet)) ||

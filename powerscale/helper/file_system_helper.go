@@ -412,7 +412,7 @@ func getNewAccessControlParams(accessControl string) (string, string) {
 	}
 }
 
-// ValidateUserAndGroup check if owner/group information is correct
+// ValidateUserAndGroup check if owner/group information is correct.
 func ValidateUserAndGroup(ctx context.Context, client client.Client, owner models.MemberObject, group models.MemberObject) error {
 	// Validate owner information
 	userReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, owner.Name.ValueString())
