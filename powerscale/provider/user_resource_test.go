@@ -143,7 +143,7 @@ func TestAccUserResourceCreateMockErr(t *testing.T) {
 						userCreateMocker.UnPatch()
 					}
 					userCreateMocker = Mock(helper.CreateUser).Return(nil).Build()
-					userMocker = Mock(helper.GetUser).Return(nil, fmt.Errorf("user read mock error")).Build()
+					userMocker = Mock(helper.GetUserWithZone).Return(nil, fmt.Errorf("user read mock error")).Build()
 				},
 				Config:      ProviderConfig + userBasicResourceConfig,
 				ExpectError: regexp.MustCompile(`.*user read mock error*.`),
@@ -178,7 +178,7 @@ func TestAccUserRolesResourceImportRolesErr(t *testing.T) {
 					if userCreateMocker != nil {
 						userCreateMocker.UnPatch()
 					}
-					userMocker = Mock(helper.GetAllRoles).Return(nil, fmt.Errorf("roles read mock error")).Build()
+					userMocker = Mock(helper.GetAllRolesWithZone).Return(nil, fmt.Errorf("roles read mock error")).Build()
 				},
 				ResourceName:      userResourceName,
 				ImportState:       true,
@@ -215,7 +215,7 @@ func TestAccUserRolesResourceImportGetErr(t *testing.T) {
 					if userCreateMocker != nil {
 						userCreateMocker.UnPatch()
 					}
-					userMocker = Mock(helper.GetUser).Return(nil, fmt.Errorf("user read mock error")).Build()
+					userMocker = Mock(helper.GetUserWithZone).Return(nil, fmt.Errorf("user read mock error")).Build()
 				},
 				ResourceName:      userResourceName,
 				ImportState:       true,

@@ -58,8 +58,10 @@ resource "powerscale_user_group" "testUserGroup" {
   # Optional query_force. If true, skip validation checks when creating user group. The force option is required for user group ID changes.
   # query_force = false
 
-  # Optional query parameters when creating and updating. Will return the information according to zone and provider. 
+  # Optional query_zone, will return user group according to zone. Specifies the zone that the user group will belong to when creating. Once user group is created, its zone cannot be changed.
   # query_zone = "testZone"
+
+  # Optional query_provider, will return user group according to provider. Specifies the provider that the user group will belong to when creating. Once user group is created, its provider cannot be changed.
   # query_provider = "testProvider"
 
   # Optional parameters when creating
@@ -80,7 +82,7 @@ After the execution of above resource block, a powerscale_user_group would have 
 
 ### Required
 
-- `name` (String) Specifies a user name.
+- `name` (String) Specifies a user group name.
 
 ### Optional
 
@@ -126,9 +128,11 @@ Import is supported using the following syntax:
 # limitations under the License.
 
 # The command is
-# terraform import powerscale_user_group.testUserGroup <name>
-# Example:
+# terraform import powerscale_user_group.testUserGroup [<zoneID>:]<userGroupName>
+# Example1, <zoneID> is Optional, defaults to System:
 terraform import powerscale_user_group.testUserGroup userGroupName
+# Example2:
+terraform import powerscale_user_group.testUserGroup zoneID:userGroupName
 # after running this command, populate the name field and other required parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```

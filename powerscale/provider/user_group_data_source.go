@@ -267,8 +267,12 @@ func (d *UserGroupDataSource) Read(ctx context.Context, req datasource.ReadReque
 	var egRole errgroup.Group
 	var roles []powerscale.V1AuthRoleExtended
 	var roleErr error
+	var zoneID string
+	if state.Filter != nil && !state.Filter.Zone.IsNull() {
+		zoneID = state.Filter.Zone.ValueString()
+	}
 	egRole.Go(func() error {
-		roles, roleErr = helper.GetAllRoles(ctx, d.client)
+		roles, roleErr = helper.GetAllRolesWithZone(ctx, d.client, zoneID)
 		return roleErr
 	})
 
@@ -285,7 +289,7 @@ func (d *UserGroupDataSource) Read(ctx context.Context, req datasource.ReadReque
 	var groups []models.UserGroupModel
 	for _, group := range groupsResponse {
 		model := models.UserGroupModel{}
-		members, err := helper.GetAllGroupMembers(ctx, d.client, group.Name)
+		members, err := helper.GetAllGroupMembersWithZone(ctx, d.client, group.Name, zoneID)
 		if err != nil {
 			resp.Diagnostics.AddError(fmt.Sprintf("Error getting the list of PowerScale Group Members of %s", group.Name), err.Error())
 		}
