@@ -36,6 +36,10 @@ resource "powerscale_filesystem" "file_system_test" {
     type = "user"
   }
 
+  # Optional : query_zone, this will default to the default access zone if unset. However is needed if the user trying to be created is not in the default access zone.connection {
+  # This should just be the access zone name. 
+  # query_zone = "test_access_zone"
+
   # Optional attributes. Default values set.
   # Creates intermediate folders recursively, when set to true.
   recursive = true

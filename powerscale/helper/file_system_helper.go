@@ -317,6 +317,7 @@ func UpdateFileSystemResourcePlanData(plan *models.FileSystemResource, state *mo
 	state.Overwrite = plan.Overwrite
 	state.Recursive = plan.Recursive
 	state.AccessControl = plan.AccessControl
+	state.QueryZone = plan.QueryZone
 }
 
 // GetDirectoryPath Gets the final directory path(dirPath+dirName).
@@ -336,7 +337,7 @@ func UpdateFileSystem(ctx context.Context, client client.Client, dirPath string,
 	// Update Owner / Group if modified
 	if plan.Owner.Name.ValueString() != state.Owner.Name.ValueString() || plan.Group.Name.ValueString() != state.Group.Name.ValueString() ||
 		plan.Owner.ID.ValueString() != state.Owner.ID.ValueString() || plan.Group.ID.ValueString() != state.Group.ID.ValueString() {
-		errAuth := ValidateUserAndGroup(ctx, client, plan.Owner, plan.Group)
+		errAuth := ValidateUserAndGroup(ctx, client, plan.Owner, plan.Group, plan.QueryZone.ValueString())
 		if errAuth != nil {
 			errStr := constants.UpdateFileSystemErrorMsg
 			message := GetErrorString(errAuth, errStr)
@@ -413,9 +414,15 @@ func getNewAccessControlParams(accessControl string) (string, string) {
 }
 
 // ValidateUserAndGroup check if owner/group information is correct.
-func ValidateUserAndGroup(ctx context.Context, client client.Client, owner models.MemberObject, group models.MemberObject) error {
+func ValidateUserAndGroup(ctx context.Context, client client.Client, owner models.MemberObject, group models.MemberObject, accessZone string) error {
 	// Validate owner information
 	userReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, owner.Name.ValueString())
+
+	// If zone filter is set use it otherwise leave blank and it will use the default zone
+	if accessZone != "" {
+		userReq = userReq.Zone(accessZone)
+	}
+
 	users, _, err := userReq.Execute()
 	if err != nil {
 		errStr := "unable to validate user information with error: "
@@ -434,6 +441,12 @@ func ValidateUserAndGroup(ctx context.Context, client client.Client, owner model
 
 	// Validate group information
 	groupReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthGroup(ctx, group.Name.ValueString())
+
+	// If zone filter is set use it otherwise leave blank and it will use the default zone
+	if accessZone != "" {
+		groupReq = groupReq.Zone(accessZone)
+	}
+
 	groups, _, err := groupReq.Execute()
 	if err != nil {
 		errStr := "unable to validate group information with error: "

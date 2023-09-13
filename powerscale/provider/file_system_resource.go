@@ -82,6 +82,11 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Computed:            true,
 				Default:             stringdefault.StaticString("/ifs"),
 			},
+			"query_zone": schema.StringAttribute{
+				Description:         "Specifies the zone that the object belongs to. Optional and will default to the default access zone if one is not set.",
+				MarkdownDescription: "Specifies the zone that the object belongs to. Optional and will default to the default access zone if one is not set.",
+				Optional:            true,
+			},
 			"type": schema.StringAttribute{
 				Description:         "File System Resource type",
 				MarkdownDescription: "File System Resource type",
@@ -227,7 +232,7 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	if !plan.AccessControl.IsNull() && (plan.AccessControl.ValueString() != "") {
 		createReq = createReq.XIsiIfsAccessControl(plan.AccessControl.ValueString())
 	}
-	errAuth := helper.ValidateUserAndGroup(ctx, *r.client, plan.Owner, plan.Group)
+	errAuth := helper.ValidateUserAndGroup(ctx, *r.client, plan.Owner, plan.Group, plan.QueryZone.ValueString())
 	if errAuth != nil {
 		errStr := constants.CreateFileSystemErrorMsg
 		message := helper.GetErrorString(errAuth, errStr)
@@ -304,6 +309,26 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 			message,
 		)
 		return
+	}
+
+	if owner, ok := acl.GetOwnerOk(); ok {
+		if owner == nil || owner.Name == nil {
+			resp.Diagnostics.AddError(
+				"Error creating filesystem",
+				fmt.Sprintf("The filesystem was created but there was an issue setting ACL permissions because current user '%s' is an invalid owner", plan.Owner.Name),
+			)
+			return
+		}
+	}
+
+	if group, ok := acl.GetGroupOk(); ok {
+		if group == nil || group.Name == nil {
+			resp.Diagnostics.AddError(
+				"Error creating filesystem",
+				fmt.Sprintf("The filesystem was created but there was an issue setting ACL permissions because current group '%s' is an invalid group", plan.Group.Name),
+			)
+			return
+		}
 	}
 
 	// Update resource state

@@ -68,6 +68,10 @@ resource "powerscale_filesystem" "file_system_test" {
     type = "user"
   }
 
+  # Optional : query_zone, this will default to the default access zone if unset. However is needed if the user trying to be created is not in the default access zone.connection {
+  # This should just be the access zone name. 
+  # query_zone = "test_access_zone"
+
   # Optional attributes. Default values set.
   # Creates intermediate folders recursively, when set to true.
   recursive = true
@@ -103,6 +107,7 @@ After the execution of above resource block, a powerscale_filesystem would have 
 - `directory_path` (String) FileSystem directory path.This specifies the path to the FileSystem(Namespace directory) which we are trying to manage. If no directory path is specified, [/ifs] would be taken by default.
 - `id` (String) FileSystem identifier. Unique identifier for the FileSystem(Namespace directory)
 - `overwrite` (Boolean) Deletes and replaces the existing user attributes and ACLs of the directory with user-specified attributes if set to true.
+- `query_zone` (String) Specifies the zone that the object belongs to. Optional and will default to the default access zone if one is not set.
 - `recursive` (Boolean) Creates intermediate folders recursively when set to true.
 
 ### Read-Only

@@ -170,6 +170,8 @@ type FileSystemResource struct {
 	Group         MemberObject `tfsdk:"group"`
 	Type          types.String `tfsdk:"type"`
 	CreationTime  types.String `tfsdk:"creation_time"`
+	// If the user wants to filter on a partcular access zone they can set that here, otherwise will just default to the default access zone.
+	QueryZone types.String `tfsdk:"query_zone"`
 	// The ACL value for the directory. Users can either provide access rights input such as 'private_read' , 'private' ,
 	//'public_read', 'public_read_write', 'public' or permissions in POSIX format as '0550', '0770', '0775','0777' or 0700. The Default value is (0700).Modification of ACL is only supported from POSIX to POSIX mode.",
 	AccessControl types.String `tfsdk:"access_control"`
