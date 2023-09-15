@@ -75,6 +75,12 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 				MarkdownDescription: "FileSystem directory name",
 				Required:            true,
 			},
+			"full_path": schema.StringAttribute{
+				Description:         "The full path of the FileSystem",
+				MarkdownDescription: "The full path of the FileSystem",
+				Computed:            true,
+				Optional:            true,
+			},
 			"directory_path": schema.StringAttribute{
 				Description:         "FileSystem directory path.This specifies the path to the FileSystem(Namespace directory) which we are trying to manage. If no directory path is specified, [/ifs] would be taken by default.",
 				MarkdownDescription: "FileSystem directory path.This specifies the path to the FileSystem(Namespace directory) which we are trying to manage. If no directory path is specified, [/ifs] would be taken by default.",

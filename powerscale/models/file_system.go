@@ -164,6 +164,7 @@ type FileSystemFilterType struct {
 // FileSystemResource Defines the File System Resource Model.
 type FileSystemResource struct {
 	ID            types.String `tfsdk:"id"`
+	FullPath      types.String `tfsdk:"full_path"`
 	Name          types.String `tfsdk:"name"`
 	DirectoryPath types.String `tfsdk:"directory_path"`
 	Owner         MemberObject `tfsdk:"owner"`

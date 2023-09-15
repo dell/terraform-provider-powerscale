@@ -312,6 +312,7 @@ func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemR
 // UpdateFileSystemResourcePlanData Updates File System Resource State from plan data.
 func UpdateFileSystemResourcePlanData(plan *models.FileSystemResource, state *models.FileSystemResource) {
 	state.ID = types.StringValue(GetDirectoryPath(plan.DirectoryPath.ValueString(), plan.Name.ValueString()))
+	state.FullPath = types.StringValue("/" + state.ID.ValueString())
 	state.Name = plan.Name
 	state.DirectoryPath = plan.DirectoryPath
 	state.Overwrite = plan.Overwrite
