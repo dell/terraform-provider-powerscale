@@ -245,22 +245,22 @@ func assignKnownObjectToUnknown(ctx context.Context, source types.Object, target
 			}
 			var listElement []attr.Value
 			for index := range targetList.Elements() {
-				if targetList.Elements()[index].IsUnknown() || targetList.Elements()[index].IsNull() {
-					if strings.HasPrefix(targetList.Elements()[index].Type(ctx).String(), "types.ObjectType") {
-						sourceObj, ok := sourceList.Elements()[index].(basetypes.ObjectValue)
-						if !ok {
-							continue
-						}
-						targetObj, ok := targetList.Elements()[index].(basetypes.ObjectValue)
-						if !ok {
-							continue
-						}
-						listElement = append(listElement, assignKnownObjectToUnknown(ctx, sourceObj, targetObj))
-					} else {
-						listElement = append(listElement, sourceList.Elements()[index])
+				if strings.HasPrefix(targetList.Elements()[index].Type(ctx).String(), "types.ObjectType") {
+					sourceObj, ok := sourceList.Elements()[index].(basetypes.ObjectValue)
+					if !ok {
+						continue
 					}
+					targetObj, ok := targetList.Elements()[index].(basetypes.ObjectValue)
+					if !ok {
+						continue
+					}
+					listElement = append(listElement, assignKnownObjectToUnknown(ctx, sourceObj, targetObj))
 				} else {
-					listElement = append(listElement, targetList.Elements()[index])
+					if targetList.Elements()[index].IsUnknown() || targetList.Elements()[index].IsNull() {
+						listElement = append(listElement, sourceList.Elements()[index])
+					} else {
+						listElement = append(listElement, targetList.Elements()[index])
+					}
 				}
 			}
 			if len(listElement) == 0 {

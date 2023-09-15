@@ -425,21 +425,7 @@ func (d *SmbShareDataSource) Read(ctx context.Context, req datasource.ReadReques
 	}
 
 	var shareNames []types.String
-	listSmbParam := d.client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv7SmbShares(ctx)
-	if sharesPlan.SmbSharesFilter != nil {
-		shareNames = sharesPlan.SmbSharesFilter.Names
-
-		// handle api filter
-		listSmbParam.Resume(sharesPlan.SmbSharesFilter.Resume.ValueString())
-		listSmbParam.Zone(sharesPlan.SmbSharesFilter.Zone.ValueString())
-		listSmbParam.Dir(sharesPlan.SmbSharesFilter.Dir.ValueString())
-		listSmbParam.Scope(sharesPlan.SmbSharesFilter.Scope.ValueString())
-		listSmbParam.Sort(sharesPlan.SmbSharesFilter.Sort.ValueString())
-		if !sharesPlan.SmbSharesFilter.Limit.IsNull() {
-			listSmbParam.Limit(int32(sharesPlan.SmbSharesFilter.Limit.ValueInt64()))
-		}
-	}
-	smbShares, _, err := listSmbParam.Execute()
+	totalSmbShares, err := helper.ListSmbShares(ctx, d.client, sharesPlan.SmbSharesFilter)
 	if err != nil {
 		errStr := constants.ListSmbShareErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -447,25 +433,15 @@ func (d *SmbShareDataSource) Read(ctx context.Context, req datasource.ReadReques
 			message)
 		return
 	}
-	totalSmbShares := smbShares.Shares
-	for smbShares.Resume != nil && (sharesPlan.SmbSharesFilter == nil || sharesPlan.SmbSharesFilter.Limit.IsNull()) {
-		resumeSmbParam := d.client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv7SmbShares(ctx).Resume(*smbShares.Resume)
-		smbShares, _, err = resumeSmbParam.Execute()
-		if err != nil {
-			errStr := constants.ListSmbShareErrorMsg + "with error: "
-			message := helper.GetErrorString(err, errStr)
-			resp.Diagnostics.AddError("Error reading resuming smb shares ",
-				message)
-			return
-		}
-		totalSmbShares = append(totalSmbShares, smbShares.Shares...)
-	}
 
+	if sharesPlan.SmbSharesFilter != nil {
+		shareNames = sharesPlan.SmbSharesFilter.Names
+	}
 	// if names are specified filter locally
 	var filteredShares []models.SmbShareDatasourceEntity
 	if len(shareNames) > 0 {
 		sharesMap := make(map[string]powerscale.V7SmbShareExtended)
-		for _, s := range totalSmbShares {
+		for _, s := range *totalSmbShares {
 			sharesMap[s.Name] = s
 		}
 		for _, name := range shareNames {
@@ -482,7 +458,7 @@ func (d *SmbShareDataSource) Read(ctx context.Context, req datasource.ReadReques
 		}
 	} else {
 		entity := models.SmbShareDatasourceEntity{}
-		for _, share := range totalSmbShares {
+		for _, share := range *totalSmbShares {
 			err := helper.CopyFields(ctx, share, &entity)
 			if err != nil {
 				resp.Diagnostics.AddError("Error reading smb share datasource plan",
