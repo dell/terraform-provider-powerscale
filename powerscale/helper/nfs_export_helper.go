@@ -212,7 +212,7 @@ func FilterExports(paths []types.String, ids []types.Int64, exports []powerscale
 // Need to manually copy plan info to state, or state would keep the type/username as null, which is inconsistent.
 func ResolvePersonaDiff(ctx context.Context, plan models.NfsExportResource, state *models.NfsExportResource) {
 	state.MapAll = assignKnownObjectToUnknown(ctx, plan.MapAll, state.MapAll)
-	state.MapFailure = assignKnownObjectToUnknown(ctx, plan.MapAll, state.MapAll)
+	state.MapFailure = assignKnownObjectToUnknown(ctx, plan.MapFailure, state.MapFailure)
 	state.MapNonRoot = assignKnownObjectToUnknown(ctx, plan.MapNonRoot, state.MapNonRoot)
 	state.MapRoot = assignKnownObjectToUnknown(ctx, plan.MapRoot, state.MapRoot)
 }
@@ -220,6 +220,9 @@ func ResolvePersonaDiff(ctx context.Context, plan models.NfsExportResource, stat
 func assignKnownObjectToUnknown(ctx context.Context, source types.Object, target types.Object) types.Object {
 	sourceMap := source.Attributes()
 	targetMap := target.Attributes()
+	if len(targetMap) == 0 {
+		targetMap = sourceMap
+	}
 	for tag := range sourceMap {
 		if strings.HasPrefix(targetMap[tag].Type(ctx).String(), "types.ObjectType") {
 			sourceObj, ok := sourceMap[tag].(basetypes.ObjectValue)
@@ -242,22 +245,22 @@ func assignKnownObjectToUnknown(ctx context.Context, source types.Object, target
 			}
 			var listElement []attr.Value
 			for index := range targetList.Elements() {
-				if targetList.Elements()[index].IsUnknown() || targetList.Elements()[index].IsNull() {
-					if strings.HasPrefix(targetList.Elements()[index].Type(ctx).String(), "types.ObjectType") {
-						sourceObj, ok := sourceList.Elements()[index].(basetypes.ObjectValue)
-						if !ok {
-							continue
-						}
-						targetObj, ok := targetList.Elements()[index].(basetypes.ObjectValue)
-						if !ok {
-							continue
-						}
-						listElement = append(listElement, assignKnownObjectToUnknown(ctx, sourceObj, targetObj))
-					} else {
-						listElement = append(listElement, sourceList.Elements()[index])
+				if strings.HasPrefix(targetList.Elements()[index].Type(ctx).String(), "types.ObjectType") {
+					sourceObj, ok := sourceList.Elements()[index].(basetypes.ObjectValue)
+					if !ok {
+						continue
 					}
+					targetObj, ok := targetList.Elements()[index].(basetypes.ObjectValue)
+					if !ok {
+						continue
+					}
+					listElement = append(listElement, assignKnownObjectToUnknown(ctx, sourceObj, targetObj))
 				} else {
-					listElement = append(listElement, targetList.Elements()[index])
+					if targetList.Elements()[index].IsUnknown() || targetList.Elements()[index].IsNull() {
+						listElement = append(listElement, sourceList.Elements()[index])
+					} else {
+						listElement = append(listElement, targetList.Elements()[index])
+					}
 				}
 			}
 			if len(listElement) == 0 {
@@ -266,13 +269,16 @@ func assignKnownObjectToUnknown(ctx context.Context, source types.Object, target
 				targetMap[tag], _ = basetypes.NewListValue(targetList.ElementType(ctx), listElement)
 			}
 		} else {
-			if (targetMap[tag].IsNull() || targetMap[tag].IsUnknown()) &&
-				!(sourceMap[tag].IsUnknown() || sourceMap[tag].IsNull()) {
-				targetMap[tag] = sourceMap[tag]
+			if targetMap[tag] == nil || targetMap[tag].IsNull() || targetMap[tag].IsUnknown() {
+				if sourceMap[tag].IsUnknown() || sourceMap[tag].IsNull() {
+					targetMap[tag] = sourceMap[tag].Type(ctx).ValueType(ctx)
+				} else {
+					targetMap[tag] = sourceMap[tag]
+				}
 			}
 		}
 	}
-	if len(targetMap) == 0 {
+	if len(sourceMap) == 0 && len(targetMap) == 0 {
 		return basetypes.NewObjectNull(target.AttributeTypes(ctx))
 	}
 	result, _ := basetypes.NewObjectValue(target.AttributeTypes(ctx), targetMap)

@@ -68,6 +68,22 @@ func TestAccNfsExportDatasourceGetAll(t *testing.T) {
 	})
 }
 
+func TestAccNfsExportDatasourceGetWithQueryParam(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			//Read testing
+			{
+				Config: ProviderConfig + NfsExportDatasourceGetWithQueryParam,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.powerscale_nfs_export.export_datasource_test", "nfs_exports.#"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccNfsExportDatasourceErrorList(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -111,6 +127,33 @@ data "powerscale_nfs_export" "export_datasource_test" {
 }
 `
 
+var NfsExportDatasourceGetWithQueryParam = `
+resource "powerscale_nfs_export" "test_export" {
+	paths = ["/ifs/tfacc_nfs_export"]
+}
+
+data "powerscale_nfs_export" "export_datasource_test" {
+	filter {
+        check = true
+        dir   = "ASC"
+		limit = 10
+		scope = "effective"
+        sort  = "id"
+	}
+  	depends_on = [
+    	powerscale_nfs_export.test_export
+  	]
+}
+`
+
 var NfsExportDatasourceGetAllConfig = `
-data "powerscale_nfs_export" "export_datasource_test" {}
+resource "powerscale_nfs_export" "test_export" {
+	paths = ["/ifs/tfacc_nfs_export"]
+}
+
+data "powerscale_nfs_export" "export_datasource_test" {
+  	depends_on = [
+    	powerscale_nfs_export.test_export
+  	]
+}
 `

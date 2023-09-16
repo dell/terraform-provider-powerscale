@@ -60,6 +60,23 @@ func TestAccSmbShareDatasourceGetAll(t *testing.T) {
 	})
 }
 
+func TestAccSmbShareDatasourceGetError(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			//Read testing
+			{
+				PreConfig: func() {
+					FunctionMocker = Mock(helper.ListSmbShares).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + SmbShareAllDatasourceConfig,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+		},
+	})
+}
+
 func TestAccSmbShareDatasourcePagination(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -115,6 +132,15 @@ func TestAccSmbShareDatasourceErrorCopyFields(t *testing.T) {
 				Config:      ProviderConfig + SmbShareAllDatasourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
 			},
+			//Read testing with names
+			{
+				PreConfig: func() {
+					FunctionMocker.UnPatch()
+					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + SmbShareDatasourceConfig,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
 		},
 	})
 }
@@ -161,7 +187,11 @@ resource "powerscale_smb_share" "share_resource_test" {
 data "powerscale_smb_share" "share_datasource_test" {
 	filter {
 		names = ["%s"]
-		limit = 1
+		zone  = "System"
+		scope = "effective"
+		sort  = "id"
+		offset= 0
+		dir = "ASC"
 	}
   	depends_on = [
     	powerscale_smb_share.share_resource_test
