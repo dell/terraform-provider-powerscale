@@ -133,7 +133,7 @@ func TestAccSmbShareResourceErrorUpdate(t *testing.T) {
 							return FunctionMocker.Times() == 2
 						})
 				},
-				Config:      ProviderConfig + SmbShareUpdatedResourceConfig,
+				Config:      ProviderConfig + SmbShareUpdatedResourceConfig2,
 				ExpectError: regexp.MustCompile(".not found"),
 			},
 			// Update get error
@@ -276,6 +276,28 @@ resource "powerscale_smb_share" "share_test" {
 	]
 	allow_delete_readonly = true
 	ca_timeout = 30
+	zone = "System"
+}
+`, shareName, shareName)
+
+var SmbShareUpdatedResourceConfig2 = fmt.Sprintf(`
+resource "powerscale_smb_share" "share_test" {
+	auto_create_directory = true
+	name = "%s"
+	path = "/ifs/%s"
+	permissions = [
+		{
+			permission = "full"
+			permission_type = "allow"
+			trustee = {
+				id = "SID:S-1-1-0",
+				name = "Everyone",
+				type = "wellknown"
+			}
+		}
+	]
+	allow_delete_readonly = true
+	ca_timeout = 60
 	zone = "System"
 }
 `, shareName, shareName)

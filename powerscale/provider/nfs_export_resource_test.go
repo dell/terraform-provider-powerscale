@@ -47,10 +47,11 @@ func TestAccNFSExport(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:            nfsExportResourceName,
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"force"},
+				ResourceName:      nfsExportResourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateVerifyIgnore: []string{"map_all", "force", "ignore_bad_auth", "ignore_bad_paths",
+					"ignore_conflicts", "ignore_unresolvable_hosts"},
 			},
 			{
 				Config: ProviderConfig + NFSExportUpdatedResourceConfig,
@@ -235,6 +236,26 @@ var NFSExportResourceConfig = `
 resource "powerscale_nfs_export" "test_export" {
 	paths = ["/ifs/tfacc_nfs_export"]
 	force = true
+	map_all = {
+		enabled = true
+		primary_group = {
+		  id = "GROUP:Users"
+		}
+		user = {
+		  type = "user"
+		  name = "Guest"	
+		}
+		secondary_groups = [
+			{
+			  id = "GROUP:Users"
+			}
+		]
+	}
+    ignore_bad_auth = true
+    ignore_bad_paths= true
+    ignore_conflicts = true
+    ignore_unresolvable_hosts = true
+    zone = "System"
 }
 `
 
@@ -242,6 +263,26 @@ var NFSExportUpdatedResourceConfig = `
 resource "powerscale_nfs_export" "test_export" {
 	paths = ["/ifs/tfacc_nfs_export"]
 	force = true
+	map_all = {
+		enabled = true
+		primary_group = {
+		  id = "GROUP:Users"
+		}
+		user = {
+		  type = "user"
+		  name = "Guest"	
+		}
+		secondary_groups = [
+			{
+			  id = "GROUP:Users"
+			}
+		]
+	}
+    ignore_bad_auth = true
+    ignore_bad_paths= true
+    ignore_conflicts = true
+    ignore_unresolvable_hosts = true
+    zone = "System"
 	block_size = 4096
 	name_max_size = 127
 }
@@ -251,6 +292,26 @@ var NFSExportUpdatedResourceConfig2 = `
 resource "powerscale_nfs_export" "test_export" {
 	paths = ["/ifs/tfacc_nfs_export"]
 	force = true
+	map_all = {
+		enabled = true
+		primary_group = {
+		  id = "GROUP:Users"
+		}
+		user = {
+		  type = "user"
+		  name = "Guest"	
+		}
+		secondary_groups = [
+			{
+			  id = "GROUP:Users"
+			}
+		]
+	}
+    ignore_bad_auth = true
+    ignore_bad_paths= true
+    ignore_conflicts = true
+    ignore_unresolvable_hosts = true
+    zone = "System"
 	block_size = 4096
 	name_max_size = 255
 }

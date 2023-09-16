@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/models"
 )
 
 // DeleteSmbShare delete smb share.
@@ -61,4 +62,46 @@ func UpdateSmbShare(ctx context.Context, client *client.Client, shareID string, 
 	}
 	_, err := updateParam.Execute()
 	return err
+}
+
+// ListSmbShares update smb share.
+func ListSmbShares(ctx context.Context, client *client.Client, smbFilter *models.SmbShareDatasourceFilter) (*[]powerscale.V7SmbShareExtended, error) {
+	listSmbParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv7SmbShares(ctx)
+	if smbFilter != nil {
+		if !smbFilter.Resume.IsNull() {
+			listSmbParam = listSmbParam.Resume(smbFilter.Resume.ValueString())
+		}
+		if !smbFilter.Zone.IsNull() {
+			listSmbParam = listSmbParam.Zone(smbFilter.Zone.ValueString())
+		}
+		if !smbFilter.Scope.IsNull() {
+			listSmbParam = listSmbParam.Scope(smbFilter.Scope.ValueString())
+		}
+		if !smbFilter.Sort.IsNull() {
+			listSmbParam = listSmbParam.Sort(smbFilter.Sort.ValueString())
+		}
+		if !smbFilter.Dir.IsNull() {
+			listSmbParam = listSmbParam.Dir(smbFilter.Dir.ValueString())
+		}
+		if !smbFilter.Limit.IsNull() {
+			listSmbParam = listSmbParam.Limit(int32(smbFilter.Limit.ValueInt64()))
+		}
+		if !smbFilter.Offset.IsNull() {
+			listSmbParam = listSmbParam.Offset(int32(smbFilter.Offset.ValueInt64()))
+		}
+	}
+	smbShares, _, err := listSmbParam.Execute()
+	if err != nil {
+		return nil, err
+	}
+	totalSmbShares := smbShares.Shares
+	for smbShares.Resume != nil && (smbFilter == nil || smbFilter.Limit.IsNull()) {
+		resumeSmbParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv7SmbShares(ctx).Resume(*smbShares.Resume)
+		smbShares, _, err = resumeSmbParam.Execute()
+		if err != nil {
+			return &totalSmbShares, err
+		}
+		totalSmbShares = append(totalSmbShares, smbShares.Shares...)
+	}
+	return &totalSmbShares, nil
 }
