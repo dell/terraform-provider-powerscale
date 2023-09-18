@@ -105,6 +105,7 @@ After the execution of above resource block, a powerscale_filesystem would have 
 				'public_read', 'public_read_write', 'public' or permissions in POSIX format as '0550', '0770', '0775','0777' or 0700. The Default value is (0700). 
 				(Update Supported but Modification of ACL is only supported from POSIX to POSIX mode)
 - `directory_path` (String) FileSystem directory path.This specifies the path to the FileSystem(Namespace directory) which we are trying to manage. If no directory path is specified, [/ifs] would be taken by default.
+- `full_path` (String) The full path of the FileSystem
 - `id` (String) FileSystem identifier. Unique identifier for the FileSystem(Namespace directory)
 - `overwrite` (Boolean) Deletes and replaces the existing user attributes and ACLs of the directory with user-specified attributes if set to true.
 - `query_zone` (String) Specifies the zone that the object belongs to. Optional and will default to the default access zone if one is not set.
