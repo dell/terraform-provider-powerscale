@@ -23,6 +23,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"path/filepath"
 	"strings"
 	"terraform-provider-powerscale/client"
@@ -464,4 +465,14 @@ func ValidateUserAndGroup(ctx context.Context, client client.Client, owner model
 		return fmt.Errorf("unable to retrieve group information")
 	}
 	return nil
+}
+
+// ExecuteCreate executes the create file system request.
+func ExecuteCreate(reqCreate powerscale.ApiCreateDirectoryRequest) (map[string]interface{}, *http.Response, error) {
+	return reqCreate.Execute()
+}
+
+// ExecuteSetACL executes the create set ACL for file system request.
+func ExecuteSetACL(reqSetACL powerscale.ApiSetAclRequest) (map[string]interface{}, *http.Response, error) {
+	return reqSetACL.Execute()
 }

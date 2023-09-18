@@ -29,6 +29,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var createMockerLocal *Mocker
+var setACLMockerLocal *Mocker
+var metadataMocker *Mocker
+
 func TestFileSystemResource(t *testing.T) {
 	var fileSystemResourceName = "powerscale_filesystem.file_system_test"
 	resource.Test(t, resource.TestCase{
@@ -62,6 +66,43 @@ func TestFileSystemResource(t *testing.T) {
 				Config:      ProviderConfig + FileSystemUpdateResourceConfigError,
 				ExpectError: regexp.MustCompile(".*Error updating the File system Resource*."),
 			},
+			// Import failure GetMetadata
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					metadataMocker = Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				ResourceName: fileSystemResourceName,
+				ImportState:  true,
+				ExpectError:  regexp.MustCompile(`.*mock error*.`),
+			},
+			// Import failure GetACL
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					metadataMocker = Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
+					setACLMockerLocal = Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				ResourceName: fileSystemResourceName,
+				ImportState:  true,
+				ExpectError:  regexp.MustCompile(`.*mock error*.`),
+			},
 			// Delete testing automatically occurs in TestCase
 		},
 	})
@@ -74,6 +115,17 @@ func TestFileSystemResourceUpdate(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+				},
 				Config: ProviderConfig + FileSystemResourceUpdConfig,
 			},
 			//Update owner/group/accessControl, then Read testing
@@ -88,6 +140,96 @@ func TestFileSystemResourceUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(fileSystemResourceName, "mode", "0770"),
 				),
 			},
+			// Delete testing automatically occurs in TestCase
+		},
+	})
+}
+func TestFileSystemResourceUpdateMetadataError(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + FileSystemResourceUpdConfig,
+			},
+			//Update owner/group/accessControl, then Read testing
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					FunctionMocker = Mock(helper.UpdateFileSystem).Return(nil).Build()
+					metadataMocker = Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+				Destroy:     true,
+			},
+		},
+	})
+}
+
+func TestFileSystemResourceUpdateGetAclError(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + FileSystemResourceUpdConfig,
+			},
+			//Update owner/group/accessControl, then Read testing
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					createMockerLocal = Mock(helper.UpdateFileSystem).Return(nil).Build()
+					metadataMocker = Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
+					FunctionMocker = Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+				Destroy:     true,
+			},
 		},
 	})
 }
@@ -99,11 +241,31 @@ func TestFileSystemResourceUpdateUserErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+				},
 				Config: ProviderConfig + FileSystemResourceUpdConfig,
 			},
 			//Update owner/group/accessControl, then Read testing
 			{
 				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
 					FunctionMocker = Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error updating user")).Build()
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
@@ -119,6 +281,17 @@ func TestFileSystemResourceUpdateACLErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+				},
 				Config: ProviderConfig + FileSystemResourceUpdConfig,
 			},
 			//Update owner/group/accessControl, then Read testing
@@ -128,6 +301,22 @@ func TestFileSystemResourceUpdateACLErr(t *testing.T) {
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error updating acl*.`),
+			},
+		},
+	})
+}
+func TestFileSystemResourceValidateOwnerErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			//Validate owner failed
+			{
+				PreConfig: func() {
+					FunctionMocker = Mock(helper.ValidateUserAndGroup).Return(fmt.Errorf("unable to validate user information with error")).Build()
+				},
+				Config:      ProviderConfig + FileSystemResourceConfig,
+				ExpectError: regexp.MustCompile(`.*unable to validate user information with error*.`),
 			},
 		},
 	})
@@ -146,6 +335,110 @@ func TestFileSystemResourceUpdateFail(t *testing.T) {
 			{
 				Config:      ProviderConfig + FileSystemUpdateResourceConfigErr,
 				ExpectError: regexp.MustCompile(`.*Renaming Directory is not supported*.`),
+			},
+		},
+	})
+}
+
+func TestAccFileSystemResourceGetAclErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					createMockerLocal = Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
+					setACLMockerLocal = Mock(helper.ExecuteSetACL).Return(nil, nil, nil).Build()
+					metadataMocker = Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
+					FunctionMocker = Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + FileSystemResourceConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+		},
+	})
+}
+func TestAccFileSystemResourceGetMetaErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					createMockerLocal = Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
+					setACLMockerLocal = Mock(helper.ExecuteSetACL).Return(nil, nil, nil).Build()
+					FunctionMocker = Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + FileSystemResourceConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+		},
+	})
+}
+
+func TestAccFileSystemResourceSetAclErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					createMockerLocal = Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
+					FunctionMocker = Mock(helper.ExecuteSetACL).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + FileSystemResourceConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+		},
+	})
+}
+func TestAccFileSystemResourceCreateFSErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					FunctionMocker = Mock(helper.ExecuteCreate).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + FileSystemResourceConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
 		},
 	})
