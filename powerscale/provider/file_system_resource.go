@@ -249,7 +249,7 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	_, _, errCR := createReq.Execute()
+	_, _, errCR := helper.ExecuteCreate(createReq)
 	if errCR != nil {
 		errStr := constants.CreateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(errCR, errStr)
@@ -281,7 +281,7 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 
 	setACLReq = setACLReq.NamespaceAcl(namespaceACLUserGroup)
 
-	_, _, err := setACLReq.Execute()
+	_, _, err := helper.ExecuteSetACL(setACLReq)
 	if err != nil {
 		errStr := constants.CreateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
