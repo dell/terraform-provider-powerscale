@@ -34,3 +34,5 @@ resource "powerscale_accesszone" "zone" {
   # Optional pecifies the list of authentication providers available on this access zon
   custom_auth_providers = ["System"]
 }
+
+# After the execution of above resource block, accesszone would have been created on the PowerScale array. For more information, Please check the terraform state file. 

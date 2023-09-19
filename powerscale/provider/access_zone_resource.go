@@ -57,8 +57,8 @@ func (r *AccessZoneResource) Metadata(ctx context.Context, req resource.Metadata
 func (r *AccessZoneResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Access Zone resource. Supported Update (path, name, custom_auth_providers). PowerScale access zones allow you to isolate data and control who can access data in each zone.",
-		Description:         "Access Zone resource. Supported Update (path, name, custom_auth_providers).PowerScale access zones allow you to isolate data and control who can access data in each zone.",
+		MarkdownDescription: "This resource is used to manage the Access Zone entity of PowerScale Array. We can Create, Update and Delete the Access Zone using this resource. We can also import an existing Access Zone from PowerScale array. PowerScale access zones allow you to isolate data and control who can access data in each zone.",
+		Description:         "This resource is used to manage the Access Zone entity of PowerScale Array. We can Create, Update and Delete the Access Zone using this resource. We can also import an existing Access Zone from PowerScale array. PowerScale access zones allow you to isolate data and control who can access data in each zone.",
 
 		Attributes: map[string]schema.Attribute{
 			"alternate_system_provider": schema.StringAttribute{
