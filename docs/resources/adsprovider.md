@@ -19,12 +19,12 @@ linkTitle: "powerscale_adsprovider"
 page_title: "powerscale_adsprovider Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  ADS Provider resource. This Terraform resource is used to manage ADS provider entities on PowerScale Array. You can create, update, delete and import PowerScale ADS providers with this resource.
+  This resource is used to manage the ADS provider entity of PowerScale Array. We can Create, Update and Delete the ADS provider using this resource. We can also import an existing ADS provider from PowerScale array.
 ---
 
 # powerscale_adsprovider (Resource)
 
-ADS Provider resource. This Terraform resource is used to manage ADS provider entities on PowerScale Array. You can create, update, delete and import PowerScale ADS providers with this resource.
+This resource is used to manage the ADS provider entity of PowerScale Array. We can Create, Update and Delete the ADS provider using this resource. We can also import an existing ADS provider from PowerScale array.
 
 
 ## Example Usage
@@ -113,6 +113,9 @@ resource "powerscale_adsprovider" "ads_test" {
   #   unfindable_groups = ["testUnfindableGroup"]
   #   unfindable_users = ["testUnfindableUser"]
 }
+
+# After the execution of above resource block, ADS Provider would have been created on the PowerScale array.
+# For more information, Please check the terraform state file.
 ```
 After the execution of above resource block, a powerscale_adsprovider would have been created at PowerScale array
 
