@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.
+# PowerScale User Group allows you to do operations on a set of users, groups and well-knowns.
 
 # Returns a list of PowerScale User Groups based on gid or name in names filter block. 
 data "powerscale_user_group" "test_user_group" {
@@ -48,3 +48,5 @@ data "powerscale_user_group" "test_user_group" {
 output "powerscale_user_group_filter" {
   value = data.powerscale_user_group.test_user_group
 }
+
+# After the successful execution of above said block, We can see the output value by executing 'terraform output' command.

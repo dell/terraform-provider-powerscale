@@ -48,3 +48,6 @@ resource "powerscale_user" "testUser" {
   # expiry = 123456
   # gecos = "testFullName"
 }
+
+# After the execution of above resource block, user would have been created on the PowerScale array. 
+# For more information, Please check the terraform state file. 

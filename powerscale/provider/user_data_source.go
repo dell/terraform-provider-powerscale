@@ -59,8 +59,8 @@ func (d *UserDataSource) Metadata(ctx context.Context, req datasource.MetadataRe
 // Schema describes the data source arguments.
 func (d *UserDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Data source for reading Users in PowerScale cluster. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.",
-		Description:         "Data source for reading Users in PowerScale cluster. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.",
+		MarkdownDescription: "This datasource is used to query the existing Users from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.",
+		Description:         "This datasource is used to query the existing Users from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
