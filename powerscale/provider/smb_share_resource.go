@@ -62,8 +62,12 @@ func (r SmbShareResource) Metadata(ctx context.Context, req resource.MetadataReq
 func (r *SmbShareResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Resource for managing SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.",
-		Description:         "Resource for managing SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.",
+		MarkdownDescription: "This resource is used to manage the SMB share entity on PowerScale array. " +
+			"PowerScale SMB shares provide clients network access to file system resources on the cluster. " +
+			"We can Create, Update and Delete the SMB share using this resource. We can also import an existing SMB Share from PowerScale array.",
+		Description: "This resource is used to manage the SMB share entity on PowerScale array. " +
+			"PowerScale SMB shares provide clients network access to file system resources on the cluster. " +
+			"We can Create, Update and Delete the SMB share using this resource. We can also import an existing SMB Share from PowerScale array.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "The ID of the smb share.",

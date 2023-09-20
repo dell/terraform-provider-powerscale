@@ -19,12 +19,12 @@ linkTitle: "powerscale_nfs_export"
 page_title: "powerscale_nfs_export Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Data source for reading NFS Exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster
+  This datasource is used to query the existing NFS exports from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale provides an NFS server so you can share files on your cluster
 ---
 
 # powerscale_nfs_export (Data Source)
 
-Data source for reading NFS Exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster
+This datasource is used to query the existing NFS exports from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale provides an NFS server so you can share files on your cluster
 
 ## Example Usage
 

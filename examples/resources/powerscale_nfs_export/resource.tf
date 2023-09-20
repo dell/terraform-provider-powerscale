@@ -102,3 +102,6 @@ resource "powerscale_nfs_export" "example_export" {
   # write_unstable_action = "UNSTABLE"
   # write_unstable_reply = "UNSTABLE"
 }
+
+# After the execution of above resource block, an NFS export would have been created on the PowerScale array.
+# For more information, Please check the terraform state file.
