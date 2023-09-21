@@ -18,7 +18,7 @@ limitations under the License.
 # Available actions: Create, Update, Delete and Import.
 # After `terraform apply` of this example file it will create a new user group with the name set in `name` attribute on the PowerScale.
 
-# PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.
+# PowerScale User Group allows you to do operations on a set of users, groups and well-knowns.
 resource "powerscale_user_group" "testUserGroup" {
   # Required name for creating
   name = "testUserGroupResourceSample"
@@ -42,3 +42,6 @@ resource "powerscale_user_group" "testUserGroup" {
   # groups   = ["MemberOfGroup"]
   # well_knowns    = ["MemberOfWellKnown"]
 }
+
+# After the execution of above resource block, user group would have been created on the PowerScale array. 
+# For more information, Please check the terraform state file. 

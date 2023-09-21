@@ -60,8 +60,8 @@ func (r *UserResource) Metadata(ctx context.Context, req resource.MetadataReques
 // Schema describes the resource arguments.
 func (r *UserResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Resource for managing Users in PowerScale cluster. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.",
-		Description:         "Resource for managing Users in PowerScale cluster. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.",
+		MarkdownDescription: "This resource is used to manage the User entity of PowerScale Array. We can Create, Update and Delete the User using this resource. We can also import an existing User from PowerScale array. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.",
+		Description:         "This resource is used to manage the User entity of PowerScale Array. We can Create, Update and Delete the User using this resource. We can also import an existing User from PowerScale array. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.",
 
 		Attributes: map[string]schema.Attribute{
 			"query_force": schema.BoolAttribute{

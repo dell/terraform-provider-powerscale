@@ -49,3 +49,5 @@ data "powerscale_user" "test_user" {
 output "powerscale_user_filter" {
   value = data.powerscale_user.test_user
 }
+
+# After the successful execution of above said block, We can see the output value by executing 'terraform output' command.
