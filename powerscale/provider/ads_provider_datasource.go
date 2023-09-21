@@ -54,8 +54,8 @@ func (d *AdsProviderDataSource) Metadata(ctx context.Context, req datasource.Met
 func (d *AdsProviderDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		Description:         "ADS Provider Datasource. Joining your cluster to an Active Directory domain allows you to perform user and group authentication. This Terraform DataSource is used to query the details of existing ADS providers from PowerScale array.",
-		MarkdownDescription: "ADS Provider Datasource. Joining your cluster to an Active Directory domain allows you to perform user and group authentication. This Terraform DataSource is used to query the details of existing ADS providers from PowerScale array.",
+		Description:         "This datasource is used to query the existing ADS providers from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. Joining your cluster to an AD domain allows you to perform user and group authentication.",
+		MarkdownDescription: "This datasource is used to query the existing ADS providers from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. Joining your cluster to an AD domain allows you to perform user and group authentication.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

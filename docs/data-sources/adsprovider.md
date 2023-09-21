@@ -19,12 +19,12 @@ linkTitle: "powerscale_adsprovider"
 page_title: "powerscale_adsprovider Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  ADS Provider Datasource. Joining your cluster to an Active Directory domain allows you to perform user and group authentication. This Terraform DataSource is used to query the details of existing ADS providers from PowerScale array.
+  This datasource is used to query the existing ADS providers from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. Joining your cluster to an AD domain allows you to perform user and group authentication.
 ---
 
 # powerscale_adsprovider (Data Source)
 
-ADS Provider Datasource. Joining your cluster to an Active Directory domain allows you to perform user and group authentication. This Terraform DataSource is used to query the details of existing ADS providers from PowerScale array.
+This datasource is used to query the existing ADS providers from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. Joining your cluster to an AD domain allows you to perform user and group authentication.
 
 ## Example Usage
 

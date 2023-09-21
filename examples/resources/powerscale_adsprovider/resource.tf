@@ -81,3 +81,6 @@ resource "powerscale_adsprovider" "ads_test" {
   #   unfindable_groups = ["testUnfindableGroup"]
   #   unfindable_users = ["testUnfindableUser"]
 }
+
+# After the execution of above resource block, ADS Provider would have been created on the PowerScale array.
+# For more information, Please check the terraform state file.
