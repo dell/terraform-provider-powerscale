@@ -35,3 +35,6 @@ data "powerscale_accesszone" "test" {
 output "powerscale_accesszone" {
   value = data.powerscale_accesszone.test
 }
+
+# After the successful execution of above said block, We can see the output value by executing 'terraform output' command.
+# Also, we can use the fetched information by the variable data.powerscale_accesszone.all

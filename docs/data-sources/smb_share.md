@@ -19,12 +19,12 @@ linkTitle: "powerscale_smb_share"
 page_title: "powerscale_smb_share Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Data source for reading SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.
+  This datasource is used to query the existing SMB shares from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale SMB shares provide clients network access to file system resources on the cluster.
 ---
 
 # powerscale_smb_share (Data Source)
 
-Data source for reading SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.
+This datasource is used to query the existing SMB shares from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale SMB shares provide clients network access to file system resources on the cluster.
 
 ## Example Usage
 

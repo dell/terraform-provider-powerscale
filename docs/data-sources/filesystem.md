@@ -19,12 +19,12 @@ linkTitle: "powerscale_filesystem"
 page_title: "powerscale_filesystem Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  FileSystem data source.This is used to query the existing FileSystem(Namespace Directory) from PowerScale array.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.
+  This datasource is used to query the existing FileSystem(Namespace Directory) from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.
 ---
 
 # powerscale_filesystem (Data Source)
 
-FileSystem data source.This is used to query the existing FileSystem(Namespace Directory) from PowerScale array.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.
+This datasource is used to query the existing FileSystem(Namespace Directory) from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.
 
 ## Example Usage
 
