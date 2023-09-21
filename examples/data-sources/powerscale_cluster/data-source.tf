@@ -20,3 +20,6 @@ data "powerscale_cluster" "test" {
 output "powerscale_cluster" {
   value = data.powerscale_cluster.test
 }
+
+# After the successful execution of above said block, We can see the output by executing `terraform output` command.
+# Also, we can fetch information via the variable: `data.powerscale.test.attribute_name` where attribute_name is the attribute which user wants to fetch.
