@@ -19,12 +19,12 @@ linkTitle: "powerscale_user"
 page_title: "powerscale_user Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Resource for managing Users in PowerScale cluster. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
+  This resource is used to manage the User entity of PowerScale Array. We can Create, Update and Delete the User using this resource. We can also import an existing User from PowerScale array. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
 ---
 
 # powerscale_user (Resource)
 
-Resource for managing Users in PowerScale cluster. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
+This resource is used to manage the User entity of PowerScale Array. We can Create, Update and Delete the User using this resource. We can also import an existing User from PowerScale array. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
 
 
 ## Example Usage
@@ -80,6 +80,9 @@ resource "powerscale_user" "testUser" {
   # expiry = 123456
   # gecos = "testFullName"
 }
+
+# After the execution of above resource block, user would have been created on the PowerScale array. 
+# For more information, Please check the terraform state file.
 ```
 After the execution of above resource block, a powerscale_user would have been created at PowerScale array
 

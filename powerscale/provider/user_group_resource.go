@@ -61,8 +61,8 @@ func (r *UserGroupResource) Metadata(ctx context.Context, req resource.MetadataR
 // Schema describes the resource arguments.
 func (r *UserGroupResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Resource for managing User Groups in PowerScale cluster. PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.",
-		Description:         "Resource for managing User Groups in PowerScale cluster. PowerScale User Group allows you can do operations on a set of users, groups and well-knowns.",
+		MarkdownDescription: "This resource is used to manage the User Group entity of PowerScale Array. We can Create, Update and Delete the User Group using this resource. We can also import an existing User Group from PowerScale array. PowerScale User Group allows you to do operations on a set of users, groups and well-knowns.",
+		Description:         "This resource is used to manage the User Group entity of PowerScale Array. We can Create, Update and Delete the User Group using this resource. We can also import an existing User Group from PowerScale array. PowerScale User Group allows you to do operations on a set of users, groups and well-knowns.",
 		Attributes: map[string]schema.Attribute{
 			"query_force": schema.BoolAttribute{
 				Description:         "If true, skip validation checks when creating user group. Need to be true, when changing group GID.",
