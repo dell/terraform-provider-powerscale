@@ -61,7 +61,8 @@ func (r *FileSystemResource) Metadata(ctx context.Context, req resource.Metadata
 func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "FileSystem resource.This Resource allows you to manage the Namespace Directory on the Powerscale array",
+		MarkdownDescription: "This resource is used to manage the FileSystem(Namespace directory) entity of PowerScale Array. We can Create, Update and Delete the FileSystem using this resource. We can also import an existing FileSystem from PowerScale array.",
+		Description:         "This resource is used to manage the FileSystem(Namespace directory) entity of PowerScale Array. We can Create, Update and Delete the FileSystem using this resource. We can also import an existing FileSystem from PowerScale array.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
