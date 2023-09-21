@@ -54,8 +54,12 @@ func (r NfsExportResource) Metadata(ctx context.Context, req resource.MetadataRe
 func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Resource for managing NFS exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster",
-		Description:         "Resource for managing NFS exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster",
+		MarkdownDescription: "This resource is used to manage the NFS export entity of PowerScale Array. " +
+			"PowerScale provides an NFS server so you can share files on your cluster. " +
+			"We can Create, Update and Delete the NFS export using this resource. We can also import an existing NFS export from PowerScale array.",
+		Description: "This resource is used to manage the NFS export entity of PowerScale Array. " +
+			"PowerScale provides an NFS server so you can share files on your cluster. " +
+			"We can Create, Update and Delete the NFS export using this resource. We can also import an existing NFS export from PowerScale array.",
 		Attributes: map[string]schema.Attribute{
 			"scope": schema.StringAttribute{
 				Description:         "When specified as 'effective', or not specified, all fields are returned. When specified as 'user', only fields with non-default values are shown. When specified as 'default', the original values are returned.",

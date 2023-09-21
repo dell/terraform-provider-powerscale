@@ -16,7 +16,8 @@ limitations under the License.
 */
 
 # Available actions: Create, Update, Delete and Import
-# After `terraform apply` of this example file it will create NFS export on specified paths on the PowerScale
+# After `terraform apply` of this example file it will create NFS export on specified paths on the PowerScale Array.
+# For more information, Please check the terraform state file.
 
 # PowerScale SMB shares provide clients network access to file system resources on the cluster
 resource "powerscale_smb_share" "share_example" {
@@ -83,3 +84,6 @@ resource "powerscale_smb_share" "share_example" {
   # zid should be computed according to zone
   # zid = 1
 }
+
+# After the execution of above resource block, an SMB share would have been created on the PowerScale array.
+# For more information, Please check the terraform state file.

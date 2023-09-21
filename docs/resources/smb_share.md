@@ -19,12 +19,12 @@ linkTitle: "powerscale_smb_share"
 page_title: "powerscale_smb_share Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Resource for managing SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.
+  This resource is used to manage the SMB share entity on PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster. We can Create, Update and Delete the SMB share using this resource. We can also import an existing SMB Share from PowerScale array.
 ---
 
 # powerscale_smb_share (Resource)
 
-Resource for managing SMB Shares in PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster.
+This resource is used to manage the SMB share entity on PowerScale array. PowerScale SMB shares provide clients network access to file system resources on the cluster. We can Create, Update and Delete the SMB share using this resource. We can also import an existing SMB Share from PowerScale array.
 
 
 ## Example Usage
@@ -48,7 +48,8 @@ limitations under the License.
 */
 
 # Available actions: Create, Update, Delete and Import
-# After `terraform apply` of this example file it will create NFS export on specified paths on the PowerScale
+# After `terraform apply` of this example file it will create NFS export on specified paths on the PowerScale Array.
+# For more information, Please check the terraform state file.
 
 # PowerScale SMB shares provide clients network access to file system resources on the cluster
 resource "powerscale_smb_share" "share_example" {
@@ -115,6 +116,9 @@ resource "powerscale_smb_share" "share_example" {
   # zid should be computed according to zone
   # zid = 1
 }
+
+# After the execution of above resource block, an SMB share would have been created on the PowerScale array.
+# For more information, Please check the terraform state file.
 ```
 After the execution of above resource block, a powerscale_smb_share would have been created at PowerScale array
 

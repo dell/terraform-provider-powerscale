@@ -19,12 +19,12 @@ linkTitle: "powerscale_nfs_export"
 page_title: "powerscale_nfs_export Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Resource for managing NFS exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster
+  This resource is used to manage the NFS export entity of PowerScale Array. PowerScale provides an NFS server so you can share files on your cluster. We can Create, Update and Delete the NFS export using this resource. We can also import an existing NFS export from PowerScale array.
 ---
 
 # powerscale_nfs_export (Resource)
 
-Resource for managing NFS exports in PowerScale array. PowerScale provides an NFS server so you can share files on your cluster
+This resource is used to manage the NFS export entity of PowerScale Array. PowerScale provides an NFS server so you can share files on your cluster. We can Create, Update and Delete the NFS export using this resource. We can also import an existing NFS export from PowerScale array.
 
 
 ## Example Usage
@@ -134,6 +134,9 @@ resource "powerscale_nfs_export" "example_export" {
   # write_unstable_action = "UNSTABLE"
   # write_unstable_reply = "UNSTABLE"
 }
+
+# After the execution of above resource block, an NFS export would have been created on the PowerScale array.
+# For more information, Please check the terraform state file.
 ```
 After the execution of above resource block, a powerscale_nfs_export would have been created at PowerScale array
 
