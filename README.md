@@ -1,20 +1,19 @@
----
-# Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
-#
-# Licensed under the Mozilla Public License Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://mozilla.org/MPL/2.0/
-#
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
----
-## 0.1.0 (Unreleased)
+<!--
+Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+
+Licensed under the Mozilla Public License Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://mozilla.org/MPL/2.0/
+
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 
 # Terraform Provider for Dell Technologies PowerScale
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](about/CODE_OF_CONDUCT.md)
@@ -43,7 +42,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 | **Terraform Provider** | **PowerScale Version** | **OS**                                | **Terraform**    | **Golang** |
 |------------------------|:-----------------------|:--------------------------------------|------------------|------------|
-| v1.0.0                 | 9.4 <br> 9.5           | ubuntu22.04 <br> rhel8.x <br> rhel9.x | 1.3.x <br> 1.4.x | 1.20       |
+| v1.0.0                 | 9.4 <br> 9.5           | ubuntu22.04 <br> rhel8.x <br> rhel9.x | 1.4.x <br> 1.5.x | 1.20       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
 * Cluster
