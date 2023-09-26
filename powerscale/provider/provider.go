@@ -19,8 +19,9 @@ package provider
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"terraform-provider-powerscale/client"
+
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 
@@ -177,6 +178,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewAdsProviderDataSource,
 		NewUserGroupDataSource,
 		NewNfsExportDataSource,
+		NewSnapshotDataSource,
 	}
 }
 

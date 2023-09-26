@@ -18,6 +18,10 @@ limitations under the License.
 package constants
 
 const (
+
+	// ReadSnapshotErrorMessage specifies error details occurred while reading Snapshots.
+	ReadSnapshotErrorMessage = "Could not read snapshots"
+
 	// ReadAccessZoneErrorMsg specifies error details occurred while reading Access Zones.
 	ReadAccessZoneErrorMsg = "Could not read access zones "
 
