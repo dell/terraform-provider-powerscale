@@ -144,4 +144,7 @@ const (
 
 	// ReadClusterErrorMsg specifies error details occurred while reading cluster.
 	ReadClusterErrorMsg = "Could not read cluster "
+
+	// ListSnapshotSchedulesMsg specifies error details occurred while listing snapshot schedules.
+	ListSnapshotSchedulesMsg = "Could not list snapshot schedules "
 )
