@@ -94,13 +94,17 @@ Optional:
 <a id="nestedatt--snapshots_details"></a>
 ### Nested Schema for `snapshots_details`
 
+Optional:
+
+- `set_expires` (String) The amount of time from creation before the snapshot will expire and be eligible for automatic deletion.
+
 Read-Only:
 
 - `alias` (String) The name of the alias, none for real snapshots.
 - `created` (Number) The Unix Epoch time the snapshot was created.
 - `expires` (Number) The Unix Epoch time the snapshot will expire and be eligible for automatic deletion.
 - `has_locks` (Boolean) True if the snapshot has one or more locks present see, see the locks subresource of a snapshot for a list of lock.
-- `id` (Number) The system ID given to the snapshot. This is useful for tracking the status of delete pending snapshots.
+- `id` (String) The system ID given to the snapshot. This is useful for tracking the status of delete pending snapshots.
 - `name` (String) The user or system supplied snapshot name. This will be null for snapshots pending delete.
 - `path` (String) The /ifs path snapshotted.
 - `pct_filesystem` (Number) Percentage of /ifs used for storing this snapshot.

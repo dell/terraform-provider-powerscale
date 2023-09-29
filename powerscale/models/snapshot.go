@@ -40,10 +40,12 @@ type SnapshotDetailModel struct {
 	Created types.Int64 `tfsdk:"created"`
 	// The Unix Epoch time the snapshot will expire and be eligible for automatic deletion.
 	Expires types.Int64 `tfsdk:"expires"`
+	// The Unix Epoch time the snapshot will expire and be eligible for automatic deletion.
+	SetExpires types.String `tfsdk:"set_expires"`
 	// True if the snapshot has one or more locks present see, see the locks subresource of a snapshot for a list of locks.
 	HasLocks types.Bool `tfsdk:"has_locks"`
 	// The system ID given to the snapshot. This is useful for tracking the status of delete pending snapshots.
-	ID types.Int64 `tfsdk:"id"`
+	ID types.String `tfsdk:"id"`
 	// The user or system supplied snapshot name. This will be null for snapshots pending delete.
 	Name types.String `tfsdk:"name"`
 	// The /ifs path snapshotted.

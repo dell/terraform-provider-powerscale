@@ -22,6 +22,15 @@ const (
 	// ReadSnapshotErrorMessage specifies error details occurred while reading Snapshots.
 	ReadSnapshotErrorMessage = "Could not read snapshots"
 
+	// CreateSnapshotErrorMessage specifies error details occurred while create a Snapshot.
+	CreateSnapshotErrorMessage = "Could not create snapshot"
+
+	// UpdateSnapshotErrorMessage specifies error details occurred while delete a Snapshot.
+	UpdateSnapshotErrorMessage = "Could not update snapshot"
+
+	// DeleteSnapshotErrorMessage specifies error details occurred while delete a Snapshot.
+	DeleteSnapshotErrorMessage = "Could not delete snapshot"
+
 	// ReadAccessZoneErrorMsg specifies error details occurred while reading Access Zones.
 	ReadAccessZoneErrorMsg = "Could not read access zones "
 

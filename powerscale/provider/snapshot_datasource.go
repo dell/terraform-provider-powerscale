@@ -82,12 +82,18 @@ func (d *SnapshotDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 							MarkdownDescription: "The Unix Epoch time the snapshot will expire and be eligible for automatic deletion.",
 							Computed:            true,
 						},
+						"set_expires": schema.StringAttribute{
+							Description:         "The amount of time from creation before the snapshot will expire and be eligible for automatic deletion.",
+							MarkdownDescription: "The amount of time from creation before the snapshot will expire and be eligible for automatic deletion.",
+							Optional:            true,
+							Computed:            true,
+						},
 						"has_locks": schema.BoolAttribute{
 							Description:         "True if the snapshot has one or more locks present see, see the locks subresource of a snapshot for a list of lock.",
 							MarkdownDescription: "True if the snapshot has one or more locks present see, see the locks subresource of a snapshot for a list of lock.",
 							Computed:            true,
 						},
-						"id": schema.Int64Attribute{
+						"id": schema.StringAttribute{
 							Description:         "The system ID given to the snapshot. This is useful for tracking the status of delete pending snapshots.",
 							MarkdownDescription: "The system ID given to the snapshot. This is useful for tracking the status of delete pending snapshots.",
 							Computed:            true,
