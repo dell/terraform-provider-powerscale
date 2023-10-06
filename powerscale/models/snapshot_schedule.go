@@ -64,3 +64,27 @@ type SnapshotScheduleFilter struct {
 	// custom names filter to filter on snapshot schedule names
 	Names []types.String `tfsdk:"names"`
 }
+
+// SnapshotScheduleResource Defines the Snapshot schedule entity
+type SnapshotScheduleResource struct {
+	// Alias name to create for each snapshot.
+	Alias types.String `tfsdk:"alias"`
+	// Time in seconds added to creation time to construction expiration time.
+	Duration types.Int64 `tfsdk:"duration"`
+	// The system ID given to the schedule.
+	ID types.String `tfsdk:"id"`
+	// The schedule name.
+	Name types.String `tfsdk:"name"`
+	// Unix Epoch time of next snapshot to be created.
+	NextRun types.Int64 `tfsdk:"next_run"`
+	// Formatted name (see pattern) of next snapshot to be created.
+	NextSnapshot types.String `tfsdk:"next_snapshot"`
+	// The /ifs path snapshotted.
+	Path types.String `tfsdk:"path"`
+	// Pattern expanded with strftime to create snapshot names.
+	Pattern types.String `tfsdk:"pattern"`
+	// The isidate compatible natural language description of the schedule.
+	Schedule types.String `tfsdk:"schedule"`
+	//Time value in String for which snapshots created by this snapshot schedule should be retained. Values supported are of format : "Never Expires, x Seconds(s), x Minute(s), x Hour(s), x Week(s), x Day(s), x Month(s), x Year(s) where x can be any integer value.
+	RetentionTime types.String `tfsdk:"retention_time"`
+}
