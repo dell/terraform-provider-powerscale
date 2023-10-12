@@ -147,4 +147,16 @@ const (
 
 	// ListSnapshotSchedulesMsg specifies error details occurred while listing snapshot schedules.
 	ListSnapshotSchedulesMsg = "Could not list snapshot schedules "
+
+	// ReadSnapshotScheduleErrorMessage specifies error details occurred while reading Snapshot schedule.
+	ReadSnapshotScheduleErrorMessage = "Could not read snapshot schedule"
+
+	// CreateSnapshotScheduleErrorMessage specifies error details occurred while create a Snapshot schedule.
+	CreateSnapshotScheduleErrorMessage = "Could not create snapshot schedule"
+
+	// UpdateSnapshotScheduleErrorMessage specifies error details occurred while delete a Snapshot schedule.
+	UpdateSnapshotScheduleErrorMessage = "Could not update snapshot schedule"
+
+	// DeleteSnapshotScheduleErrorMessage specifies error details occurred while delete a Snapshot schedule.
+	DeleteSnapshotScheduleErrorMessage = "Could not delete snapshot schedule"
 )
