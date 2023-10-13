@@ -204,7 +204,7 @@ func (r *SnapshotResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	state, err := helper.SnapshotResourceDetailMapper(ctx, result)
+	state, err := helper.SnapshotResourceDetailMapper(ctx, *result)
 	if err != nil {
 		resp.Diagnostics.AddError(constants.CreateSnapshotErrorMessage+" with error: ", err.Error())
 		return

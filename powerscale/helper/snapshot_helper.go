@@ -53,7 +53,7 @@ func ModifySnapshot(ctx context.Context, client *client.Client, id string, edit 
 }
 
 // CreateSnapshot returns the full list of snapshots.
-func CreateSnapshot(ctx context.Context, client *client.Client, plan *models.SnapshotDetailModel) (powerscale.Createv1SnapshotSnapshotResponse, error) {
+func CreateSnapshot(ctx context.Context, client *client.Client, plan *models.SnapshotDetailModel) (*powerscale.Createv1SnapshotSnapshotResponse, error) {
 	expire := CalclulateExpire(plan.SetExpires.ValueString())
 	nameDefault := time.Now().String()
 	// Path should always be set
@@ -74,7 +74,7 @@ func CreateSnapshot(ctx context.Context, client *client.Client, plan *models.Sna
 	createParam := client.PscaleOpenAPIClient.SnapshotApi.CreateSnapshotv1SnapshotSnapshot(ctx)
 	createParam = createParam.V1SnapshotSnapshot(createBody)
 	result, _, err := createParam.Execute()
-	return *result, err
+	return result, err
 }
 
 // SnapshotDetailMapper Does the mapping from response to model.
