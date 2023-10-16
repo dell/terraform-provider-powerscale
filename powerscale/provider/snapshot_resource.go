@@ -79,10 +79,10 @@ func (r *SnapshotResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
-					stringvalidator.LengthAtMost(64),
+					stringvalidator.LengthAtMost(255),
 					stringvalidator.RegexMatches(
-						regexp.MustCompile(`^[a-zA-Z0-9_-]*$`),
-						"must contain only alphanumeric characters and _-",
+						regexp.MustCompile(`^[a-zA-Z0-9_\-$@#&]*$`),
+						"must contain only alphanumeric characters and _-$@#&",
 					),
 				},
 			},
