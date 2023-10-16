@@ -182,6 +182,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewNfsExportDataSource,
 		NewSnapshotDataSource,
 		NewSnapshotScheduleDataSource,
+		NewQuotaDataSource,
 	}
 }
 

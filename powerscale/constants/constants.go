@@ -159,4 +159,7 @@ const (
 
 	// DeleteSnapshotScheduleErrorMessage specifies error details occurred while delete a Snapshot schedule.
 	DeleteSnapshotScheduleErrorMessage = "Could not delete snapshot schedule"
+
+	// ListQuotaMsg specifies error details occurred while listing quotas.
+	ListQuotaMsg = "Could not list quotas "
 )
