@@ -105,7 +105,7 @@ func TestAccSnapshotResourceMapperError(t *testing.T) {
 					if createSnapMocker != nil {
 						createSnapMocker.UnPatch()
 					}
-					createSnapMocker = Mock(helper.CreateSnapshot).Return(create, nil).Build()
+					createSnapMocker = Mock(helper.CreateSnapshot).Return(&create, nil).Build()
 					snapMocker = Mock(helper.SnapshotResourceDetailMapper).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotResourceConfig,
