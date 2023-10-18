@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/cookiejar"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -49,6 +50,75 @@ type AuthContextKey string
 // Client type is to hold powerscale client.
 type Client struct {
 	PscaleOpenAPIClient *powerscale.APIClient
+	OnefsVersion        OnefsVersion
+}
+
+// OnefsVersion present OneFS release version.
+type OnefsVersion struct {
+	Major, Minor, Patch int
+}
+
+func (v OnefsVersion) IsEqualTo(version string) bool {
+	parsedVersion, err := parseVersion(version)
+	if err != nil {
+		return false
+	}
+	return v.compare(parsedVersion) == 0
+}
+
+func (v OnefsVersion) IsLessThan(version string) bool {
+	parsedVersion, err := parseVersion(version)
+	if err != nil {
+		return false
+	}
+	return v.compare(parsedVersion) < 0
+}
+
+func (v OnefsVersion) IsGreaterThan(version string) bool {
+	parsedVersion, err := parseVersion(version)
+	if err != nil {
+		return false
+	}
+	return v.compare(parsedVersion) > 0
+}
+
+func parseVersion(version string) (*OnefsVersion, error) {
+	parts := strings.Split(version, ".")
+	if len(parts) != 3 {
+		return nil, fmt.Errorf("invalid version format")
+	}
+
+	major, err := strconv.Atoi(parts[0])
+	if err != nil {
+		return nil, fmt.Errorf("invalid major version")
+	}
+
+	minor, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return nil, fmt.Errorf("invalid minor version")
+	}
+
+	patch, err := strconv.Atoi(parts[2])
+	if err != nil {
+		return nil, fmt.Errorf("invalid patch version")
+	}
+
+	return &OnefsVersion{Major: major, Minor: minor, Patch: patch}, nil
+}
+
+func (v OnefsVersion) compare(other *OnefsVersion) int {
+	if v.Major != other.Major {
+		return v.Major - other.Major
+	}
+	if v.Minor != other.Minor {
+		return v.Minor - other.Minor
+	}
+	return v.Patch - other.Patch
+}
+
+// String return formatted version string.
+func (v OnefsVersion) String() string {
+	return fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
 }
 
 // NewClient returns the client.
@@ -67,9 +137,27 @@ func NewClient(endpoint string,
 	if err != nil {
 		return nil, err
 	}
+
 	client := Client{
 		PscaleOpenAPIClient: openAPIClient,
 	}
+
+	// Inject OneFS version
+	config, _, err := openAPIClient.ClusterApi.GetClusterv3ClusterConfig(context.Background()).Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	parts := strings.Split(config.OnefsVersion.Release, ".")
+	if len(parts) > 2 {
+		major, _ := strconv.Atoi(parts[0])
+		minor, _ := strconv.Atoi(parts[1])
+		patch, _ := strconv.Atoi(parts[2])
+		client.OnefsVersion = OnefsVersion{major, minor, patch}
+	} else {
+		return nil, errors.New("Unable to parse OneFS version " + config.OnefsVersion.Release)
+	}
+
 	return &client, nil
 }
 

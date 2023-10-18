@@ -1,8 +1,24 @@
+/*
+Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+
+Licensed under the Mozilla Public License Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://mozilla.org/MPL/2.0/
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// V12GroupnetSubnets struct for V12GroupnetSubnets
+// V12GroupnetSubnets struct for V12GroupnetSubnets.
 type V12GroupnetSubnets struct {
 	ID           types.String                `tfsdk:"id"`
 	Subnets      []V12GroupnetSubnetExtended `tfsdk:"subnets"`
@@ -15,7 +31,7 @@ type SubnetFilterType struct {
 	GroupnetName types.String   `tfsdk:"groupnet_name"`
 }
 
-// V12GroupnetSubnetExtended struct for V12GroupnetSubnetExtended
+// V12GroupnetSubnetExtended struct for V12GroupnetSubnetExtended.
 type V12GroupnetSubnetExtended struct {
 	// IP address format.
 	AddrFamily types.String `tfsdk:"addr_family"`
@@ -51,7 +67,7 @@ type V12GroupnetSubnetExtended struct {
 	VlanID types.Int64 `tfsdk:"vlan_id"`
 }
 
-// V12GroupnetSubnetScServiceAddr struct for V12GroupnetSubnetScServiceAddr
+// V12GroupnetSubnetScServiceAddr struct for V12GroupnetSubnetScServiceAddr.
 type V12GroupnetSubnetScServiceAddr struct {
 	// High IP
 	High types.String `tfsdk:"high"`
