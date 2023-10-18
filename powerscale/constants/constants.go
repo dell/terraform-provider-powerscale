@@ -177,4 +177,16 @@ const (
 
 	// ListSubnetErrorMsg specifies error details occurred while listing subnets.
 	ListSubnetErrorMsg = "Could not list subnets "
+
+	// ReadGroupnetErrorMsg specifies error details occurred while reading groupnet.
+	ReadGroupnetErrorMsg = "Could not read groupnet "
+
+	// CreateGroupnetErrorMsg specifies error details occurred while creating a groupnet.
+	CreateGroupnetErrorMsg = "Could not create groupnet "
+
+	// UpdateGroupnetErrorMsg specifies error details occurred while updating a groupnet.
+	UpdateGroupnetErrorMsg = "Could not update groupnet "
+
+	// DeleteGroupnetErrorMsg specifies error details occurred while deleting a groupnet.
+	DeleteGroupnetErrorMsg = "Could not delete groupnet "
 )
