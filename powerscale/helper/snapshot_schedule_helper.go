@@ -51,7 +51,7 @@ func ListSnapshotSchedules(ctx context.Context, client *client.Client, ssFilter 
 	return snapshotSchedules.Schedules, nil
 }
 
-// ParseTimeStringToSeconds takes a string time value(in a specific format) and converts it to seconds
+// ParseTimeStringToSeconds takes a string time value(in a specific format) and converts it to seconds.
 func ParseTimeStringToSeconds(timeString string) (*int32, error) {
 	if timeString == "Never Expires" {
 		return nil, nil
@@ -137,7 +137,7 @@ func SnapshotScheduleMapper(ctx context.Context, snapshotSchedule powerscale.V1S
 	return nil
 }
 
-// UpdateSnapshotSchedule updates the Snapshot Schedule
+// UpdateSnapshotSchedule updates the Snapshot Schedule.
 func UpdateSnapshotSchedule(ctx context.Context, client *client.Client, plan *models.SnapshotScheduleResource, state *models.SnapshotScheduleResource) error {
 	ss := *powerscale.NewV1SnapshotScheduleExtendedExtended()
 
@@ -174,7 +174,7 @@ func UpdateSnapshotSchedule(ctx context.Context, client *client.Client, plan *mo
 	return err
 }
 
-// GetSpecificSnapshotSchedule returns a Snapshot Schedule
+// GetSpecificSnapshotSchedule returns a Snapshot Schedule.
 func GetSpecificSnapshotSchedule(ctx context.Context, client *client.Client, id string) (powerscale.V1SnapshotScheduleExtendedExtendedExtended, error) {
 	ss := powerscale.V1SnapshotScheduleExtendedExtendedExtended{}
 	result, _, err := client.PscaleOpenAPIClient.SnapshotApi.GetSnapshotv1SnapshotSchedule(ctx, id).Execute()

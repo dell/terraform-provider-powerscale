@@ -19,7 +19,7 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// SnapshotScheduleDataSourceModel Defines the Snapshot schedule datasource model
+// SnapshotScheduleDataSourceModel Defines the Snapshot schedule datasource model.
 type SnapshotScheduleDataSourceModel struct {
 	ID                types.String             `tfsdk:"id"`
 	SnapshotSchedules []SnapshotScheduleEntity `tfsdk:"schedules"`
@@ -28,7 +28,7 @@ type SnapshotScheduleDataSourceModel struct {
 	SnapshotScheduleFilter *SnapshotScheduleFilter `tfsdk:"filter"`
 }
 
-// SnapshotScheduleEntity Defines the Snapshot schedule entity
+// SnapshotScheduleEntity Defines the Snapshot schedule entity.
 type SnapshotScheduleEntity struct {
 	// Alias name to create for each snapshot.
 	Alias types.String `tfsdk:"alias"`
@@ -50,7 +50,7 @@ type SnapshotScheduleEntity struct {
 	Schedule types.String `tfsdk:"schedule"`
 }
 
-// SnapshotScheduleFilter defines the snapshot schedule filter
+// SnapshotScheduleFilter defines the snapshot schedule filter.
 type SnapshotScheduleFilter struct {
 	// filters supported by api
 
@@ -65,7 +65,7 @@ type SnapshotScheduleFilter struct {
 	Names []types.String `tfsdk:"names"`
 }
 
-// SnapshotScheduleResource Defines the Snapshot schedule entity
+// SnapshotScheduleResource Defines the Snapshot schedule entity.
 type SnapshotScheduleResource struct {
 	// Alias name to create for each snapshot.
 	Alias types.String `tfsdk:"alias"`

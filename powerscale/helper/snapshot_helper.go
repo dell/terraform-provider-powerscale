@@ -34,7 +34,7 @@ func GetAllSnapshots(ctx context.Context, client *client.Client) ([]powerscale.V
 	return result.GetSnapshots(), err
 }
 
-// GetSpecificSnapshot returns a specific snapshot based on the id
+// GetSpecificSnapshot returns a specific snapshot based on the id.
 func GetSpecificSnapshot(ctx context.Context, client *client.Client, id string) (powerscale.Createv1SnapshotSnapshotResponse, error) {
 	snap := powerscale.Createv1SnapshotSnapshotResponse{}
 	result, _, err := client.PscaleOpenAPIClient.SnapshotApi.GetSnapshotv1SnapshotSnapshot(ctx, id).Execute()

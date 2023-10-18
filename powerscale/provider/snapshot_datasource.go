@@ -230,7 +230,7 @@ func (d *SnapshotDataSource) Read(ctx context.Context, req datasource.ReadReques
 				state.Snapshots = append(state.Snapshots, sdm)
 			}
 		}
-		// If after the filter the lenght is still zero then that filter is invalid
+		// If after the filter the length is still zero then that filter is invalid
 		if len(state.Snapshots) == 0 {
 			resp.Diagnostics.AddError(
 				"Error getting snapshots",
