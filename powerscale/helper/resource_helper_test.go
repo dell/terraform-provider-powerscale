@@ -26,6 +26,8 @@ import (
 )
 
 type OpenapiStruct struct {
+	FloatVal          float64                   `json:"float_val,omitempty"`
+	FloatPtr          *float64                  `json:"float_ptr,omitempty"`
 	BoolPtr           *bool                     `json:"bool_ptr,omitempty"`
 	BoolVal           bool                      `json:"bool_val,omitempty"`
 	StringPtr         *string                   `json:"string_ptr,omitempty"`
@@ -46,6 +48,7 @@ type OpenapiStruct struct {
 
 type OpenapiChildStruct struct {
 	Str               string                            `json:"str,omitempty"`
+	FloatVal          float64                           `json:"child_float_val,omitempty"`
 	NullableStringVal powerscale.NullableString         `json:"nullable_string_val,omitempty"`
 	GrandSlice        []OpenapiGrandChildSingleStruct   `json:"grand_slice,omitempty"`
 	GrandSlicePtr     *[]OpenapiGrandChildSingleStruct  `json:"grand_slice_ptr,omitempty"`
@@ -53,6 +56,7 @@ type OpenapiChildStruct struct {
 }
 
 type OpenapiChildSingleStruct struct {
+	FloatVal        []float64                      `json:"float_val,omitempty"`
 	Strings         []string                       `json:"strings,omitempty"`
 	Integers        []int64                        `json:"integers,omitempty"`
 	Structs         []OpenapiChildStruct           `json:"structs,omitempty"`
@@ -60,11 +64,14 @@ type OpenapiChildSingleStruct struct {
 	SingleStructPtr *OpenapiGrandChildSingleStruct `json:"single_struct_ptr,omitempty"`
 }
 type OpenapiGrandChildSingleStruct struct {
-	String string `json:"str,omitempty"`
-	IntVal int64  `json:"int_val,omitempty"`
+	FloatVal float64 `json:"float_val,omitempty"`
+	String   string  `json:"str,omitempty"`
+	IntVal   int64   `json:"int_val,omitempty"`
 }
 
 type TfStruct struct {
+	FloatVal          types.Number `tfsdk:"float_val"`
+	FloatPtr          types.Number `tfsdk:"float_ptr"`
 	BoolPtr           types.Bool   `tfsdk:"bool_ptr"`
 	BoolVal           types.Bool   `tfsdk:"bool_val"`
 	StringPtr         types.String `tfsdk:"string_ptr"`
@@ -86,8 +93,11 @@ type TfStruct struct {
 var fakeBool = true
 var fakeString = "fake_string"
 var fakeInt = int64(32)
+var fakeFloat = 25.4
 
 var openapiStructObj = OpenapiStruct{
+	FloatPtr:  &fakeFloat,
+	FloatVal:  fakeFloat,
 	BoolPtr:   &fakeBool,
 	BoolVal:   fakeBool,
 	StringPtr: &fakeString,
@@ -95,7 +105,8 @@ var openapiStructObj = OpenapiStruct{
 	Int64Ptr:  &fakeInt,
 	Int64Val:  fakeInt,
 	NestedSlice: []OpenapiChildStruct{{
-		Str: "fake_child_1",
+		FloatVal: 0.24,
+		Str:      "fake_child_1",
 		Matrix: [][]OpenapiGrandChildSingleStruct{{{
 			String: "matrix_1",
 			IntVal: 0,
@@ -104,8 +115,9 @@ var openapiStructObj = OpenapiStruct{
 		Str: "fake_child_2",
 		GrandSlicePtr: &[]OpenapiGrandChildSingleStruct{
 			{
-				String: "string",
-				IntVal: int64(1),
+				FloatVal: 0.43,
+				String:   "string",
+				IntVal:   int64(1),
 			},
 		},
 	}},

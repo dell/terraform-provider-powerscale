@@ -20,9 +20,45 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"fmt"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
+
+// CreateQuota creates quota.
+func CreateQuota(ctx context.Context, client *client.Client, quota powerscale.V12QuotaQuota, zone string) (*powerscale.CreateResponse, error) {
+	param := client.PscaleOpenAPIClient.QuotaApi.CreateQuotav12QuotaQuota(ctx).V12QuotaQuota(quota)
+	if zone != "" {
+		param.Zone(zone)
+	}
+	response, _, err := param.Execute()
+	return response, err
+}
+
+// GetQuota gets quota.
+func GetQuota(ctx context.Context, client *client.Client, quotaID string, zone string) (*powerscale.V12QuotaQuotasExtended, error) {
+	param := client.PscaleOpenAPIClient.QuotaApi.GetQuotav12QuotaQuota(ctx, quotaID)
+	if zone != "" {
+		param.Zone(zone)
+	}
+	response, _, err := param.Execute()
+	return response, err
+}
+
+// UpdateQuota updates quota.
+func UpdateQuota(ctx context.Context, client *client.Client, quotaID string, updatedQuota powerscale.V12QuotaQuotaExtendedExtended) error {
+	param := client.PscaleOpenAPIClient.QuotaApi.UpdateQuotav12QuotaQuota(ctx, quotaID).V12QuotaQuota(updatedQuota)
+	_, err := param.Execute()
+	return err
+}
+
+// DeleteQuota deletes quota.
+func DeleteQuota(ctx context.Context, client *client.Client, quotaID string) error {
+	param := client.PscaleOpenAPIClient.QuotaApi.DeleteQuotav12QuotaQuota(ctx, quotaID)
+	_, err := param.Execute()
+	return err
+}
 
 // ListQuotas list Quota entities.
 func ListQuotas(ctx context.Context, client *client.Client, quotaFilter *models.QuotaDatasourceFilter) ([]powerscale.V12QuotaQuotaExtended, error) {
@@ -73,4 +109,35 @@ func ListQuotas(ctx context.Context, client *client.Client, quotaFilter *models.
 		totalQuotas = append(totalQuotas, QuotasResponse.Quotas...)
 	}
 	return totalQuotas, nil
+}
+
+// ValidateQuotaUpdate validates if update params contain params only for creating.
+func ValidateQuotaUpdate(plan models.QuotaResource, state models.QuotaResource) error {
+	if (plan.Zone.IsNull() && !state.Zone.IsNull()) || !plan.Zone.Equal(state.Zone) {
+		return fmt.Errorf("do not update field Zone")
+	}
+	if (plan.Path.IsNull() && !state.Path.IsNull()) || !plan.Path.Equal(state.Path) {
+		return fmt.Errorf("do not update field Path")
+	}
+	if (plan.Type.IsNull() && !state.Type.IsNull()) || !plan.Type.Equal(state.Type) {
+		return fmt.Errorf("do not update field Type")
+	}
+	if (plan.IncludeSnapshots.IsNull() && !state.IncludeSnapshots.IsNull()) || !plan.IncludeSnapshots.Equal(state.IncludeSnapshots) {
+		return fmt.Errorf("do not update field IncludeSnapshots")
+	}
+	if (plan.Persona.IsNull() && !state.Persona.IsNull()) || !plan.Persona.Equal(state.Persona) {
+		return fmt.Errorf("do not update field Persona.ID")
+	}
+	return nil
+}
+
+// CleanQuotaPersona handles inconsistency between post/get response different
+func CleanQuotaPersona(ctx context.Context, source types.Object, target types.Object) types.Object {
+	target = assignKnownObjectToUnknown(ctx, source, target)
+	for _, val := range target.Attributes() {
+		if !val.IsNull() {
+			return target
+		}
+	}
+	return types.ObjectNull(target.AttributeTypes(ctx))
 }

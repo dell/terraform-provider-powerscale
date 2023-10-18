@@ -75,6 +75,12 @@ func TestAccQuotaDatasourceErrorCopyField(t *testing.T) {
 }
 
 var QuotaDatasourceConfig = `
+resource "powerscale_quota" "quota_test" {
+	path = "/ifs/tfacc_quota_test"
+	type = "directory"
+	include_snapshots = false
+}
+
 data "powerscale_quota" "quota_datasource_test" {
   filter {
     enforced = false
@@ -86,5 +92,8 @@ data "powerscale_quota" "quota_datasource_test" {
     type = "directory"
     zone  = "System"
   }
+  depends_on = [	
+    powerscale_quota.quota_test
+  ]
 }
 `

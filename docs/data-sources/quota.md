@@ -99,7 +99,7 @@ data "powerscale_quota" "all" {
 
 # Output value of above block by executing 'terraform output' command
 # The user can use the fetched information by the variable data.powerscale_quota.all
-output "powerscale_quota" {
+output "powerscale_quota_all" {
   value = data.powerscale_quota.all
 }
 ```
