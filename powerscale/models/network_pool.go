@@ -104,3 +104,53 @@ type NetworkPoolFilterType struct {
 	AccessZone  types.String   `tfsdk:"access_zone"`
 	AllocMethod types.String   `tfsdk:"alloc_method"`
 }
+
+// NetworkPoolResourceModel describes the resource data model.
+type NetworkPoolResourceModel struct {
+	// Name of a valid access zone to map IP address pool to the zone.
+	AccessZone types.String `tfsdk:"access_zone"`
+	// IP address format.
+	AddrFamily types.String `tfsdk:"addr_family"`
+	// OneFS supports the following NIC aggregation modes.
+	AggregationMode types.String `tfsdk:"aggregation_mode"`
+	// Specifies how IP address allocation is done among pool members.
+	AllocMethod types.String `tfsdk:"alloc_method"`
+	// A description of the pool.
+	Description types.String `tfsdk:"description"`
+	// Name of the groupnet this pool belongs to.
+	Groupnet types.String `tfsdk:"groupnet"`
+	// Unique Pool ID.
+	ID types.String `tfsdk:"id"`
+	// List of interface members in this pool.
+	Ifaces types.List `tfsdk:"ifaces"`
+	// The name of the pool. It must be unique throughout the given subnet.It's a required field with POST method.
+	Name types.String `tfsdk:"name"`
+	// Indicates that pool contains only RDMA RRoCE capable interfaces.
+	Nfsv3RroceOnly types.Bool `tfsdk:"nfsv3_rroce_only"`
+	// List of IP address ranges in this pool.
+	Ranges types.List `tfsdk:"ranges"`
+	// Rebalance policy..
+	RebalancePolicy types.String `tfsdk:"rebalance_policy"`
+	// Names of the rules in this pool.
+	Rules types.List `tfsdk:"rules"`
+	// Time delay in seconds before a node which has been automatically unsuspended becomes usable in SmartConnect responses for pool zones.
+	ScAutoUnsuspendDelay types.Int64 `tfsdk:"sc_auto_unsuspend_delay"`
+	// SmartConnect client connection balancing policy.
+	ScConnectPolicy types.String `tfsdk:"sc_connect_policy"`
+	// SmartConnect zone name for the pool.
+	ScDNSZone types.String `tfsdk:"sc_dns_zone"`
+	// List of SmartConnect zone aliases (DNS names) to the pool.
+	ScDNSZoneAliases types.List `tfsdk:"sc_dns_zone_aliases"`
+	// SmartConnect IP failover policy.
+	ScFailoverPolicy types.String `tfsdk:"sc_failover_policy"`
+	// Name of SmartConnect service subnet for this pool.
+	ScSubnet types.String `tfsdk:"sc_subnet"`
+	// List of LNNs showing currently suspended nodes in SmartConnect.
+	ScSuspendedNodes types.List `tfsdk:"sc_suspended_nodes"`
+	// Time to live value for SmartConnect DNS query responses in seconds.
+	ScTTL types.Int64 `tfsdk:"sc_ttl"`
+	// List of interface members in this pool.
+	StaticRoutes types.List `tfsdk:"static_routes"`
+	// The name of the subnet.
+	Subnet types.String `tfsdk:"subnet"`
+}
