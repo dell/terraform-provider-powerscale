@@ -33,7 +33,7 @@ import (
 )
 
 // UpdateUserDataSourceState updates datasource state.
-func UpdateUserDataSourceState(userState *models.UserDataSourceModel, userResponse []powerscale.V1MappingUsersLookupMappingItemUser, roles []powerscale.V1AuthRoleExtended) {
+func UpdateUserDataSourceState(userState *models.UserDataSourceModel, userResponse []powerscale.V1AuthUserExtended, roles []powerscale.V1AuthRoleExtended) {
 	for _, user := range userResponse {
 		var model models.UserModel
 		updateUserState(&model, user)
@@ -52,7 +52,7 @@ func UpdateUserDataSourceState(userState *models.UserDataSourceModel, userRespon
 }
 
 // updateUserState updates user state.
-func updateUserState(model *models.UserModel, user powerscale.V1MappingUsersLookupMappingItemUser) {
+func updateUserState(model *models.UserModel, user powerscale.V1AuthUserExtended) {
 
 	model.Dn = types.StringValue(user.Dn)
 	model.DNSDomain = types.StringValue(user.DnsDomain)
@@ -91,14 +91,14 @@ func updateUserState(model *models.UserModel, user powerscale.V1MappingUsersLook
 	model.PromptPasswordChange = types.BoolValue(user.PromptPasswordChange)
 	model.UserCanChangePassword = types.BoolValue(user.UserCanChangePassword)
 
-	model.Expiry = types.Int64Value(int64(user.Expiry))
+	model.Expiry = types.Int64Value(user.Expiry)
 	model.MaxPasswordAge = types.Int64Value(int64(user.MaxPasswordAge))
 	model.PasswordExpiry = types.Int64Value(int64(user.PasswordExpiry))
 	model.PasswordLastSet = types.Int64Value(int64(user.PasswordLastSet))
 }
 
 // UpdateUserResourceState updates resource state.
-func UpdateUserResourceState(model *models.UserResourceModel, user powerscale.V1MappingUsersLookupMappingItemUser, roles []powerscale.V1AuthRoleExtended) {
+func UpdateUserResourceState(model *models.UserResourceModel, user powerscale.V1AuthUserExtended, roles []powerscale.V1AuthRoleExtended) {
 	model.Dn = types.StringValue(user.Dn)
 	model.DNSDomain = types.StringValue(user.DnsDomain)
 	model.Domain = types.StringValue(user.Domain)
@@ -137,7 +137,7 @@ func UpdateUserResourceState(model *models.UserResourceModel, user powerscale.V1
 	model.PromptPasswordChange = types.BoolValue(user.PromptPasswordChange)
 	model.UserCanChangePassword = types.BoolValue(user.UserCanChangePassword)
 
-	model.Expiry = types.Int64Value(int64(user.Expiry))
+	model.Expiry = types.Int64Value(user.Expiry)
 	model.MaxPasswordAge = types.Int64Value(int64(user.MaxPasswordAge))
 	model.PasswordExpiry = types.Int64Value(int64(user.PasswordExpiry))
 	model.PasswordLastSet = types.Int64Value(int64(user.PasswordLastSet))
@@ -157,7 +157,7 @@ func UpdateUserResourceState(model *models.UserResourceModel, user powerscale.V1
 }
 
 // GetUsersWithFilter returns all filtered users.
-func GetUsersWithFilter(ctx context.Context, client *client.Client, filter *models.UserFilterType) (users []powerscale.V1MappingUsersLookupMappingItemUser, err error) {
+func GetUsersWithFilter(ctx context.Context, client *client.Client, filter *models.UserFilterType) (users []powerscale.V1AuthUserExtended, err error) {
 	userParams := client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthUsers(ctx)
 
 	if filter != nil {
@@ -336,7 +336,7 @@ func UpdateUser(ctx context.Context, client *client.Client, state *models.UserRe
 		updateParam = updateParam.Provider(plan.QueryProvider.ValueString())
 	}
 
-	body := &powerscale.V1AuthUserExtended{}
+	body := &powerscale.V1AuthUserExtendedExtended{}
 	if !state.Name.Equal(plan.Name) {
 		return fmt.Errorf("may not change user's name")
 	}
