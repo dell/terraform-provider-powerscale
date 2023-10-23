@@ -183,7 +183,7 @@ func GetUsersWithFilter(ctx context.Context, client *client.Client, filter *mode
 
 	result, _, err := userParams.Execute()
 	if err != nil {
-		errStr := constants.ReadRoleErrorMsg + "with error: "
+		errStr := constants.ReadUserErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
 		return nil, fmt.Errorf("error getting users: %s", message)
 	}
@@ -196,7 +196,7 @@ func GetUsersWithFilter(ctx context.Context, client *client.Client, filter *mode
 
 		userParams = client.PscaleOpenAPIClient.AuthApi.ListAuthv1AuthUsers(ctx).Resume(*result.Resume)
 		if result, _, err = userParams.Execute(); err != nil {
-			errStr := constants.ReadRoleErrorMsg + "with error: "
+			errStr := constants.ReadUserErrorMsg + "with error: "
 			message := GetErrorString(err, errStr)
 			return nil, fmt.Errorf("error getting users with resume: %s", message)
 		}
