@@ -67,6 +67,18 @@ const (
 	// DeleteAdsProviderErrorMsg specifies error details occurred while deleting an Ads Provider.
 	DeleteAdsProviderErrorMsg = "Could not delete ads providers "
 
+	// ReadNetworkPoolErrorMsg specifies error details occurred while reading Network Pools.
+	ReadNetworkPoolErrorMsg = "Could not read network pools "
+
+	// CreateNetworkPoolErrorMsg specifies error details occurred while creating a Network Pool.
+	CreateNetworkPoolErrorMsg = "Could not create network pools "
+
+	// UpdateNetworkPoolErrorMsg specifies error details occurred while updating a Network Pool.
+	UpdateNetworkPoolErrorMsg = "Could not update network pools "
+
+	// DeleteNetworkPoolErrorMsg specifies error details occurred while deleting a Network Pool.
+	DeleteNetworkPoolErrorMsg = "Could not delete network pools "
+
 	// ReadUserErrorMsg specifies error details occurred while reading Users.
 	ReadUserErrorMsg = "Could not read users "
 

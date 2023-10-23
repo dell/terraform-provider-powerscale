@@ -72,7 +72,7 @@ func TestAccAdsProviderDataSourceFilter(t *testing.T) {
 }
 
 func TestAccAdsProviderDataSourceAll(t *testing.T) {
-	var azTerraformName = "data.powerscale_adsprovider.all"
+	var adsTerraformName = "data.powerscale_adsprovider.all"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -81,7 +81,7 @@ func TestAccAdsProviderDataSourceAll(t *testing.T) {
 			{
 				Config: ProviderConfig + AdsAllDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet(azTerraformName, "ads_providers_details.#"),
+					resource.TestCheckResourceAttrSet(adsTerraformName, "ads_providers_details.#"),
 				),
 			},
 		},
