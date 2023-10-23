@@ -183,6 +183,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewSnapshotDataSource,
 		NewSnapshotScheduleDataSource,
 		NewQuotaDataSource,
+		NewSubnetDataSource,
 	}
 }
 

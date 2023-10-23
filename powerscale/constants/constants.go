@@ -162,4 +162,7 @@ const (
 
 	// ListQuotaMsg specifies error details occurred while listing quotas.
 	ListQuotaMsg = "Could not list quotas "
+
+	// ListSubnetErrorMsg specifies error details occurred while listing subnets.
+	ListSubnetErrorMsg = "Could not list subnets "
 )
