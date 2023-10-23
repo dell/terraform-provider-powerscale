@@ -73,6 +73,7 @@ func (r *SnapshotScheduleResource) Schema(ctx context.Context, req resource.Sche
 				Computed:            true,
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
 					stringvalidator.LengthAtMost(255),
 				},
 			},
@@ -102,6 +103,7 @@ func (r *SnapshotScheduleResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: "The schedule name.",
 				Required:            true,
 				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
 					stringvalidator.LengthAtMost(255),
 				},
 			},
@@ -123,6 +125,9 @@ func (r *SnapshotScheduleResource) Schema(ctx context.Context, req resource.Sche
 				Optional:            true,
 				Computed:            true,
 				Default:             stringdefault.StaticString("/ifs"),
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"pattern": schema.StringAttribute{
 				Description:         "Pattern expanded with strftime to create snapshot names.Some sample values for pattern are: 'snap-%F' would yield snap-1984-03-20 , 'backup-%FT%T' would yield backup-1984-03-20T22:30:00",
@@ -130,6 +135,9 @@ func (r *SnapshotScheduleResource) Schema(ctx context.Context, req resource.Sche
 				Optional:            true,
 				Computed:            true,
 				Default:             stringdefault.StaticString("ScheduleName_duration_%Y-%m-%d_%H:%M"),
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"schedule": schema.StringAttribute{
 				Description: `The isidate-compatible natural language description of the schedule. It specifies the frequency of the schedule. You can specify this as combination of <interval> and <frequency> where each of them can be defined as: 
@@ -155,6 +163,9 @@ func (r *SnapshotScheduleResource) Schema(ctx context.Context, req resource.Sche
 				Optional: true,
 				Computed: true,
 				Default:  stringdefault.StaticString("every 1 days at 12:00 AM"),
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 		},
 	}
