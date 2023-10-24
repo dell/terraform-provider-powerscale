@@ -58,7 +58,7 @@ type V12GroupnetSubnetExtended struct {
 	// Subnet Prefix Length.
 	Prefixlen types.Int64 `tfsdk:"prefixlen"`
 	// List of IP addresses that SmartConnect listens for DNS requests.
-	ScServiceAddrs []V12GroupnetSubnetScServiceAddr `tfsdk:"sc_service_addrs"`
+	ScServiceAddrs types.List `tfsdk:"sc_service_addrs"`
 	// Domain Name corresponding to the SmartConnect Service Address.
 	ScServiceName types.String `tfsdk:"sc_service_name"`
 	// VLAN tagging enabled or disabled.
@@ -73,4 +73,32 @@ type V12GroupnetSubnetScServiceAddr struct {
 	High types.String `tfsdk:"high"`
 	// Low IP
 	Low types.String `tfsdk:"low"`
+}
+
+// GroupnetSubnetResourceModel struct for GroupnetSubnetResourceModel
+type GroupnetSubnetResourceModel struct {
+	// IP address format.
+	AddrFamily types.String `tfsdk:"addr_family"`
+	// A description of the subnet.
+	Description types.String `tfsdk:"description"`
+	// List of Direct Server Return addresses.
+	DsrAddrs types.List `tfsdk:"dsr_addrs"`
+	// Gateway IP address.
+	Gateway types.String `tfsdk:"gateway"`
+	// Gateway priority.
+	GatewayPriority types.Int64 `tfsdk:"gateway_priority"`
+	// MTU of the subnet.
+	Mtu types.Int64 `tfsdk:"mtu"`
+	// The name of the subnet.
+	Name types.String `tfsdk:"name"`
+	// Subnet Prefix Length.
+	Prefixlen types.Int64 `tfsdk:"prefixlen"`
+	// List of IP addresses that SmartConnect listens for DNS requests.
+	ScServiceAddrs types.List `tfsdk:"sc_service_addrs"`
+	// Domain Name corresponding to the SmartConnect Service Address.
+	ScServiceName types.String `tfsdk:"sc_service_name"`
+	// VLAN tagging enabled or disabled.
+	VlanEnabled types.Bool `tfsdk:"vlan_enabled"`
+	// VLAN ID for all interfaces in the subnet.
+	VlanID types.Int64 `tfsdk:"vlan_id"`
 }
