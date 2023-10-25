@@ -15,8 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# Available actions: Create, Update (alias, name, expire), Delete and Import
+# Available actions: Create, Update (name, expire), Delete and Import
 # After `terraform apply` of this example file it will create a new snapshot for the path name set in `path` attribute on the PowerScale
+
+# Note: This resource can be used to create a manual snapshot at a single point in time. Howerver, if the user wants to take snapshots on a regular cadence, they should use the snapshot_schedules resource. 
 
 # PowerScale Snapshots is a logical pointer to data that is stored on a cluster at a specific point in time.
 resource "powerscale_snapshot" "snap" {

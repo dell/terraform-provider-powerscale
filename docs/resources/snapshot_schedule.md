@@ -82,7 +82,7 @@ resource "powerscale_snapshot_schedule" "snap_schedule" {
   # 			<integer> can include "st," "th," or "rd," e.g., "Every 1st month."
   # 			<day> can be a day of the week or a three-letter abbreviation, e.g., "saturday" or "sat."
   # 			<month> must be the name of the month or its abbreviation, e.g., "July" or "Jul."
-  # 	Some sample values:  "Every 2 days.", "Every 3rd weekday at 11 PM.", "Every month on the 15th at 1:30 AM."`
+  # 	Some sample values:  "Every 2 days", "Every 3rd weekday at 11 PM", "Every month on the 15th at 1:30 AM"`
   # Default set to : "every 1 days at 12:00 AM"
   # schedule = "every 1 days at 12:00 AM"
 
