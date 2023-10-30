@@ -24,12 +24,12 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-var snapMocker *Mocker
-var createSnapMocker *Mocker
+var snapMocker *mockey.Mocker
+var createSnapMocker *mockey.Mocker
 
 func TestAccSnapshotResourceA(t *testing.T) {
 	var snapshotResourceName = "powerscale_snapshot.test"
@@ -79,7 +79,7 @@ func TestAccSnapshotResourceCreateError(t *testing.T) {
 					if createSnapMocker != nil {
 						createSnapMocker.UnPatch()
 					}
-					createSnapMocker = Mock(helper.CreateSnapshot).Return(nil, fmt.Errorf("mock error")).Build()
+					createSnapMocker = mockey.Mock(helper.CreateSnapshot).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error creating snapshot*.`),
@@ -105,8 +105,8 @@ func TestAccSnapshotResourceMapperError(t *testing.T) {
 					if createSnapMocker != nil {
 						createSnapMocker.UnPatch()
 					}
-					createSnapMocker = Mock(helper.CreateSnapshot).Return(&create, nil).Build()
-					snapMocker = Mock(helper.SnapshotResourceDetailMapper).Return(nil, fmt.Errorf("mock error")).Build()
+					createSnapMocker = mockey.Mock(helper.CreateSnapshot).Return(&create, nil).Build()
+					snapMocker = mockey.Mock(helper.SnapshotResourceDetailMapper).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Could not create snapshot*.`),
@@ -135,7 +135,7 @@ func TestAccSnapshotResourceReadAndUpdateError(t *testing.T) {
 			// Read Error
 			{
 				PreConfig: func() {
-					snapMocker = Mock(helper.GetSpecificSnapshot).Return(nil, fmt.Errorf("mock error")).Build()
+					snapMocker = mockey.Mock(helper.GetSpecificSnapshot).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error getting the list of snapshots*.`),
@@ -149,7 +149,7 @@ func TestAccSnapshotResourceReadAndUpdateError(t *testing.T) {
 					if createSnapMocker != nil {
 						createSnapMocker.UnPatch()
 					}
-					snapMocker = Mock(helper.ModifySnapshot).Return(fmt.Errorf("mock error")).Build()
+					snapMocker = mockey.Mock(helper.ModifySnapshot).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotResourceConfigUpdate,
 				ExpectError: regexp.MustCompile(`.*Error editing snapshot*.`),

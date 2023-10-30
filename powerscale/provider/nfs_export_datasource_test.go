@@ -20,7 +20,7 @@ package provider
 import (
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -40,7 +40,7 @@ func TestAccNfsExportDatasource(t *testing.T) {
 						Id:    &id,
 						Paths: []string{"/ifs/primary"},
 					}}
-					FunctionMocker = Mock(helper.ListNFSExports).Return(exports, nil).Build()
+					FunctionMocker = mockey.Mock(helper.ListNFSExports).Return(exports, nil).Build()
 				},
 				Config: ProviderConfig + NfsExportDatasourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -92,7 +92,7 @@ func TestAccNfsExportDatasourceErrorList(t *testing.T) {
 			//Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.ListNFSExports).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.ListNFSExports).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + NfsExportDatasourceGetAllConfig,
 				ExpectError: regexp.MustCompile("mock error"),
@@ -109,7 +109,7 @@ func TestAccNfsExportDatasourceErrorCopy(t *testing.T) {
 			//Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + NfsExportDatasourceGetAllConfig,
 				ExpectError: regexp.MustCompile("mock error"),

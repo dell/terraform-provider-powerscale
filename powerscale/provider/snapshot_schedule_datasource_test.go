@@ -19,7 +19,7 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -85,7 +85,7 @@ func TestAccSnapshotScheduleDataSourceGetErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.ListSnapshotSchedules).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.ListSnapshotSchedules).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotScheduleAllDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -101,7 +101,7 @@ func TestAccSnapshotScheduleDataSourceGetErrCopyAll(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotScheduleAllDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -117,7 +117,7 @@ func TestAccSnapshotScheduleDataSourceGetErrCopy(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotScheduleDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),

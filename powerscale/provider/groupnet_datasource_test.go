@@ -23,7 +23,7 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -92,7 +92,7 @@ func TestAccGroupnetDatasourceErrorCopyField(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + groupnetAllDataSourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
@@ -108,7 +108,7 @@ func TestAccGroupnetDatasourceErrorGetAll(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetAllGroupnets).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetAllGroupnets).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + groupnetAllDataSourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),

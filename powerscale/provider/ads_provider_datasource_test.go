@@ -23,7 +23,7 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -121,7 +121,7 @@ func TestAccAdsProviderDataSourceMappingErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.AdsProviderDetailMapper).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.AdsProviderDetailMapper).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + AdsAllDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),

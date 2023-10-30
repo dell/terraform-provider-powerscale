@@ -17,7 +17,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/stretchr/testify/assert"
@@ -83,7 +83,7 @@ func TestAccAdsProviderResourceErrorRead(t *testing.T) {
 				ResourceName: "powerscale_adsprovider.ads_test",
 				ImportState:  true,
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetAdsProvider).Return(&powerscale.V14ProvidersAdsExtended{}, nil).Build()
+					FunctionMocker = mockey.Mock(helper.GetAdsProvider).Return(&powerscale.V14ProvidersAdsExtended{}, nil).Build()
 				},
 				ExpectError: regexp.MustCompile(".not found"),
 			},
@@ -93,7 +93,7 @@ func TestAccAdsProviderResourceErrorRead(t *testing.T) {
 				ImportState:  true,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetAdsProvider).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetAdsProvider).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
@@ -118,7 +118,7 @@ func TestAccAdsProviderResourceErrorUpdate(t *testing.T) {
 			{
 				Config: ProviderConfig + AdsProviderUpdatedResourceConfig,
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.UpdateAdsProvider).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.UpdateAdsProvider).Return(fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
@@ -127,7 +127,7 @@ func TestAccAdsProviderResourceErrorUpdate(t *testing.T) {
 				Config: ProviderConfig + AdsProviderUpdatedResourceConfig,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetAdsProvider).Return(&powerscale.V14ProvidersAdsExtended{}, nil).Build().
+					FunctionMocker = mockey.Mock(helper.GetAdsProvider).Return(&powerscale.V14ProvidersAdsExtended{}, nil).Build().
 						When(func(ctx context.Context, client *client.Client, adsModel models.AdsProviderResourceModel) bool {
 							return FunctionMocker.Times() == 2
 						})
@@ -139,7 +139,7 @@ func TestAccAdsProviderResourceErrorUpdate(t *testing.T) {
 				Config: ProviderConfig + AdsProviderUpdatedResourceConfig2,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetAdsProvider).Return(nil, fmt.Errorf("mock error")).Build().
+					FunctionMocker = mockey.Mock(helper.GetAdsProvider).Return(nil, fmt.Errorf("mock error")).Build().
 						When(func(ctx context.Context, client *client.Client, adsModel models.AdsProviderResourceModel) bool {
 							return FunctionMocker.Times() == 2
 						})
@@ -196,7 +196,7 @@ func TestAccAdsProviderResourceErrorCopyField(t *testing.T) {
 				ResourceName: "powerscale_adsprovider.ads_test",
 				ImportState:  true,
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + AdsProviderResourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
@@ -204,7 +204,7 @@ func TestAccAdsProviderResourceErrorCopyField(t *testing.T) {
 			{
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build().
+					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build().
 						When(func(ctx context.Context, source, destination interface{}) bool {
 							return FunctionMocker.Times() == 2
 						})
@@ -224,7 +224,7 @@ func TestAccAdsProviderResourceErrorReadState(t *testing.T) {
 			// Create and Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.ReadFromState).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.ReadFromState).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + AdsProviderResourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),

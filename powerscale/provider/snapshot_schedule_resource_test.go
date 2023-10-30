@@ -23,14 +23,14 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/stretchr/testify/assert"
 )
 
-var createSnapshotScheduleMocker *Mocker
-var mapSnapshotScheduleMocker *Mocker
+var createSnapshotScheduleMocker *mockey.Mocker
+var mapSnapshotScheduleMocker *mockey.Mocker
 
 func TestAccSnapshotScheduleResource(t *testing.T) {
 	var snapshotScheduleResourceName = "powerscale_snapshot_schedule.test"
@@ -92,7 +92,7 @@ func TestAccSnapshotScheduleResourceCreateError(t *testing.T) {
 					if mapSnapshotScheduleMocker != nil {
 						mapSnapshotScheduleMocker.UnPatch()
 					}
-					FunctionMocker = Mock(helper.CreateSnapshotSchedule).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CreateSnapshotSchedule).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotScheduleResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error creating snapshot schedule*.`),
@@ -119,7 +119,7 @@ func TestAccSnapshotScheduleResourceReadError(t *testing.T) {
 					if mapSnapshotScheduleMocker != nil {
 						mapSnapshotScheduleMocker.UnPatch()
 					}
-					FunctionMocker = Mock(helper.GetSpecificSnapshotSchedule).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetSpecificSnapshotSchedule).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotScheduleResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error getting the snapshot schedule*.`),
@@ -147,7 +147,7 @@ func TestAccSnapshotScheduleResourceUpdateError(t *testing.T) {
 					if mapSnapshotScheduleMocker != nil {
 						mapSnapshotScheduleMocker.UnPatch()
 					}
-					FunctionMocker = Mock(helper.UpdateSnapshotSchedule).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.UpdateSnapshotSchedule).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotScheduleUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error Updating the snapshot schedule*.`),
@@ -174,8 +174,8 @@ func TestAccSnapshotScheduleResourceGetError(t *testing.T) {
 					if mapSnapshotScheduleMocker != nil {
 						mapSnapshotScheduleMocker.UnPatch()
 					}
-					createSnapshotScheduleMocker = Mock(helper.CreateSnapshotSchedule).Return(&createResp, nil).Build()
-					FunctionMocker = Mock(helper.GetSpecificSnapshotSchedule).Return(nil, fmt.Errorf("mock error")).Build()
+					createSnapshotScheduleMocker = mockey.Mock(helper.CreateSnapshotSchedule).Return(&createResp, nil).Build()
+					FunctionMocker = mockey.Mock(helper.GetSpecificSnapshotSchedule).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotScheduleResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error creating snapshot schedule*.`),
@@ -202,9 +202,9 @@ func TestAccSnapshotScheduleResourceMappingError(t *testing.T) {
 					if mapSnapshotScheduleMocker != nil {
 						mapSnapshotScheduleMocker.UnPatch()
 					}
-					createSnapshotScheduleMocker = Mock(helper.CreateSnapshotSchedule).Return(&createResp, nil).Build()
-					FunctionMocker = Mock(helper.GetSpecificSnapshotSchedule).Return(nil, nil).Build()
-					mapSnapshotScheduleMocker = Mock(helper.SnapshotScheduleMapper).Return(fmt.Errorf("mock error")).Build()
+					createSnapshotScheduleMocker = mockey.Mock(helper.CreateSnapshotSchedule).Return(&createResp, nil).Build()
+					FunctionMocker = mockey.Mock(helper.GetSpecificSnapshotSchedule).Return(nil, nil).Build()
+					mapSnapshotScheduleMocker = mockey.Mock(helper.SnapshotScheduleMapper).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotScheduleResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),

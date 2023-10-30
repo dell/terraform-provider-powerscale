@@ -23,7 +23,7 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -87,7 +87,7 @@ func TestAccFileSystemDataSourceGetAclErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -103,7 +103,7 @@ func TestAccFileSystemDataSourceGetQuotaErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetDirectoryQuota).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetDirectoryQuota).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -119,7 +119,7 @@ func TestAccFileSystemDataSourceGetSnapErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetDirectorySnapshots).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetDirectorySnapshots).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -135,7 +135,7 @@ func TestAccFileSystemDataSourceGetMetaErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),

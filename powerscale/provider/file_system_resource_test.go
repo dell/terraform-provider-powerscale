@@ -23,15 +23,15 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/stretchr/testify/assert"
 )
 
-var createMockerLocal *Mocker
-var setACLMockerLocal *Mocker
-var metadataMocker *Mocker
+var createMockerLocal *mockey.Mocker
+var setACLMockerLocal *mockey.Mocker
+var metadataMocker *mockey.Mocker
 
 func TestFileSystemResource(t *testing.T) {
 	var fileSystemResourceName = "powerscale_filesystem.file_system_test"
@@ -78,7 +78,7 @@ func TestFileSystemResource(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					metadataMocker = Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
+					metadataMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ResourceName: fileSystemResourceName,
 				ImportState:  true,
@@ -96,8 +96,8 @@ func TestFileSystemResource(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					metadataMocker = Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
-					setACLMockerLocal = Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
+					metadataMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
+					setACLMockerLocal = mockey.Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ResourceName: fileSystemResourceName,
 				ImportState:  true,
@@ -177,8 +177,8 @@ func TestFileSystemResourceUpdateMetadataError(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					FunctionMocker = Mock(helper.UpdateFileSystem).Return(nil).Build()
-					metadataMocker = Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.UpdateFileSystem).Return(nil).Build()
+					metadataMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -222,9 +222,9 @@ func TestFileSystemResourceUpdateGetAclError(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					createMockerLocal = Mock(helper.UpdateFileSystem).Return(nil).Build()
-					metadataMocker = Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
-					FunctionMocker = Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
+					createMockerLocal = mockey.Mock(helper.UpdateFileSystem).Return(nil).Build()
+					metadataMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
+					FunctionMocker = mockey.Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -266,7 +266,7 @@ func TestFileSystemResourceUpdateUserErr(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					FunctionMocker = Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error updating user")).Build()
+					FunctionMocker = mockey.Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error updating user")).Build()
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error updating user*.`),
@@ -297,7 +297,7 @@ func TestFileSystemResourceUpdateACLErr(t *testing.T) {
 			//Update owner/group/accessControl, then Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error updating acl")).Build()
+					FunctionMocker = mockey.Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error updating acl")).Build()
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error updating acl*.`),
@@ -313,7 +313,7 @@ func TestFileSystemResourceValidateOwnerErr(t *testing.T) {
 			//Validate owner failed
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.ValidateUserAndGroup).Return(fmt.Errorf("unable to validate user information with error")).Build()
+					FunctionMocker = mockey.Mock(helper.ValidateUserAndGroup).Return(fmt.Errorf("unable to validate user information with error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemResourceConfig,
 				ExpectError: regexp.MustCompile(`.*unable to validate user information with error*.`),
@@ -356,10 +356,10 @@ func TestAccFileSystemResourceGetAclErr(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					createMockerLocal = Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
-					setACLMockerLocal = Mock(helper.ExecuteSetACL).Return(nil, nil, nil).Build()
-					metadataMocker = Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
-					FunctionMocker = Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
+					createMockerLocal = mockey.Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
+					setACLMockerLocal = mockey.Mock(helper.ExecuteSetACL).Return(nil, nil, nil).Build()
+					metadataMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
+					FunctionMocker = mockey.Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -383,9 +383,9 @@ func TestAccFileSystemResourceGetMetaErr(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					createMockerLocal = Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
-					setACLMockerLocal = Mock(helper.ExecuteSetACL).Return(nil, nil, nil).Build()
-					FunctionMocker = Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
+					createMockerLocal = mockey.Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
+					setACLMockerLocal = mockey.Mock(helper.ExecuteSetACL).Return(nil, nil, nil).Build()
+					FunctionMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -410,8 +410,8 @@ func TestAccFileSystemResourceSetAclErr(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					createMockerLocal = Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
-					FunctionMocker = Mock(helper.ExecuteSetACL).Return(nil, nil, fmt.Errorf("mock error")).Build()
+					createMockerLocal = mockey.Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
+					FunctionMocker = mockey.Mock(helper.ExecuteSetACL).Return(nil, nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -435,7 +435,7 @@ func TestAccFileSystemResourceCreateFSErr(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					FunctionMocker = Mock(helper.ExecuteCreate).Return(nil, nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.ExecuteCreate).Return(nil, nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),

@@ -21,7 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
 	"terraform-provider-powerscale/client"
@@ -74,7 +74,7 @@ func TestAccNFSExportErrorCreate(t *testing.T) {
 			{
 				Config: ProviderConfig + NFSExportResourceConfig,
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.CreateNFSExport).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CreateNFSExport).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
@@ -94,7 +94,7 @@ func TestAccNFSExportErrorUpdate(t *testing.T) {
 				Config: ProviderConfig + NFSExportUpdatedResourceConfig,
 				PreConfig: func() {
 					//FunctionMocker.Release()
-					FunctionMocker = Mock(helper.UpdateNFSExport).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.UpdateNFSExport).Return(fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
@@ -102,7 +102,7 @@ func TestAccNFSExportErrorUpdate(t *testing.T) {
 				Config: ProviderConfig + NFSExportUpdatedResourceConfig2,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetNFSExport).Return(nil, fmt.Errorf("mock error")).Build().
+					FunctionMocker = mockey.Mock(helper.GetNFSExport).Return(nil, fmt.Errorf("mock error")).Build().
 						When(func(ctx context.Context, client *client.Client, nfsModel models.NfsExportResource) bool {
 							return FunctionMocker.Times() == 2
 						})
@@ -113,7 +113,7 @@ func TestAccNFSExportErrorUpdate(t *testing.T) {
 				Config: ProviderConfig + NFSExportUpdatedResourceConfig,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetNFSExport).Return(&powerscale.V2NfsExportsExtended{}, nil).Build().
+					FunctionMocker = mockey.Mock(helper.GetNFSExport).Return(&powerscale.V2NfsExportsExtended{}, nil).Build().
 						When(func(ctx context.Context, client *client.Client, nfsModel models.NfsExportResource) bool {
 							return FunctionMocker.Times() == 2
 						})
@@ -124,7 +124,7 @@ func TestAccNFSExportErrorUpdate(t *testing.T) {
 				Config: ProviderConfig + NFSExportUpdatedResourceConfig2,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build().
+					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build().
 						When(func(ctx context.Context, source, destination interface{}) bool {
 							return FunctionMocker.Times() == 2
 						})
@@ -148,7 +148,7 @@ func TestAccNFSExportErrorRead(t *testing.T) {
 				ResourceName: "powerscale_nfs_export.test_export",
 				ImportState:  true,
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetNFSExportByID).Return(&powerscale.V2NfsExportsExtended{}, nil).Build()
+					FunctionMocker = mockey.Mock(helper.GetNFSExportByID).Return(&powerscale.V2NfsExportsExtended{}, nil).Build()
 				},
 				ExpectError: regexp.MustCompile(".not found"),
 			},
@@ -158,7 +158,7 @@ func TestAccNFSExportErrorRead(t *testing.T) {
 				ImportState:  true,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetNFSExportByID).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetNFSExportByID).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
@@ -168,7 +168,7 @@ func TestAccNFSExportErrorRead(t *testing.T) {
 				ImportState:  true,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
@@ -178,7 +178,7 @@ func TestAccNFSExportErrorRead(t *testing.T) {
 				ImportState:  true,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetNFSExport).Return(&powerscale.V2NfsExportsExtended{}, nil).Build()
+					FunctionMocker = mockey.Mock(helper.GetNFSExport).Return(&powerscale.V2NfsExportsExtended{}, nil).Build()
 				},
 				ExpectError: regexp.MustCompile(".not found"),
 			},
@@ -188,7 +188,7 @@ func TestAccNFSExportErrorRead(t *testing.T) {
 				ImportState:  true,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetNFSExport).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetNFSExport).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
@@ -198,7 +198,7 @@ func TestAccNFSExportErrorRead(t *testing.T) {
 				ImportState:  true,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build().
+					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build().
 						When(func(ctx context.Context, source, destination interface{}) bool {
 							return FunctionMocker.Times() == 2
 						})
@@ -219,7 +219,7 @@ func TestAccNFSExportErrorDelete(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.DeleteNFSExport).Return(fmt.Errorf("mock error")).Build().
+					FunctionMocker = mockey.Mock(helper.DeleteNFSExport).Return(fmt.Errorf("mock error")).Build().
 						When(func(ctx context.Context, client *client.Client, nfsModel models.NfsExportResource) bool {
 							return FunctionMocker.Times() == 1
 						})
