@@ -189,4 +189,7 @@ const (
 
 	// DeleteGroupnetErrorMsg specifies error details occurred while deleting a groupnet.
 	DeleteGroupnetErrorMsg = "Could not delete groupnet "
+
+	// ReadSmartPoolSettingsErrorMsg specifies error details occurred while reading smart pool settings.
+	ReadSmartPoolSettingsErrorMsg = "Could not read SmartPool settings "
 )

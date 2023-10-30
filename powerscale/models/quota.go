@@ -40,7 +40,7 @@ type QuotaDatasourceFilter struct {
 	Zone                types.String `tfsdk:"zone"`
 }
 
-// QuotaDatasourceEntity struct for Quota data source model
+// QuotaDatasourceEntity struct for Quota data source model.
 type QuotaDatasourceEntity struct {
 	// If true, SMB shares using the quota directory see the quota thresholds as share size.
 	Container types.Bool `tfsdk:"container"`
@@ -74,7 +74,7 @@ type QuotaDatasourceEntity struct {
 	Usage QuotaUsage `tfsdk:"usage"`
 }
 
-// QuotaThreshold struct for Quota threshold
+// QuotaThreshold struct for Quota threshold.
 type QuotaThreshold struct {
 	// Usage bytes at which notifications will be sent but writes will not be denied.
 	Advisory types.Int64 `tfsdk:"advisory"`
@@ -102,7 +102,7 @@ type QuotaThreshold struct {
 	SoftLastExceeded types.Int64 `tfsdk:"soft_last_exceeded"`
 }
 
-// QuotaUsage struct for QuotaUsage
+// QuotaUsage struct for QuotaUsage.
 type QuotaUsage struct {
 	// Bytes used by governed data apparent to application.
 	Applogical types.Int64 `tfsdk:"applogical"`

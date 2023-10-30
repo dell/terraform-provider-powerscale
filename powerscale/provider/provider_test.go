@@ -27,6 +27,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/joho/godotenv"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"log"
 	"net/http"
@@ -219,4 +220,13 @@ func TestSessionRefresh(t *testing.T) {
 	if resp.StatusCode == http.StatusUnauthorized {
 		t.Errorf("failed to refresh session token")
 	}
+}
+
+func TestOnefsVersion(t *testing.T) {
+	testAccPreCheck(t)
+	version940 := client.OnefsVersion{Major: 9, Minor: 4, Patch: 0}
+	assert.True(t, true, version940.IsGreaterThan("9.3.0"))
+	assert.True(t, true, version940.IsEqualTo("9.4.0"))
+	assert.True(t, true, version940.IsLessThan("9.5.0"))
+	assert.Equal(t, version940.String(), "9.4.0")
 }
