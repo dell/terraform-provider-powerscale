@@ -23,12 +23,12 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-var mocker *Mocker
-var createMocker *Mocker
+var mocker *mockey.Mocker
+var createMocker *mockey.Mocker
 
 func TestAccAccessZoneA(t *testing.T) {
 	var accessZoneResourceName = "powerscale_accesszone.zone"
@@ -107,7 +107,7 @@ func TestAccAccessZoneResourceAfterCreateGetErr(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
-					mocker = Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
+					mocker = mockey.Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
 				},
 				Config:      ProviderConfig + AccessZoneResourceConfig,
 				ExpectError: regexp.MustCompile(`.*access zone read mock error*.`),
@@ -127,8 +127,8 @@ func TestAccAccessZoneResourceGetErr(t *testing.T) {
 					if mocker != nil {
 						mocker.UnPatch()
 					}
-					createMocker = Mock(helper.CreateAccessZones).Return(nil).Build()
-					mocker = Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
+					createMocker = mockey.Mock(helper.CreateAccessZones).Return(nil).Build()
+					mocker = mockey.Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
 				},
 				Config:      ProviderConfig + AccessZoneResourceConfig,
 				ExpectError: regexp.MustCompile(`.*access zone read mock error*.`),
@@ -163,7 +163,7 @@ func TestAccAccessZoneResourceGetImportErr(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
-					mocker = Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
+					mocker = mockey.Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
 				},
 				ResourceName:      accessZoneResourceName,
 				ImportState:       true,
@@ -200,7 +200,7 @@ func TestAccAccessZoneResourceGetImportSpecificErr(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
-					mocker = Mock(helper.GetSpecificZone).Return(nil, fmt.Errorf("access zone read specific mock error")).Build()
+					mocker = mockey.Mock(helper.GetSpecificZone).Return(nil, fmt.Errorf("access zone read specific mock error")).Build()
 				},
 				ResourceName:      accessZoneResourceName,
 				ImportState:       true,

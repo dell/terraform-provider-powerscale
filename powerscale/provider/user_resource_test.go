@@ -23,14 +23,14 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/stretchr/testify/assert"
 )
 
-var userMocker *Mocker
-var userCreateMocker *Mocker
+var userMocker *mockey.Mocker
+var userCreateMocker *mockey.Mocker
 
 func TestAccUserResourceCreate(t *testing.T) {
 	var userResourceName = "powerscale_user.test"
@@ -142,8 +142,8 @@ func TestAccUserResourceCreateMockErr(t *testing.T) {
 					if userCreateMocker != nil {
 						userCreateMocker.UnPatch()
 					}
-					userCreateMocker = Mock(helper.CreateUser).Return(nil).Build()
-					userMocker = Mock(helper.GetUserWithZone).Return(nil, fmt.Errorf("user read mock error")).Build()
+					userCreateMocker = mockey.Mock(helper.CreateUser).Return(nil).Build()
+					userMocker = mockey.Mock(helper.GetUserWithZone).Return(nil, fmt.Errorf("user read mock error")).Build()
 				},
 				Config:      ProviderConfig + userBasicResourceConfig,
 				ExpectError: regexp.MustCompile(`.*user read mock error*.`),
@@ -178,7 +178,7 @@ func TestAccUserRolesResourceImportRolesErr(t *testing.T) {
 					if userCreateMocker != nil {
 						userCreateMocker.UnPatch()
 					}
-					userMocker = Mock(helper.GetAllRolesWithZone).Return(nil, fmt.Errorf("roles read mock error")).Build()
+					userMocker = mockey.Mock(helper.GetAllRolesWithZone).Return(nil, fmt.Errorf("roles read mock error")).Build()
 				},
 				ResourceName:      userResourceName,
 				ImportState:       true,
@@ -215,7 +215,7 @@ func TestAccUserRolesResourceImportGetErr(t *testing.T) {
 					if userCreateMocker != nil {
 						userCreateMocker.UnPatch()
 					}
-					userMocker = Mock(helper.GetUserWithZone).Return(nil, fmt.Errorf("user read mock error")).Build()
+					userMocker = mockey.Mock(helper.GetUserWithZone).Return(nil, fmt.Errorf("user read mock error")).Build()
 				},
 				ResourceName:      userResourceName,
 				ImportState:       true,

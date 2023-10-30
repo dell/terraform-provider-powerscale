@@ -23,7 +23,7 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
@@ -69,7 +69,7 @@ func TestAccClusterConfigError(t *testing.T) {
 			// Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetClusterConfig).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetClusterConfig).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error reading cluster*.`),
@@ -92,7 +92,7 @@ func TestAccClusterIdentityError(t *testing.T) {
 			// Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetClusterIdentity).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetClusterIdentity).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error reading cluster*.`),
@@ -115,7 +115,7 @@ func TestAccClusterNodesError(t *testing.T) {
 			// Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetClusterNodes).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetClusterNodes).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error reading cluster*.`),
@@ -138,7 +138,7 @@ func TestAccClusterInternalNetworksError(t *testing.T) {
 			// Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetClusterInternalNetworks).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetClusterInternalNetworks).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error reading cluster*.`),
@@ -161,7 +161,7 @@ func TestAccClusterAcsError(t *testing.T) {
 			// Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.ListClusterAcs).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.ListClusterAcs).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + testAccClusterDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error reading cluster*.`),

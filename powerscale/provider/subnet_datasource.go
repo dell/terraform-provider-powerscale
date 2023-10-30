@@ -173,10 +173,11 @@ func (d *SubnetDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 		Blocks: map[string]schema.Block{
 			"filter": schema.SingleNestedBlock{
 				Attributes: map[string]schema.Attribute{
-					"names": schema.StringAttribute{
+					"names": schema.SetAttribute{
 						Description:         "List of subnet name.",
 						MarkdownDescription: "List of subnet name.",
 						Optional:            true,
+						ElementType:         types.StringType,
 					},
 					"groupnet_name": schema.StringAttribute{
 						Description:         "Specifies which groupnet to query.",

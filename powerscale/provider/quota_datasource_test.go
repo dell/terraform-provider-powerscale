@@ -19,7 +19,7 @@ package provider
 
 import (
 	"fmt"
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -49,7 +49,7 @@ func TestAccQuotaDatasourceErrorListQuota(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.ListQuotas).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.ListQuotas).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + QuotaDatasourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
@@ -65,7 +65,7 @@ func TestAccQuotaDatasourceErrorCopyField(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + QuotaDatasourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),

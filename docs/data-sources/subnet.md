@@ -89,7 +89,7 @@ output "powerscale_subnet" {
 Optional:
 
 - `groupnet_name` (String) Specifies which groupnet to query.
-- `names` (String) List of subnet name.
+- `names` (Set of String) List of subnet name.
 
 
 <a id="nestedatt--subnets"></a>

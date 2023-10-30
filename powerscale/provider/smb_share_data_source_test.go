@@ -24,7 +24,7 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -68,7 +68,7 @@ func TestAccSmbShareDatasourceGetError(t *testing.T) {
 			//Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.ListSmbShares).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.ListSmbShares).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SmbShareAllDatasourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
@@ -95,7 +95,7 @@ func TestAccSmbShareDatasourcePagination(t *testing.T) {
 					if FunctionMocker != nil {
 						FunctionMocker.Release()
 					}
-					FunctionMocker = Mock(GetMethod(powerscale.ApiListProtocolsv7SmbSharesRequest{}, "Execute")).Return(&shares, nil, nil).Build()
+					FunctionMocker = mockey.Mock(mockey.GetMethod(powerscale.ApiListProtocolsv7SmbSharesRequest{}, "Execute")).Return(&shares, nil, nil).Build()
 					FunctionMocker.When(func() bool {
 						shares := powerscale.V7SmbShares{
 							Digest: nil,
@@ -105,7 +105,7 @@ func TestAccSmbShareDatasourcePagination(t *testing.T) {
 						}
 						if FunctionMocker.MockTimes() > 0 {
 							FunctionMocker.UnPatch()
-							FunctionMocker = Mock(GetMethod(powerscale.ApiListProtocolsv7SmbSharesRequest{}, "Execute")).Return(&shares, nil, nil).Build()
+							FunctionMocker = mockey.Mock(mockey.GetMethod(powerscale.ApiListProtocolsv7SmbSharesRequest{}, "Execute")).Return(&shares, nil, nil).Build()
 						}
 						return FunctionMocker.MockTimes() == 0
 					})
@@ -127,7 +127,7 @@ func TestAccSmbShareDatasourceErrorCopyFields(t *testing.T) {
 			//Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SmbShareAllDatasourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
@@ -136,7 +136,7 @@ func TestAccSmbShareDatasourceErrorCopyFields(t *testing.T) {
 			{
 				PreConfig: func() {
 					FunctionMocker.UnPatch()
-					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SmbShareDatasourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),

@@ -23,7 +23,7 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -73,7 +73,7 @@ func TestAccSnapshotDataSourceGetErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetAllSnapshots).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetAllSnapshots).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotAllDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -89,7 +89,7 @@ func TestAccSnapshotDataSourceMapErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.SnapshotDetailMapper).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.SnapshotDetailMapper).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotAllDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),

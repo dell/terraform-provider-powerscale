@@ -209,7 +209,7 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user 
 		UserAgent:     userAgent,
 		Debug:         false,
 		Servers: powerscale.ServerConfigurations{
-			{
+			powerscale.ServerConfiguration{
 				URL:         endpoint,
 				Description: endpoint,
 			},

@@ -21,7 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/stretchr/testify/assert"
@@ -85,7 +85,7 @@ func TestAccSmbShareResourceErrorRead(t *testing.T) {
 				ResourceName: "powerscale_smb_share.share_test",
 				ImportState:  true,
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.GetSmbShare).Return(&powerscale.V7SmbSharesExtended{}, nil).Build()
+					FunctionMocker = mockey.Mock(helper.GetSmbShare).Return(&powerscale.V7SmbSharesExtended{}, nil).Build()
 				},
 				ExpectError: regexp.MustCompile(".not found"),
 			},
@@ -95,7 +95,7 @@ func TestAccSmbShareResourceErrorRead(t *testing.T) {
 				ImportState:  true,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetSmbShare).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetSmbShare).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
@@ -120,7 +120,7 @@ func TestAccSmbShareResourceErrorUpdate(t *testing.T) {
 			{
 				Config: ProviderConfig + SmbShareUpdatedResourceConfig,
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.UpdateSmbShare).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.UpdateSmbShare).Return(fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
@@ -128,7 +128,7 @@ func TestAccSmbShareResourceErrorUpdate(t *testing.T) {
 			{
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetSmbShare).Return(&powerscale.V7SmbSharesExtended{}, nil).Build().
+					FunctionMocker = mockey.Mock(helper.GetSmbShare).Return(&powerscale.V7SmbSharesExtended{}, nil).Build().
 						When(func(ctx context.Context, client *client.Client, shareID string, zone *string) bool {
 							return FunctionMocker.Times() == 2
 						})
@@ -141,7 +141,7 @@ func TestAccSmbShareResourceErrorUpdate(t *testing.T) {
 				Config: ProviderConfig + SmbShareUpdatedResourceConfig,
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.GetSmbShare).Return(nil, fmt.Errorf("mock error")).Build().
+					FunctionMocker = mockey.Mock(helper.GetSmbShare).Return(nil, fmt.Errorf("mock error")).Build().
 						When(func(ctx context.Context, client *client.Client, shareID string, zone *string) bool {
 							return FunctionMocker.Times() == 2
 						})
@@ -182,7 +182,7 @@ func TestAccSmbShareResourceErrorCopyField(t *testing.T) {
 				ResourceName: "powerscale_smb_share.share_test",
 				ImportState:  true,
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SmbShareResourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
@@ -190,7 +190,7 @@ func TestAccSmbShareResourceErrorCopyField(t *testing.T) {
 			{
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SmbShareUpdatedResourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
@@ -207,7 +207,7 @@ func TestAccSmbShareResourceErrorReadState(t *testing.T) {
 			// Create and Read testing
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.ReadFromState).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.ReadFromState).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SmbShareResourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),

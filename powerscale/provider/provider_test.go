@@ -22,7 +22,7 @@ import (
 	"crypto/tls"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	. "github.com/bytedance/mockey"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -49,7 +49,7 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 
 var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
-var FunctionMocker *Mocker
+var FunctionMocker *mockey.Mocker
 
 func init() {
 	err := godotenv.Load("powerscale.env")
@@ -117,7 +117,6 @@ func TestSessionAuth(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// Read testing
 			{
 				Config: SessionAuthProviderConfig + testAccClusterDataSourceConfig,
 				Check:  resource.TestCheckResourceAttr("data.powerscale_cluster.test", "id", "cluster-data-source"),
@@ -133,7 +132,7 @@ func TestSessionAuthError(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = Mock(client.RequestSession).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(client.RequestSession).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      SessionAuthProviderConfig + testAccClusterDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -157,13 +156,13 @@ func TestSessionAuthUnauthorizedError(t *testing.T) {
 						ProtoMinor: 0,
 						Request:    &http.Request{Method: "POST"},
 						Header: http.Header{
-							"Content-Type": {"application/json"},
+							"Content-Type": []string{"application/json"},
 						},
 						Close:         true,
 						ContentLength: -1,
 						Body:          io.NopCloser(strings.NewReader("abcdef")),
 					}
-					FunctionMocker = Mock(client.RequestSession).Return(response, nil).Build()
+					FunctionMocker = mockey.Mock(client.RequestSession).Return(response, nil).Build()
 				},
 				Config:      SessionAuthProviderConfig + testAccClusterDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*authentication failed*.`),
@@ -199,7 +198,7 @@ func TestSessionRefresh(t *testing.T) {
 		UserAgent:     "terraform-powerscale-provider/1.0.0",
 		HTTPClient:    httpclient,
 		Servers: powerscale.ServerConfigurations{
-			{
+			powerscale.ServerConfiguration{
 				URL:         endpoint,
 				Description: endpoint,
 			},
