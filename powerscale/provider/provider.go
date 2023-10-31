@@ -166,6 +166,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewFileSystemResource,
 		NewSnapshotResource,
 		NewSnapshotScheduleResource,
+		NewGroupnetResource,
 	}
 }
 

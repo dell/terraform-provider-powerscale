@@ -267,6 +267,14 @@ resource "powerscale_user_group" "test" {
 `
 
 var userGroupResourceConfig = `
+resource "powerscale_user" "testDepMember" {
+	name = "tfaccMemberUser"
+}
+
+resource "powerscale_user" "testDepMember2" {
+	name = "tfaccMemberUser2"
+}
+
 resource "powerscale_user_group" "test" {
     name = "tfaccUserGroupCreation"
 
@@ -279,10 +287,23 @@ resource "powerscale_user_group" "test" {
     users = ["tfaccMemberUser"]
     groups    = ["wheel"]
     well_knowns    = ["Everyone"]
+
+	depends_on = [
+		powerscale_user.testDepMember,
+		powerscale_user.testDepMember2
+	  ]
   }
 `
 
 var userGroupUpdateResourceConfig = `
+resource "powerscale_user" "testDepMember" {
+	name = "tfaccMemberUser"
+}
+
+resource "powerscale_user" "testDepMember2" {
+	name = "tfaccMemberUser2"
+}
+
 resource "powerscale_user_group" "test" {
     name = "tfaccUserGroupCreation"
 
@@ -293,6 +314,11 @@ resource "powerscale_user_group" "test" {
     users = ["tfaccMemberUser","tfaccMemberUser2"]
     groups    = ["admin"]
     well_knowns    = ["NT AUTHORITY\\NETWORK"]
+
+	depends_on = [
+		powerscale_user.testDepMember,
+		powerscale_user.testDepMember2
+	  ]
   }
 `
 
