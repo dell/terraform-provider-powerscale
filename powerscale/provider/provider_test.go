@@ -224,8 +224,17 @@ func TestSessionRefresh(t *testing.T) {
 func TestOnefsVersion(t *testing.T) {
 	testAccPreCheck(t)
 	version940 := client.OnefsVersion{Major: 9, Minor: 4, Patch: 0}
-	assert.True(t, true, version940.IsGreaterThan("9.3.0"))
-	assert.True(t, true, version940.IsEqualTo("9.4.0"))
-	assert.True(t, true, version940.IsLessThan("9.5.0"))
+	assert.True(t, version940.IsGreaterThan("9.3.0"))
+	assert.True(t, version940.IsEqualTo("9.4.0"))
+	assert.True(t, version940.IsLessThan("9.5.0"))
 	assert.Equal(t, version940.String(), "9.4.0")
+}
+
+func TestErrorOnefsVersion(t *testing.T) {
+	testAccPreCheck(t)
+	version940 := client.OnefsVersion{Major: 9, Minor: 4, Patch: 0}
+	assert.False(t, version940.IsGreaterThan("a.b.c.d"))
+	assert.False(t, version940.IsGreaterThan("a.3.0"))
+	assert.False(t, version940.IsGreaterThan("9.b.0"))
+	assert.False(t, version940.IsGreaterThan("9.3.c"))
 }

@@ -131,7 +131,7 @@ func ValidateQuotaUpdate(plan models.QuotaResource, state models.QuotaResource) 
 	return nil
 }
 
-// CleanQuotaPersona handles inconsistency between post/get response different
+// CleanQuotaPersona handles inconsistency between post/get response different.
 func CleanQuotaPersona(ctx context.Context, source types.Object, target types.Object) types.Object {
 	target = assignKnownObjectToUnknown(ctx, source, target)
 	for _, val := range target.Attributes() {
