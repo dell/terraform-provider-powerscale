@@ -136,6 +136,11 @@ data "powerscale_user" "test" {
 `
 
 var userFilterNamesDataSourceConfig = `
+resource "powerscale_user" "testDep" {
+	name = "tfaccUserDatasource"
+	uid = 10000
+}
+
 data "powerscale_user" "test" {
   filter {
     names = [
@@ -151,10 +156,18 @@ data "powerscale_user" "test" {
 	# zone = "testZone"
 	# provider = "testProvider"
   }
+  depends_on = [
+	powerscale_user.testDep
+  ]
 }
 `
 
 var userNamesDataSourceConfig = `
+resource "powerscale_user" "testDep" {
+	name = "tfaccUserDatasource"
+	uid = 10000
+}
+
 data "powerscale_user" "test" {
   filter {
     names = [
@@ -170,9 +183,17 @@ data "powerscale_user" "test" {
 		}
 	]
   }
+  depends_on = [
+	powerscale_user.testDep
+  ]
 }
 `
 var userInvalidFilterDataSourceConfig = `
+resource "powerscale_user" "testDep" {
+	name = "tfaccUserDatasource"
+	uid = 10000
+}
+
 data "powerscale_user" "test" {
 	filter {
 	  names = [
@@ -188,6 +209,9 @@ data "powerscale_user" "test" {
 	  zone = " "
 	  provider = " "
 	}
+	depends_on = [
+		powerscale_user.testDep
+	  ]
   }
 `
 

@@ -59,8 +59,8 @@ func TestAccGroupnetDataSourceFilterNames(t *testing.T) {
 					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.allow_wildcard_subdomains", "false"),
 					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.server_side_dns_search", "true"),
 					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.dns_cache_enabled", "true"),
-					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.name", "tfaccGroupnetDatasource"),
-					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.id", "tfaccGroupnetDatasource"),
+					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.name", "tfaccGroupnetDatasourceDep"),
+					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.id", "tfaccGroupnetDatasourceDep"),
 					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.description", "terraform groupnet datasource"),
 					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.dns_search.0", "pie.lab.emc.com"),
 					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.dns_servers.0", "10.230.44.169"),
@@ -117,11 +117,46 @@ func TestAccGroupnetDatasourceErrorGetAll(t *testing.T) {
 	})
 }
 
+func TestAccGroupnetDatasourceReleaseMock(t *testing.T) {
+	var groupnetTerraformName = "data.powerscale_groupnet.all"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + groupnetAllDataSourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet(groupnetTerraformName, "groupnets.#"),
+				),
+			},
+		},
+	})
+}
+
 var groupnetFilterDataSourceConfig = `
+resource "powerscale_groupnet" "test" {
+	name = "tfaccGroupnetDatasourceDep"
+	dns_cache_enabled = true
+	description = "terraform groupnet datasource"
+	allow_wildcard_subdomains = false
+	server_side_dns_search = true
+	dns_resolver_rotate = true
+	dns_search = ["pie.lab.emc.com"]
+	dns_servers = ["10.230.44.169"]
+  }
+
 data "powerscale_groupnet" "test" {
   filter {
-    names = ["tfaccGroupnetDatasource"]
+    names = ["tfaccGroupnetDatasourceDep"]
   }
+  depends_on = [
+	powerscale_groupnet.test
+  ]
 }
 `
 

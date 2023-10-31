@@ -124,6 +124,11 @@ data "powerscale_user_group" "test" {
 `
 
 var userGroupFilterNamesDataSourceConfig = `
+resource "powerscale_user_group" "testDep" {
+	name = "tfaccUserGroupDatasource"
+	gid = 10000
+}
+
 data "powerscale_user_group" "test" {
   filter {
     names = [
@@ -133,10 +138,18 @@ data "powerscale_user_group" "test" {
 		}
 	]
   }
+  depends_on = [
+	powerscale_user_group.testDep
+  ]
 }
 `
 
 var userGroupNamesDataSourceConfig = `
+resource "powerscale_user_group" "testDep" {
+	name = "tfaccUserGroupDatasource"
+	gid = 10000
+}
+
 data "powerscale_user_group" "test" {
   filter {
     names = [
@@ -152,6 +165,9 @@ data "powerscale_user_group" "test" {
 		}
 	]
   }
+  depends_on = [
+	powerscale_user_group.testDep
+  ]
 }
 `
 
