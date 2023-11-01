@@ -150,9 +150,18 @@ func NewClient(endpoint string,
 
 	parts := strings.Split(config.OnefsVersion.Release, ".")
 	if len(parts) > 2 {
-		major, _ := strconv.Atoi(parts[0])
-		minor, _ := strconv.Atoi(parts[1])
-		patch, _ := strconv.Atoi(parts[2])
+		major, err := strconv.Atoi(parts[0])
+		if err != nil {
+			return nil, err
+		}
+		minor, err := strconv.Atoi(parts[1])
+		if err != nil {
+			return nil, err
+		}
+		patch, err := strconv.Atoi(parts[2])
+		if err != nil {
+			return nil, err
+		}
 		client.OnefsVersion = OnefsVersion{major, minor, patch}
 	} else {
 		return nil, errors.New("Unable to parse OneFS version " + config.OnefsVersion.Release)
