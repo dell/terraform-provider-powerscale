@@ -413,7 +413,7 @@ func (d *QuotaDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	var filteredQuotas []models.QuotaDatasourceEntity
 
 	if err != nil {
-		errStr := constants.ListQuotaMsg + "with error: "
+		errStr := constants.ListQuotaErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
 			"Error getting the list of quotas",

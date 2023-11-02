@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -260,6 +261,14 @@ func getStructValue(ctx context.Context, structObj interface{}) (basetypes.Objec
 			} else {
 				valueMap[tag] = types.Int64Null()
 			}
+		case reflect.Float32, reflect.Float64:
+			if elemFieldVal.IsValid() {
+				// Due to accuracy issue, keep the precision as 4
+				floatVal, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", elemFieldVal.Float()), 64)
+				valueMap[tag] = types.NumberValue(big.NewFloat(floatVal))
+			} else {
+				valueMap[tag] = types.NumberNull()
+			}
 		case reflect.String:
 			if elemFieldVal.IsValid() {
 				valueMap[tag] = types.StringValue(elemFieldVal.String())
@@ -437,6 +446,36 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 				} else {
 					destinationField.Set(reflect.ValueOf(boolVal.ValueBool()))
 				}
+			case basetypes.NumberValue:
+				floatVal, ok := sourceValue.Field(i).Interface().(basetypes.NumberValue)
+				if !ok || floatVal.IsNull() || floatVal.IsUnknown() {
+					continue
+				}
+				bigFloat := floatVal.ValueBigFloat()
+				if destinationField.Kind() == reflect.Ptr {
+					if destinationField.Type().Elem().Kind() == reflect.Float64 {
+						bigFloatVal, _ := bigFloat.Float64()
+						floatVal, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", bigFloatVal), 64)
+						destinationField.Set(reflect.ValueOf(&floatVal))
+					}
+					if destinationField.Type().Elem().Kind() == reflect.Float32 {
+						bigFloatVal, _ := bigFloat.Float32()
+						floatVal, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", bigFloatVal), 32)
+						float32Val := float32(floatVal)
+						destinationField.Set(reflect.ValueOf(&float32Val))
+					}
+				} else {
+					if destinationField.Kind() == reflect.Float64 {
+						bigFloatVal, _ := bigFloat.Float64()
+						floatVal, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", bigFloatVal), 64)
+						destinationField.Set(reflect.ValueOf(floatVal))
+					}
+					if destinationField.Kind() == reflect.Float32 {
+						bigFloatVal, _ := bigFloat.Float32()
+						floatVal, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", bigFloatVal), 32)
+						destinationField.Set(reflect.ValueOf(float32(floatVal)))
+					}
+				}
 			case basetypes.ObjectValue:
 				objVal, ok := sourceValue.Field(i).Interface().(basetypes.ObjectValue)
 				if !ok || objVal.IsNull() || objVal.IsUnknown() {
@@ -530,6 +569,36 @@ func assignObjectToField(ctx context.Context, source basetypes.ObjectValue, dest
 					destinationField.Set(reflect.ValueOf(boolVal.ValueBoolPointer()))
 				} else {
 					destinationField.Set(reflect.ValueOf(boolVal.ValueBool()))
+				}
+			case basetypes.NumberType{}:
+				floatVal, ok := val.(basetypes.NumberValue)
+				if !ok || floatVal.IsNull() || floatVal.IsUnknown() {
+					continue
+				}
+				bigFloat := floatVal.ValueBigFloat()
+				if destinationField.Kind() == reflect.Ptr {
+					if destinationField.Type().Elem().Kind() == reflect.Float64 {
+						bigFloatVal, _ := bigFloat.Float64()
+						floatVal, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", bigFloatVal), 64)
+						destinationField.Set(reflect.ValueOf(&floatVal))
+					}
+					if destinationField.Type().Elem().Kind() == reflect.Float32 {
+						bigFloatVal, _ := bigFloat.Float32()
+						floatVal, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", bigFloatVal), 32)
+						float32Val := float32(floatVal)
+						destinationField.Set(reflect.ValueOf(&float32Val))
+					}
+				} else {
+					if destinationField.Kind() == reflect.Float64 {
+						bigFloatVal, _ := bigFloat.Float64()
+						floatVal, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", bigFloatVal), 64)
+						destinationField.Set(reflect.ValueOf(floatVal))
+					}
+					if destinationField.Kind() == reflect.Float32 {
+						bigFloatVal, _ := bigFloat.Float32()
+						floatVal, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", bigFloatVal), 32)
+						destinationField.Set(reflect.ValueOf(float32(floatVal)))
+					}
 				}
 			default:
 				typeString := val.Type(ctx).String()

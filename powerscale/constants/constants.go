@@ -172,8 +172,20 @@ const (
 	// DeleteSnapshotScheduleErrorMessage specifies error details occurred while delete a Snapshot schedule.
 	DeleteSnapshotScheduleErrorMessage = "Could not delete snapshot schedule"
 
-	// ListQuotaMsg specifies error details occurred while listing quotas.
-	ListQuotaMsg = "Could not list quotas "
+	// ListQuotaErrorMsg specifies error details occurred while listing quotas.
+	ListQuotaErrorMsg = "Could not list quotas "
+
+	// ReadQuotaErrorMsg specifies error details occurred while reading quotas.
+	ReadQuotaErrorMsg = "Could not read quotas "
+
+	// CreateQuotaErrorMsg specifies error details occurred while creating quotas.
+	CreateQuotaErrorMsg = "Could not create quotas "
+
+	// UpdateQuotaErrorMsg specifies error details occurred while updating quotas.
+	UpdateQuotaErrorMsg = "Could not update quotas "
+
+	// DeleteQuotaErrorMsg specifies error details occurred while deleting quotas.
+	DeleteQuotaErrorMsg = "Could not delete quotas "
 
 	// ListSubnetErrorMsg specifies error details occurred while listing subnets.
 	ListSubnetErrorMsg = "Could not list subnets "

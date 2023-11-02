@@ -19,6 +19,57 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// QuotaResource specifies configuration values for NFS exports.
+type QuotaResource struct {
+	// Optional attributes and can not update
+	// Optional named zone to use for user and group resolution.
+	Zone types.String `tfsdk:"zone"`
+	// Specifies the persona of the file group.
+	Persona types.Object `tfsdk:"persona"`
+
+	// Optional and can update
+	// If true, skip child quota's threshold comparison with parent quota path.
+	IgnoreLimitChecks types.Bool `tfsdk:"ignore_limit_checks"`
+	// Force creation of quotas on the root of /ifs or percent based quotas.
+	Force types.Bool `tfsdk:"force"`
+
+	// Required attributes cannot be updated
+	// If true, quota governs snapshot data as well as head data.
+	IncludeSnapshots types.Bool `tfsdk:"include_snapshots"`
+	// The /ifs path governed.
+	Path types.String `tfsdk:"path"`
+	// The type of quota.
+	Type types.String `tfsdk:"type"`
+
+	// Attributes can be updated only after created
+	// For user, group and directory quotas, true if the quota is linked and controlled by a parent default-* quota. Linked quotas cannot be modified until they are unlinked.
+	Linked types.Bool `tfsdk:"linked"`
+
+	// Attributes can be read and updated
+	// If true, SMB shares using the quota directory see the quota thresholds as share size.
+	Container types.Bool `tfsdk:"container"`
+	// True if the quota provides enforcement, otherwise a accounting quota.
+	Enforced types.Bool `tfsdk:"enforced"`
+	// The thresholds of quota
+	Thresholds types.Object `tfsdk:"thresholds"`
+	// Thresholds apply on quota accounting metric.
+	ThresholdsOn types.String `tfsdk:"thresholds_on"`
+
+	// ReadOnly Attributes
+	// Represents the ratio of logical space provided to physical space used. This accounts for protection overhead, metadata, and compression ratios for the data.
+	EfficiencyRatio types.Number `tfsdk:"efficiency_ratio"`
+	// The system ID given to the quota.
+	ID types.String `tfsdk:"id"`
+	// Summary of notifications: 'custom' indicates one or more notification rules available from the notifications sub-resource; 'default' indicates system default rules are used; 'disabled' indicates that no notifications will be used for this quota.; 'badmap' indicates that notification rule has problem in rule map.
+	Notifications types.String `tfsdk:"notifications"`
+	// True if the default resource accounting is accurate on the quota. If false, this quota is waiting on completion of a QuotaScan job.
+	Ready types.Bool `tfsdk:"ready"`
+	// Represents the ratio of logical space provided to physical data space used. This accounts for compression and data deduplication effects.
+	ReductionRatio types.Number `tfsdk:"reduction_ratio"`
+	// The usage of quota
+	Usage types.Object `tfsdk:"usage"`
+}
+
 // QuotaDatasource holds quotas datasource schema attribute details.
 type QuotaDatasource struct {
 	ID          types.String            `tfsdk:"id"`
