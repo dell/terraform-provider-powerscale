@@ -204,4 +204,10 @@ const (
 
 	// ReadSmartPoolSettingsErrorMsg specifies error details occurred while reading smart pool settings.
 	ReadSmartPoolSettingsErrorMsg = "Could not read SmartPool settings "
+
+	// ReadNetworkSettingErrorMsg specifies error details occurred while reading network setting.
+	ReadNetworkSettingErrorMsg = "Could not read network setting "
+
+	// UpdateNetworkSettingErrorMsg specifies error details occurred while updating network setting.
+	UpdateNetworkSettingErrorMsg = "Could not update network setting "
 )
