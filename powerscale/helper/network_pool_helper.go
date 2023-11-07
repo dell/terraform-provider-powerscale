@@ -25,7 +25,7 @@ import (
 )
 
 // GetNetworkPools Get a list of Network Pools.
-func GetNetworkPools(ctx context.Context, client *client.Client, state models.NetworkPoolDataSourceModel) (*[]powerscale.V12NetworkPool, error) {
+func GetNetworkPools(ctx context.Context, client *client.Client, state models.NetworkPoolDataSourceModel) (*powerscale.V12NetworkPools, error) {
 	networkPoolParams := client.PscaleOpenAPIClient.NetworkApi.GetNetworkv12NetworkPools(ctx)
 
 	if state.NetworkPoolFilter != nil && !state.NetworkPoolFilter.Subnet.IsNull() {
@@ -42,7 +42,7 @@ func GetNetworkPools(ctx context.Context, client *client.Client, state models.Ne
 	}
 
 	networkPools, _, err := networkPoolParams.Execute()
-	return &networkPools.Pools, err
+	return networkPools, err
 }
 
 // NetworkPoolDetailMapper Does the mapping from response to model.
@@ -52,4 +52,30 @@ func NetworkPoolDetailMapper(ctx context.Context, networkPool *powerscale.V12Net
 	model := models.NetworkPoolDetailModel{}
 	err := CopyFields(ctx, networkPool, &model)
 	return model, err
+}
+
+// CreateNetworkPool Create a Network Pool.
+func CreateNetworkPool(ctx context.Context, client *client.Client, groupnet string, subnet string, np powerscale.V12SubnetsSubnetPool) (*powerscale.CreateResponse, error) {
+	npID, _, err := client.PscaleOpenAPIClient.NetworkGroupnetsApi.CreateNetworkGroupnetsv12SubnetsSubnetPool(ctx, groupnet, subnet).V12SubnetsSubnetPool(np).Execute()
+	return npID, err
+}
+
+// GetNetworkPool retrieve Network Pool information.
+func GetNetworkPool(ctx context.Context, client *client.Client, npModel models.NetworkPoolResourceModel) (*powerscale.V12GroupnetsGroupnetSubnetsSubnetPools, error) {
+	queryParam := client.PscaleOpenAPIClient.NetworkApi.GetNetworkv12GroupnetsGroupnetSubnetsSubnetPool(ctx, npModel.Name.ValueString(), npModel.Groupnet.ValueString(), npModel.Subnet.ValueString())
+	npRes, _, err := queryParam.Execute()
+	return npRes, err
+}
+
+// UpdateNetworkPool Update a Network Pool.
+func UpdateNetworkPool(ctx context.Context, client *client.Client, npID string, groupnet string, subnet string, npToUpdate powerscale.V12GroupnetsGroupnetSubnetsSubnetPool) error {
+	updateParam := client.PscaleOpenAPIClient.NetworkApi.UpdateNetworkv12GroupnetsGroupnetSubnetsSubnetPool(ctx, npID, groupnet, subnet)
+	_, err := updateParam.V12GroupnetsGroupnetSubnetsSubnetPool(npToUpdate).Execute()
+	return err
+}
+
+// DeleteNetworkPool Delete a Network Pool.
+func DeleteNetworkPool(ctx context.Context, client *client.Client, npID string, groupnet string, subnet string) error {
+	_, err := client.PscaleOpenAPIClient.NetworkApi.DeleteNetworkv12GroupnetsGroupnetSubnetsSubnetPool(ctx, npID, groupnet, subnet).Execute()
+	return err
 }

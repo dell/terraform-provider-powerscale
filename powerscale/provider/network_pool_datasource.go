@@ -319,7 +319,7 @@ func (d *NetworkPoolDataSource) Read(ctx context.Context, req datasource.ReadReq
 	}
 
 	var networkPools []models.NetworkPoolDetailModel
-	for _, poolItem := range *networkPoolList {
+	for _, poolItem := range networkPoolList.Pools {
 		val := poolItem
 		networkPool, err := helper.NetworkPoolDetailMapper(ctx, &val)
 		if err != nil {

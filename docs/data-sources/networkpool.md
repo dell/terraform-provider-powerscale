@@ -52,6 +52,7 @@ limitations under the License.
 data "powerscale_networkpool" "test" {
   filter {
     #   Optional query parameters
+    #   Note: the following filters will be applied with AND logic
     names = ["pool0"]
     #     subnet = "subnet0"
     #     groupnet = "groupnet0"
