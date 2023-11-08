@@ -19,6 +19,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"fmt"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -85,4 +86,35 @@ func ResumeSubnets(ctx context.Context, client *client.Client, subnets *powersca
 		totalSubnets = append(totalSubnets, subnets.Subnets...)
 	}
 	return &totalSubnets, nil
+}
+
+// CreateSubnet create subnet.
+func CreateSubnet(ctx context.Context, client *client.Client, subnet powerscale.V12GroupnetSubnet, groupnet string) (*powerscale.CreateResponse, error) {
+	subnetID, _, err := client.PscaleOpenAPIClient.NetworkGroupnetsApi.CreateNetworkGroupnetsv12GroupnetSubnet(ctx, groupnet).V12GroupnetSubnet(subnet).Execute()
+	return subnetID, err
+}
+
+// GetSubnet get subnet.
+func GetSubnet(ctx context.Context, client *client.Client, subnetName, groupnet string) (*powerscale.V12GroupnetSubnetExtended, error) {
+	subnets, _, err := client.PscaleOpenAPIClient.NetworkApi.GetNetworkv7GroupnetsGroupnetSubnet(ctx, subnetName, groupnet).Execute()
+	if err != nil {
+		return nil, err
+	}
+	subnetSlice := subnets.GetSubnets()
+	if len(subnetSlice) != 1 {
+		return nil, fmt.Errorf("error get subnet, %d subnets are found with Name: %s", len(subnetSlice), subnetName)
+	}
+	return &subnetSlice[0], err
+}
+
+// UpdateSubnet update subnet.
+func UpdateSubnet(ctx context.Context, client *client.Client, subnetName, groupnet string, subnet powerscale.V16GroupnetsGroupnetSubnet) error {
+	_, err := client.PscaleOpenAPIClient.NetworkApi.UpdateNetworkv7GroupnetsGroupnetSubnet(ctx, subnetName, groupnet).V7GroupnetsGroupnetSubnet(subnet).Execute()
+	return err
+}
+
+// DeleteSubnet delete subnet.
+func DeleteSubnet(ctx context.Context, client *client.Client, subnetName, groupnet string) error {
+	_, err := client.PscaleOpenAPIClient.NetworkApi.DeleteNetworkv7GroupnetsGroupnetSubnet(ctx, subnetName, groupnet).Execute()
+	return err
 }

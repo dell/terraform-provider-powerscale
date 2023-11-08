@@ -210,4 +210,16 @@ const (
 
 	// UpdateNetworkSettingErrorMsg specifies error details occurred while updating network setting.
 	UpdateNetworkSettingErrorMsg = "Could not update network setting "
+
+	// CreateSubnetErrorMsg specifies error details occurred while creating subnet.
+	CreateSubnetErrorMsg = "Could not create subnet "
+
+	// GetSubnetErrorMsg specifies error details occurred while getting subnet.
+	GetSubnetErrorMsg = "Could not get subnet "
+
+	// UpdateSubnetErrorMsg specifies error details occurred while updating subnet.
+	UpdateSubnetErrorMsg = "Could not update subnet "
+
+	// DeleteSubnetErrorMsg specifies error details occurred while deleting subnet.
+	DeleteSubnetErrorMsg = "Could not delete subnet "
 )
