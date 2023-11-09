@@ -14,16 +14,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+terraform {
+  required_providers {
+    powerscale = {
+      source = "registry.terraform.io/dell/powerscale"
+    }
+  }
+}
 
-package models
-
-import "github.com/hashicorp/terraform-plugin-framework/types"
-
-// NetworkSettingModel holds network settings schema attribute details.
-type NetworkSettingModel struct {
-	ID               types.String `tfsdk:"id"`
-	DefaultGroupnet  types.String `tfsdk:"default_groupnet"`
-	SBREnabled       types.Bool   `tfsdk:"source_based_routing_enabled"`
-	SCRebalanceDelay types.Int64  `tfsdk:"sc_rebalance_delay"`
-	TCPPorts         types.List   `tfsdk:"tcp_ports"`
+provider "powerscale" {
+  username = var.username
+  password = var.password
+  endpoint = var.endpoint
+  insecure = var.insecure
 }

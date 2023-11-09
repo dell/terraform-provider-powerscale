@@ -171,6 +171,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewQuotaResource,
 		NewSubnetResource,
 		NewSmartPoolSettingResource,
+		NewNetworkSettingResource,
 	}
 }
 

@@ -15,14 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# powerscale_network_setting provides the ability to configure external network configuration on the cluster.
+# powerscale_network_settings provides the ability to configure external network configuration on the cluster.
 
-# Returns PowerScale network setting detail
-data "powerscale_network_setting" "example" {
+# Returns PowerScale network settings detail
+data "powerscale_network_settings" "example" {
 }
 
 # Output value of above block by executing 'terraform output' command
-# The user can use the fetched information by the variable data.powerscale_network_setting.example
-output "powerscale_network_setting_output" {
-  value = data.powerscale_network_setting.example
+# The user can use the fetched information by the variable data.powerscale_network_settings.example
+output "powerscale_network_settings_output" {
+  value = data.powerscale_network_settings.example
 }
