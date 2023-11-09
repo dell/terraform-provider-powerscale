@@ -21,16 +21,19 @@ limitations under the License.
 # PowerScale subnet allows you to manage the subnet on the Powerscale array
 resource "powerscale_subnet" "subnet" {
 
-  # Required name of the new subnet
+  # Required. Name of the new subnet
   name = "subnet1"
 
-  # Required Name of the groupnet this subnet belongs to
+  # Required. Name of the groupnet this subnet belongs to
+  # Updating is not allowed
+  # when managing resource together with groupnet, recommend:
+  # groupnet = powerscale_groupnet.example_groupnet.name
   groupnet = "groupnet0"
 
-  # Required IP address format
+  # Required. IP address format
   addr_family = "ipv4"
 
-  # Required Subnet Prefix Length
+  # Required. Subnet Prefix Length
   prefixlen = 21
 
   # Optional fields both for creating and updating
@@ -39,10 +42,10 @@ resource "powerscale_subnet" "subnet" {
   #  gateway="0.0.0.0"
   #  gateway_priority=10
   #  mtu=1500
-  #  sc_service_addrs={
+  #  sc_service_addrs=[{
   #    high="0.0.0.0"
   #    low="0.0.0.0"
-  #  }
+  #  }]
   #  sc_service_name=""
   #  vlan_enabled=true
   #  vlan_id=1
