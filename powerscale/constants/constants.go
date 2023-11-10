@@ -222,4 +222,7 @@ const (
 
 	// DeleteSubnetErrorMsg specifies error details occurred while deleting subnet.
 	DeleteSubnetErrorMsg = "Could not delete subnet "
+
+	// UpdateSmartPoolSettingsErrorMsg specifies error details occurred while updating smartpool settings.
+	UpdateSmartPoolSettingsErrorMsg = "Could not update SmartPool settings "
 )

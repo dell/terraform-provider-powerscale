@@ -20,13 +20,14 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"strconv"
 	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 // GetNFSExport retrieve nfs export information.
@@ -278,6 +279,7 @@ func assignKnownObjectToUnknown(ctx context.Context, source types.Object, target
 			}
 		}
 	}
+
 	if len(sourceMap) == 0 && len(targetMap) == 0 {
 		return basetypes.NewObjectNull(target.AttributeTypes(ctx))
 	}

@@ -75,7 +75,7 @@ type V12GroupnetSubnetScServiceAddr struct {
 	Low types.String `tfsdk:"low"`
 }
 
-// GroupnetSubnetResourceModel struct for GroupnetSubnetResourceModel
+// GroupnetSubnetResourceModel struct for GroupnetSubnetResourceModel.
 type GroupnetSubnetResourceModel struct {
 	// IP address format.
 	AddrFamily types.String `tfsdk:"addr_family"`
