@@ -52,7 +52,8 @@ limitations under the License.
 
 # PowerScale network pool allows you to add network interfaces to network pools to associate address ranges with a node or a group of nodes.
 resource "powerscale_networkpool" "pool_test" {
-  #   Required
+  #   Required (subnet and groupnet cannot be modified once designated)
+  #   Recommend using powerscale_groupnet.groupnet_example.name and powerscale_subnet.subnet_example.name to manage network pool together with groupnet and subnet
   name     = "pool_test"
   subnet   = "subnet0"
   groupnet = "groupnet0"
@@ -101,9 +102,9 @@ resource "powerscale_networkpool" "pool_test" {
 
 ### Required
 
-- `groupnet` (String) Name of the groupnet this pool belongs to.
+- `groupnet` (String) Name of the groupnet this pool belongs to. Cannot be modified once designated
 - `name` (String) The name of the pool. It must be unique throughout the given subnet.It's a required field with POST method.
-- `subnet` (String) The name of the subnet.
+- `subnet` (String) The name of the subnet. Cannot be modified once designated
 
 ### Optional
 

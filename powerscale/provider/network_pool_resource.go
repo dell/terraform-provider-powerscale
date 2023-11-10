@@ -91,8 +91,8 @@ func (r *NetworkPoolResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:            true,
 			},
 			"groupnet": schema.StringAttribute{
-				Description:         "Name of the groupnet this pool belongs to.",
-				MarkdownDescription: "Name of the groupnet this pool belongs to.",
+				Description:         "Name of the groupnet this pool belongs to. Cannot be modified once designated",
+				MarkdownDescription: "Name of the groupnet this pool belongs to. Cannot be modified once designated",
 				Required:            true,
 			},
 			"id": schema.StringAttribute{
@@ -245,8 +245,8 @@ func (r *NetworkPoolResource) Schema(ctx context.Context, req resource.SchemaReq
 				},
 			},
 			"subnet": schema.StringAttribute{
-				Description:         "The name of the subnet.",
-				MarkdownDescription: "The name of the subnet.",
+				Description:         "The name of the subnet. Cannot be modified once designated",
+				MarkdownDescription: "The name of the subnet. Cannot be modified once designated",
 				Required:            true,
 			},
 		},
@@ -446,7 +446,7 @@ func (r *NetworkPoolResource) Update(ctx context.Context, req resource.UpdateReq
 		)
 		return
 	}
-	err = helper.UpdateNetworkPool(ctx, r.client, poolPlan.Name.ValueString(), poolPlan.Groupnet.ValueString(), poolPlan.Subnet.ValueString(), poolToUpdate)
+	err = helper.UpdateNetworkPool(ctx, r.client, poolState.Name.ValueString(), poolPlan.Groupnet.ValueString(), poolPlan.Subnet.ValueString(), poolToUpdate)
 	if err != nil {
 		errStr := constants.UpdateNetworkPoolErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
