@@ -102,8 +102,8 @@ func (r *SubnetResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 			},
 			"groupnet": schema.StringAttribute{
-				Description:         "Name of the groupnet this subnet belongs to.",
-				MarkdownDescription: "Name of the groupnet this subnet belongs to.",
+				Description:         "Name of the groupnet this subnet belongs to. Updating is not allowed.",
+				MarkdownDescription: "Name of the groupnet this subnet belongs to. Updating is not allowed.",
 				Required:            true,
 			},
 			"id": schema.StringAttribute{
@@ -335,7 +335,7 @@ func (r SubnetResource) Update(ctx context.Context, request resource.UpdateReque
 		)
 		return
 	}
-	err = helper.UpdateSubnet(ctx, r.client, subnetState.Name.ValueString(), subnetState.Groupnet.ValueString(), subnetToUpdate)
+	err = helper.UpdateSubnet(ctx, r.client, subnetState.Name.ValueString(), subnetPlan.Groupnet.ValueString(), subnetToUpdate)
 	if err != nil {
 		errStr := constants.UpdateSubnetErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
