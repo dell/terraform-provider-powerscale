@@ -19,16 +19,15 @@ package provider
 
 import (
 	"context"
-	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -61,11 +60,126 @@ func (d SmartPoolSettingDataSource) Schema(ctx context.Context, req datasource.S
 			"PowerScale SmartPools settings provide the ability to configure SmartPools on the cluster.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Id of SmartPool settings.",
-				MarkdownDescription: "Id of SmartPool settings.",
+				Description:         "Id of SmartPools settings. Readonly. Fixed value of \"smartpools_settings\"",
+				MarkdownDescription: "Id of SmartPools settings. Readonly. Fixed value of \"smartpools_settings\"",
+				Optional:            false,
+				Required:            false,
 				Computed:            true,
 			},
-			"settings": helper.GetSmartPoolSettingsSchema(),
+			"manage_io_optimization": schema.BoolAttribute{
+				Description:         "Manage I/O optimization settings.",
+				MarkdownDescription: "Manage I/O optimization settings.",
+				Computed:            true,
+			},
+			"manage_io_optimization_apply_to_files": schema.BoolAttribute{
+				Description:         "Apply to files with manually-managed I/O optimization settings.",
+				MarkdownDescription: "Apply to files with manually-managed I/O optimization settings.",
+				Computed:            true,
+			},
+			"manage_protection": schema.BoolAttribute{
+				Description:         "Manage protection settings.",
+				MarkdownDescription: "Manage protection settings.",
+				Computed:            true,
+			},
+			"manage_protection_apply_to_files": schema.BoolAttribute{
+				Description:         "Apply to files with manually-managed protection.",
+				MarkdownDescription: "Apply to files with manually-managed protection.",
+				Computed:            true,
+			},
+			"global_namespace_acceleration_enabled": schema.BoolAttribute{
+				Description:         "Enable global namespace acceleration.",
+				MarkdownDescription: "Enable global namespace acceleration.",
+				Computed:            true,
+			},
+			"global_namespace_acceleration_state": schema.StringAttribute{
+				Description:         "Whether or not namespace operation optimizations are currently in effect.",
+				MarkdownDescription: "Whether or not namespace operation optimizations are currently in effect.",
+				Computed:            true,
+			},
+			"protect_directories_one_level_higher": schema.BoolAttribute{
+				Description:         "Increase directory protection to a higher requested protection than its contents.",
+				MarkdownDescription: "Increase directory protection to a higher requested protection than its contents.",
+				Computed:            true,
+			},
+			"spillover_enabled": schema.BoolAttribute{
+				Description:         "Enable global spillover.",
+				MarkdownDescription: "Enable global spillover.",
+				Computed:            true,
+			},
+			"spillover_target": schema.SingleNestedAttribute{
+				Description:         "Spillover data target.",
+				MarkdownDescription: "Spillover data target.",
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"id": schema.Int64Attribute{
+						Description:         "Target pool ID if target specified, otherwise null.",
+						MarkdownDescription: "Target pool ID if target specified, otherwise null.",
+						Computed:            true,
+					},
+					"name": schema.StringAttribute{
+						Description:         "Target pool name if target specified, otherwise null.",
+						MarkdownDescription: "Target pool name if target specified, otherwise null.",
+						Computed:            true,
+					},
+					"type": schema.StringAttribute{
+						Description:         "Type of target pool.",
+						MarkdownDescription: "Type of target pool.",
+						Computed:            true,
+					},
+				},
+			},
+			"ssd_l3_cache_default_enabled": schema.BoolAttribute{
+				Description:         "Use SSDs as L3 cache by default for new node pools",
+				MarkdownDescription: "Use SSDs as L3 cache by default for new node pools.",
+				Computed:            true,
+			},
+			"ssd_qab_mirrors": schema.StringAttribute{
+				Description:         "Controls number of mirrors of QAB blocks to place on SSDs.",
+				MarkdownDescription: "Controls number of mirrors of QAB blocks to place on SSDs.",
+				Computed:            true,
+			},
+			"ssd_system_btree_mirrors": schema.StringAttribute{
+				Description:         "Controls number of mirrors of system B-tree blocks to place on SSDs.",
+				MarkdownDescription: "Controls number of mirrors of system B-tree blocks to place on SSDs.",
+				Computed:            true,
+			},
+			"ssd_system_delta_mirrors": schema.StringAttribute{
+				Description:         "Controls number of mirrors of system delta blocks to place on SSDs.",
+				MarkdownDescription: "Controls number of mirrors of system delta blocks to place on SSDs.",
+				Computed:            true,
+			},
+			"virtual_hot_spare_deny_writes": schema.BoolAttribute{
+				Description:         "Deny data writes to reserved disk space",
+				MarkdownDescription: "Deny data writes to reserved disk space",
+				Computed:            true,
+			},
+			"virtual_hot_spare_hide_spare": schema.BoolAttribute{
+				Description:         "Subtract the space reserved for the virtual hot spare when calculating available free space",
+				MarkdownDescription: "Subtract the space reserved for the virtual hot spare when calculating available free space",
+				Computed:            true,
+			},
+			"virtual_hot_spare_limit_drives": schema.Int64Attribute{
+				Description:         "The number of drives to reserve for the virtual hot spare, from 0-4.",
+				MarkdownDescription: "The number of drives to reserve for the virtual hot spare, from 0-4.",
+				Computed:            true,
+			},
+			"virtual_hot_spare_limit_percent": schema.Int64Attribute{
+				Description:         "The percent space to reserve for the virtual hot spare, from 0-20.",
+				MarkdownDescription: "The percent space to reserve for the virtual hot spare, from 0-20.",
+				Computed:            true,
+			},
+			"default_transfer_limit_state": schema.StringAttribute{
+				Description:         "How the default transfer limit value is applied. Only available for PowerScale 9.5 and above.",
+				MarkdownDescription: "How the default transfer limit value is applied.Only available for PowerScale 9.5 and above.",
+				Computed:            true,
+				Optional:            true,
+			},
+			"default_transfer_limit_pct": schema.NumberAttribute{
+				Description:         "Applies to all storagepools that fall back on the default transfer limit. Stop moving files to this pool when this limit is met. The value must be between 0 and 100. Only available for PowerScale 9.5 and above.",
+				MarkdownDescription: "Applies to all storagepools that fall back on the default transfer limit. Stop moving files to this pool when this limit is met. The value must be between 0 and 100. Only available for PowerScale 9.5 and above.",
+				Computed:            true,
+				Optional:            true,
+			},
 		},
 	}
 }
@@ -111,58 +225,11 @@ func (d SmartPoolSettingDataSource) Read(ctx context.Context, req datasource.Rea
 		return
 	}
 
-	var sts Settings
-	switch v := settings.(type) {
-	case *powerscale.V16StoragepoolSettings:
-		sts, _ = settings.(*powerscale.V16StoragepoolSettings).GetSettingsOk()
-		err := helper.CopyFields(ctx, settings, &state)
-		if err != nil {
-			resp.Diagnostics.AddError("Failed to map SmartPool settings fields", err.Error())
-			return
-		}
-	case *powerscale.V5StoragepoolSettings:
-		sts, _ = settings.(*powerscale.V5StoragepoolSettings).GetSettingsOk()
-		err := helper.CopyFields(ctx, settings, &state)
-		if err != nil {
-			resp.Diagnostics.AddError("Failed to map SmartPool settings fields", err.Error())
-			return
-		}
-	default:
-		tflog.Error(ctx, fmt.Sprintf("Unknown type %s", v))
-		resp.Diagnostics.AddError("Failed to parse StoragePool Settings.", fmt.Sprintf("Unknown type %s", v))
-		return
-	}
-
-	state.ID = types.StringValue("smartpool_settings_datasource")
-	// Compute the following two values that align with OneFS UI
-	if sts.GetAutomaticallyManageIoOptimization() == "none" {
-		state.Settings.ManageIoOptimization = types.BoolValue(false)
-		state.Settings.ManageIoOptimizationApplyToFiles = types.BoolValue(false)
-	} else if sts.GetAutomaticallyManageIoOptimization() == "files_at_default" {
-		state.Settings.ManageIoOptimization = types.BoolValue(true)
-		state.Settings.ManageIoOptimizationApplyToFiles = types.BoolValue(false)
-	} else if sts.GetAutomaticallyManageIoOptimization() == "all" {
-		state.Settings.ManageIoOptimization = types.BoolValue(true)
-		state.Settings.ManageIoOptimizationApplyToFiles = types.BoolValue(true)
-	}
-
-	if sts.GetAutomaticallyManageProtection() == "none" {
-		state.Settings.ManageProtection = types.BoolValue(false)
-		state.Settings.ManageProtectionApplyToFiles = types.BoolValue(false)
-	} else if sts.GetAutomaticallyManageProtection() == "files_at_default" {
-		state.Settings.ManageProtection = types.BoolValue(true)
-		state.Settings.ManageProtectionApplyToFiles = types.BoolValue(false)
-	} else if sts.GetAutomaticallyManageProtection() == "all" {
-		state.Settings.ManageProtection = types.BoolValue(true)
-		state.Settings.ManageProtectionApplyToFiles = types.BoolValue(true)
+	summary, detail := helper.UpdateSmartPoolSettingsDatasourceModel(ctx, settings, &state)
+	if summary != "" && detail != "" {
+		resp.Diagnostics.AddError(summary, detail)
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-	tflog.Info(ctx, "Done with Read SmartPool Settings data source ")
-}
-
-// Settings The interface of various StoragepoolSettingsSettings.
-type Settings interface {
-	GetAutomaticallyManageIoOptimization() string
-	GetAutomaticallyManageProtection() string
+	tflog.Info(ctx, "Done with Read SmartPoolSettings data source ")
 }
