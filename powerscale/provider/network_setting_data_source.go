@@ -36,7 +36,7 @@ var (
 	_ datasource.DataSourceWithConfigure = &NetworkSettingDataSource{}
 )
 
-// NewNetworkSettingDataSource creates a new network setting data source.
+// NewNetworkSettingDataSource creates a new network settings data source.
 func NewNetworkSettingDataSource() datasource.DataSource {
 	return &NetworkSettingDataSource{}
 }
@@ -48,19 +48,19 @@ type NetworkSettingDataSource struct {
 
 // Metadata describes the data source arguments.
 func (d *NetworkSettingDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_network_setting"
+	resp.TypeName = req.ProviderTypeName + "_network_settings"
 }
 
 // Schema describes the data source arguments.
 func (d *NetworkSettingDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "This datasource is used to query the Network Setting from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. powerscale_network_setting provides the ability to configure external network configuration on the cluster.",
-		Description:         "This datasource is used to query the Network Setting from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. powerscale_network_setting provides the ability to configure external network configuration on the cluster.",
+		MarkdownDescription: "This datasource is used to query the Network Settings from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. powerscale_network_settings provides the ability to configure external network configuration on the cluster.",
+		Description:         "This datasource is used to query the Network Settings from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. powerscale_network_settings provides the ability to configure external network configuration on the cluster.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Network Setting ID.",
-				MarkdownDescription: "Network Setting ID.",
+				Description:         "Network Settings ID.",
+				MarkdownDescription: "Network Settings ID.",
 				Computed:            true,
 			},
 			"default_groupnet": schema.StringAttribute{
@@ -111,7 +111,7 @@ func (d *NetworkSettingDataSource) Configure(ctx context.Context, req datasource
 
 // Read reads data from the data source.
 func (d *NetworkSettingDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Info(ctx, "Reading Network Setting data source ")
+	tflog.Info(ctx, "Reading Network Settings data source ")
 
 	var state models.NetworkSettingModel
 
@@ -124,17 +124,13 @@ func (d *NetworkSettingDataSource) Read(ctx context.Context, req datasource.Read
 
 	setting, err := helper.GetNetworkSetting(ctx, d.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Error getting PowerScale Network Setting.", err.Error())
+		resp.Diagnostics.AddError("Error getting PowerScale Network Settings.", err.Error())
 		return
 	}
 
-	// parse network setting response to state network setting model
-	if err := helper.UpdateNetworkSettingDataSourceState(ctx, &state, setting); err != nil {
-		resp.Diagnostics.AddError("Error reading network setting datasource plan",
-			fmt.Sprintf("Could not get network setting with error: %s", err.Error()))
-		return
-	}
+	// parse network settings response to state network settings model
+	helper.UpdateNetworkSettingState(ctx, &state, setting)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-	tflog.Info(ctx, "Done with Read Network Setting data source ")
+	tflog.Info(ctx, "Done with Read Network Settings data source ")
 }

@@ -28,7 +28,7 @@ import (
 )
 
 func TestAccNetworkSettingDataSource(t *testing.T) {
-	var settingTerraformName = "data.powerscale_network_setting.test"
+	var settingTerraformName = "data.powerscale_network_settings.test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -40,22 +40,6 @@ func TestAccNetworkSettingDataSource(t *testing.T) {
 					resource.TestMatchResourceAttr(settingTerraformName, "default_groupnet", regexp.MustCompile(`^\w+$`)),
 					resource.TestMatchResourceAttr(settingTerraformName, "source_based_routing_enabled", regexp.MustCompile(`^false|true$`)),
 				),
-			},
-		},
-	})
-}
-
-func TestAccNetworkSettingDatasourceErrorCopyField(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				PreConfig: func() {
-					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
-				},
-				Config:      ProviderConfig + networkSettingDataSourceConfig,
-				ExpectError: regexp.MustCompile("mock error"),
 			},
 		},
 	})
@@ -78,6 +62,6 @@ func TestAccNetworkSettingDatasourceErrorGetAll(t *testing.T) {
 }
 
 var networkSettingDataSourceConfig = `
-data "powerscale_network_setting" "test" {
+data "powerscale_network_settings" "test" {
 }
 `
