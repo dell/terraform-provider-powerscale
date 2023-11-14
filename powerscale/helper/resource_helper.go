@@ -264,7 +264,10 @@ func getStructValue(ctx context.Context, structObj interface{}) (basetypes.Objec
 		case reflect.Float32, reflect.Float64:
 			if elemFieldVal.IsValid() {
 				// Due to accuracy issue, keep the precision as 4
-				floatVal, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", elemFieldVal.Float()), 64)
+				floatVal, err := strconv.ParseFloat(fmt.Sprintf("%.4f", elemFieldVal.Float()), 64)
+				if err != nil {
+					return types.ObjectNull(nil), err
+				}
 				valueMap[tag] = types.NumberValue(big.NewFloat(floatVal))
 			} else {
 				valueMap[tag] = types.NumberNull()
