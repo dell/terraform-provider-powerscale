@@ -186,15 +186,30 @@ func copySliceToTargetField(ctx context.Context, fields interface{}) attr.Value 
 
 	// get the attrType for Object
 	structElem := reflect.ValueOf(fields).Type().Elem()
-	if structElem.Kind() == reflect.String {
+	switch structElem.Kind() {
+	case reflect.String:
 		listValue, _ := types.ListValueFrom(ctx, types.StringType, fields)
 		return listValue
-	} else if structElem.Kind() == reflect.Struct {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		listValue, _ := types.ListValueFrom(ctx, types.Int64Type, fields)
+		return listValue
+	case reflect.Float32, reflect.Float64:
+		listValue, _ := types.ListValueFrom(ctx, types.Float64Type, fields)
+		return listValue
+	case reflect.Bool:
+		listValue, _ := types.ListValueFrom(ctx, types.BoolType, fields)
+		return listValue
+	case reflect.Struct:
 		for fieldIndex := 0; fieldIndex < structElem.NumField(); fieldIndex++ {
 			field := structElem.Field(fieldIndex)
 			tag := field.Tag.Get("json")
 			tag = strings.TrimSuffix(tag, ",omitempty")
-			switch field.Type.Kind() {
+			fieldType := field.Type
+			if fieldType.Kind() == reflect.Ptr {
+				fieldType = fieldType.Elem()
+			}
+
+			switch fieldType.Kind() {
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				attrTypeMap[tag] = types.Int64Type
 			case reflect.String:
@@ -212,13 +227,19 @@ func copySliceToTargetField(ctx context.Context, fields interface{}) attr.Value 
 			for fieldIndex := 0; fieldIndex < elem.NumField(); fieldIndex++ {
 				tag := elem.Type().Field(fieldIndex).Tag.Get("json")
 				tag = strings.TrimSuffix(tag, ",omitempty")
-				switch elem.Field(fieldIndex).Type().Kind() {
+				eleField := elem.Field(fieldIndex)
+				eleFieldType := eleField.Type()
+				if eleFieldType.Kind() == reflect.Ptr {
+					eleFieldType = eleFieldType.Elem()
+					eleField = eleField.Elem()
+				}
+				switch eleFieldType.Kind() {
 				case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-					valueMap[tag] = types.Int64Value(elem.Field(fieldIndex).Int())
+					valueMap[tag] = types.Int64Value(eleField.Int())
 				case reflect.String:
-					valueMap[tag] = types.StringValue(elem.Field(fieldIndex).String())
+					valueMap[tag] = types.StringValue(eleField.String())
 				case reflect.Float32, reflect.Float64:
-					valueMap[tag] = types.NumberValue(big.NewFloat(elem.Field(fieldIndex).Float()))
+					valueMap[tag] = types.NumberValue(big.NewFloat(eleField.Float()))
 				}
 			}
 			object, _ := types.ObjectValue(attrTypeMap, valueMap)

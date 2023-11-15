@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"strings"
 	"terraform-provider-powerscale/client"
@@ -105,6 +107,7 @@ func (r *NetworkPoolResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "List of interface members in this pool.",
 				Optional:            true,
 				Computed:            true,
+				PlanModifiers:       []planmodifier.List{listplanmodifier.UseStateForUnknown()},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"iface": schema.StringAttribute{
@@ -138,6 +141,7 @@ func (r *NetworkPoolResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "List of IP address ranges in this pool.",
 				Optional:            true,
 				Computed:            true,
+				PlanModifiers:       []planmodifier.List{listplanmodifier.UseStateForUnknown()},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"high": schema.StringAttribute{
@@ -334,7 +338,7 @@ func (r *NetworkPoolResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	createdPool := getPoolResponse.Pools[0]
-	err = helper.CopyFieldsToNonNestedModel(ctx, createdPool, &plan)
+	err = helper.CopyFields(ctx, createdPool, &plan)
 	if err != nil {
 		errStr := constants.ReadNetworkPoolErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
