@@ -50,6 +50,13 @@ func TestAccSubnetDatasourceGetFilter(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.powerscale_subnet.subnet_datasource_test", "subnets.#"),
 				),
 			},
+			// Read testing
+			{
+				Config: ProviderConfig + SubnetDatasourceGetFilterNameConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.powerscale_subnet.subnet_datasource_test", "subnets.#"),
+				),
+			},
 		},
 	})
 }
@@ -77,6 +84,14 @@ var SubnetDatasourceGetFilterConfig = `
 data "powerscale_subnet" "subnet_datasource_test" {
   filter{
     groupnet_name="groupnet0"
+  }
+}
+`
+
+var SubnetDatasourceGetFilterNameConfig = `
+data "powerscale_subnet" "subnet_datasource_test" {
+  filter{
+    names=["subnet0"]
   }
 }
 `

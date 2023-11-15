@@ -49,6 +49,7 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 
 var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
+var BasicAuthProviderConfig = ""
 var FunctionMocker *mockey.Mocker
 
 func init() {
@@ -92,6 +93,17 @@ func init() {
 			timeout       = %s
 		}
 	`, username, password, endpoint, client.SessionAuthType, timeout)
+
+	BasicAuthProviderConfig = fmt.Sprintf(`
+		provider "powerscale" {
+			username      = "%s"
+			password      = "%s"
+  			endpoint      = "%s"
+  			insecure      = true
+			auth_type     = %d
+			timeout       = %s
+		}
+	`, username, password, endpoint, client.BasicAuthType, timeout)
 }
 
 func testAccPreCheck(t *testing.T) {
@@ -219,6 +231,19 @@ func TestSessionRefresh(t *testing.T) {
 	if resp.StatusCode == http.StatusUnauthorized {
 		t.Errorf("failed to refresh session token")
 	}
+}
+
+func TestUnauthorizedErrorParse(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      BasicAuthProviderConfig + testAccClusterDataSourceConfig,
+				ExpectError: regexp.MustCompile(`.*Unauthorized to access PAPI*.`),
+			},
+		},
+	})
 }
 
 func TestOnefsVersion(t *testing.T) {
