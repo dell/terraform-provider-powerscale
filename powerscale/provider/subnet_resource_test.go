@@ -70,6 +70,26 @@ func TestAccSubnetResource(t *testing.T) {
 	})
 }
 
+func TestAccSubnetResourceErrorImport(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				Config: ProviderConfig + SubnetResourceConfig,
+			},
+			// ImportState testing
+			{
+				ResourceName:  "powerscale_subnet.subnet",
+				ImportState:   true,
+				ImportStateId: "groupnet0.subnet-non-existing",
+				ExpectError:   regexp.MustCompile("Error importing subnet"),
+			},
+		},
+	})
+}
+
 func TestAccSubnetResourceErrorRead(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },

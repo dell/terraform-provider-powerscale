@@ -20,6 +20,7 @@ package provider
 import (
 	"context"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/helper"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 
@@ -141,9 +142,10 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	)
 
 	if err != nil {
+		message := helper.GetErrorString(err, "")
 		resp.Diagnostics.AddError(
 			"Unable to create powerscale client",
-			err.Error(),
+			message,
 		)
 		return
 	}

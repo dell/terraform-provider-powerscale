@@ -36,6 +36,7 @@ import (
 	"regexp"
 	"strings"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 )
 
@@ -49,6 +50,7 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 
 var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
+var BasicAuthProviderErrorConfig = ""
 var FunctionMocker *mockey.Mocker
 
 func init() {
@@ -92,6 +94,17 @@ func init() {
 			timeout       = %s
 		}
 	`, username, password, endpoint, client.SessionAuthType, timeout)
+
+	BasicAuthProviderErrorConfig = fmt.Sprintf(`
+		provider "powerscale" {
+			username      = "%s"
+			password      = "wrong"
+  			endpoint      = "%s"
+  			insecure      = true
+			auth_type     = %d
+			timeout       = %s
+		}
+	`, username, endpoint, client.BasicAuthType, timeout)
 }
 
 func testAccPreCheck(t *testing.T) {
@@ -219,6 +232,49 @@ func TestSessionRefresh(t *testing.T) {
 	if resp.StatusCode == http.StatusUnauthorized {
 		t.Errorf("failed to refresh session token")
 	}
+}
+
+func TestUnauthorizedErrorParse(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      BasicAuthProviderErrorConfig + testAccClusterDataSourceConfig,
+				ExpectError: regexp.MustCompile(`.*Unauthorized*.`),
+			},
+		},
+	})
+}
+
+func TestUnauthorizedErrorParseHTML(t *testing.T) {
+	htmlContent := `
+		<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+		<html>
+		
+		<head>
+			<title>401 Unauthorized to access PAPI.</title>
+		</head>
+		<script type="text/javascript">
+			var regex = new RegExp(/http:\/\/([^:]+):([^/]+)/),
+					match = regex.exec(window.location.href);
+		
+				if (match !== null) {
+				   window.location = 'https://' + match[1] + ':' + match[2];
+				}
+		</script>
+		
+		<body>
+			<h1>Unauthorized to access PAPI.</h1>
+			<p>Please contact Administrator.</p>
+		</body>
+		
+		</html>
+	`
+	errorString, err := helper.ParseBody([]byte(htmlContent))
+	t.Log(errorString)
+	assert.Equal(t, "401 Unauthorized to access PAPI. ", errorString)
+	assert.Empty(t, err)
 }
 
 func TestOnefsVersion(t *testing.T) {
