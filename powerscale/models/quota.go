@@ -48,7 +48,7 @@ type QuotaResource struct {
 	// Attributes can be read and updated
 	// If true, SMB shares using the quota directory see the quota thresholds as share size.
 	Container types.Bool `tfsdk:"container"`
-	// True if the quota provides enforcement, otherwise a accounting quota.
+	// True if the quota provides enforcement, otherwise an accounting quota.
 	Enforced types.Bool `tfsdk:"enforced"`
 	// The thresholds of quota
 	Thresholds types.Object `tfsdk:"thresholds"`
@@ -97,7 +97,7 @@ type QuotaDatasourceEntity struct {
 	Container types.Bool `tfsdk:"container"`
 	// Represents the ratio of logical space provided to physical space used. This accounts for protection overhead, metadata, and compression ratios for the data.
 	EfficiencyRatio types.Number `tfsdk:"efficiency_ratio"`
-	// True if the quota provides enforcement, otherwise a accounting quota.
+	// True if the quota provides enforcement, otherwise an accounting quota.
 	Enforced types.Bool `tfsdk:"enforced"`
 	// The system ID given to the quota.
 	ID types.String `tfsdk:"id"`

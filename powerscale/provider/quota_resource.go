@@ -273,8 +273,8 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 			},
 			"enforced": schema.BoolAttribute{
-				Description:         "True if the quota provides enforcement, otherwise a accounting quota.",
-				MarkdownDescription: "True if the quota provides enforcement, otherwise a accounting quota.",
+				Description:         "True if the quota provides enforcement, otherwise an accounting quota.",
+				MarkdownDescription: "True if the quota provides enforcement, otherwise an accounting quota.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -434,6 +434,8 @@ func (r *QuotaResource) Create(ctx context.Context, request resource.CreateReque
 		return
 	}
 
+	quotaPlan.IgnoreLimitChecks = quotaPlanBackup.IgnoreLimitChecks
+	quotaPlan.Force = quotaPlanBackup.Force
 	diags = response.State.Set(ctx, quotaPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -469,7 +471,7 @@ func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateReque
 	// validate update params
 	if err := helper.ValidateQuotaUpdate(quotaPlan, quotaState); err != nil {
 		response.Diagnostics.AddError(
-			"Error update quota",
+			"Error updating quota",
 			fmt.Sprintf("Could not update Quota %s with error: %s", quotaID, err.Error()),
 		)
 		return
@@ -480,7 +482,7 @@ func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateReque
 	err := helper.ReadFromState(ctx, quotaPlan, &quotaToUpdate)
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Error update quota",
+			"Error updating quota",
 			fmt.Sprintf("Could not read quota struct %s with error: %s", quotaID, err.Error()),
 		)
 		return
@@ -522,6 +524,8 @@ func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateReque
 		)
 		return
 	}
+	quotaState.IgnoreLimitChecks = quotaPlan.IgnoreLimitChecks
+	quotaState.Force = quotaPlan.Force
 	quotaState.Persona = helper.CleanQuotaPersona(ctx, quotaPlan.Persona, quotaState.Persona)
 	diags = response.State.Set(ctx, quotaState)
 	response.Diagnostics.Append(diags...)
@@ -578,6 +582,8 @@ func (r *QuotaResource) Read(ctx context.Context, request resource.ReadRequest, 
 		)
 		return
 	}
+	quotaState.IgnoreLimitChecks = quotaStateBackup.IgnoreLimitChecks
+	quotaState.Force = quotaStateBackup.Force
 	quotaState.Persona = helper.CleanQuotaPersona(ctx, quotaStateBackup.Persona, quotaState.Persona)
 	diags = response.State.Set(ctx, quotaState)
 	response.Diagnostics.Append(diags...)

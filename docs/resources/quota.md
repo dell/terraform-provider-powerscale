@@ -97,7 +97,7 @@ resource "powerscale_quota" "quota_test" {
 ### Optional
 
 - `container` (Boolean) If true, quotas using the quota directory see the quota thresholds as share size.
-- `enforced` (Boolean) True if the quota provides enforcement, otherwise a accounting quota.
+- `enforced` (Boolean) True if the quota provides enforcement, otherwise an accounting quota.
 - `force` (Boolean) Force creation of quotas on the root of /ifs or percent based quotas.
 - `ignore_limit_checks` (Boolean) If true, skip child quota's threshold comparison with parent quota path.
 - `linked` (Boolean) For user, group and directory quotas, true if the quota is linked and controlled by a parent default-* quota. Linked quotas cannot be modified until they are unlinked. Computed by PowerScale, do not set Linked while creating.

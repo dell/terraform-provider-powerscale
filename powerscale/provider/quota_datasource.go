@@ -105,8 +105,8 @@ func (d *QuotaDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest
 							Computed:            true,
 						},
 						"enforced": schema.BoolAttribute{
-							Description:         "True if the quota provides enforcement, otherwise a accounting quota.",
-							MarkdownDescription: "True if the quota provides enforcement, otherwise a accounting quota.",
+							Description:         "True if the quota provides enforcement, otherwise an accounting quota.",
+							MarkdownDescription: "True if the quota provides enforcement, otherwise an accounting quota.",
 							Computed:            true,
 						},
 						"id": schema.StringAttribute{
