@@ -210,7 +210,7 @@ func TestAccNetworkPoolResourceErrorCopyField(t *testing.T) {
 				ResourceName: "powerscale_networkpool.pool_test",
 				ImportState:  true,
 				PreConfig: func() {
-					FunctionMocker = Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + NetworkPoolResourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
@@ -218,7 +218,7 @@ func TestAccNetworkPoolResourceErrorCopyField(t *testing.T) {
 			{
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build().
+					FunctionMocker = Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build().
 						When(func(ctx context.Context, source, destination interface{}) bool {
 							return FunctionMocker.Times() == 2
 						})

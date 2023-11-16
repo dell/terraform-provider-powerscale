@@ -334,7 +334,7 @@ func (r *NetworkPoolResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	createdPool := getPoolResponse.Pools[0]
-	err = helper.CopyFieldsToNonNestedModel(ctx, createdPool, &plan)
+	err = helper.CopyFields(ctx, createdPool, &plan)
 	if err != nil {
 		errStr := constants.ReadNetworkPoolErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -390,7 +390,7 @@ func (r *NetworkPoolResource) Read(ctx context.Context, req resource.ReadRequest
 		"networkPoolResponse": poolResponse,
 		"networkPoolState":    poolState,
 	})
-	err = helper.CopyFieldsToNonNestedModel(ctx, poolResponse.Pools[0], &poolState)
+	err = helper.CopyFields(ctx, poolResponse.Pools[0], &poolState)
 	if err != nil {
 		errStr := constants.ReadNetworkPoolErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -479,7 +479,7 @@ func (r *NetworkPoolResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	err = helper.CopyFieldsToNonNestedModel(ctx, updatedPool.Pools[0], &poolPlan)
+	err = helper.CopyFields(ctx, updatedPool.Pools[0], &poolPlan)
 	if err != nil {
 		errStr := constants.ReadNetworkPoolErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
