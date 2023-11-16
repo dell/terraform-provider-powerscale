@@ -140,7 +140,7 @@ Read-Only:
 
 - `container` (Boolean) If true, SMB shares using the quota directory see the quota thresholds as share size.
 - `efficiency_ratio` (Number) Represents the ratio of logical space provided to physical space used. This accounts for protection overhead, metadata, and compression ratios for the data.
-- `enforced` (Boolean) True if the quota provides enforcement, otherwise a accounting quota.
+- `enforced` (Boolean) True if the quota provides enforcement, otherwise an accounting quota.
 - `id` (String) The system ID given to the quota.
 - `include_snapshots` (Boolean) If true, quota governs snapshot data as well as head data.
 - `linked` (Boolean) For user, group and directory quotas, true if the quota is linked and controlled by a parent default-* quota. Linked quotas cannot be modified until they are unlinked.
