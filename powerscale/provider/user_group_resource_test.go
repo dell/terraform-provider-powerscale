@@ -18,12 +18,16 @@ limitations under the License.
 package provider
 
 import (
+	"context"
+	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"regexp"
+	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
 	"github.com/bytedance/mockey"
+	. "github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/stretchr/testify/assert"
@@ -189,6 +193,7 @@ func TestAccUserGroupRolesResourceImportRolesErr(t *testing.T) {
 						userGroupCreateMocker.UnPatch()
 					}
 					userGroupMocker = mockey.Mock(helper.GetAllRolesWithZone).Return(nil, fmt.Errorf("roles read mock error")).Build()
+					userGroupCreateMocker = mockey.Mock(helper.GetAllGroupMembersWithZone).Return(nil, fmt.Errorf("members read mock error")).Build()
 				},
 				ResourceName:      userGroupResourceName,
 				ImportState:       true,
@@ -231,6 +236,131 @@ func TestAccUserGroupRolesResourceImportGetErr(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ExpectError:       regexp.MustCompile(`.*user group read mock error*.`),
+			},
+		},
+	})
+}
+
+func TestAccUserGroupResourceDeleteMockErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if userGroupMocker != nil {
+						userGroupMocker.UnPatch()
+					}
+					if userGroupCreateMocker != nil {
+						userGroupCreateMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + userGroupBasicResourceConfig,
+			},
+			{
+				PreConfig: func() {
+					if userGroupMocker != nil {
+						userGroupMocker.UnPatch()
+					}
+					if userGroupCreateMocker != nil {
+						userGroupCreateMocker.UnPatch()
+					}
+					userGroupMocker = mockey.Mock(helper.DeleteUserGroupWithZone).Return(fmt.Errorf("user group delete mock error")).Build().
+						When(func(ctx context.Context, client *client.Client, groupName, zone string) bool {
+							return userGroupMocker.Times() == 1
+						})
+				},
+				Config:      ProviderConfig + userGroupBasicResourceConfig,
+				Destroy:     true,
+				ExpectError: regexp.MustCompile("user group delete mock error"),
+			},
+		},
+	})
+}
+
+func TestAccUserGroupResourceHelperMockErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if userGroupMocker != nil {
+						userGroupMocker.UnPatch()
+					}
+					if userGroupCreateMocker != nil {
+						userGroupCreateMocker.UnPatch()
+					}
+					userGroupMocker = Mock((*powerscale.AuthApiService).GetAuthv1AuthGroupExecute).Return(nil, nil, fmt.Errorf("user group read mock error")).Build()
+					userGroupCreateMocker = mockey.Mock(helper.CreateUserGroup).Return(nil).Build()
+				},
+				Config:      ProviderConfig + userGroupBasicResourceConfig,
+				ExpectError: regexp.MustCompile(`.*user group read mock error*.`),
+			},
+			{
+				PreConfig: func() {
+					if userGroupMocker != nil {
+						userGroupMocker.UnPatch()
+					}
+					if userGroupCreateMocker != nil {
+						userGroupCreateMocker.UnPatch()
+					}
+					userGroupCreateMocker = mockey.Mock(helper.CreateUserGroup).Return(nil).Build()
+					userGroupMocker = Mock((*powerscale.AuthApiService).GetAuthv1AuthGroupExecute).Return(&powerscale.V1AuthGroupsExtended{}, nil, nil).Build()
+				},
+				Config:      ProviderConfig + userGroupBasicResourceConfig,
+				ExpectError: regexp.MustCompile(`.*got empty user group*.`),
+			},
+			{
+				PreConfig: func() {
+					if userGroupMocker != nil {
+						userGroupMocker.UnPatch()
+					}
+					if userGroupCreateMocker != nil {
+						userGroupCreateMocker.UnPatch()
+					}
+					userGroupMocker = Mock((*powerscale.AuthApiService).CreateAuthv1AuthGroupExecute).Return(nil, nil, fmt.Errorf("create mock error")).Build()
+				},
+				Config:      ProviderConfig + userGroupBasicResourceConfig,
+				ExpectError: regexp.MustCompile(`.*Error creating the User Group*.`),
+			},
+			{
+				PreConfig: func() {
+					if userGroupMocker != nil {
+						userGroupMocker.UnPatch()
+					}
+					if userGroupCreateMocker != nil {
+						userGroupCreateMocker.UnPatch()
+					}
+					userGroupMocker = Mock((*powerscale.AuthRolesApiService).CreateAuthRolesv7RoleMemberExecute).Return(nil, nil, fmt.Errorf("role mock error")).Build()
+					userGroupCreateMocker = Mock((*powerscale.AuthGroupsApiService).CreateAuthGroupsv1GroupMemberExecute).Return(nil, nil, fmt.Errorf("member mock error")).Build()
+				},
+				Config:      ProviderConfig + userGroupUpdateResourceConfig,
+				ExpectError: regexp.MustCompile(`.*role mock error*.`),
+			},
+			{
+				PreConfig: func() {
+					if userGroupMocker != nil {
+						userGroupMocker.UnPatch()
+					}
+					if userGroupCreateMocker != nil {
+						userGroupCreateMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + userGroupResourceConfig,
+			},
+			{
+				PreConfig: func() {
+					if userGroupMocker != nil {
+						userGroupMocker.UnPatch()
+					}
+					if userGroupCreateMocker != nil {
+						userGroupCreateMocker.UnPatch()
+					}
+					userGroupCreateMocker = Mock((*powerscale.AuthApiService).DeleteAuthv1GroupsGroupMemberExecute).Return(nil, fmt.Errorf("member mock error")).Build()
+				},
+				Config:      ProviderConfig + userGroupBasicResourceConfig,
+				ExpectError: regexp.MustCompile(`.*member mock error*.`),
 			},
 		},
 	})
