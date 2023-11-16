@@ -33,7 +33,7 @@ import (
 // UpdateNetworkSettingState updates resource state.
 func UpdateNetworkSettingState(ctx context.Context, settingState *models.NetworkSettingModel, settingResponse *powerscale.V12NetworkExternalSettings) {
 
-	if len(settingState.TCPPorts.Elements()) != len(settingResponse.TcpPorts) {
+	if len(settingState.TCPPorts.Elements()) == 0 || len(settingState.TCPPorts.Elements()) != len(settingResponse.TcpPorts) {
 		var portAttrs []attr.Value
 		for _, port := range settingResponse.TcpPorts {
 			portAttrs = append(portAttrs, types.Int64Value(port))
