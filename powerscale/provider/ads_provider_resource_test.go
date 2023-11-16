@@ -158,6 +158,10 @@ func TestAccAdsProviderResourceErrorUpdate(t *testing.T) {
 				Config:      ProviderConfig + AdsProviderUpdatePreCheckConfig,
 				ExpectError: regexp.MustCompile(".*Should not provide parameters for creating*."),
 			},
+			{
+				Config:      ProviderConfig + AdsProviderUpdateGroupnetConfig,
+				ExpectError: regexp.MustCompile(".*Should not use a different groupnet*."),
+			},
 		},
 	})
 }
@@ -286,5 +290,14 @@ resource "powerscale_adsprovider" "ads_test" {
 	user = "administrator"
 	password = "Password123!"
 	kerberos_hdfs_spn = true
+}
+`, adsName)
+
+var AdsProviderUpdateGroupnetConfig = fmt.Sprintf(`
+resource "powerscale_adsprovider" "ads_test" {
+	name = "%s"
+	user = "administrator"
+	password = "Password123!"
+	groupnet = "groupnet_x"
 }
 `, adsName)

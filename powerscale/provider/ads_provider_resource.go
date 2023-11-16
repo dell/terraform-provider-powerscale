@@ -653,6 +653,14 @@ func (r *AdsProviderResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
+	if helper.IsGroupnetUpdated(adsPlan.Groupnet.ValueString(), *updatedAds.Ads[0].Groupnet) {
+		resp.Diagnostics.AddError(
+			"Error updating ads provider",
+			"Should not use a different groupnet",
+		)
+		return
+	}
+
 	err = helper.CopyFieldsToNonNestedModel(ctx, updatedAds.Ads[0], &adsPlan)
 	if err != nil {
 		errStr := constants.ReadAdsProviderErrorMsg + "with error: "

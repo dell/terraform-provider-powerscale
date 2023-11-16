@@ -78,7 +78,6 @@ func IsCreateAdsProviderParamInvalid(plan models.AdsProviderResourceModel) bool 
 // IsUpdateAdsProviderParamInvalid Verify if update params contain params only for creating.
 func IsUpdateAdsProviderParamInvalid(plan models.AdsProviderResourceModel, state models.AdsProviderResourceModel) bool {
 	if (!plan.DNSDomain.IsNull() && !state.DNSDomain.Equal(plan.DNSDomain)) ||
-		(!plan.Groupnet.IsUnknown() && !state.Groupnet.Equal(plan.Groupnet)) ||
 		(!plan.Instance.IsNull() && !state.Instance.Equal(plan.Instance)) ||
 		(!plan.KerberosHdfsSpn.IsNull() && !state.KerberosHdfsSpn.Equal(plan.KerberosHdfsSpn)) ||
 		(!plan.KerberosNfsSpn.IsNull() && !state.KerberosNfsSpn.Equal(plan.KerberosNfsSpn)) ||
@@ -87,4 +86,12 @@ func IsUpdateAdsProviderParamInvalid(plan models.AdsProviderResourceModel, state
 		return true
 	}
 	return false
+}
+
+// IsGroupnetUpdated Verify if groupnet is updated after creation.
+func IsGroupnetUpdated(groupnetInPlan string, groupnetInResp string) bool {
+	if groupnetInPlan == "" {
+		return false
+	}
+	return groupnetInResp != groupnetInPlan
 }
