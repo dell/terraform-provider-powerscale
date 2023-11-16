@@ -50,7 +50,7 @@ resource "powerscale_networkpool" "pool_test" {
   #   sc_dns_zone = "testZoneName"
   #   sc_dns_zone_aliases = ["testZoneNameAlias"]
   #   sc_failover_policy = "round_robin"
-  #   sc_subnet = ["testSubnetName"]
+  #   sc_subnet = "testSubnetName"
   #   sc_ttl = 0
   #   static_routes = [
   #     {
