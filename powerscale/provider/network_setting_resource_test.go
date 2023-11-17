@@ -224,6 +224,43 @@ func TestAccNetworkSettingResourceUpdateMockErr(t *testing.T) {
 	})
 }
 
+func TestAccNetworkSettingResourceHelperMockErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Read Error testing
+			{
+				PreConfig: func() {
+					if networkSettingGetMocker != nil {
+						networkSettingGetMocker.UnPatch()
+					}
+					if networkSettingMocker != nil {
+						networkSettingMocker.UnPatch()
+					}
+					networkSettingGetMocker = Mock((*powerscale.NetworkApiService).GetNetworkv12NetworkExternalExecute).Return(nil, nil, fmt.Errorf("networkSettings read mock error")).Build()
+				},
+				Config:      ProviderConfig + networkSettingBasicResourceConfig,
+				ExpectError: regexp.MustCompile(`.*networkSettings read mock error*.`),
+			},
+			// Create and Read Error testing
+			{
+				PreConfig: func() {
+					if networkSettingGetMocker != nil {
+						networkSettingGetMocker.UnPatch()
+					}
+					if networkSettingMocker != nil {
+						networkSettingMocker.UnPatch()
+					}
+					networkSettingMocker = Mock((*powerscale.NetworkApiService).UpdateNetworkv12NetworkExternalExecute).Return(nil, fmt.Errorf("networkSettings update mock error")).Build()
+				},
+				Config:      ProviderConfig + networkSettingBasicResourceConfig,
+				ExpectError: regexp.MustCompile(`.*networkSettings update mock error*.`),
+			},
+		},
+	})
+}
+
 func TestAccNetworkSettingReleaseMockResource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
