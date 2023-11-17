@@ -17,8 +17,11 @@ limitations under the License.
 package provider
 
 import (
+	"fmt"
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
+	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 )
 
@@ -50,6 +53,13 @@ func TestAccSubnetDatasourceGetFilter(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.powerscale_subnet.subnet_datasource_test", "subnets.#"),
 				),
 			},
+			// Read testing
+			{
+				Config: ProviderConfig + SubnetDatasourceGetFilterNameConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.powerscale_subnet.subnet_datasource_test", "subnets.#"),
+				),
+			},
 		},
 	})
 }
@@ -68,6 +78,23 @@ func TestAccSubnetDatasourceGetFilterError(t *testing.T) {
 	})
 }
 
+func TestAccSubnetDatasourceGetPaginationError(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Read testing
+			{
+				PreConfig: func() {
+					FunctionMocker = mockey.Mock(helper.ResumeSubnets).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + SubnetDatasourceGetAllConfig,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+		},
+	})
+}
+
 var SubnetDatasourceGetAllConfig = `
 data "powerscale_subnet" "subnet_datasource_test" {
 }
@@ -77,6 +104,14 @@ var SubnetDatasourceGetFilterConfig = `
 data "powerscale_subnet" "subnet_datasource_test" {
   filter{
     groupnet_name="groupnet0"
+  }
+}
+`
+
+var SubnetDatasourceGetFilterNameConfig = `
+data "powerscale_subnet" "subnet_datasource_test" {
+  filter{
+    names=["subnet0"]
   }
 }
 `
