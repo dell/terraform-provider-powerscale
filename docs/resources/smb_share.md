@@ -190,7 +190,7 @@ Required:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona using security identifier, which can be 'SID:S-1-1'.
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -201,7 +201,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona using security identifier, which can be 'SID:S-1-1'.
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 

@@ -294,8 +294,8 @@ func (r *SmbShareResource) Schema(ctx context.Context, req resource.SchemaReques
 							Required:            true,
 							Attributes: map[string]schema.Attribute{
 								"id": schema.StringAttribute{
-									Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-									MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+									Description:         "Specifies the serialized form of a persona using security identifier, which can be 'SID:S-1-1'.",
+									MarkdownDescription: "Specifies the serialized form of a persona using security identifier, which can be 'SID:S-1-1'.",
 									Optional:            true,
 									Computed:            true,
 								},
@@ -326,8 +326,8 @@ func (r *SmbShareResource) Schema(ctx context.Context, req resource.SchemaReques
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
-							Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-							MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+							Description:         "Specifies the serialized form of a persona using security identifier, which can be 'SID:S-1-1'.",
+							MarkdownDescription: "Specifies the serialized form of a persona using security identifier, which can be 'SID:S-1-1'.",
 							Optional:            true,
 							Computed:            true,
 						},
@@ -558,7 +558,7 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 		)
 		return
 	}
-	err = helper.UpdateSmbShare(ctx, r.client, shareID, shareState.Zone.ValueStringPointer(), shareToUpdate)
+	err = helper.UpdateSmbShare(ctx, r.client, shareID, sharePlan.Zone.ValueStringPointer(), shareToUpdate)
 	if err != nil {
 		errStr := constants.UpdateSmbShareErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)

@@ -499,7 +499,7 @@ func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateReque
 	tflog.Debug(ctx, "calling get quota by ID on pscale client", map[string]interface{}{
 		"smbQuotaID": quotaID,
 	})
-	updatedQuota, err := helper.GetQuota(ctx, r.client, quotaID, quotaState.Zone.ValueString())
+	updatedQuota, err := helper.GetQuota(ctx, r.client, quotaID, quotaPlan.Zone.ValueString())
 	if err != nil {
 		errStr := constants.UpdateQuotaErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
