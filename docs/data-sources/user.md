@@ -19,12 +19,12 @@ linkTitle: "powerscale_user"
 page_title: "powerscale_user Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This datasource is used to query the existing Users from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
+  This datasource is used to query the existing Users from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
 ---
 
 # powerscale_user (Data Source)
 
-This datasource is used to query the existing Users from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
+This datasource is used to query the existing Users from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale User allows you to authenticate through a local authentication provider. Remote users are restricted to read-only operations.
 
 ## Example Usage
 

@@ -19,12 +19,12 @@ linkTitle: "powerscale_filesystem"
 page_title: "powerscale_filesystem Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This resource is used to manage the FileSystem(Namespace directory) entity of PowerScale Array. We can Create, Update and Delete the FileSystem using this resource. We can also import an existing FileSystem from PowerScale array.
+  This resource is used to manage the FileSystem (Namespace directory) entity of PowerScale Array. We can Create, Update and Delete the FileSystem using this resource. We can also import an existing FileSystem from PowerScale array.
 ---
 
 # powerscale_filesystem (Resource)
 
-This resource is used to manage the FileSystem(Namespace directory) entity of PowerScale Array. We can Create, Update and Delete the FileSystem using this resource. We can also import an existing FileSystem from PowerScale array.
+This resource is used to manage the FileSystem (Namespace directory) entity of PowerScale Array. We can Create, Update and Delete the FileSystem using this resource. We can also import an existing FileSystem from PowerScale array.
 
 
 ## Example Usage

@@ -53,8 +53,8 @@ func (d *AccessZoneDataSource) Metadata(ctx context.Context, req datasource.Meta
 func (d *AccessZoneDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Access Zone Datasource. This datasource is used to query the existing Access Zone from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale Access Zones allow you to isolate data and control who can access data in each zone.",
-		Description:         "Access Zone Datasource. This datasource is used to query the existing Access Zone from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale Access Zones allow you to isolate data and control who can access data in each zone.",
+		MarkdownDescription: "Access Zone Datasource. This datasource is used to query the existing Access Zone from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Access Zones allow you to isolate data and control who can access data in each zone.",
+		Description:         "Access Zone Datasource. This datasource is used to query the existing Access Zone from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Access Zones allow you to isolate data and control who can access data in each zone.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "Identifier",

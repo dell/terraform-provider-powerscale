@@ -55,8 +55,8 @@ func (d *GroupnetDataSource) Metadata(ctx context.Context, req datasource.Metada
 // Schema describes the data source arguments.
 func (d *GroupnetDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "This datasource is used to query the existing Groupnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. powerscale_groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.",
-		Description:         "This datasource is used to query the existing Groupnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. powerscale_groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.",
+		MarkdownDescription: "This datasource is used to query the existing Groupnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.",
+		Description:         "This datasource is used to query the existing Groupnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

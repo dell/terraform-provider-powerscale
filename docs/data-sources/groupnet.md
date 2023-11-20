@@ -19,12 +19,12 @@ linkTitle: "powerscale_groupnet"
 page_title: "powerscale_groupnet Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This datasource is used to query the existing Groupnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. powerscale_groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.
+  This datasource is used to query the existing Groupnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.
 ---
 
 # powerscale_groupnet (Data Source)
 
-This datasource is used to query the existing Groupnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. powerscale_groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.
+This datasource is used to query the existing Groupnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.
 
 ## Example Usage
 
@@ -46,7 +46,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# powerscale_groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.
+# PowerScale Groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.
 
 # Returns a list of PowerScale Groupnets based on names filter block. 
 data "powerscale_groupnet" "example_groupnet" {

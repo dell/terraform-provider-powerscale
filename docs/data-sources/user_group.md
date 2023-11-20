@@ -19,12 +19,12 @@ linkTitle: "powerscale_user_group"
 page_title: "powerscale_user_group Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This datasource is used to query the existing User Groups from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale User Group allows you to do operations on a set of users, groups and well-knowns.
+  This datasource is used to query the existing User Groups from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale User Group allows you to do operations on a set of users, groups and well-knowns.
 ---
 
 # powerscale_user_group (Data Source)
 
-This datasource is used to query the existing User Groups from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale User Group allows you to do operations on a set of users, groups and well-knowns.
+This datasource is used to query the existing User Groups from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale User Group allows you to do operations on a set of users, groups and well-knowns.
 
 ## Example Usage
 

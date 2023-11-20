@@ -19,12 +19,12 @@ linkTitle: "powerscale_subnet"
 page_title: "powerscale_subnet Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This datasource is used to query the existing Subnets from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+  This datasource is used to query the existing Subnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block.
 ---
 
 # powerscale_subnet (Data Source)
 
-This datasource is used to query the existing Subnets from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+This datasource is used to query the existing Subnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block.
 
 ## Example Usage
 

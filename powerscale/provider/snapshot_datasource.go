@@ -53,8 +53,8 @@ func (d *SnapshotDataSource) Metadata(ctx context.Context, req datasource.Metada
 func (d *SnapshotDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "This datasource is used to query the existing Snapshots from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale Snapshots is a logical pointer to data that is stored on a cluster at a specific point in time.",
-		Description:         "This datasource is used to query the existing Snapshots from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale Snapshot is a logical pointer to data that is stored on a cluster at a specific point in time.",
+		MarkdownDescription: "This datasource is used to query the existing Snapshots from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Snapshots is a logical pointer to data that is stored on a cluster at a specific point in time.",
+		Description:         "This datasource is used to query the existing Snapshots from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Snapshot is a logical pointer to data that is stored on a cluster at a specific point in time.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "Identifier",

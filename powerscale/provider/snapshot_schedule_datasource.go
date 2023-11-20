@@ -56,9 +56,9 @@ func (d *SnapshotScheduleDataSource) Schema(_ context.Context, _ datasource.Sche
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "This datasource is used to query the existing Snapshot Schedules from PowerScale array. " +
-			"The information fetched from this datasource can be used for getting the details / for further processing in resource block. Uses are able to see information like duration, path, schedule, name etc. for the existing snapshot schedules",
+			"The information fetched from this datasource can be used for getting the details or for further processing in resource block. Uses are able to see information like duration, path, schedule, name etc. for the existing snapshot schedules",
 		Description: "This datasource is used to query the existing Snapshot Schedules from PowerScale array. " +
-			"The information fetched from this datasource can be used for getting the details / for further processing in resource block. Uses are able to see information like duration, path, schedule, name etc. for the existing snapshot schedules",
+			"The information fetched from this datasource can be used for getting the details or for further processing in resource block. Uses are able to see information like duration, path, schedule, name etc. for the existing snapshot schedules",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "Identifier",

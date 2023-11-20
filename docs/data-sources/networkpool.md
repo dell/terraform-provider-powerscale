@@ -19,12 +19,12 @@ linkTitle: "powerscale_networkpool"
 page_title: "powerscale_networkpool Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This datasource is used to query the existing network pools from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. You can add network interfaces to network pools to associate address ranges with a node or a group of nodes.
+  This datasource is used to query the existing network pools from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. You can add network interfaces to network pools to associate address ranges with a node or a group of nodes.
 ---
 
 # powerscale_networkpool (Data Source)
 
-This datasource is used to query the existing network pools from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. You can add network interfaces to network pools to associate address ranges with a node or a group of nodes.
+This datasource is used to query the existing network pools from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. You can add network interfaces to network pools to associate address ranges with a node or a group of nodes.
 
 ## Example Usage
 

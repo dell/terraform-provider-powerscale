@@ -60,8 +60,8 @@ func (r *GroupnetResource) Metadata(ctx context.Context, req resource.MetadataRe
 // Schema describes the resource arguments.
 func (r *GroupnetResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "This resource is used to manage the Groupnet entity of PowerScale Array. We can Create, Update and Delete the Groupnet using this resource. We can also import an existing Groupnet from PowerScale array. powerscale_groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.",
-		Description:         "This resource is used to manage the Groupnet entity of PowerScale Array. We can Create, Update and Delete the Groupnet using this resource. We can also import an existing Groupnet from PowerScale array. powerscale_groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.",
+		MarkdownDescription: "This resource is used to manage the Groupnet entity of PowerScale Array. We can Create, Update and Delete the Groupnet using this resource. We can also import an existing Groupnet from PowerScale array. PowerScale Groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.",
+		Description:         "This resource is used to manage the Groupnet entity of PowerScale Array. We can Create, Update and Delete the Groupnet using this resource. We can also import an existing Groupnet from PowerScale array. PowerScale Groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.",
 
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{

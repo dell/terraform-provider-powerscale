@@ -53,10 +53,10 @@ func (d SmartPoolSettingDataSource) Schema(ctx context.Context, req datasource.S
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "This datasource is used to query the SmartPools settings from PowerScale array. " +
-			"The information fetched from this datasource can be used for getting the details / for further processing in resource block. " +
+			"The information fetched from this datasource can be used for getting the details or for further processing in resource block. " +
 			"PowerScale SmartPools settings provide the ability to configure SmartPools on the cluster.",
 		Description: "This datasource is used to query the SmartPools settings from PowerScale array. " +
-			"The information fetched from this datasource can be used for getting the details / for further processing in resource block. " +
+			"The information fetched from this datasource can be used for getting the details or for further processing in resource block. " +
 			"PowerScale SmartPools settings provide the ability to configure SmartPools on the cluster.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

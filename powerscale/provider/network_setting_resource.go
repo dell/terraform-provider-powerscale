@@ -58,13 +58,13 @@ func (r *NetworkSettingResource) Metadata(ctx context.Context, req resource.Meta
 func (r *NetworkSettingResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "This resource is used to manage the Network Settings entity of PowerScale Array. " +
-			"powerscale_network_settings provides the ability to configure external network configuration on the cluster." +
+			"PowerScale Network Settings provide the ability to configure external network configuration on the cluster." +
 			"We can Create, Update and Delete the Network Settings using this resource. We can also import an existing Network Settings from PowerScale array. " +
-			"Note that, powerscale_network_settings is the native functionality of PowerScale. When creating the resource, we actually load Network Settings from PowerScale to the resource state. ",
+			"Note that, Network Settings is the native functionality of PowerScale. When creating the resource, we actually load Network Settings from PowerScale to the resource state. ",
 		Description: "This resource is used to manage the Network Settings entity of PowerScale Array. " +
-			"powerscale_network_settings provides the ability to configure external network configuration on the cluster." +
+			"PowerScale Network Settings provide the ability to configure external network configuration on the cluster." +
 			"We can Create, Update and Delete the Network Settings using this resource. We can also import an existing Network Settings from PowerScale array. " +
-			"Note that, powerscale_network_settings is the native functionality of PowerScale. When creating the resource, we actually load Network Settings from PowerScale to the resource state. ",
+			"Note that, Network Settings is the native functionality of PowerScale. When creating the resource, we actually load Network Settings from PowerScale to the resource state. ",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
