@@ -25,6 +25,12 @@ The Terraform Provider can be used to manage ...
 
 ## Table of Contents
 
+* [Code of Conduct](https://github.com/dell/dell-terraform-providers/blob/main/docs/CODE_OF_CONDUCT.md)
+* [Maintainer Guide](https://github.com/dell/dell-terraform-providers/blob/main/docs/MAINTAINER_GUIDE.md)
+* [Committer Guide](https://github.com/dell/dell-terraform-providers/blob/main/docs/COMMITTER_GUIDE.md)
+* [Contributing Guide](https://github.com/dell/dell-terraform-providers/blob/main/docs/CONTRIBUTING.md)
+* [List of Adopters](https://github.com/dell/dell-terraform-providers/blob/main/docs/ADOPTERS.md)
+* [Security](https://github.com/dell/dell-terraform-providers/blob/main/docs/SECURITY.md)
 * [Support](#support)
 * [License](#license)
 * [Prerequisites](#prerequisites)
