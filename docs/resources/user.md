@@ -64,6 +64,9 @@ resource "powerscale_user" "testUser" {
   # Optional query_provider, will return user according to provider. Specifies the provider that the user will belong to when creating. Once user is created, its provider cannot be changed.
   # query_provider = "testProvider"
 
+  # Optional parameters when creating
+  # sid = "SID:XXXX"
+
   # Optional parameters when creating and updating. 
   # uid      = 11000
   # password = "testPassword"
@@ -76,7 +79,6 @@ resource "powerscale_user" "testUser" {
   # primary_group = "testPrimaryGroup"
   # prompt_password_change = false
   # shell = "/bin/zsh"
-  # sid = "SID:XXXX"
   # expiry = 123456
   # gecos = "testFullName"
 }
@@ -109,7 +111,7 @@ resource "powerscale_user" "testUser" {
 - `query_zone` (String) Specifies the zone that the object belongs to.
 - `roles` (List of String) List of roles, the user is assigned. (Update Supported)
 - `shell` (String) Specifies a path to the shell for the user. (Update Supported)
-- `sid` (String) Specifies a security identifier. (Update Supported)
+- `sid` (String) Specifies a security identifier.
 - `uid` (Number) Specifies a numeric user identifier. (Update Supported)
 - `unlock` (Boolean) If true, the user account should be unlocked. (Update Supported)
 

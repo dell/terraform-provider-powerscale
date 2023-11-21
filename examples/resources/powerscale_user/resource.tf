@@ -32,6 +32,9 @@ resource "powerscale_user" "testUser" {
   # Optional query_provider, will return user according to provider. Specifies the provider that the user will belong to when creating. Once user is created, its provider cannot be changed.
   # query_provider = "testProvider"
 
+  # Optional parameters when creating
+  # sid = "SID:XXXX"
+
   # Optional parameters when creating and updating. 
   # uid      = 11000
   # password = "testPassword"
@@ -44,7 +47,6 @@ resource "powerscale_user" "testUser" {
   # primary_group = "testPrimaryGroup"
   # prompt_password_change = false
   # shell = "/bin/zsh"
-  # sid = "SID:XXXX"
   # expiry = 123456
   # gecos = "testFullName"
 }
