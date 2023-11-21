@@ -915,11 +915,6 @@ func (r NfsExportResource) Update(ctx context.Context, request resource.UpdateRe
 		"exportState": exportState,
 	})
 
-	if !exportPlan.Zone.IsUnknown() && exportPlan.Zone.ValueString() != exportState.Zone.ValueString() {
-		response.Diagnostics.AddError("Error updating nfs export", "Do not change access zone once set")
-		return
-	}
-
 	exportID := exportState.ID.ValueInt64()
 	exportPlan.ID = exportState.ID
 	err := helper.UpdateNFSExport(ctx, r.client, exportPlan)
