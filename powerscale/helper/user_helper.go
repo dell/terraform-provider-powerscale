@@ -340,6 +340,9 @@ func UpdateUser(ctx context.Context, client *client.Client, state *models.UserRe
 	if !state.Name.Equal(plan.Name) {
 		return fmt.Errorf("may not change user's name")
 	}
+	if !state.SID.Equal(plan.SID) && plan.SID.ValueString() != "" {
+		return fmt.Errorf("may not change user's sid")
+	}
 	if !state.UID.Equal(plan.UID) && plan.UID.ValueInt64() > 0 {
 		if !plan.QueryForce.ValueBool() {
 			return fmt.Errorf("may not change user's uid without using the force option")
@@ -375,9 +378,6 @@ func UpdateUser(ctx context.Context, client *client.Client, state *models.UserRe
 	}
 	if !state.UnLock.Equal(plan.UnLock) {
 		body.Unlock = plan.UnLock.ValueBoolPointer()
-	}
-	if !state.SID.Equal(plan.SID) && plan.SID.ValueString() != "" {
-		body.Sid = plan.SID.ValueStringPointer()
 	}
 	if !state.PrimaryGroup.Equal(plan.PrimaryGroup) && plan.PrimaryGroup.ValueString() != "" {
 		primaryGroupName := plan.PrimaryGroup.ValueString()

@@ -21,15 +21,18 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"regexp"
 	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golang.org/x/sync/errgroup"
@@ -221,10 +224,15 @@ func (r *UserResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Computed:            true,
 			},
 			"sid": schema.StringAttribute{
-				Description:         "Specifies a security identifier. (Update Supported)",
-				MarkdownDescription: "Specifies a security identifier. (Update Supported)",
+				Description:         "Specifies a security identifier. ",
+				MarkdownDescription: "Specifies a security identifier. ",
 				Computed:            true,
 				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.RegexMatches(
+						regexp.MustCompile(`^SID`), "must start with 'SID:'",
+					),
+				},
 			},
 			"type": schema.StringAttribute{
 				Description:         "Specifies the object type.",
