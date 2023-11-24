@@ -18,7 +18,7 @@ limitations under the License.
 # Available actions: Create, Update, Delete and Import.
 # After `terraform apply` of this example file it will create a new groupnet with the name set in `name` attribute on the PowerScale.
 
-# powerscale_groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.
+# PowerScale Groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.
 resource "powerscale_groupnet" "example_groupnet" {
   # Required name for creating and updating. (Update Supported)
   name = "testGroupnetResourceSample"

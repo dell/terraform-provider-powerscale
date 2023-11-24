@@ -21,15 +21,15 @@ linkTitle: "Provider"
 page_title: "powerscale Provider"
 subcategory: ""
 description: |-
-  
+  The Terraform provider for Dell PowerScale can be used to interact with a Dell PowerScale array in order to manage the array resources.
 ---
 
 # powerscale Provider
 
-
+The Terraform provider for Dell PowerScale can be used to interact with a Dell PowerScale array in order to manage the array resources.
 
 ## Example Usage
-The following abridged example demonstrates the usage of the provider to create user, user group, filesystem and NFS export.
+The following abridged example demonstrates the usage of the provider to create groupnet, subnet, network pool, ads provider, access zone, quota, snapshot, snapshot schedule, user, user group, filesystem ,nfs export and smb share.
 
 ```terraform
 /*
@@ -49,10 +49,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# Best Practices
+# 1. The parent resource attributes of a certain resource (e.g. groupnet field of subnet resource) can only be designated
+#    at creation. Once designated, they cannot be modified except for parent resource renaming.
+# 2. The name of a resource is modifiable, but it is necessary to make sure its name referenced in the child resources
+#    is also updated (can be done manually or use reference resource_id.name).
+# 3. Resources with child resources cannot be deleted independently. Use terraform destroy to delete all resources directly
+#    or delete all the child resources at the same time (depends_on is recommended to manage resources, serving as a
+#    precheck for delete operations).
+
 terraform {
   required_providers {
     powerscale = {
-      source = "registry.terraform.io/dell/powerscale"
+      source  = "registry.terraform.io/dell/powerscale"
+      version = "1.1.0"
     }
   }
 }
@@ -62,6 +72,58 @@ provider "powerscale" {
   password = var.password
   endpoint = var.endpoint
   insecure = var.insecure
+}
+
+resource "powerscale_groupnet" "example_groupnet" {
+  name = "example_groupnet"
+}
+
+resource "powerscale_accesszone" "zone" {
+  name     = "example_acczone"
+  groupnet = powerscale_groupnet.example_groupnet.name
+  path     = "/ifs"
+}
+
+resource "powerscale_adsprovider" "ads_test" {
+  name     = "ADS.PROVIDER.EXAMPLE.COM"
+  groupnet = powerscale_groupnet.example_groupnet.name
+  user     = "admin"
+  password = "password"
+}
+
+resource "powerscale_subnet" "subnet" {
+  name     = "example_subnet"
+  groupnet = powerscale_groupnet.example_groupnet.name
+}
+
+resource "powerscale_networkpool" "pool_test" {
+  name        = "example_pool"
+  subnet      = powerscale_subnet.subnet.name
+  groupnet    = powerscale_groupnet.example_groupnet.name
+  access_zone = powerscale_accesszone.zone.name
+}
+
+resource "powerscale_quota" "quota_test" {
+  path              = powerscale_filesystem.example_file_system.full_path
+  type              = "user"
+  include_snapshots = "false"
+  zone              = powerscale_accesszone.zone.name
+  persona = {
+    id   = format("%s:%s", "UID", powerscale_user.example_user.uid)
+    name = powerscale_user.example_user.name
+    type = "user"
+  }
+}
+
+resource "powerscale_snapshot" "snap" {
+  path        = powerscale_filesystem.example_file_system.full_path
+  name        = "example_snapshot"
+  set_expires = "1 Day"
+}
+
+resource "powerscale_snapshot_schedule" "snap_schedule" {
+  name = "example_snap_schedule"
+  path = powerscale_filesystem.example_file_system.full_path
 }
 
 resource "powerscale_user" "example_user" {
@@ -92,6 +154,7 @@ resource "powerscale_filesystem" "example_file_system" {
 
 resource "powerscale_nfs_export" "example_export" {
   paths = [powerscale_filesystem.example_file_system.full_path]
+  zone  = powerscale_accesszone.zone.name
   map_all = {
     enabled = true,
     primary_group = {
@@ -101,6 +164,23 @@ resource "powerscale_nfs_export" "example_export" {
       id = format("%s:%s", "USER", powerscale_user.example_user.uid)
     }
   }
+}
+
+resource "powerscale_smb_share" "share_example" {
+  name = "example_smb_share"
+  path = powerscale_filesystem.example_file_system.full_path
+  zone = powerscale_accesszone.zone.name
+  permissions = [
+    {
+      permission      = "full"
+      permission_type = "allow"
+      trustee = {
+        id   = powerscale_user.example_user.sid,
+        name = powerscale_user.example_user.name,
+        type = "user"
+      }
+    }
+  ]
 }
 ```
 

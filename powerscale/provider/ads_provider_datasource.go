@@ -54,8 +54,8 @@ func (d *AdsProviderDataSource) Metadata(ctx context.Context, req datasource.Met
 func (d *AdsProviderDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		Description:         "This datasource is used to query the existing ADS providers from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. Joining your cluster to an AD domain allows you to perform user and group authentication.",
-		MarkdownDescription: "This datasource is used to query the existing ADS providers from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. Joining your cluster to an AD domain allows you to perform user and group authentication.",
+		Description:         "This datasource is used to query the existing ADS providers from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. Joining your cluster to an AD domain allows you to perform user and group authentication.",
+		MarkdownDescription: "This datasource is used to query the existing ADS providers from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. Joining your cluster to an AD domain allows you to perform user and group authentication.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

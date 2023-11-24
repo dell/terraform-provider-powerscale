@@ -54,8 +54,8 @@ func (d *NetworkSettingDataSource) Metadata(ctx context.Context, req datasource.
 // Schema describes the data source arguments.
 func (d *NetworkSettingDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "This datasource is used to query the Network Settings from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. powerscale_network_settings provides the ability to configure external network configuration on the cluster.",
-		Description:         "This datasource is used to query the Network Settings from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. powerscale_network_settings provides the ability to configure external network configuration on the cluster.",
+		MarkdownDescription: "This datasource is used to query the Network Settings from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Network Settings provide the ability to configure external network configuration on the cluster.",
+		Description:         "This datasource is used to query the Network Settings from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Network Settings provide the ability to configure external network configuration on the cluster.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

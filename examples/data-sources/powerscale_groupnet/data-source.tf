@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# powerscale_groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.
+# PowerScale Groupnet sits above subnets and pools and allows separate Access Zones to contain distinct DNS settings.
 
 # Returns a list of PowerScale Groupnets based on names filter block. 
 data "powerscale_groupnet" "example_groupnet" {

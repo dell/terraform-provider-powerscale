@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# powerscale_network_settings provides the ability to configure external network configuration on the cluster.
+# PowerScale Network Settings provide the ability to configure external network configuration on the cluster.
 
 # Returns PowerScale network settings detail
 data "powerscale_network_settings" "example" {

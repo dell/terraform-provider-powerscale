@@ -19,12 +19,12 @@ linkTitle: "powerscale_accesszone"
 page_title: "powerscale_accesszone Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Access Zone Datasource. This datasource is used to query the existing Access Zone from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale Access Zones allow you to isolate data and control who can access data in each zone.
+  Access Zone Datasource. This datasource is used to query the existing Access Zone from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Access Zones allow you to isolate data and control who can access data in each zone.
 ---
 
 # powerscale_accesszone (Data Source)
 
-Access Zone Datasource. This datasource is used to query the existing Access Zone from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale Access Zones allow you to isolate data and control who can access data in each zone.
+Access Zone Datasource. This datasource is used to query the existing Access Zone from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Access Zones allow you to isolate data and control who can access data in each zone.
 
 ## Example Usage
 

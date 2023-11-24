@@ -16,15 +16,23 @@ limitations under the License.
 -->
 
 # Terraform Provider for Dell Technologies PowerScale
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](about/CODE_OF_CONDUCT.md)
-[![License](https://img.shields.io/badge/License-MPL_2.0-blue.svg)](LICENSE)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](https://github.com/dell/terraform-provider-powerscale/blob/main/about/CODE_OF_CONDUCT.md)
+[![License](https://img.shields.io/badge/License-MPL_2.0-blue.svg)](https://github.com/dell/terraform-provider-powerscale/blob/main/LICENSE)
 
 The Terraform Provider for Dell Technologies (Dell) PowerScale allows Data Center and IT administrators to use Hashicorp Terraform to automate and orchestrate the provisioning and management of Dell PowerScale storage systems.
 
-The Terraform Provider can be used to manage ...
+The Terraform Provider can be used to manage access zone, active directory, cluster, user, user group, file system, smb share, nfs export, snapshot, snapshot schedule, quota, groupnet, subnet, network pool, network settings and smart pool settings.
+
+The logged-in user configured in the Terraform provider must possess adequate permissions  against the target Dell PowerScale System
 
 ## Table of Contents
 
+* [Code of Conduct](https://github.com/dell/dell-terraform-providers/blob/main/docs/CODE_OF_CONDUCT.md)
+* [Maintainer Guide](https://github.com/dell/dell-terraform-providers/blob/main/docs/MAINTAINER_GUIDE.md)
+* [Committer Guide](https://github.com/dell/dell-terraform-providers/blob/main/docs/COMMITTER_GUIDE.md)
+* [Contributing Guide](https://github.com/dell/dell-terraform-providers/blob/main/docs/CONTRIBUTING.md)
+* [List of Adopters](https://github.com/dell/dell-terraform-providers/blob/main/docs/ADOPTERS.md)
+* [Security](https://github.com/dell/dell-terraform-providers/blob/main/docs/SECURITY.md)
 * [Support](#support)
 * [License](#license)
 * [Prerequisites](#prerequisites)
@@ -40,17 +48,25 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 ## Prerequisites
 
-| **Terraform Provider** | **PowerScale Version** | **OS**                                | **Terraform**    | **Golang** |
-|------------------------|:-----------------------|:--------------------------------------|------------------|------------|
-| v1.0.0                 | 9.4 <br> 9.5           | ubuntu22.04 <br> rhel8.x <br> rhel9.x | 1.4.x <br> 1.5.x | 1.20       |
+| **Terraform Provider** | **PowerScale Version** | **OS**                    | **Terraform**    | **Golang** |
+|------------------------|:-----------------------|:--------------------------|------------------|------------|
+| v1.1.0                 | 9.4 <br> 9.5           | ubuntu22.04 <br>  rhel9.x | 1.5.x <br> 1.6.x | 1.21       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
 * Cluster
 * Access Zone
 * Active Directory
 * File System
+* Groupnet
+* Network Pool
+* Network Settings
 * NFS Export
+* Quota
+* Smart Pool Settings
 * SMB Share
+* Snapshot
+* Snapshot Schedule
+* Subnet
 * User
 * User Group
 
@@ -58,13 +74,65 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * Access Zone
 * Active Directory
 * File System
+* Groupnet
+* Network Pool
+* Network Settings
 * NFS Export
+* Quota
+* Smart Pool Settings
 * SMB Share
+* Snapshot
+* Snapshot Schedule
+* Subnet
 * User
 * User Group
 
 ## Installation and execution of Terraform Provider for Dell PowerScale
-The installation and execution steps of Terraform Provider for Dell PowerScale can be found [here](about/INSTALLATION.md).
+
+## Installation from public repository
+
+The provider will be fetched from the public repository and installed by Terraform automatically.
+Create a file called `main.tf` in your workspace with the following contents
+
+```tf
+terraform {
+  required_providers {
+    powerscale = { 
+      version = "1.1.0"
+      source = "registry.terraform.io/dell/powerscale"
+    }
+  }
+}
+```
+Then, in that workspace, run
+```
+terraform init
+``` 
+
+## Installation from source code
+
+1. Clone this repo
+2. In the root of this repo run
+```
+make install
+```
+Then follow [installation from public repo](#installation-from-public-repository)
+
+## SSL Certificate Verification
+
+For SSL verifcation on RHEL, these steps can be performed:
+* Copy the CA certificate to the `/etc/pki/ca-trust/source/anchors` path of the host by any external means.
+* Import the SSL certificate to host by running
+```
+update-ca-trust extract
+```
+
+For SSL verification on Ubuntu, these steps can be performed:
+* Copy the CA certificate to the `/etc/ssl/certs` path of the host by any external means.
+* Import the SSL certificate to host by running:
+ ```
+  update-ca-certificates
+```
 
 ## Releasing, Maintenance and Deprecation
 

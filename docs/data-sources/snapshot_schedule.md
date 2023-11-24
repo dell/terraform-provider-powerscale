@@ -19,12 +19,12 @@ linkTitle: "powerscale_snapshot_schedule"
 page_title: "powerscale_snapshot_schedule Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This datasource is used to query the existing Snapshot Schedules from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. Uses are able to see information like duration, path, schedule, name etc. for the existing snapshot schedules
+  This datasource is used to query the existing Snapshot Schedules from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. Uses are able to see information like duration, path, schedule, name etc. for the existing snapshot schedules
 ---
 
 # powerscale_snapshot_schedule (Data Source)
 
-This datasource is used to query the existing Snapshot Schedules from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. Uses are able to see information like duration, path, schedule, name etc. for the existing snapshot schedules
+This datasource is used to query the existing Snapshot Schedules from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. Uses are able to see information like duration, path, schedule, name etc. for the existing snapshot schedules
 
 
 

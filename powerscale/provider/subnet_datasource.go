@@ -55,8 +55,8 @@ func (d *SubnetDataSource) Metadata(ctx context.Context, req datasource.Metadata
 // Schema describes the data source arguments.
 func (d *SubnetDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "This datasource is used to query the existing Subnets from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. ",
-		Description:         "This datasource is used to query the existing Subnets from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. ",
+		MarkdownDescription: "This datasource is used to query the existing Subnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. ",
+		Description:         "This datasource is used to query the existing Subnets from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. ",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

@@ -54,8 +54,8 @@ func (d *NetworkPoolDataSource) Metadata(ctx context.Context, req datasource.Met
 func (d *NetworkPoolDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "This datasource is used to query the existing network pools from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. You can add network interfaces to network pools to associate address ranges with a node or a group of nodes.",
-		Description:         "This datasource is used to query the existing network pools from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. You can add network interfaces to network pools to associate address ranges with a node or a group of nodes.",
+		MarkdownDescription: "This datasource is used to query the existing network pools from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. You can add network interfaces to network pools to associate address ranges with a node or a group of nodes.",
+		Description:         "This datasource is used to query the existing network pools from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. You can add network interfaces to network pools to associate address ranges with a node or a group of nodes.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "Unique identifier of the ads provider instance.",

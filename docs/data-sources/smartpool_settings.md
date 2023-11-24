@@ -19,12 +19,12 @@ linkTitle: "powerscale_smartpool_settings"
 page_title: "powerscale_smartpool_settings Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This datasource is used to query the SmartPools settings from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale SmartPools settings provide the ability to configure SmartPools on the cluster.
+  This datasource is used to query the SmartPools settings from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale SmartPools settings provide the ability to configure SmartPools on the cluster.
 ---
 
 # powerscale_smartpool_settings (Data Source)
 
-This datasource is used to query the SmartPools settings from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale SmartPools settings provide the ability to configure SmartPools on the cluster.
+This datasource is used to query the SmartPools settings from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale SmartPools settings provide the ability to configure SmartPools on the cluster.
 
 ## Example Usage
 

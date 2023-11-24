@@ -51,3 +51,40 @@ N/A
 
 ## Bug Fixes
 N/A
+
+# v1.1.0 (Nov 24, 2023)
+## Release Summary
+The release supports resources and data sources mentioned in the Features section for Dell PowerScale.
+## Features
+
+### Data Sources:
+
+* `powerscale_groupnet` for reading groupnets in PowerScale.
+* `powerscale_network_settings` for reading network settings in PowerScale.
+* `powerscale_networkpool` for reading network pools in PowerScale.
+* `powerscale_quota` for reading quotas in PowerScale.
+* `powerscale_smartpool_settings` for reading smart pool settings in PowerScale.
+* `powerscale_snapshot` for reading snapshots in PowerScale.
+* `powerscale_snapshot_schedule` for reading snapshot schedules in PowerScale.
+* `powerscale_subnet` for reading subnets in PowerScale.
+
+
+### Resources
+
+* `powerscale_groupnet` for managing groupnets in PowerScale.
+* `powerscale_network_settings` for managing network settings in PowerScale.
+* `powerscale_networkpool` for managing network pools in PowerScale.
+* `powerscale_quota` for managing quotas in PowerScale.
+* `powerscale_smartpool_settings` for managing smart pool settings in PowerScale.
+* `powerscale_snapshot` for managing snapshots in PowerScale.
+* `powerscale_snapshot_schedule` for managing snapshot schedules in PowerScale.
+* `powerscale_subnet` for managing subnets in PowerScale.
+
+### Others
+N/A
+
+## Enhancements
+N/A
+
+## Bug Fixes
+N/A

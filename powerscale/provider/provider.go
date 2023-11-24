@@ -68,6 +68,8 @@ func (p *PscaleProvider) Metadata(ctx context.Context, req provider.MetadataRequ
 // Schema describes the provider arguments.
 func (p *PscaleProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		MarkdownDescription: "The Terraform provider for Dell PowerScale can be used to interact with a Dell PowerScale array in order to manage the array resources.",
+		Description:         "The Terraform provider for Dell PowerScale can be used to interact with a Dell PowerScale array in order to manage the array resources.",
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{
 				MarkdownDescription: "The API endpoint, ex. https://172.17.177.230:8080",

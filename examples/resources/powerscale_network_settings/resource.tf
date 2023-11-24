@@ -21,7 +21,7 @@ limitations under the License.
 # `terraform destroy` will delete the resource from terraform state file rather than deleting Network Settings from PowerScale.
 # For more information, Please check the terraform state file.
 
-# powerscale_network_settings provides the ability to configure external network configuration on the cluster.
+# PowerScale Network Settings provide the ability to configure external network configuration on the cluster.
 resource "powerscale_network_settings" "example_network_settings" {
 
   # Optional fields when updating.

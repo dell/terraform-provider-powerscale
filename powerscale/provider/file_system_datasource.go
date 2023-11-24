@@ -53,8 +53,8 @@ func (d *FileSystemDataSource) Metadata(ctx context.Context, req datasource.Meta
 func (d *FileSystemDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "This datasource is used to query the existing FileSystem(Namespace Directory) from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.",
-		Description:         "This datasource is used to query the existing FileSystem(Namespace Directory) from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.",
+		MarkdownDescription: "This datasource is used to query the existing FileSystem (Namespace Directory) from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.",
+		Description:         "This datasource is used to query the existing FileSystem (Namespace Directory) from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block.It allows you to get information which includes all metadata , access control , quotas and snapshots related information for the directory.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

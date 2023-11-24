@@ -19,12 +19,12 @@ linkTitle: "powerscale_snapshot"
 page_title: "powerscale_snapshot Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This datasource is used to query the existing Snapshots from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale Snapshots is a logical pointer to data that is stored on a cluster at a specific point in time.
+  This datasource is used to query the existing Snapshots from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Snapshots is a logical pointer to data that is stored on a cluster at a specific point in time.
 ---
 
 # powerscale_snapshot (Data Source)
 
-This datasource is used to query the existing Snapshots from PowerScale array. The information fetched from this datasource can be used for getting the details / for further processing in resource block. PowerScale Snapshots is a logical pointer to data that is stored on a cluster at a specific point in time.
+This datasource is used to query the existing Snapshots from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. PowerScale Snapshots is a logical pointer to data that is stored on a cluster at a specific point in time.
 
 ## Example Usage
 
