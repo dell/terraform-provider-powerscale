@@ -391,9 +391,11 @@ Import is supported using the following syntax:
 # limitations under the License.
 
 # The command is
-# terraform import powerscale_nfs_export.example_export <name>
-# Example:
+# terraform import powerscale_nfs_export.example_export [<zoneID>]:<name>
+# Example 1:  <zoneID> is Optional, defaults to System:
 terraform import powerscale_nfs_export.example_export example_export
+# Example 2:
+terraform import powerscale_nfs_export.example_export zone_id:example_export
 # after running this command, populate the name field and other required parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```

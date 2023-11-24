@@ -22,7 +22,6 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
@@ -30,6 +29,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -558,7 +558,20 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 		)
 		return
 	}
-	err = helper.UpdateSmbShare(ctx, r.client, shareID, sharePlan.Zone.ValueStringPointer(), shareToUpdate)
+	zoneName := shareState.Zone.ValueString()
+	// if share name is updated, query original zone
+	if !sharePlan.Zone.Equal(shareState.Zone) {
+		zoneName, err = helper.QueryZoneNameByID(ctx, r.client, int32(shareState.Zid.ValueInt64()))
+		if err != nil {
+			response.Diagnostics.AddError(
+				"Error update smb share",
+				fmt.Sprintf("Could not read zone %d for share %s with error: %s",
+					shareState.Zid.ValueInt64(), shareID, err.Error()),
+			)
+			return
+		}
+	}
+	err = helper.UpdateSmbShare(ctx, r.client, shareID, &zoneName, shareToUpdate)
 	if err != nil {
 		errStr := constants.UpdateSmbShareErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -638,5 +651,44 @@ func (r SmbShareResource) Delete(ctx context.Context, request resource.DeleteReq
 
 // ImportState imports the resource state.
 func (r SmbShareResource) ImportState(ctx context.Context, request resource.ImportStateRequest, response *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), request, response)
+	var zoneName string
+	shareID := request.ID
+	// request.ID is form of zoneName:shareID
+	if strings.Contains(request.ID, ":") {
+		params := strings.Split(request.ID, ":")
+		shareID = strings.Trim(params[1], " ")
+		zoneName = strings.Trim(params[0], " ")
+	}
+
+	readSmbShare, err := helper.GetSmbShare(ctx, r.client, shareID, &zoneName)
+	if err != nil {
+		errStr := constants.GetSmbShareErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error importing smb share ",
+			message)
+		return
+	}
+
+	if len(readSmbShare.Shares) <= 0 {
+		response.Diagnostics.AddError(
+			"Error importing smb share",
+			fmt.Sprintf("Could not read smb share %s from pscale with error: smb share not found", shareID),
+		)
+		return
+	}
+	var model models.SmbShareResource
+	err = helper.CopyFieldsToNonNestedModel(ctx, readSmbShare.Shares[0], &model)
+	if err != nil {
+		response.Diagnostics.AddError(
+			"Error importing smb share",
+			fmt.Sprintf("Could not read smb share struct %s with error: %s", shareID, err.Error()),
+		)
+		return
+	}
+	model.Zone = types.StringValue(zoneName)
+	response.Diagnostics.Append(response.State.Set(ctx, model)...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+	tflog.Info(ctx, "import smb share completed")
 }

@@ -21,7 +21,6 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -30,7 +29,7 @@ import (
 func CreateQuota(ctx context.Context, client *client.Client, quota powerscale.V12QuotaQuota, zone string) (*powerscale.CreateResponse, error) {
 	param := client.PscaleOpenAPIClient.QuotaApi.CreateQuotav12QuotaQuota(ctx).V12QuotaQuota(quota)
 	if zone != "" {
-		param.Zone(zone)
+		param = param.Zone(zone)
 	}
 	response, _, err := param.Execute()
 	return response, err
@@ -40,9 +39,9 @@ func CreateQuota(ctx context.Context, client *client.Client, quota powerscale.V1
 func GetQuota(ctx context.Context, client *client.Client, quotaID string, zone string) (*powerscale.V12QuotaQuotasExtended, error) {
 	param := client.PscaleOpenAPIClient.QuotaApi.GetQuotav12QuotaQuota(ctx, quotaID)
 	if zone != "" {
-		param.Zone(zone)
+		param = param.Zone(zone)
 	}
-	response, _, err := param.Execute()
+	response, _, err := param.ResolveNames(true).Execute()
 	return response, err
 }
 
@@ -129,15 +128,4 @@ func ValidateQuotaUpdate(plan models.QuotaResource, state models.QuotaResource) 
 		return fmt.Errorf("do not update field Persona.ID")
 	}
 	return nil
-}
-
-// CleanQuotaPersona handles inconsistency between post/get response different.
-func CleanQuotaPersona(ctx context.Context, source types.Object, target types.Object) types.Object {
-	target = assignKnownObjectToUnknown(ctx, source, target)
-	for _, val := range target.Attributes() {
-		if !val.IsNull() {
-			return target
-		}
-	}
-	return types.ObjectNull(target.AttributeTypes(ctx))
 }

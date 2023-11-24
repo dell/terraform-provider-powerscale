@@ -22,12 +22,13 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"regexp"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -425,7 +426,6 @@ func (r *QuotaResource) Create(ctx context.Context, request resource.CreateReque
 	createdQuota := getQuotaResponse.Quotas[0]
 
 	err = helper.CopyFieldsToNonNestedModel(ctx, createdQuota, &quotaPlan)
-	quotaPlan.Persona = helper.CleanQuotaPersona(ctx, quotaPlanBackup.Persona, quotaPlan.Persona)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error creating quota",
@@ -436,6 +436,9 @@ func (r *QuotaResource) Create(ctx context.Context, request resource.CreateReque
 
 	quotaPlan.IgnoreLimitChecks = quotaPlanBackup.IgnoreLimitChecks
 	quotaPlan.Force = quotaPlanBackup.Force
+	if quotaPlanBackup.Persona.IsNull() {
+		quotaPlan.Persona = types.ObjectNull(quotaPlan.Persona.AttributeTypes(ctx))
+	}
 	diags = response.State.Set(ctx, quotaPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -526,7 +529,9 @@ func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateReque
 	}
 	quotaState.IgnoreLimitChecks = quotaPlan.IgnoreLimitChecks
 	quotaState.Force = quotaPlan.Force
-	quotaState.Persona = helper.CleanQuotaPersona(ctx, quotaPlan.Persona, quotaState.Persona)
+	if quotaPlan.Persona.IsNull() {
+		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
+	}
 	diags = response.State.Set(ctx, quotaState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -584,7 +589,9 @@ func (r *QuotaResource) Read(ctx context.Context, request resource.ReadRequest, 
 	}
 	quotaState.IgnoreLimitChecks = quotaStateBackup.IgnoreLimitChecks
 	quotaState.Force = quotaStateBackup.Force
-	quotaState.Persona = helper.CleanQuotaPersona(ctx, quotaStateBackup.Persona, quotaState.Persona)
+	if quotaStateBackup.Persona.IsNull() {
+		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
+	}
 	diags = response.State.Set(ctx, quotaState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -625,5 +632,54 @@ func (r QuotaResource) Delete(ctx context.Context, request resource.DeleteReques
 
 // ImportState imports the resource state.
 func (r QuotaResource) ImportState(ctx context.Context, request resource.ImportStateRequest, response *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), request, response)
+	tflog.Info(ctx, "importing Quota resource")
+	var zoneName string
+	quotaID := request.ID
+	// request.ID is form of zoneName:exportID
+	if strings.Contains(request.ID, ":") {
+		params := strings.Split(request.ID, ":")
+		quotaID = strings.Trim(params[1], " ")
+		zoneName = strings.Trim(params[0], " ")
+	}
+
+	tflog.Debug(ctx, "calling get quota by ID", map[string]interface{}{
+		"QuotaID": quotaID,
+		"Zone":    zoneName,
+	})
+	quotaResponse, err := helper.GetQuota(ctx, r.client, quotaID, zoneName)
+	if err != nil {
+		errStr := constants.ReadQuotaErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		response.Diagnostics.AddError("Error importing quota ",
+			message)
+		return
+	}
+
+	if len(quotaResponse.Quotas) <= 0 {
+		response.Diagnostics.AddError(
+			"Error importing quota",
+			fmt.Sprintf("Could not read quota %s from pscale with error: quota not found", quotaID),
+		)
+		return
+	}
+	var quotaState models.QuotaResource
+	tflog.Debug(ctx, "updating read quota state", map[string]interface{}{
+		"QuotaResponse": quotaResponse,
+		"QuotaState":    quotaState,
+	})
+	err = helper.CopyFieldsToNonNestedModel(ctx, quotaResponse.Quotas[0], &quotaState)
+	if err != nil {
+		response.Diagnostics.AddError(
+			"Error importing quota",
+			fmt.Sprintf("Could not read quota struct %s with error: %s", quotaID, err.Error()),
+		)
+		return
+	}
+	quotaState.Zone = types.StringValue(zoneName)
+	diags := response.State.Set(ctx, quotaState)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+	tflog.Info(ctx, "importing quota completed")
 }

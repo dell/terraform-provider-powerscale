@@ -99,6 +99,32 @@ func TestAccSmbShareResourceErrorRead(t *testing.T) {
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
+			// ImportState testing get none share
+			{
+				ResourceName: "powerscale_smb_share.share_test",
+				ImportState:  true,
+				PreConfig: func() {
+					FunctionMocker.Release()
+					FunctionMocker = mockey.Mock(helper.GetSmbShare).Return(&powerscale.V7SmbSharesExtended{}, nil).Build().
+						When(func(ctx context.Context, client *client.Client, shareID string, zone *string) bool {
+							return FunctionMocker.Times() == 2
+						})
+				},
+				ExpectError: regexp.MustCompile(".not found"),
+			},
+			// ImportState testing get error
+			{
+				ResourceName: "powerscale_smb_share.share_test",
+				ImportState:  true,
+				PreConfig: func() {
+					FunctionMocker.Release()
+					FunctionMocker = mockey.Mock(helper.GetSmbShare).Return(nil, fmt.Errorf("mock error")).Build().
+						When(func(ctx context.Context, client *client.Client, shareID string, zone *string) bool {
+							return FunctionMocker.Times() == 2
+						})
+				},
+				ExpectError: regexp.MustCompile("mock error"),
+			},
 		},
 	})
 }
@@ -121,6 +147,15 @@ func TestAccSmbShareResourceErrorUpdate(t *testing.T) {
 				Config: ProviderConfig + SmbShareUpdatedResourceConfig,
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.UpdateSmbShare).Return(fmt.Errorf("mock error")).Build()
+				},
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			// Update zone get error
+			{
+				Config: ProviderConfig + SmbShareUpdatedZoneResourceConfig,
+				PreConfig: func() {
+					FunctionMocker.Release()
+					FunctionMocker = mockey.Mock(helper.QueryZoneNameByID).Return("", fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
@@ -321,5 +356,27 @@ resource "powerscale_smb_share" "share_test" {
 	allow_delete_readonly = true
 	ca_timeout = 30
 	zone = "System"
+}
+`, shareName, shareName)
+
+var SmbShareUpdatedZoneResourceConfig = fmt.Sprintf(`
+resource "powerscale_smb_share" "share_test" {
+	auto_create_directory = true
+	name = "%s"
+	path = "/ifs/%s"
+	permissions = [
+		{
+			permission = "full"
+			permission_type = "allow"
+			trustee = {
+				id = "SID:S-1-1-0",
+				name = "Everyone",
+				type = "wellknown"
+			}
+		}
+	]
+	allow_delete_readonly = true
+	ca_timeout = 30
+	zone = "System2"
 }
 `, shareName, shareName)
