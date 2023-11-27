@@ -14,8 +14,10 @@
 # limitations under the License.
 
 # The command is
-# terraform import powerscale_quota.quota_example <id>
-# Example:
+# terraform import powerscale_quota.quota_example [<zoneID>]:<id>
+# Example 1: <zoneID> is Optional, defaults to System:
 terraform import powerscale_quota.quota_example example_quota_id
+# Example 2:
+terraform import powerscale_quota.quota_example zone_id:example_quota_id
 # after running this command, populate the name field and other required parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.

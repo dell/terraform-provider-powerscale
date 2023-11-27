@@ -44,8 +44,11 @@ func GetNFSExport(ctx context.Context, client *client.Client, nfsModel models.Nf
 }
 
 // GetNFSExportByID retrieve nfs export information by id.
-func GetNFSExportByID(ctx context.Context, client *client.Client, id string) (*powerscale.V2NfsExportsExtended, error) {
+func GetNFSExportByID(ctx context.Context, client *client.Client, id string, zoneName string) (*powerscale.V2NfsExportsExtended, error) {
 	queryParam := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv2NfsExport(ctx, id)
+	if zoneName != "" {
+		queryParam = queryParam.Zone(zoneName)
+	}
 	exportRes, _, err := queryParam.Execute()
 	return exportRes, err
 }

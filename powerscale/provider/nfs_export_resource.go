@@ -25,6 +25,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"strconv"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -820,6 +821,7 @@ func (r NfsExportResource) Create(ctx context.Context, request resource.CreateRe
 		return
 	}
 	createdExport := getExportResponse.Exports[0]
+
 	err = helper.CopyFieldsToNonNestedModel(ctx, createdExport, &exportPlan)
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -992,7 +994,16 @@ func (r NfsExportResource) Delete(ctx context.Context, request resource.DeleteRe
 
 // ImportState imports the resource state.
 func (r NfsExportResource) ImportState(ctx context.Context, request resource.ImportStateRequest, response *resource.ImportStateResponse) {
-	readNfsExport, err := helper.GetNFSExportByID(ctx, r.client, request.ID)
+	var zoneName string
+	exportID := request.ID
+	// request.ID is form of zoneName:exportID
+	if strings.Contains(request.ID, ":") {
+		params := strings.Split(request.ID, ":")
+		exportID = strings.Trim(params[1], " ")
+		zoneName = strings.Trim(params[0], " ")
+	}
+
+	readNfsExport, err := helper.GetNFSExportByID(ctx, r.client, exportID, zoneName)
 	if err != nil {
 		errStr := constants.GetNfsExportErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
