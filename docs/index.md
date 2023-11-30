@@ -49,15 +49,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# Best Practices
-# 1. The parent resource attributes of a certain resource (e.g. groupnet field of subnet resource) can only be designated
-#    at creation. Once designated, they cannot be modified except for parent resource renaming.
-# 2. The name of a resource is modifiable, but it is necessary to make sure its name referenced in the child resources
-#    is also updated (can be done manually or use reference resource_id.name).
-# 3. Resources with child resources cannot be deleted independently. Use terraform destroy to delete all resources directly
-#    or delete all the child resources at the same time (depends_on is recommended to manage resources, serving as a
-#    precheck for delete operations).
-
 terraform {
   required_providers {
     powerscale = {
@@ -198,3 +189,12 @@ resource "powerscale_smb_share" "share_example" {
 
 - `auth_type` (Number) what should be the auth type, 0 for basic and 1 for session-based
 - `timeout` (Number) specifies a time limit for requests
+
+## Best Practices
+1. The parent resource attributes of a certain resource (e.g. groupnet field of subnet resource) can only be designated
+   at creation. Once designated, they cannot be modified except for parent resource renaming.
+2. The name of a resource is modifiable, but it is necessary to make sure its name referenced in the child resources
+   is also updated (can be done manually or use reference resource_id.name).
+3. Resources with child resources cannot be deleted independently. Use terraform destroy to delete all resources directly
+   or delete all the child resources at the same time (depends_on is recommended to manage resources, serving as a
+   precheck for delete operations).
