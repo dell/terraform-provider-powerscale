@@ -21,7 +21,6 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"strconv"
 	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
@@ -162,20 +161,4 @@ func QueryZoneNameByID(ctx context.Context, client *client.Client, zoneID int32)
 	}
 
 	return "", fmt.Errorf("error finding zone name for zone ID %d", zoneID)
-}
-
-// QueryZoneIDByName returns a specific zone id by name.
-func QueryZoneIDByName(ctx context.Context, client *client.Client, zoneName string) (string, error) {
-	zones, err := GetAllAccessZones(ctx, client)
-	if err != nil {
-		return "", err
-	}
-	for _, zone := range zones.Zones {
-		if *zone.Name == zoneName {
-
-			return strconv.Itoa(int(*zone.ZoneId)), nil
-		}
-	}
-
-	return "", fmt.Errorf("error finding zone ID for zone name %s", zoneName)
 }

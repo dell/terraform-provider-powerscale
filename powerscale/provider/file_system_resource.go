@@ -239,7 +239,7 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	if !plan.AccessControl.IsNull() && (plan.AccessControl.ValueString() != "") {
 		createReq = createReq.XIsiIfsAccessControl(plan.AccessControl.ValueString())
 	}
-	errAuth := helper.ValidateUserAndGroup(ctx, *r.client, plan.Owner, plan.Group, plan.QueryZone.ValueString())
+	errAuth := helper.ValidateUserAndGroup(ctx, r.client, plan.Owner, plan.Group, plan.QueryZone.ValueString())
 	if errAuth != nil {
 		errStr := constants.CreateFileSystemErrorMsg
 		message := helper.GetErrorString(errAuth, errStr)
@@ -384,7 +384,7 @@ func (r *FileSystemResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	//copy to model
+	// copy to model
 	var state models.FileSystemResource
 	helper.UpdateFileSystemResourceState(ctx, &plan, &state, acl, meta)
 	helper.UpdateFileSystemResourcePlanData(&plan, &state)
@@ -442,7 +442,7 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	if err := helper.UpdateFileSystem(ctx, *r.client, planDirName, &plan, &state); err != nil {
+	if err := helper.UpdateFileSystem(ctx, r.client, planDirName, &plan, &state); err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("Error updating the File system Resource - %s", planDirName),
 			err.Error(),
@@ -474,7 +474,7 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	//copy to model
+	// copy to model
 	helper.UpdateFileSystemResourceState(ctx, &plan, &state, acl, meta)
 	helper.UpdateFileSystemResourcePlanData(&plan, &state)
 
@@ -512,7 +512,7 @@ func (r *FileSystemResource) ImportState(ctx context.Context, req resource.Impor
 		return
 	}
 
-	//copy to model
+	// copy to model
 	helper.UpdateFileSystemResourceState(ctx, nil, &state, acl, meta)
 	state.ID = types.StringValue(id)
 	dir, name := filepath.Split(id)

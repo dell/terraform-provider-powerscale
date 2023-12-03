@@ -42,7 +42,7 @@ type PscaleProvider struct {
 	// client can contain the upstream provider SDK or HTTP client used to
 	// communicate with the upstream service. Resource and DataSource
 	// implementations can then make calls using this client.
-	client *client.Client
+
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
@@ -153,7 +153,6 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	}
 
 	// client configuration for data sources and resources
-	p.client = pscaleClient
 	resp.DataSourceData = pscaleClient
 	resp.ResourceData = pscaleClient
 }

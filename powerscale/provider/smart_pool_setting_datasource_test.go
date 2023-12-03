@@ -184,14 +184,16 @@ func TestAccSmartPoolSettingsDatasourceV16(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = Mock(helper.GetSmartPoolSettings).Build().
 						When(func(ctx context.Context, powerscaleClient *client.Client) bool {
+							onefsVersion, _ := powerscaleClient.GetOnefsVersion()
+
 							if strings.Contains(powerscaleClient.PscaleOpenAPIClient.GetConfig().Servers[0].URL, "localhost") {
 								// enforce 9.5 (i.e. v16) endpoint in mock server
-								powerscaleClient.OnefsVersion = client.OnefsVersion{Major: 9, Minor: 5, Patch: 0}
+								powerscaleClient.SetOnefsVersion(9, 5, 0)
 								return false
 							} else if !strings.Contains(powerscaleClient.PscaleOpenAPIClient.GetConfig().Servers[0].URL, "localhost") &&
-								powerscaleClient.OnefsVersion.IsLessThan("9.5.0") {
+								onefsVersion.IsLessThan("9.5.0") {
 								// if running against an actual PowerScale 9.4, v16 is invalid, use mock data
-								powerscaleClient.OnefsVersion = client.OnefsVersion{Major: 9, Minor: 5, Patch: 0}
+								powerscaleClient.SetOnefsVersion(9, 5, 0)
 								return true
 							}
 							return false

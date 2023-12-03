@@ -18,7 +18,11 @@ limitations under the License.
 package provider
 
 import (
+	"context"
+	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/stretchr/testify/assert"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
@@ -106,7 +110,34 @@ func TestAccAccessZoneDataSourceGetErr(t *testing.T) {
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
 		},
+		CheckDestroy: func(_ *terraform.State) error {
+			if FunctionMocker != nil {
+				FunctionMocker.UnPatch()
+			}
+			return nil
+		},
 	})
+}
+func TestQueryZoneNameByID(t *testing.T) {
+	var azs []powerscale.V3ZoneExtended
+	for i := 0; i < 10; i++ {
+		idInt := int32(i)
+		zoneName := fmt.Sprintf("Zone%d", i)
+		azs = append(azs, powerscale.V3ZoneExtended{
+			ZoneId: &idInt,
+			Name:   &zoneName,
+		})
+	}
+
+	zones := &powerscale.V3Zones{Zones: azs}
+	if FunctionMocker != nil {
+		FunctionMocker.UnPatch()
+	}
+	FunctionMocker = mockey.Mock(helper.GetAllAccessZones).Return(zones, nil).Build()
+	defer FunctionMocker.UnPatch()
+	name, err := helper.QueryZoneNameByID(context.Background(), nil, 0)
+	assert.Nil(t, err)
+	assert.Equal(t, "Zone0", name)
 }
 
 var AzDataSourceConfig = `

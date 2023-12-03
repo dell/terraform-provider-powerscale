@@ -50,7 +50,50 @@ type AuthContextKey string
 // Client type is to hold powerscale client.
 type Client struct {
 	PscaleOpenAPIClient *powerscale.APIClient
-	OnefsVersion        OnefsVersion
+	onefsVersion        *OnefsVersion
+	mu                  sync.Mutex
+}
+
+// GetOnefsVersion get OneFS version.
+func (c *Client) GetOnefsVersion() (*OnefsVersion, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.onefsVersion == nil {
+		c.onefsVersion = &OnefsVersion{}
+		config, _, err := c.PscaleOpenAPIClient.ClusterApi.GetClusterv3ClusterConfig(context.Background()).Execute()
+		if err != nil {
+			return nil, err
+		}
+
+		parts := strings.Split(config.OnefsVersion.Release, ".")
+		if len(parts) > 2 {
+			major, err := strconv.Atoi(parts[0])
+			if err != nil {
+				return nil, err
+			}
+			minor, err := strconv.Atoi(parts[1])
+			if err != nil {
+				return nil, err
+			}
+			patch, err := strconv.Atoi(parts[2])
+			if err != nil {
+				return nil, err
+			}
+			c.onefsVersion = &OnefsVersion{major, minor, patch}
+		} else {
+			return nil, errors.New("Unable to parse OneFS version " + config.OnefsVersion.Release)
+		}
+	}
+	return c.onefsVersion, nil
+}
+
+// SetOnefsVersion sets the OneFS version of the client.
+// Note: This function is not supposed to be called.
+// It is only used for testing.
+func (c *Client) SetOnefsVersion(major, minor, patch int) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.onefsVersion = &OnefsVersion{major, minor, patch}
 }
 
 // OnefsVersion present OneFS release version.
@@ -142,31 +185,6 @@ func NewClient(endpoint string,
 		PscaleOpenAPIClient: openAPIClient,
 	}
 
-	// Inject OneFS version
-	config, _, err := openAPIClient.ClusterApi.GetClusterv3ClusterConfig(context.Background()).Execute()
-	if err != nil {
-		return nil, err
-	}
-
-	parts := strings.Split(config.OnefsVersion.Release, ".")
-	if len(parts) > 2 {
-		major, err := strconv.Atoi(parts[0])
-		if err != nil {
-			return nil, err
-		}
-		minor, err := strconv.Atoi(parts[1])
-		if err != nil {
-			return nil, err
-		}
-		patch, err := strconv.Atoi(parts[2])
-		if err != nil {
-			return nil, err
-		}
-		client.OnefsVersion = OnefsVersion{major, minor, patch}
-	} else {
-		return nil, errors.New("Unable to parse OneFS version " + config.OnefsVersion.Release)
-	}
-
 	return &client, nil
 }
 
@@ -194,6 +212,10 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user 
 				/* #nosec */
 				InsecureSkipVerify: true,
 			},
+			MaxIdleConns:        100,
+			MaxIdleConnsPerHost: 30,
+			MaxConnsPerHost:     10,
+			IdleConnTimeout:     90 * time.Second,
 		}
 	} else {
 		// Loading system certs by default if insecure is set to false
@@ -209,6 +231,10 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user 
 				RootCAs:            pool,
 				InsecureSkipVerify: false,
 			},
+			MaxIdleConns:        100,
+			MaxIdleConnsPerHost: 30,
+			MaxConnsPerHost:     10,
+			IdleConnTimeout:     90 * time.Second,
 		}
 	}
 
@@ -232,6 +258,7 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user 
 		httpclient.Transport = transport
 		basicAuth(user, pass, &cfg)
 	} else if authType == SessionAuthType {
+		ctx = context.WithValue(ctx, AuthContextKey(AuthType), SessionAuthType)
 		httpclient.Transport = &TokenTransport{Ctx: ctx, Username: user, Password: pass, RoundTripper: transport}
 		err := sessionAuth(ctx, user, pass, &cfg)
 		if err != nil {
@@ -267,7 +294,6 @@ func getHeaders() map[string]string {
 func sessionAuth(ctx context.Context, user string, pass string, cfg *powerscale.Configuration) error {
 	mutex.Lock()
 	defer mutex.Unlock()
-	ctx = context.WithValue(ctx, AuthContextKey(AuthType), SessionAuthType)
 	host, err := cfg.ServerURLWithContext(ctx, "")
 	if err != nil {
 		return err

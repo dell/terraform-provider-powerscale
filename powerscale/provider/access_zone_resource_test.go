@@ -19,6 +19,7 @@ package provider
 
 import (
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
@@ -107,11 +108,20 @@ func TestAccAccessZoneResourceAfterCreateGetErr(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					if mocker != nil {
+						mocker.UnPatch()
+					}
 					mocker = mockey.Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
 				},
 				Config:      ProviderConfig + AccessZoneResourceConfig,
 				ExpectError: regexp.MustCompile(`.*access zone read mock error*.`),
 			},
+		},
+		CheckDestroy: func(_ *terraform.State) error {
+			if mocker != nil {
+				mocker.UnPatch()
+			}
+			return nil
 		},
 	})
 }
@@ -127,12 +137,24 @@ func TestAccAccessZoneResourceGetErr(t *testing.T) {
 					if mocker != nil {
 						mocker.UnPatch()
 					}
+					if createMocker != nil {
+						createMocker.UnPatch()
+					}
 					createMocker = mockey.Mock(helper.CreateAccessZones).Return(nil).Build()
 					mocker = mockey.Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
 				},
 				Config:      ProviderConfig + AccessZoneResourceConfig,
 				ExpectError: regexp.MustCompile(`.*access zone read mock error*.`),
 			},
+		},
+		CheckDestroy: func(_ *terraform.State) error {
+			if mocker != nil {
+				mocker.UnPatch()
+			}
+			if createMocker != nil {
+				createMocker.UnPatch()
+			}
+			return nil
 		},
 	})
 }
@@ -163,6 +185,9 @@ func TestAccAccessZoneResourceGetImportErr(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					if mocker != nil {
+						mocker.UnPatch()
+					}
 					mocker = mockey.Mock(helper.GetAllAccessZones).Return(nil, fmt.Errorf("access zone read mock error")).Build()
 				},
 				ResourceName:      accessZoneResourceName,
@@ -170,6 +195,15 @@ func TestAccAccessZoneResourceGetImportErr(t *testing.T) {
 				ImportStateVerify: true,
 				ExpectError:       regexp.MustCompile(`.*access zone read mock error*.`),
 			},
+		},
+		CheckDestroy: func(_ *terraform.State) error {
+			if createMocker != nil {
+				createMocker.UnPatch()
+			}
+			if mocker != nil {
+				mocker.UnPatch()
+			}
+			return nil
 		},
 	})
 }

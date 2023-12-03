@@ -334,7 +334,7 @@ const acl = "acl"
 const mode = "mode"
 
 // UpdateFileSystem Updates the file system attributes.
-func UpdateFileSystem(ctx context.Context, client client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) error {
+func UpdateFileSystem(ctx context.Context, client *client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) error {
 
 	// Update Owner / Group if modified
 	if plan.Owner.Name.ValueString() != state.Owner.Name.ValueString() || plan.Group.Name.ValueString() != state.Group.Name.ValueString() ||
@@ -416,7 +416,7 @@ func getNewAccessControlParams(accessControl string) (string, string) {
 }
 
 // ValidateUserAndGroup check if owner/group information is correct.
-func ValidateUserAndGroup(ctx context.Context, client client.Client, owner models.MemberObject, group models.MemberObject, accessZone string) error {
+func ValidateUserAndGroup(ctx context.Context, client *client.Client, owner models.MemberObject, group models.MemberObject, accessZone string) error {
 	// Validate owner information
 	userReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, owner.Name.ValueString())
 
