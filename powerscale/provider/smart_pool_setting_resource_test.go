@@ -82,13 +82,14 @@ func TestAccSmartPoolSettingsResourceUpdate(t *testing.T) {
 					restV5UpdateFuncMocker = Mock(powerscale.ApiUpdateStoragepoolv5StoragepoolSettingsRequest.Execute).Return(nil, nil).Build()
 					restV16UpdateFuncMocker = Mock(powerscale.ApiUpdateStoragepoolv16StoragepoolSettingsRequest.Execute).Return(nil, nil).Build()
 					FunctionMocker = Mock(helper.GetSmartPoolSettings).To(func(ctx context.Context, powerscaleClient *client.Client) (any, error) {
+						onefsVersion, _ := powerscaleClient.GetOnefsVersion()
 						if restV5UpdateFuncMocker.MockTimes() > 0 {
 							return mockV5StoragepoolSettingsAfterUpdate, nil
 						}
 						if restV16UpdateFuncMocker.MockTimes() > 0 {
 							return mockV16StoragepoolSettingsAfterUpdate, nil
 						}
-						if powerscaleClient.OnefsVersion.IsGreaterThan("9.4.0") {
+						if onefsVersion.IsGreaterThan("9.4.0") {
 							return mockV16StoragepoolSettingsBeforeUpdate, nil
 						}
 						return mockV5StoragepoolSettingsBeforeUpdate, nil
@@ -183,7 +184,8 @@ func TestAccSmartPoolSettingsResourceUpdateErrorRequest(t *testing.T) {
 							if updateFuncMocker.MockTimes() > 0 {
 								return nil, fmt.Errorf("mock error")
 							}
-							if powerscaleClient.OnefsVersion.IsGreaterThan("9.4.0") {
+							onefsVersion, _ := powerscaleClient.GetOnefsVersion()
+							if onefsVersion.IsGreaterThan("9.4.0") {
 								return mockV16StoragepoolSettingsBeforeUpdate, nil
 							}
 							return mockV5StoragepoolSettingsBeforeUpdate, nil
@@ -221,12 +223,13 @@ func TestAccSmartPoolSettingsResourceV16(t *testing.T) {
 					restV16UpdateFuncMocker = Mock(powerscale.ApiUpdateStoragepoolv16StoragepoolSettingsRequest.Execute).Return(nil, nil).Build()
 					FunctionMocker = Mock(helper.GetSmartPoolSettings).Build().
 						When(func(ctx context.Context, powerscaleClient *client.Client) bool {
+							onefsVersion, _ := powerscaleClient.GetOnefsVersion()
 							if strings.Contains(powerscaleClient.PscaleOpenAPIClient.GetConfig().Servers[0].URL, "localhost") {
-								powerscaleClient.OnefsVersion = client.OnefsVersion{Major: 9, Minor: 5, Patch: 0}
+								powerscaleClient.SetOnefsVersion(9, 5, 0)
 								return false
 							}
 							if !strings.Contains(powerscaleClient.PscaleOpenAPIClient.GetConfig().Servers[0].URL, "localhost") &&
-								powerscaleClient.OnefsVersion.IsGreaterThan("9.4.0") {
+								onefsVersion.IsGreaterThan("9.4.0") {
 								return false
 							}
 							return true

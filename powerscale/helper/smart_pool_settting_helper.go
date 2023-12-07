@@ -49,7 +49,12 @@ type SettingsSetter interface {
 
 // GetSmartPoolSettings Get SmartPool settings based on Onefs version.
 func GetSmartPoolSettings(ctx context.Context, powerscaleClient *client.Client) (any, error) {
-	if powerscaleClient.OnefsVersion.IsGreaterThan("9.4.0") {
+	onfsVersion, err := powerscaleClient.GetOnefsVersion()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get OneFS version: %v", err)
+	}
+
+	if onfsVersion.IsGreaterThan("9.4.0") {
 		settings, _, err := powerscaleClient.PscaleOpenAPIClient.StoragepoolApi.GetStoragepoolv16StoragepoolSettings(ctx).Execute()
 		return settings, err
 	}
@@ -255,7 +260,12 @@ func BigFloatToInt32(x *big.Float) (*int32, error) {
 
 // UpdateSmartPoolSettings apply SmartPool Settings changes on PowerScale.
 func UpdateSmartPoolSettings(ctx context.Context, client *client.Client, model *models.SmartPoolSettingsResource) error {
-	if client.OnefsVersion.IsGreaterThan("9.4.0") {
+	onfsVersion, err := client.GetOnefsVersion()
+	if err != nil {
+		return fmt.Errorf("failed to get OneFS version: %v", err)
+	}
+
+	if onfsVersion.IsGreaterThan("9.4.0") {
 		updateParam := client.PscaleOpenAPIClient.StoragepoolApi.UpdateStoragepoolv16StoragepoolSettings(ctx)
 		settings := powerscale.V16StoragepoolSettingsExtended{}
 
@@ -289,7 +299,7 @@ func UpdateSmartPoolSettings(ctx context.Context, client *client.Client, model *
 	updateParam := client.PscaleOpenAPIClient.StoragepoolApi.UpdateStoragepoolv5StoragepoolSettings(ctx)
 	settings := powerscale.V5StoragepoolSettingsExtended{}
 
-	err := ReadFromState(ctx, model, &settings)
+	err = ReadFromState(ctx, model, &settings)
 	if err != nil {
 		return err
 	}

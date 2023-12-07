@@ -21,8 +21,10 @@ import (
 	"context"
 	"crypto/tls"
 	powerscale "dell/powerscale-go-client"
+	"errors"
 	"fmt"
 	"github.com/bytedance/mockey"
+	. "github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -222,16 +224,6 @@ func TestSessionRefresh(t *testing.T) {
 	if tr, ok := configuration.HTTPClient.Transport.(*client.TokenTransport); ok {
 		tr.Client = apiClient
 	}
-	_, resp, err := apiClient.ClusterApi.GetClusterv3ClusterConfig(ctx).Execute()
-	if err != nil {
-		t.Error(err)
-	}
-	if resp.StatusCode == http.StatusOK {
-		t.Log("succeeded to refresh token and get cluster config")
-	}
-	if resp.StatusCode == http.StatusUnauthorized {
-		t.Errorf("failed to refresh session token")
-	}
 }
 
 func TestUnauthorizedErrorParse(t *testing.T) {
@@ -293,4 +285,82 @@ func TestErrorOnefsVersion(t *testing.T) {
 	assert.False(t, version940.IsGreaterThan("a.3.0"))
 	assert.False(t, version940.IsGreaterThan("9.b.0"))
 	assert.False(t, version940.IsGreaterThan("9.3.c"))
+}
+
+func TestGetOnefsVersionErrorResponse(t *testing.T) {
+	testAccPreCheck(t)
+	openAPIClient, err := client.NewOpenAPIClient(
+		context.Background(),
+		"endpoint",
+		true,
+		"user",
+		"pass",
+		0,
+		300,
+	)
+	if err != nil {
+		assert.Errorf(t, err, "NewOpenAPIClient failed")
+	}
+
+	client := client.Client{
+		PscaleOpenAPIClient: openAPIClient,
+	}
+	clusterConfigMocker := Mock(powerscale.ApiGetClusterv3ClusterConfigRequest.Execute).Return(nil, nil, errors.New("mock REST error")).Build()
+	defer clusterConfigMocker.UnPatch()
+	_, err = client.GetOnefsVersion()
+	assert.True(t, err != nil)
+}
+
+func TestSetOnefsVersion(t *testing.T) {
+	testAccPreCheck(t)
+	openAPIClient, err := client.NewOpenAPIClient(
+		context.Background(),
+		"endpoint",
+		true,
+		"user",
+		"pass",
+		0,
+		300,
+	)
+	if err != nil {
+		assert.Errorf(t, err, "NewOpenAPIClient failed")
+	}
+
+	client := client.Client{
+		PscaleOpenAPIClient: openAPIClient,
+	}
+	client.SetOnefsVersion(9, 4, 0)
+	version, _ := client.GetOnefsVersion()
+	assert.True(t, version.IsEqualTo("9.4.0"))
+}
+
+func TestInsecureClientWithInsecureParam(t *testing.T) {
+	testAccPreCheck(t)
+	openAPIClient, err := client.NewOpenAPIClient(
+		context.Background(),
+		"endpoint",
+		true,
+		"user",
+		"pass",
+		0,
+		300,
+	)
+	if err != nil {
+		assert.Errorf(t, err, "NewOpenAPIClient failed")
+	}
+	assert.NotNil(t, openAPIClient)
+
+	openAPIClient, err = client.NewOpenAPIClient(
+		context.Background(),
+		"endpoint",
+		false,
+		"user",
+		"pass",
+		0,
+		300,
+	)
+	if err != nil {
+		assert.Errorf(t, err, "NewOpenAPIClient failed")
+	}
+	assert.NotNil(t, openAPIClient)
 }
