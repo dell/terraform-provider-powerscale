@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -775,4 +776,28 @@ func GetElementsChanges(stateElements, planElements []attr.Value) (toAdd, toRemo
 		toAdd = append(toAdd, i)
 	}
 	return
+}
+
+// IsListValueEquals checks if two terraform list are equal.
+// It returns true if the lists have the same length and contain the same elements, otherwise it returns false.
+func IsListValueEquals(a types.List, b types.List) bool {
+	elementsA := a.Elements()
+	elementsB := b.Elements()
+	if len(elementsA) != len(elementsB) {
+		return false
+	}
+
+	sort.Slice(elementsA, func(i, j int) bool {
+		return elementsA[i].String() < elementsA[j].String()
+	})
+	sort.Slice(elementsB, func(i, j int) bool {
+		return elementsB[i].String() < elementsB[j].String()
+	})
+
+	for i, v := range elementsA {
+		if v.String() != elementsB[i].String() {
+			return false
+		}
+	}
+	return true
 }
