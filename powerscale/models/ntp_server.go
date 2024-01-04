@@ -19,6 +19,11 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// NtpServerDataSourceModel describes the data source data model.
+type NtpServerDataSourceModel struct {
+	ID           types.String             `tfsdk:"id"`
+}
+
 // NtpServerResourceModel describes the resource data model.
 type NtpServerResourceModel struct {
 	// Key value from key_file that maps to this server.

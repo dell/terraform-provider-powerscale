@@ -24,6 +24,13 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 )
 
+// GetNtpServers Get a list of NTP Servers.
+func GetNtpServers(ctx context.Context, client *client.Client) (*powerscale.V3NtpServers, error) {
+	ntpServerParams := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv3NtpServers(ctx)
+	ntpServers, _, err := ntpServerParams.Execute()
+	return ntpServers, err
+}
+
 // CreateNtpServer Create a NTP Server.
 func CreateNtpServer(ctx context.Context, client *client.Client, ntpServer powerscale.V3NtpServer) (string, error) {
 	ntpID, _, err := client.PscaleOpenAPIClient.ProtocolsApi.CreateProtocolsv3NtpServer(ctx).V3NtpServer(ntpServer).Execute()
