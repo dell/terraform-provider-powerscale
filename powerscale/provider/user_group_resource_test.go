@@ -27,7 +27,6 @@ import (
 	"testing"
 
 	"github.com/bytedance/mockey"
-	. "github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/stretchr/testify/assert"
@@ -291,7 +290,7 @@ func TestAccUserGroupResourceHelperMockErr(t *testing.T) {
 					if userGroupCreateMocker != nil {
 						userGroupCreateMocker.UnPatch()
 					}
-					userGroupMocker = Mock((*powerscale.AuthApiService).GetAuthv1AuthGroupExecute).Return(nil, nil, fmt.Errorf("user group read mock error")).Build()
+					userGroupMocker = mockey.Mock((*powerscale.AuthApiService).GetAuthv1AuthGroupExecute).Return(nil, nil, fmt.Errorf("user group read mock error")).Build()
 					userGroupCreateMocker = mockey.Mock(helper.CreateUserGroup).Return(nil).Build()
 				},
 				Config:      ProviderConfig + userGroupBasicResourceConfig,
@@ -306,7 +305,7 @@ func TestAccUserGroupResourceHelperMockErr(t *testing.T) {
 						userGroupCreateMocker.UnPatch()
 					}
 					userGroupCreateMocker = mockey.Mock(helper.CreateUserGroup).Return(nil).Build()
-					userGroupMocker = Mock((*powerscale.AuthApiService).GetAuthv1AuthGroupExecute).Return(&powerscale.V1AuthGroupsExtended{}, nil, nil).Build()
+					userGroupMocker = mockey.Mock((*powerscale.AuthApiService).GetAuthv1AuthGroupExecute).Return(&powerscale.V1AuthGroupsExtended{}, nil, nil).Build()
 				},
 				Config:      ProviderConfig + userGroupBasicResourceConfig,
 				ExpectError: regexp.MustCompile(`.*got empty user group*.`),
@@ -319,7 +318,7 @@ func TestAccUserGroupResourceHelperMockErr(t *testing.T) {
 					if userGroupCreateMocker != nil {
 						userGroupCreateMocker.UnPatch()
 					}
-					userGroupMocker = Mock((*powerscale.AuthApiService).CreateAuthv1AuthGroupExecute).Return(nil, nil, fmt.Errorf("create mock error")).Build()
+					userGroupMocker = mockey.Mock((*powerscale.AuthApiService).CreateAuthv1AuthGroupExecute).Return(nil, nil, fmt.Errorf("create mock error")).Build()
 				},
 				Config:      ProviderConfig + userGroupBasicResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error creating the User Group*.`),
@@ -332,8 +331,8 @@ func TestAccUserGroupResourceHelperMockErr(t *testing.T) {
 					if userGroupCreateMocker != nil {
 						userGroupCreateMocker.UnPatch()
 					}
-					userGroupMocker = Mock((*powerscale.AuthRolesApiService).CreateAuthRolesv7RoleMemberExecute).Return(nil, nil, fmt.Errorf("role mock error")).Build()
-					userGroupCreateMocker = Mock((*powerscale.AuthGroupsApiService).CreateAuthGroupsv1GroupMemberExecute).Return(nil, nil, fmt.Errorf("member mock error")).Build()
+					userGroupMocker = mockey.Mock((*powerscale.AuthRolesApiService).CreateAuthRolesv7RoleMemberExecute).Return(nil, nil, fmt.Errorf("role mock error")).Build()
+					userGroupCreateMocker = mockey.Mock((*powerscale.AuthGroupsApiService).CreateAuthGroupsv1GroupMemberExecute).Return(nil, nil, fmt.Errorf("member mock error")).Build()
 				},
 				Config:      ProviderConfig + userGroupUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*role mock error*.`),
@@ -357,7 +356,7 @@ func TestAccUserGroupResourceHelperMockErr(t *testing.T) {
 					if userGroupCreateMocker != nil {
 						userGroupCreateMocker.UnPatch()
 					}
-					userGroupCreateMocker = Mock((*powerscale.AuthApiService).DeleteAuthv1GroupsGroupMemberExecute).Return(nil, fmt.Errorf("member mock error")).Build()
+					userGroupCreateMocker = mockey.Mock((*powerscale.AuthApiService).DeleteAuthv1GroupsGroupMemberExecute).Return(nil, fmt.Errorf("member mock error")).Build()
 				},
 				Config:      ProviderConfig + userGroupBasicResourceConfig,
 				ExpectError: regexp.MustCompile(`.*member mock error*.`),
