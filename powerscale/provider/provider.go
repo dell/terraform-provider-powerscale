@@ -167,6 +167,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewUserGroupResource,
 		NewAdsProviderResource,
 		NewNetworkPoolResource,
+		NewNtpServerResource,
 		NewFileSystemResource,
 		NewSnapshotResource,
 		NewSnapshotScheduleResource,

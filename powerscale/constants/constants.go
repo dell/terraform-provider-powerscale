@@ -79,6 +79,18 @@ const (
 	// DeleteNetworkPoolErrorMsg specifies error details occurred while deleting a Network Pool.
 	DeleteNetworkPoolErrorMsg = "Could not delete network pools "
 
+	// ReadNtpServerErrorMsg specifies error details occurred while reading NTP Servers.
+	ReadNtpServerErrorMsg = "Could not read ntp servers "
+
+	// CreateNtpServerErrorMsg specifies error details occurred while creating a NTP Server.
+	CreateNtpServerErrorMsg = "Could not create ntp servers "
+
+	// UpdateNtpServerErrorMsg specifies error details occurred while updating a NTP Server.
+	UpdateNtpServerErrorMsg = "Could not update ntp servers "
+
+	// DeleteNtpServerErrorMsg specifies error details occurred while deleting a NTP Server.
+	DeleteNtpServerErrorMsg = "Could not delete ntp servers "
+
 	// ReadUserErrorMsg specifies error details occurred while reading Users.
 	ReadUserErrorMsg = "Could not read users "
 
