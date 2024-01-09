@@ -249,4 +249,16 @@ const (
 
 	// DeleteRuleErrorMsg specifies error details occurred while deleting rule.
 	DeleteRuleErrorMsg = "Could not delete rule "
+
+	// ReadLdapProviderErrorMsg specifies error details occurred while reading Ldap Providers.
+	ReadLdapProviderErrorMsg = "Could not read ldap providers "
+
+	// CreateLdapProviderErrorMsg specifies error details occurred while creating a Ldap Provider.
+	CreateLdapProviderErrorMsg = "Could not create ldap providers "
+
+	// UpdateLdapProviderErrorMsg specifies error details occurred while updating a Ldap Provider.
+	UpdateLdapProviderErrorMsg = "Could not update ldap providers "
+
+	// DeleteLdapProviderErrorMsg specifies error details occurred while deleting a Ldap Provider.
+	DeleteLdapProviderErrorMsg = "Could not delete ldap providers "
 )
