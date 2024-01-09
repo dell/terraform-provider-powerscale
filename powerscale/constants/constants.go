@@ -237,4 +237,16 @@ const (
 
 	// UpdateSmartPoolSettingsErrorMsg specifies error details occurred while updating smartpool settings.
 	UpdateSmartPoolSettingsErrorMsg = "Could not update SmartPool settings "
+
+	// CreateRuleErrorMsg specifies error details occurred while creating rule.
+	CreateRuleErrorMsg = "Could not create rule "
+
+	// GetRuleErrorMsg specifies error details occurred while getting rule.
+	GetRuleErrorMsg = "Could not get rule "
+
+	// UpdateRuleErrorMsg specifies error details occurred while updating rule.
+	UpdateRuleErrorMsg = "Could not update rule "
+
+	// DeleteRuleErrorMsg specifies error details occurred while deleting rule.
+	DeleteRuleErrorMsg = "Could not delete rule "
 )
