@@ -21,7 +21,45 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/models"
 )
+
+// ListNetworkRules list network rules.
+func ListNetworkRules(ctx context.Context, client *client.Client, filter *models.NetworkRuleFilterType) ([]powerscale.V3PoolsPoolRulesRule, error) {
+	networkRuleParams := client.PscaleOpenAPIClient.NetworkApi.GetNetworkv3NetworkRules(ctx)
+
+	if filter != nil {
+		if groupnet := filter.Groupnet.ValueString(); groupnet != "" {
+			networkRuleParams = networkRuleParams.Groupnet(groupnet)
+		}
+		if subnet := filter.Subnet.ValueString(); subnet != "" {
+			networkRuleParams = networkRuleParams.Subnet(subnet)
+		}
+		if pool := filter.Pool.ValueString(); pool != "" {
+			networkRuleParams = networkRuleParams.Pool(pool)
+		}
+	}
+
+	ruleList, _, err := networkRuleParams.Execute()
+	if err != nil {
+		return nil, err
+	}
+	rules := ruleList.GetRules()
+
+	// filter rules by filter.Names
+	if filter != nil && len(filter.Names) > 0 {
+		var filteredRules []powerscale.V3PoolsPoolRulesRule
+		for _, rule := range rules {
+			for _, name := range filter.Names {
+				if name.ValueString() == rule.GetName() {
+					filteredRules = append(filteredRules, rule)
+				}
+			}
+		}
+		return filteredRules, nil
+	}
+	return rules, nil
+}
 
 // CreateNetworkRule create.
 func CreateNetworkRule(ctx context.Context, client *client.Client, groupnet string, subnet string, pool string, ruleToCreate powerscale.V3PoolsPoolRule) (*powerscale.CreateResponse, error) {
