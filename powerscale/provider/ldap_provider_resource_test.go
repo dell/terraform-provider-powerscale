@@ -420,6 +420,155 @@ func TestAccLdapProviderResourceImportMockErr(t *testing.T) {
 	})
 }
 
+func TestAccLdapProviderResourceHelperMockErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create v16 Error testing
+			{
+				PreConfig: func() {
+					if ldapV16Mocker != nil {
+						ldapV16Mocker.UnPatch()
+					}
+					if ldapV11Mocker != nil {
+						ldapV11Mocker.UnPatch()
+					}
+					if ldapMocker != nil {
+						ldapMocker.UnPatch()
+					}
+					ldapMocker = Mock(client.OnefsVersion.IsGreaterThan).Return(true).Build()
+					ldapV16Mocker = Mock((*powerscale.AuthApiService).CreateAuthv16ProvidersLdapItemExecute).Return(nil, nil, fmt.Errorf("ldap mock error")).Build()
+				},
+				Config:      ProviderConfig + ldapProviderResourceConfig,
+				ExpectError: regexp.MustCompile(`.*ldap mock error*.`),
+			},
+			// Create v11 Error testing
+			{
+				PreConfig: func() {
+					if ldapV16Mocker != nil {
+						ldapV16Mocker.UnPatch()
+					}
+					if ldapV11Mocker != nil {
+						ldapV11Mocker.UnPatch()
+					}
+					if ldapMocker != nil {
+						ldapMocker.UnPatch()
+					}
+					ldapMocker = Mock(client.OnefsVersion.IsGreaterThan).Return(false).Build()
+					ldapV16Mocker = Mock((*powerscale.AuthApiService).CreateAuthv11ProvidersLdapItemExecute).Return(nil, nil, fmt.Errorf("ldap mock error")).Build()
+				},
+				Config:      ProviderConfig + ldapProviderResourceConfig,
+				ExpectError: regexp.MustCompile(`.*ldap mock error*.`),
+			},
+			// Create v16 and Read Error testing
+			{
+				PreConfig: func() {
+					if ldapV16Mocker != nil {
+						ldapV16Mocker.UnPatch()
+					}
+					if ldapV11Mocker != nil {
+						ldapV11Mocker.UnPatch()
+					}
+					if ldapMocker != nil {
+						ldapMocker.UnPatch()
+					}
+					ldapMocker = Mock(client.OnefsVersion.IsGreaterThan).Return(true).Build()
+					ldapV11Mocker = Mock((*powerscale.AuthApiService).CreateAuthv16ProvidersLdapItemExecute).Return(nil, nil, nil).Build()
+					ldapV16Mocker = Mock((*powerscale.AuthApiService).GetAuthv16ProvidersLdapByIdExecute).Return(nil, nil, fmt.Errorf("ldap mock error")).Build()
+				},
+				Config:      ProviderConfig + ldapProviderResourceConfig,
+				ExpectError: regexp.MustCompile(`.*Error getting ldap provider after creation*.`),
+			},
+			// Create v11 and Read Error testing
+			{
+				PreConfig: func() {
+					if ldapV16Mocker != nil {
+						ldapV16Mocker.UnPatch()
+					}
+					if ldapV11Mocker != nil {
+						ldapV11Mocker.UnPatch()
+					}
+					if ldapMocker != nil {
+						ldapMocker.UnPatch()
+					}
+					ldapMocker = Mock(client.OnefsVersion.IsGreaterThan).Return(false).Build()
+					ldapV11Mocker = Mock((*powerscale.AuthApiService).CreateAuthv11ProvidersLdapItemExecute).Return(nil, nil, nil).Build()
+					ldapV16Mocker = Mock((*powerscale.AuthApiService).GetAuthv11ProvidersLdapByIdExecute).Return(nil, nil, fmt.Errorf("ldap mock error")).Build()
+				},
+				Config:      ProviderConfig + ldapProviderResourceConfig,
+				ExpectError: regexp.MustCompile(`.*Error getting ldap provider after creation*.`),
+			},
+			{
+				PreConfig: func() {
+					if ldapV16Mocker != nil {
+						ldapV16Mocker.UnPatch()
+					}
+					if ldapV11Mocker != nil {
+						ldapV11Mocker.UnPatch()
+					}
+					if ldapMocker != nil {
+						ldapMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + ldapProviderResourceConfig,
+			},
+			// Update v16 Error testing
+			{
+				PreConfig: func() {
+					if ldapV16Mocker != nil {
+						ldapV16Mocker.UnPatch()
+					}
+					if ldapV11Mocker != nil {
+						ldapV11Mocker.UnPatch()
+					}
+					if ldapMocker != nil {
+						ldapMocker.UnPatch()
+					}
+					ldapMocker = Mock(client.OnefsVersion.IsGreaterThan).Return(true).Build()
+					ldapV11Mocker = Mock((*powerscale.AuthApiService).GetAuthv16ProvidersLdapByIdExecute).Return(&mockV16LdapProviders, nil, nil).Build()
+					ldapV16Mocker = Mock((*powerscale.AuthApiService).UpdateAuthv16ProvidersLdapByIdExecute).Return(nil, fmt.Errorf("ldap mock error")).Build()
+				},
+				Config:      ProviderConfig + ldapProviderResourceDisableConfig,
+				ExpectError: regexp.MustCompile(`.*ldap mock error*.`),
+			},
+			// Update v11 Error testing
+			{
+				PreConfig: func() {
+					if ldapV16Mocker != nil {
+						ldapV16Mocker.UnPatch()
+					}
+					if ldapV11Mocker != nil {
+						ldapV11Mocker.UnPatch()
+					}
+					if ldapMocker != nil {
+						ldapMocker.UnPatch()
+					}
+					ldapMocker = Mock(client.OnefsVersion.IsGreaterThan).Return(false).Build()
+					ldapV11Mocker = Mock((*powerscale.AuthApiService).GetAuthv11ProvidersLdapByIdExecute).Return(&mockV11LdapProviders, nil, nil).Build()
+					ldapV16Mocker = Mock((*powerscale.AuthApiService).UpdateAuthv11ProvidersLdapByIdExecute).Return(nil, fmt.Errorf("ldap mock error")).Build()
+				},
+				Config:      ProviderConfig + ldapProviderResourceDisableConfig,
+				ExpectError: regexp.MustCompile(`.*ldap mock error*.`),
+			},
+			{
+				PreConfig: func() {
+					if ldapV16Mocker != nil {
+						ldapV16Mocker.UnPatch()
+					}
+					if ldapV11Mocker != nil {
+						ldapV11Mocker.UnPatch()
+					}
+					if ldapMocker != nil {
+						ldapMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + ldapProviderResourceDisableConfig,
+			},
+		},
+	})
+}
+
 func TestAccLdapProviderReleaseMockResource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -475,3 +624,26 @@ resource "powerscale_ldap_provider" "ldap_test" {
 	base_dn = "dc=tthe,dc=testLdap,dc=com"
 }
 `
+
+var mockName, mockBaseDN, mockTLSRevocationCheckLevel = "tfacc_ldap", "dc=tthe,dc=testLdap,dc=com", "none"
+var mockServerUris = []string{"ldap://10.225.108.54"}
+var mockV16LdapProviders = powerscale.V16ProvidersLdap{
+	Ldap: []powerscale.V16ProvidersLdapLdapItem{
+		{
+			Name:                    &mockName,
+			BaseDn:                  &mockBaseDN,
+			ServerUris:              mockServerUris,
+			TlsRevocationCheckLevel: &mockTLSRevocationCheckLevel,
+		},
+	},
+}
+
+var mockV11LdapProviders = powerscale.V11ProvidersLdap{
+	Ldap: []powerscale.V11ProvidersLdapLdapItem{
+		{
+			Name:       &mockName,
+			BaseDn:     &mockBaseDN,
+			ServerUris: mockServerUris,
+		},
+	},
+}

@@ -74,6 +74,80 @@ func UpdateLdapProviderResourceState(ctx context.Context, ldapProviderModel *mod
 	return
 }
 
+// UpdateLdapProviderDataSourceState updates datasource state.
+func UpdateLdapProviderDataSourceState(ctx context.Context, ldapProviderModel *models.LdapProviderDataSourceModel, ldapProviderListResponse any) (err error) {
+
+	switch v := ldapProviderListResponse.(type) {
+	case *powerscale.V16ProvidersLdap:
+		s, ok := ldapProviderListResponse.(*powerscale.V16ProvidersLdap)
+		if !ok {
+			return fmt.Errorf("error pararmeter LdapProviderDataSourceModel - Unexpected type: %T", v)
+		}
+		ldapProviderModel.LdapProviders = make([]models.LdapProviderDetailModel, 0)
+		for _, ldapProvider := range s.GetLdap() {
+			var model models.LdapProviderDetailModel
+			if err = CopyFields(ctx, ldapProvider, &model); err != nil {
+				return
+			}
+			ldapProviderModel.LdapProviders = append(ldapProviderModel.LdapProviders, model)
+		}
+
+	case *powerscale.V11ProvidersLdap:
+		s, ok := ldapProviderListResponse.(*powerscale.V11ProvidersLdap)
+		if !ok {
+			return fmt.Errorf("error pararmeter LdapProviderDataSourceModel - Unexpected type: %T", v)
+		}
+		ldapProviderModel.LdapProviders = make([]models.LdapProviderDetailModel, 0)
+		for _, ldapProvider := range s.GetLdap() {
+			model := &models.LdapProviderDetailModel{}
+			// tls_revocation_check_level and ocsp_server_uris are available in 9.5
+			model.TLSRevocationCheckLevel = types.StringNull()
+			model.OcspServerUris = types.ListNull(types.StringType)
+
+			if err = CopyFields(ctx, ldapProvider, model); err != nil {
+				return
+			}
+			ldapProviderModel.LdapProviders = append(ldapProviderModel.LdapProviders, *model)
+		}
+	default:
+		return fmt.Errorf("error pararmeter LdapProviderDataSourceModel - Unexpected type: %T", v)
+	}
+	return
+}
+
+// GetAllLdapProvidersWithFilter Returns all filtered Ldap Providers based on Onefs version.
+func GetAllLdapProvidersWithFilter(ctx context.Context, client *client.Client, filter *models.LdapProviderFilterType) (any, error) {
+	onfsVersion, err := client.GetOnefsVersion()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get OneFS version: %v", err)
+	}
+
+	if onfsVersion.IsGreaterThan("9.4.0") {
+		queryParam := client.PscaleOpenAPIClient.AuthApi.ListAuthv16ProvidersLdap(ctx)
+		if filter != nil && filter.Scope.ValueString() != "" {
+			queryParam = queryParam.Scope(filter.Scope.ValueString())
+		}
+		result, _, err := queryParam.Execute()
+		if err != nil {
+			errStr := constants.ReadLdapProviderErrorMsg + "with error: "
+			message := GetErrorString(err, errStr)
+			return nil, fmt.Errorf("error getting list of ldap providers: %s", message)
+		}
+		return result, err
+	}
+	queryParam := client.PscaleOpenAPIClient.AuthApi.ListAuthv11ProvidersLdap(ctx)
+	if filter != nil && filter.Scope.ValueString() != "" {
+		queryParam = queryParam.Scope(filter.Scope.ValueString())
+	}
+	result, _, err := queryParam.Execute()
+	if err != nil {
+		errStr := constants.ReadLdapProviderErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return nil, fmt.Errorf("error getting ldap provider: %s", message)
+	}
+	return result, err
+}
+
 // GetLdapProvider Returns the Ldap Provider by ldapProviderID based on Onefs version.
 func GetLdapProvider(ctx context.Context, client *client.Client, ldapProviderName, scope string) (any, error) {
 	onfsVersion, err := client.GetOnefsVersion()
