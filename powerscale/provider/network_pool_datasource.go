@@ -58,8 +58,8 @@ func (d *NetworkPoolDataSource) Schema(ctx context.Context, req datasource.Schem
 		Description:         "This datasource is used to query the existing network pools from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block. You can add network interfaces to network pools to associate address ranges with a node or a group of nodes.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the ads provider instance.",
-				MarkdownDescription: "Unique identifier of the ads provider instance.",
+				Description:         "Unique identifier of the network pool instance.",
+				MarkdownDescription: "Unique identifier of the network pool instance.",
 				Computed:            true,
 			},
 			"network_pools_details": schema.ListNestedAttribute{

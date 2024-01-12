@@ -87,7 +87,7 @@ output "powerscale_networkpool_data_all" {
 
 ### Read-Only
 
-- `id` (String) Unique identifier of the ads provider instance.
+- `id` (String) Unique identifier of the network pool instance.
 - `network_pools_details` (Attributes List) List of Network Pools. (see [below for nested schema](#nestedatt--network_pools_details))
 
 <a id="nestedblock--filter"></a>
