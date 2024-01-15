@@ -180,6 +180,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewNetworkRuleResource,
 		NewLdapProviderResource,
 		NewClusterEmailResource,
+		NewFilePoolPolicyResource,
 	}
 }
 

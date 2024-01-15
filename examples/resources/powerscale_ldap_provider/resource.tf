@@ -132,7 +132,7 @@ resource "powerscale_ldap_provider" "example_ldap_provider" {
   # If true, checks the provider for filtered lists of listable and unlistable users and groups.
   restrict_listable = false
   # Specifies the default depth from the base DN to perform LDAP searches.
-  # Acceptable values: default, base, onelevel, subtree, children.
+  # Acceptable values: base, onelevel, subtree, children.
   search_scope = "subtree"
   # Specifies the search timeout period in seconds. Value should between 10 - 3600.
   search_timeout = 100

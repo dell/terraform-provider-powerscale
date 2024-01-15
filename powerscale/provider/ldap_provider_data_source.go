@@ -546,26 +546,31 @@ func (d *LdapProviderDataSource) Read(ctx context.Context, req datasource.ReadRe
 
 	// filter LdapProvider by names
 	if state.Filter != nil && len(state.Filter.Names) > 0 {
-		var validLdapProviders []string
-		var filteredLdapProviders []models.LdapProviderDetailModel
+		// default scope cannot co-work with names filter
+		if state.Filter.Scope.ValueString() == "default" {
+			resp.Diagnostics.AddWarning("Returning all LDAP Provider with \"default\" scope", "filter.names is ignored when filter.scope is \"default\"")
+		} else {
+			var validLdapProviders []string
+			var filteredLdapProviders []models.LdapProviderDetailModel
 
-		for _, ldapProvider := range state.LdapProviders {
-			for _, name := range state.Filter.Names {
-				if ldapProvider.Name.Equal(name) {
-					filteredLdapProviders = append(filteredLdapProviders, ldapProvider)
-					validLdapProviders = append(validLdapProviders, ldapProvider.Name.ValueString())
-					break
+			for _, ldapProvider := range state.LdapProviders {
+				for _, name := range state.Filter.Names {
+					if ldapProvider.Name.Equal(name) {
+						filteredLdapProviders = append(filteredLdapProviders, ldapProvider)
+						validLdapProviders = append(validLdapProviders, ldapProvider.Name.ValueString())
+						break
+					}
 				}
 			}
-		}
 
-		state.LdapProviders = filteredLdapProviders
+			state.LdapProviders = filteredLdapProviders
 
-		if len(state.LdapProviders) != len(state.Filter.Names) {
-			resp.Diagnostics.AddError(
-				"Error one or more of the filtered LdapProvider names is not a valid powerscale LdapProvider.",
-				fmt.Sprintf("Valid LdapProviders: [%v], filtered list: [%v]", strings.Join(validLdapProviders, " , "), state.Filter.Names),
-			)
+			if len(state.LdapProviders) != len(state.Filter.Names) {
+				resp.Diagnostics.AddError(
+					"Error one or more of the filtered LdapProvider names is not a valid powerscale LdapProvider.",
+					fmt.Sprintf("Valid LdapProviders: [%v], filtered list: [%v]", strings.Join(validLdapProviders, " , "), state.Filter.Names),
+				)
+			}
 		}
 	}
 

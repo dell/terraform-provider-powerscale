@@ -508,8 +508,8 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 			},
 			"search_scope": schema.StringAttribute{
-				Description:         "Specifies the default depth from the base DN to perform LDAP searches. Acceptable values: \"default\", \"base\", \"onelevel\", \"subtree\", \"children\". (Update Supported)",
-				MarkdownDescription: "Specifies the default depth from the base DN to perform LDAP searches. Acceptable values: \"default\", \"base\", \"onelevel\", \"subtree\", \"children\". (Update Supported)",
+				Description:         "Specifies the default depth from the base DN to perform LDAP searches. Acceptable values: \"base\", \"onelevel\", \"subtree\", \"children\". (Update Supported)",
+				MarkdownDescription: "Specifies the default depth from the base DN to perform LDAP searches. Acceptable values: \"base\", \"onelevel\", \"subtree\", \"children\". (Update Supported)",
 				Optional:            true,
 				Computed:            true,
 			},

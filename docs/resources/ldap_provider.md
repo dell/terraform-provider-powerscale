@@ -164,7 +164,7 @@ resource "powerscale_ldap_provider" "example_ldap_provider" {
   # If true, checks the provider for filtered lists of listable and unlistable users and groups.
   restrict_listable = false
   # Specifies the default depth from the base DN to perform LDAP searches.
-  # Acceptable values: default, base, onelevel, subtree, children.
+  # Acceptable values: base, onelevel, subtree, children.
   search_scope = "subtree"
   # Specifies the search timeout period in seconds. Value should between 10 - 3600.
   search_timeout = 100
@@ -288,7 +288,7 @@ resource "powerscale_ldap_provider" "example_ldap_provider" {
 - `require_secure_connection` (Boolean) Determines whether to continue over a non-TLS connection. (Update Supported)
 - `restrict_findable` (Boolean) If true, checks the provider for filtered lists of findable and unfindable users and groups. (Update Supported)
 - `restrict_listable` (Boolean) If true, checks the provider for filtered lists of listable and unlistable users and groups. (Update Supported)
-- `search_scope` (String) Specifies the default depth from the base DN to perform LDAP searches. Acceptable values: "default", "base", "onelevel", "subtree", "children". (Update Supported)
+- `search_scope` (String) Specifies the default depth from the base DN to perform LDAP searches. Acceptable values: "base", "onelevel", "subtree", "children". (Update Supported)
 - `search_timeout` (Number) Specifies the search timeout period in seconds. (Update Supported)
 - `shadow_expire_attribute` (String) Sets the attribute name that indicates the absolute date to expire the account. (Update Supported)
 - `shadow_flag_attribute` (String) Sets the attribute name that indicates the section of the shadow map that is used to store the flag value. (Update Supported)

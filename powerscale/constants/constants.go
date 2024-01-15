@@ -279,4 +279,16 @@ const (
 
 	// UpdateClusterEmailSettingsErrorMsg specifies error details occurred while updating cluster email settings.
 	UpdateClusterEmailSettingsErrorMsg = "Could not update cluster email settings "
+
+	// ReadFilePoolPolicyErrorMsg specifies error details occurred while reading file pool policy.
+	ReadFilePoolPolicyErrorMsg = "Could not read file pool policies "
+
+	// CreateFilePoolPolicyErrorMsg specifies error details occurred while creating a file pool policy.
+	CreateFilePoolPolicyErrorMsg = "Could not create file pool policy "
+
+	// UpdateFilePoolPolicyErrorMsg specifies error details occurred while updating a file pool policy.
+	UpdateFilePoolPolicyErrorMsg = "Could not update file pool policy "
+
+	// DeleteFilePoolPolicyErrorMsg specifies error details occurred while deleting a file pool policy.
+	DeleteFilePoolPolicyErrorMsg = "Could not delete file pool policy "
 )
