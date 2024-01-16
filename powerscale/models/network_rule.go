@@ -18,6 +18,13 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// NetworkRuleDataSourceModel describes the data source model.
+type NetworkRuleDataSourceModel struct {
+	ID                types.String           `tfsdk:"id"`
+	NetworkRules      []V3PoolsPoolRulesRule `tfsdk:"network_rules"`
+	NetworkRuleFilter *NetworkRuleFilterType `tfsdk:"filter"`
+}
+
 // V3PoolsPoolRulesRule struct for V3PoolsPoolRulesRule.
 type V3PoolsPoolRulesRule struct {
 	// Description for the provisioning rule.
@@ -36,4 +43,12 @@ type V3PoolsPoolRulesRule struct {
 	Pool types.String `tfsdk:"pool"`
 	// Name of the subnet this rule belongs to.
 	Subnet types.String `tfsdk:"subnet"`
+}
+
+// NetworkRuleFilterType describes the filter data model.
+type NetworkRuleFilterType struct {
+	Names    []types.String `tfsdk:"names"`
+	Groupnet types.String   `tfsdk:"groupnet"`
+	Subnet   types.String   `tfsdk:"subnet"`
+	Pool     types.String   `tfsdk:"pool"`
 }
