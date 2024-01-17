@@ -91,6 +91,15 @@ const (
 	// DeleteNtpServerErrorMsg specifies error details occurred while deleting a NTP Server.
 	DeleteNtpServerErrorMsg = "Could not delete ntp servers "
 
+	// ReadNtpSettingsErrorMsg specifies error details occurred while reading NTP Settings.
+	ReadNtpSettingsErrorMsg = "Could not read ntp settings "
+
+	// CreateNtpSettingsErrorMsg specifies error details occurred while creating NTP Settings.
+	CreateNtpSettingsErrorMsg = "Could not create ntp settings "
+
+	// UpdateNtpSettingsErrorMsg specifies error details occurred while updating NTP Settings.
+	UpdateNtpSettingsErrorMsg = "Could not update ntp settings "
+
 	// ReadUserErrorMsg specifies error details occurred while reading Users.
 	ReadUserErrorMsg = "Could not read users "
 
