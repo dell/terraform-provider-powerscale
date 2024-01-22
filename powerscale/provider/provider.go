@@ -179,6 +179,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewNetworkSettingResource,
 		NewNetworkRuleResource,
 		NewLdapProviderResource,
+		NewClusterEmailResource,
 	}
 }
 
