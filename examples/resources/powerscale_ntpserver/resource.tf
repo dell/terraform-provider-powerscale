@@ -24,7 +24,7 @@ resource "powerscale_ntpserver" "ntp_server_test" {
   #   Name should be a qualified name of an existing NTP Server
   name = "ntp_server_example"
 
-  #   Optional query parameters
+  #   Optional parameters
   key = "ntp_server_key_example"
 }
 
