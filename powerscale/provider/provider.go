@@ -194,6 +194,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewAdsProviderDataSource,
 		NewNetworkPoolDataSource,
 		NewNtpServerDataSource,
+		NewNtpSettingsDataSource,
 		NewUserGroupDataSource,
 		NewNfsExportDataSource,
 		NewSnapshotDataSource,

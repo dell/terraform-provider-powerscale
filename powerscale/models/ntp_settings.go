@@ -19,6 +19,16 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// NtpSettingsDataSourceModel describes the datasource data model.
+type NtpSettingsDataSourceModel struct {
+	// Number of nodes that will contact the NTP servers.
+	Chimers types.Int64 `tfsdk:"chimers"`
+	// Node number (LNN) for nodes excluded from chimer duty.
+	Excluded types.List `tfsdk:"excluded"`
+	// Path to NTP key file within /ifs.
+	KeyFile types.String `tfsdk:"key_file"`
+}
+
 // NtpSettingsResourceModel describes the resource data model.
 type NtpSettingsResourceModel struct {
 	// Number of nodes that will contact the NTP servers.

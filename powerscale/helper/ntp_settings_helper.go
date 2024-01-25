@@ -21,7 +21,17 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/models"
 )
+
+// NtpSettingsDetailMapper Does the mapping from response to model.
+//
+//go:noinline
+func NtpSettingsDetailMapper(ctx context.Context, ntpSettings *powerscale.V3NtpSettingsSettings) (models.NtpSettingsDataSourceModel, error) {
+	model := models.NtpSettingsDataSourceModel{}
+	err := CopyFields(ctx, ntpSettings, &model)
+	return model, err
+}
 
 // GetNtpSettings retrieve NTP Settings information.
 func GetNtpSettings(ctx context.Context, client *client.Client) (*powerscale.V3NtpSettings, error) {
