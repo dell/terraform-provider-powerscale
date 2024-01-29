@@ -53,10 +53,10 @@ limitations under the License.
 # PowerScale NTP Server allows you to synchronize the system time
 resource "powerscale_ntpserver" "ntp_server_test" {
   #   Required
-  #   Name should be a qualified name of an existing NTP Server
+  #   Name should be a qualified name of an existing NTP Server and cannot be updated
   name = "ntp_server_example"
 
-  #   Optional parameters
+  #   Optional parameters for updating
   key = "ntp_server_key_example"
 }
 

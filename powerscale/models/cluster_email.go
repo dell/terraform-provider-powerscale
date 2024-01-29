@@ -19,7 +19,7 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// ClusterEmail struct for ClusterEmail resource
+// ClusterEmail struct for ClusterEmail resource.
 type ClusterEmail struct {
 	ID types.String `tfsdk:"id"`
 	// V1ClusterEmailSettings
@@ -52,7 +52,7 @@ type ClusterEmailSettings struct {
 	UserTemplate types.String `tfsdk:"user_template"`
 }
 
-// ClusterEmailDataSource struct for ClusterEmail data source
+// ClusterEmailDataSource struct for ClusterEmail data source.
 type ClusterEmailDataSource struct {
 	ID types.String `tfsdk:"id"`
 	// V1ClusterEmailSettings

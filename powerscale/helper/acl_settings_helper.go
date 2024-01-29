@@ -23,14 +23,16 @@ import (
 	"terraform-provider-powerscale/client"
 )
 
-// GetClusterEmail retrieve cluster email.
-func GetClusterEmail(ctx context.Context, client *client.Client) (*powerscale.V1ClusterEmail, error) {
-	clusterEmail, _, err := client.PscaleOpenAPIClient.ClusterApi.GetClusterv1ClusterEmail(ctx).Execute()
-	return clusterEmail, err
+// GetACLSettings retrieve ACL Settings information.
+func GetACLSettings(ctx context.Context, client *client.Client) (*powerscale.V11SettingsAcls, error) {
+	queryParam := client.PscaleOpenAPIClient.AuthApi.GetAuthv11SettingsAcls(ctx)
+	aclSettingsRes, _, err := queryParam.Execute()
+	return aclSettingsRes, err
 }
 
-// UpdateClusterEmail update cluster email.
-func UpdateClusterEmail(ctx context.Context, client *client.Client, v1ClusterEmail powerscale.V1ClusterEmailExtended) error {
-	_, err := client.PscaleOpenAPIClient.ClusterApi.UpdateClusterv1ClusterEmail(ctx).V1ClusterEmail(v1ClusterEmail).Execute()
+// UpdateACLSettings Update ACL Settings.
+func UpdateACLSettings(ctx context.Context, client *client.Client, aclSettingsToUpdate powerscale.V11SettingsAclsAclPolicySettings) error {
+	updateParam := client.PscaleOpenAPIClient.AuthApi.UpdateAuthv11SettingsAcls(ctx)
+	_, err := updateParam.V11SettingsAcls(aclSettingsToUpdate).Execute()
 	return err
 }
