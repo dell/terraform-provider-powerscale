@@ -207,6 +207,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewNetworkSettingDataSource,
 		NewNetworkRuleDataSource,
 		NewLdapProviderDataSource,
+		NewClusterEmailDataSource,
 	}
 }
 
