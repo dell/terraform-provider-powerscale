@@ -273,4 +273,10 @@ const (
 
 	// DeleteLdapProviderErrorMsg specifies error details occurred while deleting a Ldap Provider.
 	DeleteLdapProviderErrorMsg = "Could not delete ldap providers "
+
+	// ReadClusterEmailSettingsErrorMsg specifies error details occurred while reading cluster email settings.
+	ReadClusterEmailSettingsErrorMsg = "Could not read cluster email settings "
+
+	// UpdateClusterEmailSettingsErrorMsg specifies error details occurred while updating cluster email settings.
+	UpdateClusterEmailSettingsErrorMsg = "Could not update cluster email settings "
 )
