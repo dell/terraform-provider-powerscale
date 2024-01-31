@@ -19,6 +19,40 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// FilePoolPolicyDataSourceModel describes the data source data model.
+type FilePoolPolicyDataSourceModel struct {
+	FilePoolPolicies []FilePoolPolicyDetailModel `tfsdk:"file_pool_policies"`
+	ID               types.String                `tfsdk:"id"`
+	Filter           *FilePoolPolicyFilterType   `tfsdk:"filter"`
+}
+
+// FilePoolPolicyFilterType holds filter attribute for file pool policy.
+type FilePoolPolicyFilterType struct {
+	Names []types.String `tfsdk:"names"`
+}
+
+// FilePoolPolicyDetailModel describes the datasource data model.
+type FilePoolPolicyDetailModel struct {
+	// A list of actions to be taken for matching files
+	Actions []V1FilepoolDefaultPolicyAction `tfsdk:"actions"`
+	// The order in which this policy should be applied (relative to other policies)
+	ApplyOrder types.Int64 `tfsdk:"apply_order"`
+	// The guid assigned to the cluster on which the policy was created
+	BirthClusterID types.String `tfsdk:"birth_cluster_id"`
+	// A description for this policy
+	Description types.String `tfsdk:"description"`
+	// The file matching rules for this policy
+	FileMatchingPattern *V1FilepoolPolicyFileMatchingPattern `tfsdk:"file_matching_pattern"`
+	// A unique name for this policy
+	ID types.String `tfsdk:"id"`
+	// A unique name for this policy
+	Name types.String `tfsdk:"name"`
+	// Indicates whether this policy is in a good state (\"OK\") or disabled (\"disabled\")
+	State types.String `tfsdk:"state"`
+	// Gives further information to describe the state of this policy
+	StateDetails types.String `tfsdk:"state_details"`
+}
+
 // FilePoolPolicyModel describes the resource data model.
 type FilePoolPolicyModel struct {
 	// Specifies if the policy is default policy. Default policy applies to all files not selected by higher-priority policies.
