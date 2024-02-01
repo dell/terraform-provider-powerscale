@@ -147,8 +147,8 @@ func (r *ClusterEmailResource) Schema(ctx context.Context, req resource.SchemaRe
 						Computed:            true,
 					},
 					"user_template": schema.StringAttribute{
-						Description:         "Location of a custom template file that can be used to specify the layout of the notification emails.",
-						MarkdownDescription: "Location of a custom template file that can be used to specify the layout of the notification emails.",
+						Description:         "Location of a custom template file that can be used to specify the layout of the notification emails.  If this string is empty, the default template will be used.",
+						MarkdownDescription: "Location of a custom template file that can be used to specify the layout of the notification emails.  If this string is empty, the default template will be used.",
 						Optional:            true,
 						Computed:            true,
 					},
@@ -200,6 +200,13 @@ func (r *ClusterEmailResource) Create(ctx context.Context, req resource.CreateRe
 			fmt.Sprintf("Could not read cluster email param with error: %s", message),
 		)
 		return
+	}
+	// if the field is set to empty, set it to null to update back to default
+	// if not set, unset the field to not update it
+	if plan.Settings.UserTemplate.IsUnknown() {
+		toUpdate.UserTemplate.Unset()
+	} else if plan.Settings.UserTemplate.ValueString() == "" {
+		toUpdate.UserTemplate.Set(nil)
 	}
 	err = helper.UpdateClusterEmail(ctx, r.client, toUpdate)
 	if err != nil {
@@ -300,6 +307,11 @@ func (r *ClusterEmailResource) Update(ctx context.Context, req resource.UpdateRe
 			fmt.Sprintf("Could not read cluster email param with error: %s", message),
 		)
 		return
+	}
+	if plan.Settings.UserTemplate.IsUnknown() {
+		toUpdate.UserTemplate.Unset()
+	} else if plan.Settings.UserTemplate.ValueString() == "" {
+		toUpdate.UserTemplate.Set(nil)
 	}
 	err = helper.UpdateClusterEmail(ctx, r.client, toUpdate)
 	if err != nil {

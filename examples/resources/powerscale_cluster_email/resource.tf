@@ -41,6 +41,6 @@ resource "powerscale_cluster_email" "test" {
 
 }
 
-# After the execution of above resource block, Cluster Email Settings would have been cached in terraform state file, or
+# After the execution of above resource block, Cluster Email Settings would have been cached in terraform state file, and
 # Cluster Email Settings would have been updated on PowerScale.
 # For more information, Please check the terraform state file.

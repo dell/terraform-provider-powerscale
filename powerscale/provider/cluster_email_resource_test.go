@@ -58,6 +58,24 @@ func TestAccClusterEmailResourceImport(t *testing.T) {
 	})
 }
 
+func TestAccClusterEmailResourceNullableField(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfig + clusterEmailResourceConfig,
+			},
+			{
+				Config: ProviderConfig + clusterEmailUserTemplateSetResourceConfig,
+			},
+			{
+				Config: ProviderConfig + clusterEmailUserTemplateEmptyResourceConfig,
+			},
+		},
+	})
+}
+
 func TestAccClusterEmailResourceUpdate(t *testing.T) {
 	var clusterEmailResourceName = "powerscale_cluster_email.test"
 	resource.Test(t, resource.TestCase{
@@ -216,6 +234,23 @@ resource "powerscale_cluster_email" "test" {
 	}
 }
 `
+
+var clusterEmailUserTemplateSetResourceConfig = `
+resource "powerscale_cluster_email" "test" {
+	settings = {
+		user_template = "/ifs/README.txt"
+	}
+}
+`
+
+var clusterEmailUserTemplateEmptyResourceConfig = `
+resource "powerscale_cluster_email" "test" {
+	settings = {
+		user_template = ""
+	}
+}
+`
+
 var clusterEmailUpdateResourceConfig = `
 resource "powerscale_cluster_email" "test" {
 	settings = {
