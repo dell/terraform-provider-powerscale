@@ -73,7 +73,7 @@ resource "powerscale_cluster_email" "test" {
 
 }
 
-# After the execution of above resource block, Cluster Email Settings would have been cached in terraform state file, or
+# After the execution of above resource block, Cluster Email Settings would have been cached in terraform state file, and
 # Cluster Email Settings would have been updated on PowerScale.
 # For more information, Please check the terraform state file.
 ```
@@ -103,7 +103,7 @@ Optional:
 - `smtp_auth_username` (String) Username to authenticate with if SMTP authentication is being used.
 - `smtp_port` (Number) The port on the SMTP server to be used for relaying the notification messages.
 - `use_smtp_auth` (Boolean) If true, this cluster will send SMTP authentication credentials to the SMTP relay server in order to send its notification emails.  If false, the cluster will attempt to send its notification emails without authentication.
-- `user_template` (String) Location of a custom template file that can be used to specify the layout of the notification emails.
+- `user_template` (String) Location of a custom template file that can be used to specify the layout of the notification emails.  If this string is empty, the default template will be used.
 
 Read-Only:
 
