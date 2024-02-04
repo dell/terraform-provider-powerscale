@@ -31,6 +31,8 @@ import (
 )
 
 const (
+	// FilePoolDefaultPolicyName specifies file pool default policy name.
+	FilePoolDefaultPolicyName = "Default policy"
 	// FilePoolPolicyActionSetDataAccessPatternType specifies action type for set_data_access_pattern.
 	FilePoolPolicyActionSetDataAccessPatternType = "set_data_access_pattern"
 	// FilePoolPolicyActionApplyDataStoragePolicyType specifies action type for apply_data_storage_policy.
@@ -69,12 +71,16 @@ func UpdateFilePoolPolicyImportState(ctx context.Context, policyModel *models.Fi
 	policyModel.Name = types.StringValue(*policyResponse.Name)
 	policyModel.State = types.StringValue(*policyResponse.State)
 	policyModel.StateDetails = types.StringValue(*policyResponse.StateDetails)
-	if err = parseActionParams(ctx, policyModel, policyResponse.Actions); err != nil {
+	actions, err := parseActionParams(ctx, policyResponse.Actions)
+	if err != nil {
 		return
 	}
-	if err = parseFileMatchPattern(ctx, policyModel, policyResponse.FileMatchingPattern); err != nil {
-		return
+	policyModel.Actions = actions
+	pattern, err := parseFileMatchPattern(ctx, policyResponse.FileMatchingPattern)
+	if err != nil {
+		return err
 	}
+	policyModel.FileMatchingPattern = pattern
 	return
 }
 
@@ -83,7 +89,7 @@ func UpdateFilePoolDefaultPolicyState(ctx context.Context, defaultPolicyModel *m
 	defaultPolicyModel.ID = types.StringValue("filepool_defaultpolicy")
 	defaultPolicyModel.Description = types.StringValue("This policy applies to all files not selected by higher-priority policies.")
 	defaultPolicyModel.IsDefaultPolicy = types.BoolValue(true)
-	defaultPolicyModel.Name = types.StringValue("Default policy")
+	defaultPolicyModel.Name = types.StringValue(FilePoolDefaultPolicyName)
 	defaultPolicyModel.ApplyOrder = types.Int64Null()
 	defaultPolicyModel.BirthClusterID = types.StringNull()
 	defaultPolicyModel.State = types.StringNull()
@@ -92,10 +98,76 @@ func UpdateFilePoolDefaultPolicyState(ctx context.Context, defaultPolicyModel *m
 	if len(defaultPolicyModel.Actions) != 0 {
 		return
 	}
-	if err = parseActionParams(ctx, defaultPolicyModel, policyResponse.Actions); err != nil {
+	actions, err := parseActionParams(ctx, policyResponse.Actions)
+	if err != nil {
 		return
 	}
+	defaultPolicyModel.Actions = actions
 	return
+}
+
+// UpdateFilePoolPolicyDataSourceState updates datasource state.
+func UpdateFilePoolPolicyDataSourceState(ctx context.Context, policyModel *models.FilePoolPolicyDataSourceModel, policyResponse []powerscale.V12FilepoolPolicyExtended) error {
+	policyModel.FilePoolPolicies = make([]models.FilePoolPolicyDetailModel, 0)
+	for _, policy := range policyResponse {
+		model := models.FilePoolPolicyDetailModel{
+			ApplyOrder:     types.Int64Value(*policy.ApplyOrder),
+			Description:    types.StringValue(*policy.Description),
+			BirthClusterID: types.StringValue(*policy.BirthClusterId),
+			ID:             types.StringValue(*policy.Id),
+			Name:           types.StringValue(*policy.Name),
+			State:          types.StringValue(*policy.State),
+			StateDetails:   types.StringValue(*policy.StateDetails),
+		}
+		actions, err := parseActionParams(ctx, policy.Actions)
+		if err != nil {
+			return err
+		}
+		model.Actions = actions
+		pattern, err := parseFileMatchPattern(ctx, policy.FileMatchingPattern)
+		if err != nil {
+			return err
+		}
+		model.FileMatchingPattern = pattern
+		policyModel.FilePoolPolicies = append(policyModel.FilePoolPolicies, model)
+	}
+	return nil
+}
+
+// GetFilePoolDefaultPolicyDataSourceState returns default policy datasource state.
+func GetFilePoolDefaultPolicyDataSourceState(ctx context.Context, client *client.Client) (defaultModel *models.FilePoolPolicyDetailModel, err error) {
+	defaultPolicy, err := GetFilePoolDefaultPolicy(ctx, client)
+	if err != nil {
+		return
+	}
+
+	model := models.FilePoolPolicyModel{}
+	if err = UpdateFilePoolDefaultPolicyState(ctx, &model, defaultPolicy); err != nil {
+		return
+	}
+	defaultModel = &models.FilePoolPolicyDetailModel{
+		Actions:             model.Actions,
+		ApplyOrder:          model.ApplyOrder,
+		BirthClusterID:      model.BirthClusterID,
+		Description:         model.Description,
+		FileMatchingPattern: model.FileMatchingPattern,
+		ID:                  model.ID,
+		Name:                model.Name,
+		State:               model.State,
+		StateDetails:        model.StateDetails,
+	}
+	return
+}
+
+// GetAllFilePoolPolicies returns all FilePoolPolicies.
+func GetAllFilePoolPolicies(ctx context.Context, client *client.Client) (policies []powerscale.V12FilepoolPolicyExtended, err error) {
+	result, _, err := client.PscaleOpenAPIClient.FilepoolApi.ListFilepoolv12FilepoolPolicies(ctx).Execute()
+	if err != nil {
+		errStr := constants.ReadFilePoolPolicyErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return nil, fmt.Errorf("error listing file pool policy: %s", message)
+	}
+	return result.Policies, err
 }
 
 // GetFilePoolPolicy Returns the file pool policy by name.
@@ -209,8 +281,8 @@ func UpdateFilePoolDefaultPolicy(ctx context.Context, client *client.Client, pla
 }
 
 // parseActionParams parses action params response to model according different action type.
-func parseActionParams(ctx context.Context, policyModel *models.FilePoolPolicyModel, actionsResponse []powerscale.V1FilepoolDefaultPolicyAction) (err error) {
-	actions := make([]models.V1FilepoolDefaultPolicyAction, 0)
+func parseActionParams(ctx context.Context, actionsResponse []powerscale.V1FilepoolDefaultPolicyAction) (actions []models.V1FilepoolDefaultPolicyAction, err error) {
+	actions = make([]models.V1FilepoolDefaultPolicyAction, 0)
 	for _, action := range actionsResponse {
 		actionModel := models.V1FilepoolDefaultPolicyAction{ActionType: types.StringValue(action.ActionType)}
 		correctType := false
@@ -238,11 +310,11 @@ func parseActionParams(ctx context.Context, policyModel *models.FilePoolPolicyMo
 		case FilePoolPolicyActionApplyDataStoragePolicyType:
 			paramBytes, err := json.Marshal(action.ActionParam)
 			if err != nil {
-				return err
+				return actions, err
 			}
 			jsonModel := &models.V12StoragePolicyActionParamsJSONModel{}
 			if err = json.Unmarshal(paramBytes, jsonModel); err != nil {
-				return err
+				return actions, err
 			}
 			correctType = true
 			actionModel.DataStoragePolicyAction = &models.V12StoragePolicyActionParams{
@@ -252,11 +324,11 @@ func parseActionParams(ctx context.Context, policyModel *models.FilePoolPolicyMo
 		case FilePoolPolicyActionApplySnapshotStoragePolicyType:
 			paramBytes, err := json.Marshal(action.ActionParam)
 			if err != nil {
-				return err
+				return actions, err
 			}
 			jsonModel := &models.V12StoragePolicyActionParamsJSONModel{}
 			if err = json.Unmarshal(paramBytes, jsonModel); err != nil {
-				return err
+				return actions, err
 			}
 			correctType = true
 			actionModel.SnapshotStoragePolicyAction = &models.V12StoragePolicyActionParams{
@@ -266,11 +338,11 @@ func parseActionParams(ctx context.Context, policyModel *models.FilePoolPolicyMo
 		case FilePoolPolicyActionSetCloudPoolPolicyType:
 			paramBytes, err := json.Marshal(action.ActionParam)
 			if err != nil {
-				return err
+				return actions, err
 			}
 			jsonModel := &models.V12CloudPolicyArchiveParamsJSONModel{}
 			if err = json.Unmarshal(paramBytes, jsonModel); err != nil {
-				return err
+				return actions, err
 			}
 			cloudPoolPolicyAction := models.V12CloudPolicyArchiveParams{}
 			if err = CopyFields(ctx, jsonModel, &cloudPoolPolicyAction); err == nil {
@@ -278,18 +350,17 @@ func parseActionParams(ctx context.Context, policyModel *models.FilePoolPolicyMo
 				actionModel.CloudPoolPolicyAction = cloudPoolPolicyAction.CloudPolicyActionParams
 			}
 		default:
-			return fmt.Errorf("unexpected action type: %s", action.ActionType)
+			return actions, fmt.Errorf("unexpected action type: %s", action.ActionType)
 		}
 		if err != nil {
-			return fmt.Errorf("failed to parse action param: %v for this action type: %s, Error: %s", action.ActionParam, action.ActionType, err.Error())
+			return actions, fmt.Errorf("failed to parse action param: %v for this action type: %s, Error: %s", action.ActionParam, action.ActionType, err.Error())
 		}
 		if !correctType {
 
-			return fmt.Errorf("unexpected action param: %v for this action type: %s", action.ActionParam, action.ActionType)
+			return actions, fmt.Errorf("unexpected action param: %v for this action type: %s", action.ActionParam, action.ActionType)
 		}
 		actions = append(actions, actionModel)
 	}
-	policyModel.Actions = actions
 	return
 }
 
@@ -416,7 +487,7 @@ func buildFileMatchPattern(ctx context.Context, plan *models.FilePoolPolicyModel
 }
 
 // parseFileMatchPattern parses FileMatchPattern response to terraform model.
-func parseFileMatchPattern(ctx context.Context, policyModel *models.FilePoolPolicyModel, matchPattern *powerscale.V1FilepoolPolicyFileMatchingPattern) (err error) {
+func parseFileMatchPattern(ctx context.Context, matchPattern *powerscale.V1FilepoolPolicyFileMatchingPattern) (pattern *models.V1FilepoolPolicyFileMatchingPattern, err error) {
 	orCriteriaList := make([]models.V1FilepoolPolicyFileMatchingPatternOrCriteriaItem, 0)
 	for _, orCriteria := range matchPattern.OrCriteria {
 		andCriteriaList := make([]models.V1FilepoolPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItem, 0)
@@ -438,23 +509,22 @@ func parseFileMatchPattern(ctx context.Context, policyModel *models.FilePoolPoli
 					andCriteriaModel.Value = types.StringValue(strconv.FormatInt(int64(value), 10))
 				}
 			default:
-				return fmt.Errorf("unsupported criteria type: %s", andCriteria.Type)
+				return nil, fmt.Errorf("unsupported criteria type: %s", andCriteria.Type)
 			}
 			if !correctType {
-				return fmt.Errorf("unexpected value for criteria type: %s", andCriteria.Type)
+				return nil, fmt.Errorf("unexpected value for criteria type: %s", andCriteria.Type)
 			}
 			andCriteriaList = append(andCriteriaList, andCriteriaModel)
 		}
 		orCriteriaList = append(orCriteriaList, models.V1FilepoolPolicyFileMatchingPatternOrCriteriaItem{AndCriteria: andCriteriaList})
 	}
-	policyModel.FileMatchingPattern = &models.V1FilepoolPolicyFileMatchingPattern{OrCriteria: orCriteriaList}
-	return
+	return &models.V1FilepoolPolicyFileMatchingPattern{OrCriteria: orCriteriaList}, nil
 }
 
 // IsPolicyParamInvalid Verify if policy params is valid for default policy and common policy.
 func IsPolicyParamInvalid(plan models.FilePoolPolicyModel) error {
 	if plan.IsDefaultPolicy.ValueBool() {
-		if plan.Name.ValueString() != "Default policy" {
+		if plan.Name.ValueString() != FilePoolDefaultPolicyName {
 			return fmt.Errorf("the default policy name should be \"Default policy\"")
 		}
 		if plan.FileMatchingPattern != nil || !plan.ApplyOrder.IsUnknown() || !plan.Description.IsUnknown() {
