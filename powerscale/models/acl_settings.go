@@ -19,6 +19,40 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// ACLSettingsDataSourceModel describes the datasource data model.
+type ACLSettingsDataSourceModel struct {
+	// Access checks (chmod, chown).
+	Access types.String `tfsdk:"access"`
+	// Displayed mode bits.
+	Calcmode types.String `tfsdk:"calcmode"`
+	// Approximate group mode bits when ACL exists.
+	CalcmodeGroup types.String `tfsdk:"calcmode_group"`
+	// Approximate owner mode bits when ACL exists.
+	CalcmodeOwner types.String `tfsdk:"calcmode_owner"`
+	// Require traverse rights in order to traverse directories with existing ACLs.
+	CalcmodeTraverse types.String `tfsdk:"calcmode_traverse"`
+	// chmod on files with existing ACLs.
+	Chmod types.String `tfsdk:"chmod"`
+	// chmod (007) on files with existing ACLs.
+	Chmod007 types.String `tfsdk:"chmod_007"`
+	// ACLs created on directories by UNIX chmod.
+	ChmodInheritable types.String `tfsdk:"chmod_inheritable"`
+	// chown/chgrp on files with existing ACLs.
+	Chown types.String `tfsdk:"chown"`
+	// ACL creation over SMB.
+	CreateOverSmb types.String `tfsdk:"create_over_smb"`
+	//  Read only DOS attribute.
+	DosAttr types.String `tfsdk:"dos_attr"`
+	// Group owner inheritance.
+	GroupOwnerInheritance types.String `tfsdk:"group_owner_inheritance"`
+	// Treatment of 'rwx' permissions.
+	Rwx types.String `tfsdk:"rwx"`
+	// Synthetic 'deny' ACEs.
+	SyntheticDenies types.String `tfsdk:"synthetic_denies"`
+	// Access check (utimes)
+	Utimes types.String `tfsdk:"utimes"`
+}
+
 // ACLSettingsResourceModel describes the resource data model.
 type ACLSettingsResourceModel struct {
 	// Access checks (chmod, chown).

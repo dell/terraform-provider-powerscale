@@ -21,7 +21,17 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/models"
 )
+
+// ACLSettingsDetailMapper Does the mapping from response to model.
+//
+//go:noinline
+func ACLSettingsDetailMapper(ctx context.Context, aclSettings *powerscale.V11SettingsAclsAclPolicySettings) (models.ACLSettingsDataSourceModel, error) {
+	model := models.ACLSettingsDataSourceModel{}
+	err := CopyFields(ctx, aclSettings, &model)
+	return model, err
+}
 
 // GetACLSettings retrieve ACL Settings information.
 func GetACLSettings(ctx context.Context, client *client.Client) (*powerscale.V11SettingsAcls, error) {
