@@ -77,7 +77,7 @@ type FilePoolPolicyModel struct {
 	StateDetails types.String `tfsdk:"state_details"`
 }
 
-// V1FilepoolDefaultPolicyAction An action to apply to a file matching the policy
+// V1FilepoolDefaultPolicyAction An action to apply to a file matching the policy.
 type V1FilepoolDefaultPolicyAction struct {
 	// ActionParam *V12ActionParam `tfsdk:"action_param"`
 	// action for set_data_access_pattern type
@@ -98,24 +98,24 @@ type V1FilepoolDefaultPolicyAction struct {
 	ActionType types.String `tfsdk:"action_type"`
 }
 
-// V12StoragePolicyActionParams - Action for apply_data_storage_policy and apply_snapshot_storage_policy type
+// V12StoragePolicyActionParams - Action for apply_data_storage_policy and apply_snapshot_storage_policy type.
 type V12StoragePolicyActionParams struct {
 	SSDStrategy types.String `tfsdk:"ssd_strategy"`
 	StoragePool types.String `tfsdk:"storagepool"`
 }
 
-// V12StoragePolicyActionParamsJSONModel - Json model for V12StoragePolicyActionParam
+// V12StoragePolicyActionParamsJSONModel - Json model for V12StoragePolicyActionParam.
 type V12StoragePolicyActionParamsJSONModel struct {
 	SSDStrategy string `json:"ssd_strategy"`
 	StoragePool string `json:"storagepool"`
 }
 
-// V12CloudPolicyArchiveParams - Archive Params for CloudPolicyAction
+// V12CloudPolicyArchiveParams - Archive Params for CloudPolicyAction.
 type V12CloudPolicyArchiveParams struct {
 	CloudPolicyActionParams *V12CloudPolicyActionParams `tfsdk:"archive_parameters"`
 }
 
-// V12CloudPolicyArchiveParamsJSONModel - Json model for V12CloudPolicyArchiveParams
+// V12CloudPolicyArchiveParamsJSONModel - Json model for V12CloudPolicyArchiveParams.
 type V12CloudPolicyArchiveParamsJSONModel struct {
 	CloudPolicyActionParams *V12CloudPolicyActionParamsJSONModel `json:"archive_parameters"`
 }
@@ -171,17 +171,17 @@ type V12CloudPolicyActionCacheParamsJSONModel struct {
 	Type       *string `json:"type,omitempty"`
 }
 
-// V1FilepoolPolicyFileMatchingPattern The file matching rules for this policy
+// V1FilepoolPolicyFileMatchingPattern The file matching rules for this policy.
 type V1FilepoolPolicyFileMatchingPattern struct {
 	OrCriteria []V1FilepoolPolicyFileMatchingPatternOrCriteriaItem `tfsdk:"or_criteria"`
 }
 
-// V1FilepoolPolicyFileMatchingPatternOrCriteriaItem struct for V1FilepoolPolicyFileMatchingPatternOrCriteriaItem
+// V1FilepoolPolicyFileMatchingPatternOrCriteriaItem struct for V1FilepoolPolicyFileMatchingPatternOrCriteriaItem.
 type V1FilepoolPolicyFileMatchingPatternOrCriteriaItem struct {
 	AndCriteria []V1FilepoolPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItem `tfsdk:"and_criteria"`
 }
 
-// V1FilepoolPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItem struct for V1FilepoolPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItem
+// V1FilepoolPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItem struct for V1FilepoolPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItem.
 type V1FilepoolPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItem struct {
 	// Indicates whether the existence of an attribute indicates a match (valid only with 'type' = 'custom_attribute')
 	AttributeExists types.Bool `tfsdk:"attribute_exists"`

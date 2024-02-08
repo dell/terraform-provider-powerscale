@@ -100,6 +100,15 @@ const (
 	// UpdateNtpSettingsErrorMsg specifies error details occurred while updating NTP Settings.
 	UpdateNtpSettingsErrorMsg = "Could not update ntp settings "
 
+	// ReadACLSettingsErrorMsg specifies error details occurred while reading ACL Settings.
+	ReadACLSettingsErrorMsg = "Could not read acl settings "
+
+	// CreateACLSettingsErrorMsg specifies error details occurred while creating ACL Settings.
+	CreateACLSettingsErrorMsg = "Could not create acl settings "
+
+	// UpdateACLSettingsErrorMsg specifies error details occurred while updating ACL Settings.
+	UpdateACLSettingsErrorMsg = "Could not update acl settings "
+
 	// ReadUserErrorMsg specifies error details occurred while reading Users.
 	ReadUserErrorMsg = "Could not read users "
 
