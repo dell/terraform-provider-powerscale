@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ Note that, SmartPools Settings is the native functionality of PowerScale. When c
 
 ```terraform
 /*
-Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ Optional:
 Import is supported using the following syntax:
 
 ```shell
-# Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

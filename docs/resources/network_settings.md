@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ This resource is used to manage the Network Settings entity of PowerScale Array.
 
 ```terraform
 /*
-Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ resource "powerscale_network_settings" "example_network_settings" {
 Import is supported using the following syntax:
 
 ```shell
-# Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
