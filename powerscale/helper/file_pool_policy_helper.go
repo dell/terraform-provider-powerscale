@@ -352,9 +352,6 @@ func parseActionParams(ctx context.Context, actionsResponse []powerscale.V1Filep
 		default:
 			return actions, fmt.Errorf("unexpected action type: %s", action.ActionType)
 		}
-		if err != nil {
-			return actions, fmt.Errorf("failed to parse action param: %v for this action type: %s, Error: %s", action.ActionParam, action.ActionType, err.Error())
-		}
 		if !correctType {
 
 			return actions, fmt.Errorf("unexpected action param: %v for this action type: %s", action.ActionParam, action.ActionType)

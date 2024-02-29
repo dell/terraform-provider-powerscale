@@ -151,8 +151,13 @@ func UpdateUserResourceState(model *models.UserResourceModel, user powerscale.V1
 				}
 			}
 		}
-
-		model.Roles, _ = types.ListValue(types.StringType, roleAttrs)
+		roleList, _ := types.ListValue(types.StringType, roleAttrs)
+		if model.Roles.IsNull() && len(roleAttrs) == 0 {
+			roleList = types.ListNull(types.StringType)
+		}
+		if len(model.Roles.Elements()) == 0 || !IsListValueEquals(model.Roles, roleList) {
+			model.Roles = roleList
+		}
 	}
 }
 
@@ -262,7 +267,9 @@ func GetUserWithZone(ctx context.Context, client *client.Client, userName, zone 
 
 // CreateUser Creates a User.
 func CreateUser(ctx context.Context, client *client.Client, plan *models.UserResourceModel) error {
-
+	if !plan.PasswordExpires.ValueBool() && plan.PromptPasswordChange.ValueBool() {
+		return fmt.Errorf("may not enable prompt_password_change when password_expires is disabled ")
+	}
 	createParam := client.PscaleOpenAPIClient.AuthApi.CreateAuthv1AuthUser(ctx)
 	if !plan.QueryForce.IsNull() {
 		createParam = createParam.Force(plan.QueryForce.ValueBool())
@@ -325,7 +332,9 @@ func CreateUser(ctx context.Context, client *client.Client, plan *models.UserRes
 func UpdateUser(ctx context.Context, client *client.Client, state *models.UserResourceModel, plan *models.UserResourceModel) error {
 	authID := fmt.Sprintf("USER:%s", plan.Name.ValueString())
 	updateParam := client.PscaleOpenAPIClient.AuthApi.UpdateAuthv1AuthUser(ctx, authID)
-
+	if !plan.PasswordExpires.ValueBool() && plan.PromptPasswordChange.ValueBool() {
+		return fmt.Errorf("may not enable prompt_password_change when password_expires is disabled ")
+	}
 	if !plan.QueryForce.IsNull() {
 		updateParam = updateParam.Force(plan.QueryForce.ValueBool())
 	}
@@ -370,7 +379,7 @@ func UpdateUser(ctx context.Context, client *client.Client, state *models.UserRe
 	if !state.HomeDirectory.Equal(plan.HomeDirectory) && plan.HomeDirectory.ValueString() != "" {
 		body.HomeDirectory = plan.HomeDirectory.ValueStringPointer()
 	}
-	if !state.Password.Equal(plan.Password) {
+	if !plan.Password.IsNull() && plan.Password.ValueString() != state.Password.ValueString() {
 		body.Password = plan.Password.ValueStringPointer()
 	}
 	if !state.Shell.Equal(plan.Shell) && plan.Shell.ValueString() != "" {

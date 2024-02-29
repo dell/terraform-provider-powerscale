@@ -33,6 +33,46 @@ var createMockerLocal *mockey.Mocker
 var setACLMockerLocal *mockey.Mocker
 var metadataMocker *mockey.Mocker
 
+func TestFileSystemResourceWithUIDChange(t *testing.T) {
+	var fileSystemResourceName = "powerscale_filesystem.file_system_test"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				Config: ProviderConfig + FileSystemResourceConfigWithUserChange,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(fileSystemResourceName, "name", "tfaccDirTf"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "id", "ifs/tfaccDirTf"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "owner.name", "tfaccUserCreation"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "owner.id", "UID:20000"),
+				),
+			},
+			// ImportState testing
+			{
+				ResourceName: fileSystemResourceName,
+				ImportState:  true,
+				ImportStateCheck: func(states []*terraform.InstanceState) error {
+					assert.Equal(t, "tfaccDirTf", states[0].Attributes["name"])
+					assert.Equal(t, "0700", states[0].Attributes["mode"])
+					return nil
+				},
+			},
+			// Update testing
+			{
+				Config: ProviderConfig + FileSystemResourceConfigWithUserChangeUpdate,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(fileSystemResourceName, "name", "tfaccDirTf"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "id", "ifs/tfaccDirTf"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "owner.name", "tfaccUserCreation"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "owner.id", "UID:20001"),
+				),
+			},
+		},
+	})
+}
+
 func TestFileSystemResource(t *testing.T) {
 	var fileSystemResourceName = "powerscale_filesystem.file_system_test"
 	resource.Test(t, resource.TestCase{
@@ -107,6 +147,7 @@ func TestFileSystemResource(t *testing.T) {
 		},
 	})
 }
+
 func TestFileSystemResourceUpdate(t *testing.T) {
 	var fileSystemResourceName = "powerscale_filesystem.file_system_test"
 	resource.Test(t, resource.TestCase{
@@ -557,5 +598,63 @@ resource "powerscale_filesystem" "file_system_test" {
 	   type = "user"
 	 }
 	access_control = "private_read"
+  }
+`
+
+var FileSystemResourceConfigWithUserChange = `
+resource "powerscale_user" "test" {
+	name = "tfaccUserCreation"
+
+	uid = 20000
+	email = "test@dell.com"
+	primary_group = "Administrators"
+	roles = ["SystemAdmin"]
+  }
+
+resource "powerscale_filesystem" "file_system_test" {
+	depends_on = [powerscale_user.test]
+
+	name = "tfaccDirTf"
+  
+	recursive = true
+	overwrite = false
+	group = {
+	  id   = "GID:0"
+	}
+	owner = {
+	  name = "tfaccUserCreation",
+	}
+  }
+`
+
+var FileSystemResourceConfigWithUserChangeUpdate = `
+resource "powerscale_user" "test" {
+	name = "tfaccUserCreation"
+  
+	uid = 20001
+	query_force = true
+	enabled = true
+	email = "newTest@dell.com"
+	primary_group = "Administrators"
+	roles = ["tfaccUserRole"]
+  }
+
+resource "powerscale_user_group" "testDep" {
+	name = "tfaccUserGroupDatasource"
+	gid = 10000
+}
+
+resource "powerscale_filesystem" "file_system_test" {
+	depends_on = [powerscale_user.test, powerscale_user_group.testDep]
+
+	name = "tfaccDirTf"
+	recursive = true
+	overwrite = false
+	group = {
+		name = "tfaccUserGroupDatasource",
+	}
+	owner = {
+	  name = "tfaccUserCreation",
+	}
   }
 `

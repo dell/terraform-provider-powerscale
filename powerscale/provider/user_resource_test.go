@@ -18,6 +18,7 @@ limitations under the License.
 package provider
 
 import (
+	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -68,6 +69,45 @@ func TestAccUserResourceCreate(t *testing.T) {
 			{
 				Config:      ProviderConfig + userInvalidRoleResourceConfig,
 				ExpectError: regexp.MustCompile(`.*Error assign User to Role*.`),
+			},
+		},
+	})
+}
+
+func TestAccUserResourceResetPassword(t *testing.T) {
+	var userResourceName = "powerscale_user.test"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				Config: ProviderConfig + userBasicResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(userResourceName, "name", "tfaccUserCreation"),
+					resource.TestCheckResourceAttr(userResourceName, "prompt_password_change", "false"),
+				),
+			},
+			// Update and Read testing - enable prompt_password_change
+			{
+				Config: ProviderConfig + userResourceConfigPasswordPrompt,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(userResourceName, "name", "tfaccUserCreation"),
+					resource.TestCheckResourceAttr(userResourceName, "prompt_password_change", "true"),
+				),
+			},
+			// Update Error testing - disable prompt_password_change separately
+			{
+				Config:      ProviderConfig + userResourceConfigPasswordPromptError,
+				ExpectError: regexp.MustCompile(`.*Error updating the User*.`),
+			},
+			// Update and Read testing - update password and disable prompt_password_change
+			{
+				Config: ProviderConfig + userResourceConfigPasswordReset,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(userResourceName, "name", "tfaccUserCreation"),
+					resource.TestCheckResourceAttr(userResourceName, "prompt_password_change", "false"),
+				),
 			},
 		},
 	})
@@ -226,6 +266,42 @@ func TestAccUserRolesResourceImportGetErr(t *testing.T) {
 	})
 }
 
+func TestAccUserRolesResourceDeleteMockErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if userMocker != nil {
+						userMocker.UnPatch()
+					}
+					if userCreateMocker != nil {
+						userCreateMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + userBasicResourceConfig,
+			},
+			{
+				PreConfig: func() {
+					if userMocker != nil {
+						userMocker.UnPatch()
+					}
+					if userCreateMocker != nil {
+						userCreateMocker.UnPatch()
+					}
+					userMocker = mockey.Mock((*powerscale.AuthApiService).DeleteAuthv1AuthUserExecute).When(func(r powerscale.ApiDeleteAuthv1AuthUserRequest) bool {
+						return userMocker.Times() == 1
+					}).Return(nil, fmt.Errorf("user mock error")).Build()
+				},
+				Config:      ProviderConfig + userBasicResourceConfig,
+				Destroy:     true,
+				ExpectError: regexp.MustCompile("user mock error"),
+			},
+		},
+	})
+}
+
 func TestAccUserReleaseMockResource(t *testing.T) {
 	var userResourceName = "powerscale_user.test"
 	resource.Test(t, resource.TestCase{
@@ -253,6 +329,7 @@ func TestAccUserReleaseMockResource(t *testing.T) {
 var userBasicResourceConfig = `
 resource "powerscale_user" "test" {
 	name = "tfaccUserCreation"
+	roles = ["tfaccUserRole"]
   }
 `
 
@@ -301,5 +378,33 @@ resource "powerscale_user" "test" {
 	email = "newTest@dell.com"
 	primary_group = "Administrators"
 	roles = ["invalidRole"]
+  }
+`
+
+var userResourceConfigPasswordPrompt = `
+resource "powerscale_user" "test" {
+	name = "tfaccUserCreation"
+	email = "PasswordPrompt@dell.com"
+	prompt_password_change = true
+	roles = ["tfaccUserRole"]
+  }
+`
+
+var userResourceConfigPasswordPromptError = `
+resource "powerscale_user" "test" {
+	name = "tfaccUserCreation"
+	email = "PasswordPromptError@dell.com"
+	prompt_password_change = false
+	roles = ["tfaccUserRole"]
+  }
+`
+
+var userResourceConfigPasswordReset = `
+resource "powerscale_user" "test" {
+	name = "tfaccUserCreation"
+	email = "PasswordReset@dell.com"
+	password = "testPasswordReset"
+	prompt_password_change = false
+	roles = ["tfaccUserRole"]
   }
 `

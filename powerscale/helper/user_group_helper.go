@@ -223,13 +223,16 @@ func UpdateUserGroupResourceState(model *models.UserGroupResourceModel, group po
 				}
 			}
 		}
-
-		model.Roles, _ = types.ListValue(types.StringType, roleAttrs)
+		roleList, _ := types.ListValue(types.StringType, roleAttrs)
+		if model.Roles.IsNull() && len(roleAttrs) == 0 {
+			roleList = types.ListNull(types.StringType)
+		}
+		if len(model.Roles.Elements()) == 0 || !IsListValueEquals(model.Roles, roleList) {
+			model.Roles = roleList
+		}
 	}
 	if groupMembers != nil {
-		var users []attr.Value
-		var groups []attr.Value
-		var wellKnowns []attr.Value
+		var users, groups, wellKnowns []attr.Value
 		for _, m := range groupMembers {
 			switch *m.Type {
 			case "user":
@@ -240,9 +243,48 @@ func UpdateUserGroupResourceState(model *models.UserGroupResourceModel, group po
 				wellKnowns = append(wellKnowns, types.StringValue(*m.Name))
 			}
 		}
-		model.Users, _ = types.ListValue(types.StringType, users)
-		model.Groups, _ = types.ListValue(types.StringType, groups)
-		model.WellKnowns, _ = types.ListValue(types.StringType, wellKnowns)
+
+		userList, _ := types.ListValue(types.StringType, users)
+		if model.Users.IsNull() && len(users) == 0 {
+			userList = types.ListNull(types.StringType)
+		}
+		if len(model.Users.Elements()) == 0 || !IsListValueEquals(model.Users, userList) {
+			model.Users = userList
+		}
+		groupList, _ := types.ListValue(types.StringType, groups)
+		if model.Groups.IsNull() && len(groups) == 0 {
+			groupList = types.ListNull(types.StringType)
+		}
+		if len(model.Groups.Elements()) == 0 || !IsListValueEquals(model.Groups, groupList) {
+			model.Groups = groupList
+		}
+		wellKnownList, _ := types.ListValue(types.StringType, wellKnowns)
+		if model.WellKnowns.IsNull() && len(wellKnowns) == 0 {
+			wellKnownList = types.ListNull(types.StringType)
+		}
+		if len(model.WellKnowns.Elements()) == 0 || len(wellKnowns) != len(model.WellKnowns.Elements()) {
+			model.WellKnowns = wellKnownList
+		} else if !IsListValueEquals(model.WellKnowns, wellKnownList) {
+			// check if wellKnown short name is already in the list
+			// "NT AUTHORITY\\NETWORK" short name should be "NETWORK"
+			for _, wellKnownPlan := range model.WellKnowns.Elements() {
+				if strings.Contains(wellKnownPlan.String(), "\\") {
+					wellKnownUnChanged := false
+					splitElements := strings.Split(wellKnownPlan.String(), "\\")
+					shortName := strings.Trim(splitElements[len(splitElements)-1], "\"")
+					for _, wellKnownresponse := range wellKnowns {
+						if shortName == strings.Trim(wellKnownresponse.String(), "\"") {
+							wellKnownUnChanged = true
+							break
+						}
+					}
+					if !wellKnownUnChanged {
+						model.WellKnowns = wellKnownList
+						break
+					}
+				}
+			}
+		}
 	}
 
 }

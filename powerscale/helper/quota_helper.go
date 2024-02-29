@@ -112,20 +112,41 @@ func ListQuotas(ctx context.Context, client *client.Client, quotaFilter *models.
 
 // ValidateQuotaUpdate validates if update params contain params only for creating.
 func ValidateQuotaUpdate(plan models.QuotaResource, state models.QuotaResource) error {
-	if (plan.Zone.IsNull() && !state.Zone.IsNull()) || !plan.Zone.Equal(state.Zone) {
+	if !plan.Zone.IsNull() && !plan.Zone.Equal(state.Zone) && (plan.Zone.ValueString() != "System" || !state.Zone.IsNull()) {
 		return fmt.Errorf("do not update field Zone")
 	}
-	if (plan.Path.IsNull() && !state.Path.IsNull()) || !plan.Path.Equal(state.Path) {
+	if !plan.Path.IsNull() && !plan.Path.Equal(state.Path) {
 		return fmt.Errorf("do not update field Path")
 	}
-	if (plan.Type.IsNull() && !state.Type.IsNull()) || !plan.Type.Equal(state.Type) {
+	if !plan.Type.IsNull() && !plan.Type.Equal(state.Type) {
 		return fmt.Errorf("do not update field Type")
 	}
-	if (plan.IncludeSnapshots.IsNull() && !state.IncludeSnapshots.IsNull()) || !plan.IncludeSnapshots.Equal(state.IncludeSnapshots) {
+	if !plan.IncludeSnapshots.IsNull() && !plan.IncludeSnapshots.Equal(state.IncludeSnapshots) {
 		return fmt.Errorf("do not update field IncludeSnapshots")
 	}
-	if (plan.Persona.IsNull() && !state.Persona.IsNull()) || !plan.Persona.Equal(state.Persona) {
+	if !plan.Persona.IsNull() && !plan.Persona.Equal(state.Persona) {
 		return fmt.Errorf("do not update field Persona.ID")
+	}
+	return nil
+}
+
+// IsQuotaParamInvalid Verify if persona and zone params are valid for different quota type.
+func IsQuotaParamInvalid(plan models.QuotaResource) error {
+	quotaType := plan.Type.ValueString()
+	switch quotaType {
+	case "user", "group":
+		if plan.Persona.IsNull() || plan.Persona.IsUnknown() {
+			return fmt.Errorf("\"persona\" is required for %s type", quotaType)
+		}
+	case "directory":
+		if !plan.Persona.IsNull() {
+			return fmt.Errorf("\"persona\" is not needed for %s type", quotaType)
+		}
+		if !plan.Zone.IsNull() {
+			return fmt.Errorf("\"zone\" is not needed for %s type", quotaType)
+		}
+	default:
+		return fmt.Errorf("unsupported type: %s", quotaType)
 	}
 	return nil
 }

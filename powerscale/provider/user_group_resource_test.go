@@ -392,6 +392,8 @@ func TestAccUserGroupReleaseMockResource(t *testing.T) {
 var userGroupBasicResourceConfig = `
 resource "powerscale_user_group" "test" {
     name = "tfaccUserGroupCreation"
+	roles = ["SystemAdmin"]
+	groups    = ["guest"]
   }
 `
 

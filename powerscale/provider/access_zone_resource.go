@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -67,8 +68,8 @@ func (r *AccessZoneResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Computed:            true,
 			},
 			"custom_auth_providers": schema.ListAttribute{
-				Description:         "An optional parameter which adds new auth_providers to the access zone. (Update Supported)",
-				MarkdownDescription: "An optional parameter which adds new auth_providers to the access zone. (Update Supported)",
+				Description:         "An optional parameter which adds new auth_providers to the access zone. A provider name should be of the form '[provider-type:]provider-name', the provider-type defaults to 'lsa-local-provider'. (Update Supported)",
+				MarkdownDescription: "An optional parameter which adds new auth_providers to the access zone. A provider name should be of the form '[provider-type:]provider-name', the provider-type defaults to 'lsa-local-provider'. (Update Supported)",
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
@@ -223,7 +224,9 @@ func (r *AccessZoneResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 	for i, v := range authProv {
-		authProv[i] = "lsa-file-provider:" + v
+		if !strings.Contains(v, ":") {
+			authProv[i] = "lsa-local-provider:" + v
+		}
 	}
 
 	err := helper.CreateAccessZones(ctx, r.client, authProv, plan)
@@ -288,7 +291,8 @@ func (r *AccessZoneResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	state.CustomAuthProviders = plan.CustomAuthProviders
+	customAuthProviders := helper.ExtractCustomAuthForInput(ctx, state, *plan)
+	state.CustomAuthProviders = customAuthProviders
 	// Save updated plan into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -327,7 +331,9 @@ func (r *AccessZoneResource) Update(ctx context.Context, req resource.UpdateRequ
 			return
 		}
 		for i, v := range editValues.AuthProviders {
-			editValues.AuthProviders[i] = "lsa-file-provider:" + v
+			if !strings.Contains(v, ":") {
+				editValues.AuthProviders[i] = "lsa-local-provider:" + strings.Trim(v, " ")
+			}
 		}
 	}
 	editParam := r.client.PscaleOpenAPIClient.ZonesApi.UpdateZonesv3Zone(ctx, state.ID.ValueString())
@@ -407,12 +413,7 @@ func (r *AccessZoneResource) ImportState(ctx context.Context, req resource.Impor
 		resp.Diagnostics.AddError("Error reading access zone", err.Error())
 		return
 	}
-	customAuthProviders, diags := helper.ExtractCustomAuthForInput(ctx, state.AuthProviders, state.Name.ValueString())
-
-	if diags.HasError() {
-		resp.Diagnostics.AddError("Unable to import access zone", "failed to extract custom providers")
-	}
-	state.CustomAuthProviders = customAuthProviders
+	state.CustomAuthProviders = state.AuthProviders
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return

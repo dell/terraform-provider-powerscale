@@ -29,6 +29,7 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -112,7 +113,8 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 					"id": schema.StringAttribute{
 						Description:         "Owner identifier",
 						MarkdownDescription: "Owner identifier",
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
 						Validators: []validator.String{stringvalidator.RegexMatches(
 							regexp.MustCompile(`^UID:`), "must start with 'UID:'",
 						)},
@@ -120,12 +122,18 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 					"name": schema.StringAttribute{
 						Description:         "Owner name",
 						MarkdownDescription: "Owner name",
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+							stringvalidator.AtLeastOneOf(path.MatchRelative().AtParent().AtName("id")),
+						},
 					},
 					"type": schema.StringAttribute{
 						Description:         "Owner type",
 						MarkdownDescription: "Owner type",
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
 						Validators: []validator.String{
 							stringvalidator.OneOf("user"),
 						},
@@ -140,7 +148,8 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 					"id": schema.StringAttribute{
 						Description:         "group identifier",
 						MarkdownDescription: "group identifier",
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
 						Validators: []validator.String{stringvalidator.RegexMatches(
 							regexp.MustCompile(`^GID:`), "must start with 'GID:'",
 						)},
@@ -148,12 +157,18 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 					"name": schema.StringAttribute{
 						Description:         "group name",
 						MarkdownDescription: "group name",
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+							stringvalidator.AtLeastOneOf(path.MatchRelative().AtParent().AtName("id")),
+						},
 					},
 					"type": schema.StringAttribute{
 						Description:         "group type",
 						MarkdownDescription: "group type",
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
 						Validators: []validator.String{
 							stringvalidator.OneOf("group"),
 						},
@@ -269,15 +284,27 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	namespaceACLUserGroup.SetAuthoritative("mode")
 
 	owner := *powerscale.NewMemberObject()
-	owner.Id = plan.Owner.ID.ValueStringPointer()
-	owner.Name = plan.Owner.Name.ValueStringPointer()
-	owner.Type = plan.Owner.Type.ValueStringPointer()
+	if !plan.Owner.ID.IsNull() && !plan.Owner.ID.IsUnknown() {
+		owner.Id = plan.Owner.ID.ValueStringPointer()
+	}
+	if !plan.Owner.Name.IsNull() && !plan.Owner.Name.IsUnknown() {
+		owner.Name = plan.Owner.Name.ValueStringPointer()
+	}
+	if !plan.Owner.Type.IsNull() && !plan.Owner.Type.IsUnknown() {
+		owner.Type = plan.Owner.Type.ValueStringPointer()
+	}
 	namespaceACLUserGroup.SetOwner(owner)
 
 	group := *powerscale.NewMemberObject()
-	group.Id = plan.Group.ID.ValueStringPointer()
-	group.Name = plan.Group.Name.ValueStringPointer()
-	group.Type = plan.Group.Type.ValueStringPointer()
+	if !plan.Group.ID.IsNull() && !plan.Group.ID.IsUnknown() {
+		group.Id = plan.Group.ID.ValueStringPointer()
+	}
+	if !plan.Group.Name.IsNull() && !plan.Group.Name.IsUnknown() {
+		group.Name = plan.Group.Name.ValueStringPointer()
+	}
+	if !plan.Group.Type.IsNull() && !plan.Group.Type.IsUnknown() {
+		group.Type = plan.Group.Type.ValueStringPointer()
+	}
 	namespaceACLUserGroup.SetGroup(group)
 
 	setACLReq = setACLReq.NamespaceAcl(namespaceACLUserGroup)

@@ -258,9 +258,16 @@ func (r *UserGroupResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.AddError(fmt.Sprintf("Error getting the User Group - %s", groupName), err.Error())
 		return
 	}
-
+	roles, roleErr := helper.GetAllRolesWithZone(ctx, r.client, plan.QueryZone.ValueString())
+	if roleErr != nil {
+		resp.Diagnostics.AddError("Error getting the list of PowerScale Roles", roleErr.Error())
+	}
+	members, err := helper.GetAllGroupMembersWithZone(ctx, r.client, groupName, plan.QueryZone.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError(fmt.Sprintf("Error getting the list of PowerScale Group Members of %s", groupName), err.Error())
+	}
 	// parse user response to state user group model
-	helper.UpdateUserGroupResourceState(&plan, result.Groups[0], nil, nil)
+	helper.UpdateUserGroupResourceState(&plan, result.Groups[0], members, roles)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)

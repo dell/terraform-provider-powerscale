@@ -120,7 +120,7 @@ resource "powerscale_filesystem" "file_system_test" {
 <a id="nestedatt--group"></a>
 ### Nested Schema for `group`
 
-Required:
+Optional:
 
 - `id` (String) group identifier
 - `name` (String) group name
@@ -130,7 +130,7 @@ Required:
 <a id="nestedatt--owner"></a>
 ### Nested Schema for `owner`
 
-Required:
+Optional:
 
 - `id` (String) Owner identifier
 - `name` (String) Owner name

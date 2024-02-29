@@ -21,12 +21,13 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccQuotaResource(t *testing.T) {
@@ -67,6 +68,14 @@ func TestAccQuotaResourceCreateError(t *testing.T) {
 			{
 				Config:      ProviderConfig + QuotaResourceCreateWithLink,
 				ExpectError: regexp.MustCompile(".set attribute Linked while creating"),
+			},
+			{
+				Config:      ProviderConfig + QuotaResourceCreateDirectoryTypeWithPersona,
+				ExpectError: regexp.MustCompile("\"persona\" is not needed"),
+			},
+			{
+				Config:      ProviderConfig + QuotaResourceCreateUserTypeWithoutPersona,
+				ExpectError: regexp.MustCompile("\"persona\" is required"),
 			},
 			// Update
 			{
@@ -290,11 +299,6 @@ resource "powerscale_quota" "quota_test" {
 	type = "directory"
 	include_snapshots = false
 	zone = "System"
-	persona = {
-		id = "UID:1501"
-		name = "Guest"
-		type = "user"
-	}
 	thresholds = {
 		percent_advisory = 10
         percent_soft = 20
@@ -359,10 +363,6 @@ var QuotaResourceCreateWithLink = `
 resource "powerscale_quota" "quota_test" {
 	path = "/ifs/tfacc_quota_test"
 	type = "directory"
-	persona = {
-		name = "Guest"
-		type = "user"
-	}
 	include_snapshots = false
 	linked = true
 }
@@ -413,5 +413,48 @@ resource "powerscale_quota" "quota_test" {
 	enforced = false
 	thresholds_on = "applogicalsize"
 	ignore_limit_checks = true
+}
+`
+
+var QuotaResourceCreateDirectoryTypeWithPersona = `
+resource "powerscale_quota" "quota_test" {
+	path = "/ifs/tfacc_quota_test"
+	type = "directory"
+	include_snapshots = false
+	zone = "System"
+	persona = {
+		id = "UID:1501"
+		name = "Guest"
+		type = "user"
+	}
+	thresholds = {
+		percent_advisory = 10
+        percent_soft = 20
+		soft_grace = 120
+	    hard = 4000
+	}
+	ignore_limit_checks = true
+	container = true
+	enforced = false
+	thresholds_on = "applogicalsize"
+}
+`
+
+var QuotaResourceCreateUserTypeWithoutPersona = `
+resource "powerscale_quota" "quota_test" {
+	path = "/ifs/tfacc_quota_test"
+	type = "user"
+	include_snapshots = false
+	zone = "System"
+	thresholds = {
+		percent_advisory = 10
+        percent_soft = 20
+		soft_grace = 120
+	    hard = 4000
+	}
+	ignore_limit_checks = true
+	container = true
+	enforced = false
+	thresholds_on = "applogicalsize"
 }
 `

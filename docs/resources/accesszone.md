@@ -54,7 +54,7 @@ limitations under the License.
 resource "powerscale_accesszone" "zone" {
 
   # Required name of the new access zone
-  name = "testAccessZone3"
+  name = "testGroupnetResourceSample"
 
   # Required Groupnet identifier to be assoicated with this access zone
   # Note can not be changed after the access zone is created
@@ -63,8 +63,16 @@ resource "powerscale_accesszone" "zone" {
   # Required Specifies the access zone base directory path
   path = "/ifs"
 
-  # Optional pecifies the list of authentication providers available on this access zon
-  custom_auth_providers = ["System"]
+  # Optional pecifies the list of authentication providers available on this access zone
+  # A provider name should be of the form '[provider-type:]provider-name', the provider-type defaults to 'lsa-local-provider'.
+  custom_auth_providers = [
+    "localProviderName",
+    "lsa-local-provider:testGroupnetResourceSample",
+    "lsa-local-provider:localProviderName",
+    "lsa-file-provider:fileProviderName",
+    "lsa-activedirectory-provider:adsProviderName",
+    "lsa-ldap-provider:testProvider",
+  ]
 }
 
 # After the execution of above resource block, accesszone would have been created on the PowerScale array. For more information, Please check the terraform state file.
@@ -81,7 +89,7 @@ resource "powerscale_accesszone" "zone" {
 
 ### Optional
 
-- `custom_auth_providers` (List of String) An optional parameter which adds new auth_providers to the access zone. (Update Supported)
+- `custom_auth_providers` (List of String) An optional parameter which adds new auth_providers to the access zone. A provider name should be of the form '[provider-type:]provider-name', the provider-type defaults to 'lsa-local-provider'. (Update Supported)
 
 ### Read-Only
 
