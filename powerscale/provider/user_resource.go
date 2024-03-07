@@ -386,8 +386,20 @@ func (r *UserResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 		return
 	}
 
+	roles, roleErr := helper.GetAllRolesWithZone(ctx, r.client, plan.QueryZone.ValueString())
+	if roleErr != nil {
+		resp.Diagnostics.AddError("Error getting the list of PowerScale Roles", roleErr.Error())
+	}
+
+	user := result.Users[0]
+	// user password reset
+	if user.PasswordLastSet == 0 {
+		if !user.PromptPasswordChange && !user.PasswordExpires {
+			plan.Password = types.StringValue("password_reset=true")
+		}
+	}
 	// parse user response to state user model
-	helper.UpdateUserResourceState(&plan, result.Users[0], nil)
+	helper.UpdateUserResourceState(&plan, user, roles)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
@@ -430,6 +442,20 @@ func (r *UserResource) Update(ctx context.Context, req resource.UpdateRequest, r
 			fmt.Sprintf("Error getting the User - %s", userName),
 			err.Error(),
 		)
+		return
+	}
+	if plan.PromptPasswordChange.ValueBool() != result.Users[0].PromptPasswordChange {
+		if !plan.PromptPasswordChange.ValueBool() {
+			resp.Diagnostics.AddError(
+				fmt.Sprintf("Error updating the User - %s", userName),
+				"Need to update User Password to disable prompt_password_change.",
+			)
+		} else {
+			resp.Diagnostics.AddError(
+				fmt.Sprintf("Error updating the User - %s", userName),
+				"may not enable prompt_password_change when updating User Password.",
+			)
+		}
 		return
 	}
 

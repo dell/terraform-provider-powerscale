@@ -19,10 +19,11 @@ package provider
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
 	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -50,9 +51,10 @@ func TestAccAccessZoneA(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      accessZoneResourceName,
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            accessZoneResourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"custom_auth_providers"},
 			},
 			// Update name, path and auth providers, then Read testing
 			{
@@ -63,6 +65,17 @@ func TestAccAccessZoneA(t *testing.T) {
 					resource.TestCheckResourceAttr(accessZoneResourceName, "groupnet", "groupnet0"),
 					resource.TestCheckResourceAttr(accessZoneResourceName, "path", "/ifs/home"),
 					resource.TestCheckResourceAttr(accessZoneResourceName, "auth_providers.#", "1"),
+				),
+			},
+			// Update name, add auth providers, then Read testing
+			{
+				Config: ProviderConfig + AccessZoneResourceConfigAddProvider,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(accessZoneResourceName, "name", "tfaccTestAccessZone5"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "id", "tfaccTestAccessZone5"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "groupnet", "groupnet0"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "path", "/ifs/home"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "auth_providers.#", "3"),
 				),
 			},
 			// Update to error state
@@ -236,10 +249,11 @@ func TestAccAccessZoneResourceGetImportSpecificErr(t *testing.T) {
 				PreConfig: func() {
 					mocker = mockey.Mock(helper.GetSpecificZone).Return(nil, fmt.Errorf("access zone read specific mock error")).Build()
 				},
-				ResourceName:      accessZoneResourceName,
-				ImportState:       true,
-				ImportStateVerify: true,
-				ExpectError:       regexp.MustCompile(`.*access zone read specific mock error*.`),
+				ResourceName:            accessZoneResourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"custom_auth_providers"},
+				ExpectError:             regexp.MustCompile(`.*access zone read specific mock error*.`),
 			},
 		},
 	})
@@ -266,6 +280,18 @@ resource "powerscale_accesszone" "zone" {
   
 	# Optional to apply Auth Providers
 	custom_auth_providers = []
+  }
+`
+
+var AccessZoneResourceConfigAddProvider = `
+resource "powerscale_accesszone" "zone" {
+	# Required fields
+	name = "tfaccTestAccessZone5"
+	groupnet = "groupnet0"
+	path = "/ifs/home"
+  
+	# Optional to apply Auth Providers
+	custom_auth_providers = ["lsa-local-provider:System", "lsa-file-provider:System"]
   }
 `
 

@@ -101,7 +101,7 @@ resource "powerscale_quota" "quota_test" {
 - `force` (Boolean) Force creation of quotas on the root of /ifs or percent based quotas.
 - `ignore_limit_checks` (Boolean) If true, skip child quota's threshold comparison with parent quota path.
 - `linked` (Boolean) For user, group and directory quotas, true if the quota is linked and controlled by a parent default-* quota. Linked quotas cannot be modified until they are unlinked. Computed by PowerScale, do not set Linked while creating.
-- `persona` (Attributes) Specifies the persona of the file group. (see [below for nested schema](#nestedatt--persona))
+- `persona` (Attributes) Specifies the persona of the file group. persona is required for user and group type. (see [below for nested schema](#nestedatt--persona))
 - `thresholds` (Attributes) The thresholds of quota (see [below for nested schema](#nestedatt--thresholds))
 - `thresholds_on` (String) Thresholds apply on quota accounting metric.
 - `zone` (String) Optional named zone to use for user and group resolution.

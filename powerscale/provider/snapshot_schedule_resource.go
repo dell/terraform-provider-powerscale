@@ -305,7 +305,7 @@ func (r SnapshotScheduleResource) Update(ctx context.Context, request resource.U
 
 	errMap := helper.SnapshotScheduleMapper(ctx, result, &state)
 	if errMap != nil {
-		response.Diagnostics.AddError(constants.UpdateSnapshotScheduleErrorMessage+" with error: ", err.Error())
+		response.Diagnostics.AddError(constants.UpdateSnapshotScheduleErrorMessage+" with error: ", errMap.Error())
 		return
 	}
 

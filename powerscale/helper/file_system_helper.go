@@ -293,14 +293,26 @@ func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemR
 	}
 
 	if owner, ok := acl.GetOwnerOk(); ok {
-		state.Owner.ID = types.StringValue(*owner.Id)
-		state.Owner.Name = types.StringValue(*owner.Name)
-		state.Owner.Type = types.StringValue(*owner.Type)
+		if ownerID, ok := owner.GetIdOk(); ok {
+			state.Owner.ID = types.StringValue(*ownerID)
+		}
+		if ownerName, ok := owner.GetNameOk(); ok {
+			state.Owner.Name = types.StringValue(*ownerName)
+		}
+		if ownerType, ok := owner.GetTypeOk(); ok {
+			state.Owner.Type = types.StringValue(*ownerType)
+		}
 	}
 	if group, ok := acl.GetGroupOk(); ok {
-		state.Group.ID = types.StringValue(*group.Id)
-		state.Group.Name = types.StringValue(*group.Name)
-		state.Group.Type = types.StringValue(*group.Type)
+		if groupID, ok := group.GetIdOk(); ok {
+			state.Group.ID = types.StringValue(*groupID)
+		}
+		if groupName, ok := group.GetNameOk(); ok {
+			state.Group.Name = types.StringValue(*groupName)
+		}
+		if groupType, ok := group.GetTypeOk(); ok {
+			state.Group.Type = types.StringValue(*groupType)
+		}
 	}
 	if authoritative, ok := acl.GetAuthoritativeOk(); ok {
 		state.Authoritative = types.StringValue(*authoritative)
@@ -352,15 +364,27 @@ func UpdateFileSystem(ctx context.Context, client *client.Client, dirPath string
 		namespaceUpdateUser.SetAuthoritative(mode)
 
 		owner := *powerscale.NewMemberObject()
-		owner.Id = plan.Owner.ID.ValueStringPointer()
-		owner.Name = plan.Owner.Name.ValueStringPointer()
-		owner.Type = plan.Owner.Type.ValueStringPointer()
+		if !plan.Owner.ID.IsNull() && !plan.Owner.ID.IsUnknown() {
+			owner.Id = plan.Owner.ID.ValueStringPointer()
+		}
+		if !plan.Owner.Name.IsNull() && !plan.Owner.Name.IsUnknown() {
+			owner.Name = plan.Owner.Name.ValueStringPointer()
+		}
+		if !plan.Owner.Type.IsNull() && !plan.Owner.Type.IsUnknown() {
+			owner.Type = plan.Owner.Type.ValueStringPointer()
+		}
 		namespaceUpdateUser.SetOwner(owner)
 
 		group := *powerscale.NewMemberObject()
-		group.Id = plan.Group.ID.ValueStringPointer()
-		group.Name = plan.Group.Name.ValueStringPointer()
-		group.Type = plan.Group.Type.ValueStringPointer()
+		if !plan.Group.ID.IsNull() && !plan.Group.ID.IsUnknown() {
+			group.Id = plan.Group.ID.ValueStringPointer()
+		}
+		if !plan.Group.Name.IsNull() && !plan.Group.Name.IsUnknown() {
+			group.Name = plan.Group.Name.ValueStringPointer()
+		}
+		if !plan.Group.Type.IsNull() && !plan.Group.Type.IsUnknown() {
+			group.Type = plan.Group.Type.ValueStringPointer()
+		}
 		namespaceUpdateUser.SetGroup(group)
 
 		setACLUpdReq = setACLUpdReq.NamespaceAcl(namespaceUpdateUser)
@@ -417,8 +441,20 @@ func getNewAccessControlParams(accessControl string) (string, string) {
 
 // ValidateUserAndGroup check if owner/group information is correct.
 func ValidateUserAndGroup(ctx context.Context, client *client.Client, owner models.MemberObject, group models.MemberObject, accessZone string) error {
+	var ownerAuthID, groupAuthID string
+	if !owner.Name.IsNull() && !owner.Name.IsUnknown() {
+		ownerAuthID = owner.Name.ValueString()
+	} else if !owner.ID.IsNull() && !owner.ID.IsUnknown() {
+		ownerAuthID = owner.ID.ValueString()
+	}
+	if !group.Name.IsNull() && !group.Name.IsUnknown() {
+		groupAuthID = group.Name.ValueString()
+	} else if !group.ID.IsNull() && !group.ID.IsUnknown() {
+		groupAuthID = group.ID.ValueString()
+	}
+
 	// Validate owner information
-	userReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, owner.Name.ValueString())
+	userReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, ownerAuthID)
 
 	// If zone filter is set use it otherwise leave blank and it will use the default zone
 	if accessZone != "" {
@@ -434,15 +470,15 @@ func ValidateUserAndGroup(ctx context.Context, client *client.Client, owner mode
 	user, ok := users.GetUsersOk()
 	if ok && len(user) > 0 {
 		userEntity := user[0].OnDiskUserIdentity
-		if *userEntity.Id != *owner.ID.ValueStringPointer() || *userEntity.Name != *owner.Name.ValueStringPointer() || *userEntity.Type != *owner.Type.ValueStringPointer() {
-			return fmt.Errorf("Incorrect owner information. Please make sure owner id, name, and type are valid")
+		if !owner.ID.IsUnknown() && *userEntity.Id != owner.ID.ValueString() || !owner.Name.IsUnknown() && *userEntity.Name != owner.Name.ValueString() || !owner.Type.IsUnknown() && *userEntity.Type != owner.Type.ValueString() {
+			return fmt.Errorf("incorrect owner information. Please make sure owner id, name, and type are valid")
 		}
 	} else {
 		return fmt.Errorf("unable to retrieve user information")
 	}
 
 	// Validate group information
-	groupReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthGroup(ctx, group.Name.ValueString())
+	groupReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthGroup(ctx, groupAuthID)
 
 	// If zone filter is set use it otherwise leave blank and it will use the default zone
 	if accessZone != "" {
@@ -458,7 +494,7 @@ func ValidateUserAndGroup(ctx context.Context, client *client.Client, owner mode
 	grp, okGroup := groups.GetGroupsOk()
 	if okGroup && len(grp) > 0 {
 		grpEntity := grp[0].Gid
-		if *grpEntity.Id != *group.ID.ValueStringPointer() || *grpEntity.Name != *group.Name.ValueStringPointer() || *grpEntity.Type != *group.Type.ValueStringPointer() {
+		if !group.ID.IsUnknown() && *grpEntity.Id != group.ID.ValueString() || !group.Name.IsUnknown() && *grpEntity.Name != group.Name.ValueString() || !group.Type.IsUnknown() && *grpEntity.Type != group.Type.ValueString() {
 			return fmt.Errorf("incorrect group information. Please make sure group id, name, and type are valid")
 		}
 	} else {

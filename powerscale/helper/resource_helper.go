@@ -99,9 +99,6 @@ func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interfa
 					return err
 				}
 				destinationField.Set(reflect.ValueOf(types.ListNull(mapType)))
-				if err != nil {
-					return err
-				}
 			case reflect.Struct:
 				mapType, err := getStructAttrTypeFromType(ctx, structType.Field(i).Type)
 				if err != nil {

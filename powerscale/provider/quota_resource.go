@@ -21,18 +21,19 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"regexp"
 	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
+
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -223,8 +224,8 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 			},
 			"persona": schema.SingleNestedAttribute{
-				Description:         "Specifies the persona of the file group.",
-				MarkdownDescription: "Specifies the persona of the file group.",
+				Description:         "Specifies the persona of the file group. persona is required for user and group type.",
+				MarkdownDescription: "Specifies the persona of the file group. persona is required for user and group type.",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"id": schema.StringAttribute{
@@ -386,6 +387,10 @@ func (r *QuotaResource) Create(ctx context.Context, request resource.CreateReque
 		response.Diagnostics.AddError("Error creating quota", "Do not set attribute Linked while creating")
 		return
 	}
+	if err := helper.IsQuotaParamInvalid(quotaPlan); err != nil {
+		response.Diagnostics.AddError("Error creating quota", err.Error())
+		return
+	}
 	quotaToCreate := powerscale.V12QuotaQuota{}
 	// Get param from tf input
 	err := helper.ReadFromState(ctx, quotaPlan, &quotaToCreate)
@@ -436,7 +441,7 @@ func (r *QuotaResource) Create(ctx context.Context, request resource.CreateReque
 
 	quotaPlan.IgnoreLimitChecks = quotaPlanBackup.IgnoreLimitChecks
 	quotaPlan.Force = quotaPlanBackup.Force
-	if quotaPlanBackup.Persona.IsNull() {
+	if quotaPlanBackup.Persona.IsNull() || createdQuota.Type == "directory" {
 		quotaPlan.Persona = types.ObjectNull(quotaPlan.Persona.AttributeTypes(ctx))
 	}
 	diags = response.State.Set(ctx, quotaPlan)
@@ -529,7 +534,10 @@ func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateReque
 	}
 	quotaState.IgnoreLimitChecks = quotaPlan.IgnoreLimitChecks
 	quotaState.Force = quotaPlan.Force
-	if quotaPlan.Persona.IsNull() {
+	if quotaPlan.Zone.ValueString() != "" {
+		quotaState.Zone = quotaPlan.Zone
+	}
+	if quotaPlan.Persona.IsNull() || quotaPlan.Type.ValueString() == "directory" {
 		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
 	}
 	diags = response.State.Set(ctx, quotaState)
@@ -589,7 +597,7 @@ func (r *QuotaResource) Read(ctx context.Context, request resource.ReadRequest, 
 	}
 	quotaState.IgnoreLimitChecks = quotaStateBackup.IgnoreLimitChecks
 	quotaState.Force = quotaStateBackup.Force
-	if quotaStateBackup.Persona.IsNull() {
+	if quotaStateBackup.Persona.IsNull() || quotaStateBackup.Type.ValueString() == "directory" {
 		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
 	}
 	diags = response.State.Set(ctx, quotaState)
@@ -675,7 +683,13 @@ func (r QuotaResource) ImportState(ctx context.Context, request resource.ImportS
 		)
 		return
 	}
-	quotaState.Zone = types.StringValue(zoneName)
+	if quotaState.Type.ValueString() == "directory" {
+		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
+	}
+	quotaState.Zone = types.StringNull()
+	if zoneName != "" {
+		quotaState.Zone = types.StringValue(zoneName)
+	}
 	diags := response.State.Set(ctx, quotaState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {

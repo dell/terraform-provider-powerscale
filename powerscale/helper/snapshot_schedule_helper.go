@@ -59,12 +59,12 @@ func ParseTimeStringToSeconds(timeString string) (*int32, error) {
 	parts := strings.Fields(timeString)
 
 	if len(parts) != 2 {
-		return nil, fmt.Errorf("Invalid time format: %s", timeString)
+		return nil, fmt.Errorf("invalid time format: %s", timeString)
 	}
 
 	value, err := strconv.ParseInt(parts[0], 10, 64)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid time value: %s", parts[0])
+		return nil, fmt.Errorf("invalid time value: %s", parts[0])
 	}
 
 	unit := strings.ToLower(parts[1])
@@ -83,13 +83,13 @@ func ParseTimeStringToSeconds(timeString string) (*int32, error) {
 	case "year(s)":
 		multiplier = 31536000
 	default:
-		return nil, fmt.Errorf("Unknown time unit: %s", unit)
+		return nil, fmt.Errorf("unknown time unit: %s", unit)
 	}
 
 	result := value * multiplier
 
 	if result > math.MaxInt32 || result < math.MinInt32 {
-		return nil, fmt.Errorf("Integer overflow when converting to int32")
+		return nil, fmt.Errorf("integer overflow when converting to int32")
 	}
 
 	seconds := int32(result)
@@ -112,7 +112,7 @@ func CreateSnapshotSchedule(ctx context.Context, client *client.Client, plan *mo
 	if !plan.RetentionTime.IsNull() {
 		duration, err := ParseTimeStringToSeconds(plan.RetentionTime.ValueString())
 		if err != nil {
-			return nil, fmt.Errorf("Error converting Retention time - %s", err)
+			return nil, fmt.Errorf("error converting Retention time - %s", err)
 		}
 
 		ssBody.SetDuration(*duration)
@@ -160,7 +160,7 @@ func UpdateSnapshotSchedule(ctx context.Context, client *client.Client, plan *mo
 	if !plan.RetentionTime.IsNull() {
 		duration, err := ParseTimeStringToSeconds(plan.RetentionTime.ValueString())
 		if err != nil {
-			return fmt.Errorf("Error converting Retention time - %s", err)
+			return fmt.Errorf("error converting Retention time - %s", err)
 		}
 		if state.Duration.ValueInt64() != int64(*duration) {
 			ss.SetDuration(*duration)

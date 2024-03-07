@@ -135,17 +135,36 @@ func GetSpecificZone(ctx context.Context, matchZone string, zoneList []powerscal
 }
 
 // ExtractCustomAuthForInput extracts the custom auth provider from actual auth provider for input.
-func ExtractCustomAuthForInput(ctx context.Context, authProv basetypes.ListValue, mainAuth string) (basetypes.ListValue, diag.Diagnostics) {
-	var filteredAuths []attr.Value
-	for _, v := range authProv.Elements() {
-		name := strings.Split(v.String(), ":")[1]
-		name = strings.Split(name, "\"")[0]
-		if name != mainAuth {
-			stringVal := types.StringValue(name)
-			filteredAuths = append(filteredAuths, stringVal)
+func ExtractCustomAuthForInput(ctx context.Context, stateResponse, plan models.AccessZoneResourceModel) basetypes.ListValue {
+
+	automaticProviderAdded := false
+	automaticProviderName := "lsa-local-provider:" + plan.Name.ValueString()
+	var customAuthProviders []attr.Value
+	for _, v := range plan.CustomAuthProviders.Elements() {
+		name := strings.Trim(v.String(), "\"")
+		if !strings.Contains(name, ":") {
+			name = "lsa-local-provider:" + name
+		}
+		if name == automaticProviderName {
+			automaticProviderAdded = true
+		}
+		customAuthProviders = append(customAuthProviders, types.StringValue(name))
+	}
+	if !automaticProviderAdded {
+		customAuthProviders = append(customAuthProviders, types.StringValue(automaticProviderName))
+	}
+
+	authProviders := stateResponse.AuthProviders.Elements()
+	if len(customAuthProviders) != len(authProviders) {
+		return stateResponse.AuthProviders
+	}
+	for i, v := range authProviders {
+		if !customAuthProviders[i].Equal(v) {
+			return stateResponse.AuthProviders
 		}
 	}
-	return types.ListValue(types.StringType, filteredAuths)
+
+	return plan.CustomAuthProviders
 }
 
 // QueryZoneNameByID returns a specific zone id by name.

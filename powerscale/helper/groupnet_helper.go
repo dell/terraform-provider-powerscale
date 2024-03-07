@@ -21,11 +21,11 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/models"
 
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -56,21 +56,30 @@ func UpdateGroupnetDataSourceState(ctx context.Context, groupnetState *models.Gr
 
 // UpdateGroupnetResourceState updates resource state.
 func UpdateGroupnetResourceState(ctx context.Context, groupnetModel *models.GroupnetModel, groupnetResponse *powerscale.V10NetworkGroupnetExtended) (err error) {
+	originModel := *groupnetModel
 
-	groupnetModel.ID = types.StringValue(*groupnetResponse.Id)
-	groupnetModel.Name = types.StringValue(*groupnetResponse.Name)
-	groupnetModel.AllowWildcardSubdomains = types.BoolValue(*groupnetResponse.AllowWildcardSubdomains)
-	groupnetModel.DNSCacheEnabled = types.BoolValue(*groupnetResponse.DnsCacheEnabled)
-	groupnetModel.ServerSideDNSSearch = types.BoolValue(*groupnetResponse.ServerSideDnsSearch)
-
-	if groupnetResponse.HasSubnets() {
-		var subnetAttrs []attr.Value
-		for _, subnet := range groupnetResponse.Subnets {
-			subnetAttrs = append(subnetAttrs, types.StringValue(subnet))
-		}
-		groupnetModel.Subnets, _ = types.ListValue(types.StringType, subnetAttrs)
+	if err = CopyFields(ctx, groupnetResponse, groupnetModel); err != nil {
+		return
 	}
 
+	if strings.Trim(*groupnetResponse.Description, " ") == strings.Trim(originModel.Description.ValueString(), " ") {
+		groupnetModel.Description = originModel.Description
+	}
+	if IsListValueEquals(originModel.DNSSearch, groupnetModel.DNSSearch) {
+		groupnetModel.DNSSearch = originModel.DNSSearch
+	}
+	if IsListValueEquals(originModel.DNSServers, groupnetModel.DNSServers) {
+		groupnetModel.DNSServers = originModel.DNSServers
+	}
+	groupnetModel.DNSResolverRotate = types.BoolValue(false)
+	if groupnetResponse.HasDnsOptions() {
+		for _, option := range groupnetResponse.DnsOptions {
+			if option == "rotate" {
+				groupnetModel.DNSResolverRotate = types.BoolValue(true)
+				break
+			}
+		}
+	}
 	return
 }
 
