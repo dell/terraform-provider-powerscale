@@ -58,8 +58,10 @@ func (r NetworkRuleResource) Metadata(ctx context.Context, req resource.Metadata
 func (r *NetworkRuleResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "V3PoolsPoolRulesRule struct for V3PoolsPoolRulesRule",
-		Description:         "V3PoolsPoolRulesRule struct for V3PoolsPoolRulesRule",
+		MarkdownDescription: "This resource is used to manage the Network Rule entity on PowerScale array. " +
+			"We can Create, Update and Delete the Network Rule using this resource. We can also import an existing Network Rule from PowerScale array.",
+		Description: "This resource is used to manage the Network Rule entity on PowerScale array. " +
+			"We can Create, Update and Delete the Network Rule using this resource. We can also import an existing Network Rule from PowerScale array.",
 		Attributes: map[string]schema.Attribute{
 			"description": schema.StringAttribute{
 				Description:         "Description for the provisioning rule.",
