@@ -19,12 +19,12 @@ linkTitle: "powerscale_network_rule"
 page_title: "powerscale_network_rule Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  V3PoolsPoolRulesRule struct for V3PoolsPoolRulesRule
+  This resource is used to manage the Network Rule entity on PowerScale array. We can Create, Update and Delete the Network Rule using this resource. We can also import an existing Network Rule from PowerScale array.
 ---
 
 # powerscale_network_rule (Resource)
 
-V3PoolsPoolRulesRule struct for V3PoolsPoolRulesRule
+This resource is used to manage the Network Rule entity on PowerScale array. We can Create, Update and Delete the Network Rule using this resource. We can also import an existing Network Rule from PowerScale array.
 
 
 ## Example Usage
