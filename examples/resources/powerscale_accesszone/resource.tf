@@ -22,7 +22,7 @@ limitations under the License.
 resource "powerscale_accesszone" "zone" {
 
   # Required name of the new access zone
-  name = "testGroupnetResourceSample"
+  name = "testAccessZoneSample"
 
   # Required Groupnet identifier to be assoicated with this access zone
   # Note can not be changed after the access zone is created
@@ -35,7 +35,7 @@ resource "powerscale_accesszone" "zone" {
   # A provider name should be of the form '[provider-type:]provider-name', the provider-type defaults to 'lsa-local-provider'.
   custom_auth_providers = [
     "localProviderName",
-    "lsa-local-provider:testGroupnetResourceSample",
+    "lsa-local-provider:testAccessZoneSample",
     "lsa-local-provider:localProviderName",
     "lsa-file-provider:fileProviderName",
     "lsa-activedirectory-provider:adsProviderName",

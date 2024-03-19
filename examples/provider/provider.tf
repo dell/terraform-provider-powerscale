@@ -31,6 +31,21 @@ provider "powerscale" {
   insecure = var.insecure
 }
 
+# Specify 'alias' value in provider section to use multiple providers.
+provider "powerscale" {
+  alias    = "secondProvider"
+  username = var.username
+  password = var.password
+  endpoint = var.endpoint
+  insecure = var.insecure
+}
+
+# Specify 'provider' value to use the second provider in resource section.
+resource "powerscale_groupnet" "example_multiple_provider_groupnet" {
+  provider = powerscale.secondProvider
+  name     = "example_groupnet"
+}
+
 resource "powerscale_groupnet" "example_groupnet" {
   name = "example_groupnet"
 }
