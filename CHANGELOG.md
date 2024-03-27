@@ -88,3 +88,38 @@ N/A
 
 ## Bug Fixes
 N/A
+
+# v1.2.0 (Mar 28, 2024)
+## Release Summary
+The release supports resources and data sources mentioned in the Features section for Dell PowerScale.
+## Features
+
+### Data Sources:
+
+* `powerscale_ldap_provider` for reading LDAP providers in PowerScale.
+* `powerscale_network_rule` for reading network rules in PowerScale.
+* `powerscale_filepool_policy` for reading file pool policies in PowerScale.
+* `powerscale_ntpserver` for reading NTP servers in PowerScale.
+* `powerscale_ntpsettings` for reading NTP settings in PowerScale.
+* `powerscale_cluster_email` for reading cluster email settings in PowerScale.
+* `powerscale_aclsettings` for reading ACL settings in PowerScale.
+
+
+### Resources
+
+* `powerscale_ldap_provider` for managing LDAP providers in PowerScale.
+* `powerscale_network_rule` for managing network rules in PowerScale.
+* `powerscale_filepool_policy` for managing file pool policies in PowerScale.
+* `powerscale_ntpserver` for managing NTP servers in PowerScale.
+* `powerscale_ntpsettings` for managing NTP settings in PowerScale.
+* `powerscale_cluster_email` for managing cluster email settings in PowerScale.
+* `powerscale_aclsettings` for managing ACL settings in PowerScale.
+
+### Others
+N/A
+
+## Enhancements
+N/A
+
+## Bug Fixes
+N/A
