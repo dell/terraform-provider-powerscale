@@ -109,6 +109,9 @@ const (
 	// UpdateACLSettingsErrorMsg specifies error details occurred while updating ACL Settings.
 	UpdateACLSettingsErrorMsg = "Could not update acl settings "
 
+	// ReadRolePrivilegeErrorMsg specifies error details occurred while reading Role Privilege.
+	ReadRolePrivilegeErrorMsg = "Could not read role privilege "
+
 	// ReadUserErrorMsg specifies error details occurred while reading Users.
 	ReadUserErrorMsg = "Could not read users "
 
