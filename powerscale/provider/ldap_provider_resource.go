@@ -112,7 +112,7 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.UniqueValues(),
 					listvalidator.ValueStringsAre(stringvalidator.LengthBetween(4, 2048)),
-					listvalidator.SizeBetween(1, 4294967295),
+					listvalidator.SizeAtLeast(1),
 				},
 			},
 			// Create and Update params - only available for PowerScale 9.5 and above
@@ -249,7 +249,6 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.UniqueValues(),
 					listvalidator.ValueStringsAre(stringvalidator.LengthBetween(1, 255)),
-					listvalidator.SizeBetween(0, 4294967295),
 				},
 			},
 			"findable_users": schema.ListAttribute{
@@ -261,7 +260,6 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.UniqueValues(),
 					listvalidator.ValueStringsAre(stringvalidator.LengthBetween(1, 255)),
-					listvalidator.SizeBetween(0, 4294967295),
 				},
 			},
 			"listable_groups": schema.ListAttribute{
@@ -273,7 +271,6 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.UniqueValues(),
 					listvalidator.ValueStringsAre(stringvalidator.LengthBetween(1, 255)),
-					listvalidator.SizeBetween(0, 4294967295),
 				},
 			},
 			"listable_users": schema.ListAttribute{
@@ -285,7 +282,6 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.UniqueValues(),
 					listvalidator.ValueStringsAre(stringvalidator.LengthBetween(1, 255)),
-					listvalidator.SizeBetween(0, 4294967295),
 				},
 			},
 			"unfindable_groups": schema.ListAttribute{
@@ -297,7 +293,6 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.UniqueValues(),
 					listvalidator.ValueStringsAre(stringvalidator.LengthBetween(1, 255)),
-					listvalidator.SizeBetween(0, 4294967295),
 				},
 			},
 			"unfindable_users": schema.ListAttribute{
@@ -309,7 +304,6 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.UniqueValues(),
 					listvalidator.ValueStringsAre(stringvalidator.LengthBetween(1, 255)),
-					listvalidator.SizeBetween(0, 4294967295),
 				},
 			},
 			"unlistable_groups": schema.ListAttribute{
@@ -321,7 +315,6 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.UniqueValues(),
 					listvalidator.ValueStringsAre(stringvalidator.LengthBetween(1, 255)),
-					listvalidator.SizeBetween(0, 4294967295),
 				},
 			},
 			"unlistable_users": schema.ListAttribute{
@@ -333,7 +326,6 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.UniqueValues(),
 					listvalidator.ValueStringsAre(stringvalidator.LengthBetween(1, 255)),
-					listvalidator.SizeBetween(0, 4294967295),
 				},
 			},
 			"alternate_security_identities_attribute": schema.StringAttribute{
