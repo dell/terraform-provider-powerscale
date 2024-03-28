@@ -46,3 +46,13 @@ func UpdateNtpSettings(ctx context.Context, client *client.Client, ntpSettingsTo
 	_, err := updateParam.V3NtpSettings(ntpSettingsToUpdate).Execute()
 	return err
 }
+
+// ResolveSettingsDiff implement state
+// For nfs export settings info, response may only contain UID while type/username is given
+// Need to manually copy plan info to state, or state would keep the type/username as null, which is inconsistent.
+func ResolveSettingsDiff(ctx context.Context, plan models.NfsexportsettingsModel, state *models.NfsexportsettingsModel) {
+	state.MapAll = assignKnownObjectToUnknown(ctx, plan.MapAll, state.MapAll)
+	state.MapFailure = assignKnownObjectToUnknown(ctx, plan.MapFailure, state.MapFailure)
+	state.MapNonRoot = assignKnownObjectToUnknown(ctx, plan.MapNonRoot, state.MapNonRoot)
+	state.MapRoot = assignKnownObjectToUnknown(ctx, plan.MapRoot, state.MapRoot)
+}

@@ -300,4 +300,10 @@ const (
 
 	// DeleteFilePoolPolicyErrorMsg specifies error details occurred while deleting a file pool policy.
 	DeleteFilePoolPolicyErrorMsg = "Could not delete file pool policy "
+
+	// ReadNfsExportSettingsErrorMsg specifies error details occurred while reading nfs export settings.
+	ReadNfsExportSettingsErrorMsg = "Could not read nfs export settings "
+
+	// UpdateNfsExportSettingsErrorMsg specifies error details occurred while updating nfs export settings.
+	UpdateNfsExportSettingsErrorMsg = "Could not update nfs export settings "
 )
