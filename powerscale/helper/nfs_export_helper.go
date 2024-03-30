@@ -268,7 +268,11 @@ func assignKnownObjectToUnknown(ctx context.Context, source types.Object, target
 				}
 			}
 			if len(listElement) == 0 {
-				targetMap[tag] = basetypes.NewListNull(targetList.ElementType(ctx))
+				if sourceMap[tag].IsUnknown() || sourceMap[tag].IsNull() {
+					targetMap[tag] = sourceMap[tag].Type(ctx).ValueType(ctx)
+				} else {
+					targetMap[tag] = sourceMap[tag]
+				}
 			} else {
 				targetMap[tag], _ = basetypes.NewListValue(targetList.ElementType(ctx), listElement)
 			}
