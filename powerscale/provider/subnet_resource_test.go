@@ -20,14 +20,15 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	"github.com/stretchr/testify/assert"
 	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 var subnetMocker *mockey.Mocker
@@ -262,6 +263,19 @@ func TestAccSubnetResourceErrorReadState(t *testing.T) {
 				},
 				Config:      ProviderConfig + SubnetResourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
+			},
+		},
+	})
+}
+
+func TestAccSubnetResourceReleaseMock(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() { subnetMocker.Release() },
+				Config:    ProviderConfig + SubnetResourceConfig,
 			},
 		},
 	})
