@@ -39,10 +39,10 @@ func TestAccNfsExportSettingsImport(t *testing.T) {
 			},
 			// Import testing
 			{
-				Config:       ProviderConfig + nfsExportSettingsResourceConfig,
-				ResourceName: nfsExportSettings,
-				ImportState:  true,
-				ExpectError:  nil,
+				ResourceName:  nfsExportSettings,
+				ImportState:   true,
+				ImportStateId: "System",
+				ExpectError:   nil,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					resource.TestCheckResourceAttrSet(nfsExportSettings, "id")
 					resource.TestCheckResourceAttrSet(nfsExportSettings, "symlinks")
@@ -89,6 +89,22 @@ func TestAccNfsExportSettingsUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(nfsExportSettings, "no_truncate", "false"),
 					resource.TestCheckResourceAttr(nfsExportSettings, "write_datasync_action", "DATASYNC"),
 					resource.TestCheckResourceAttr(nfsExportSettings, "security_flavors.#", "1"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccNfsExportSettingsSnapshot(t *testing.T) {
+	var nfsExportSettings = "powerscale_nfs_export_settings.test"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfig + nfsExportSettingsSnapshotResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(nfsExportSettings, "snapshot", "-"),
 				),
 			},
 		},
@@ -204,7 +220,7 @@ func TestAccNfsExportSettingsImportMockErr(t *testing.T) {
 					if FunctionMocker != nil {
 						FunctionMocker.Release()
 					}
-					FunctionMocker = mockey.Mock(helper.GetNfsExportSettings).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetNfsExportSettingsByZone).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:            ProviderConfig + nfsExportSettingsResourceConfig,
 				ResourceName:      "powerscale_nfs_export_settings.test",
@@ -219,6 +235,12 @@ func TestAccNfsExportSettingsImportMockErr(t *testing.T) {
 var nfsExportSettingsResourceConfig = `
 resource "powerscale_nfs_export_settings" "test" {
 
+}
+`
+
+var nfsExportSettingsSnapshotResourceConfig = `
+resource "powerscale_nfs_export_settings" "test" {
+	snapshot = "-"
 }
 `
 

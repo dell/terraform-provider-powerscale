@@ -90,8 +90,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 							"id": schema.StringAttribute{
 								Computed:            true,
 								Optional:            true,
-								Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+								Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 								Validators: []validator.String{
 									stringvalidator.LengthBetween(0, 261),
 								},
@@ -157,8 +157,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 							"id": schema.StringAttribute{
 								Computed:            true,
 								Optional:            true,
-								Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+								Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 								Validators: []validator.String{
 									stringvalidator.LengthBetween(0, 261),
 								},
@@ -188,8 +188,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 								"id": schema.StringAttribute{
 									Computed:            true,
 									Optional:            true,
-									Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-									MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+									Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+									MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 									Validators: []validator.String{
 										stringvalidator.LengthBetween(0, 261),
 									},
@@ -260,8 +260,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 							"id": schema.StringAttribute{
 								Computed:            true,
 								Optional:            true,
-								Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+								Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 								Validators: []validator.String{
 									stringvalidator.LengthBetween(0, 261),
 								},
@@ -300,8 +300,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 								"id": schema.StringAttribute{
 									Computed:            true,
 									Optional:            true,
-									Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-									MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+									Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+									MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 									Validators: []validator.String{
 										stringvalidator.LengthBetween(0, 261),
 									},
@@ -346,8 +346,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 							"id": schema.StringAttribute{
 								Computed:            true,
 								Optional:            true,
-								Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+								Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 								Validators: []validator.String{
 									stringvalidator.LengthBetween(0, 261),
 								},
@@ -479,8 +479,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 							"id": schema.StringAttribute{
 								Computed:            true,
 								Optional:            true,
-								Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+								Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 								Validators: []validator.String{
 									stringvalidator.LengthBetween(0, 261),
 								},
@@ -524,8 +524,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 							"id": schema.StringAttribute{
 								Computed:            true,
 								Optional:            true,
-								Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+								Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 								Validators: []validator.String{
 									stringvalidator.LengthBetween(0, 261),
 								},
@@ -564,8 +564,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 								"id": schema.StringAttribute{
 									Computed:            true,
 									Optional:            true,
-									Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-									MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+									Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+									MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 									Validators: []validator.String{
 										stringvalidator.LengthBetween(0, 261),
 									},
@@ -656,8 +656,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 			"snapshot": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
-				Description:         "Specifies the snapshot for all mounts.",
-				MarkdownDescription: "Specifies the snapshot for all mounts.",
+				Description:         "Specifies the snapshot for all mounts. Use \"-\" to set to default value.",
+				MarkdownDescription: "Specifies the snapshot for all mounts. Use \"-\" to set to default value.",
 			},
 			"max_file_size": schema.Int64Attribute{
 				Computed:            true,
@@ -745,8 +745,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 							"id": schema.StringAttribute{
 								Computed:            true,
 								Optional:            true,
-								Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+								Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 								Validators: []validator.String{
 									stringvalidator.LengthBetween(0, 261),
 								},
@@ -794,8 +794,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 							"id": schema.StringAttribute{
 								Computed:            true,
 								Optional:            true,
-								Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+								Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+								MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 								Validators: []validator.String{
 									stringvalidator.LengthBetween(0, 261),
 								},
@@ -821,8 +821,8 @@ Note that, NFS Export Settings is the native functionality of PowerScale. When c
 								"id": schema.StringAttribute{
 									Computed:            true,
 									Optional:            true,
-									Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-									MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+									Description:         "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
+									MarkdownDescription: "Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'",
 									Validators: []validator.String{
 										stringvalidator.LengthBetween(0, 261),
 									},
@@ -917,6 +917,14 @@ func (r *NfsExportSettingsResource) Create(ctx context.Context, req resource.Cre
 		resp.Diagnostics.AddError(
 			"Error updating nfs export settings",
 			fmt.Sprintf("Could not read nfs export settings param with error: %s", message),
+		)
+		return
+	}
+	err = helper.SetDefaultValues(&plan, &toUpdate)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error settings default value on nfs export settings",
+			fmt.Sprintf("Could not read nfs export settings param with error: %s", err),
 		)
 		return
 	}
@@ -1020,6 +1028,14 @@ func (r *NfsExportSettingsResource) Update(ctx context.Context, req resource.Upd
 		)
 		return
 	}
+	err = helper.SetDefaultValues(&plan, &toUpdate)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error settings default value on nfs export settings",
+			fmt.Sprintf("Could not read nfs export settings param with error: %s", err),
+		)
+		return
+	}
 
 	err = helper.UpdateNfsExportSettings(ctx, r.client, toUpdate)
 	if err != nil {
@@ -1077,8 +1093,10 @@ func (r *NfsExportSettingsResource) Delete(ctx context.Context, req resource.Del
 func (r *NfsExportSettingsResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Info(ctx, "Importing Nfs Export Settings resource")
 
+	zoneName := req.ID
+
 	var state models.NfsexportsettingsModel
-	settings, err := helper.GetNfsExportSettings(ctx, r.client)
+	settings, err := helper.GetNfsExportSettingsByZone(ctx, r.client, zoneName)
 	if err != nil {
 		errStr := constants.ReadNfsExportSettingsErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)

@@ -113,7 +113,7 @@ resource "powerscale_nfs_export_settings" "example" {
 - `return_32bit_file_ids` (Boolean) Limits the size of file identifiers returned by NFSv3+ to 32-bit values (may require remount).
 - `security_flavors` (List of String) Specifies the authentication types that are supported for this export.
 - `setattr_asynchronous` (Boolean) True if set attribute operations execute asynchronously.
-- `snapshot` (String) Specifies the snapshot for all mounts.
+- `snapshot` (String) Specifies the snapshot for all mounts. Use "-" to set to default value.
 - `symlinks` (Boolean) True if symlinks are supported. This value is used to advise the client of optimal settings for the server, but is not enforced.
 - `time_delta` (Number) Specifies the resolution of all time values that are returned to the clients
 - `write_datasync_action` (String) Specifies the action to be taken when an NFSv3+ datasync write is requested.
@@ -146,7 +146,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -156,7 +156,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -166,7 +166,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -187,7 +187,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -197,7 +197,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -207,7 +207,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -228,7 +228,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -238,7 +238,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -248,7 +248,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -269,7 +269,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -279,7 +279,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -289,7 +289,7 @@ Optional:
 
 Optional:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'GID:0', 'GROUP:wheel'
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -314,9 +314,9 @@ Import is supported using the following syntax:
 # limitations under the License.
 
 # The command is
-# terraform import powerscale_nfs_export_settings.example <anyString>
+# terraform import powerscale_nfs_export_settings.example <zoneName>
 # Example:
-terraform import powerscale_nfs_export_settings.example anyString
+terraform import powerscale_nfs_export_settings.example zoneName
 # after running this command, populate the name field and other required parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```
