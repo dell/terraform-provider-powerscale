@@ -46,10 +46,10 @@ const (
 	// ReadFileSystemErrorMsg specifies error details occurred while reading File Systems.
 	ReadFileSystemErrorMsg = "Could not read file systems "
 
-	// CreateFileSystemErrorMsg specifies error details occurred while creating an File Systems.
+	// CreateFileSystemErrorMsg specifies error details occurred while creating a File Systems.
 	CreateFileSystemErrorMsg = "Could not create file systems "
 
-	// UpdateFileSystemErrorMsg specifies error details occurred while updating an File Systems.
+	// UpdateFileSystemErrorMsg specifies error details occurred while updating a File Systems.
 	UpdateFileSystemErrorMsg = "Could not update file systems "
 
 	// DeleteFileSystemErrorMsg specifies error details occurred while deleting an File Systems.
@@ -126,6 +126,15 @@ const (
 
 	// ReadRoleErrorMsg specifies error details occurred while reading Roles.
 	ReadRoleErrorMsg = "Could not read roles "
+
+	// CreateRoleErrorMsg specifies error details occurred while creating a role.
+	CreateRoleErrorMsg = "Could not create role "
+
+	// UpdateRoleErrorMsg specifies error details occurred while updating a role.
+	UpdateRoleErrorMsg = "Could not update role "
+
+	// DeleteRoleErrorMsg specifies error details occurred while deleting a role.
+	DeleteRoleErrorMsg = "Could not delete role "
 
 	// AddRoleMemberErrorMsg specifies error details occurred while adding member to role.
 	AddRoleMemberErrorMsg = "Could not add member to role "
