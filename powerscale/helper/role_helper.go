@@ -28,6 +28,27 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 )
 
+// GetRoles Get a list of Roles.
+func GetRoles(ctx context.Context, client *client.Client, state models.RoleDataSourceModel) (*powerscale.V14AuthRoles, error) {
+	roleParams := client.PscaleOpenAPIClient.AuthApi.ListAuthv14AuthRoles(ctx)
+
+	if state.RoleFilter != nil && !state.RoleFilter.Zone.IsNull() {
+		roleParams = roleParams.Zone(state.RoleFilter.Zone.ValueString())
+	}
+
+	roles, _, err := roleParams.Execute()
+	return roles, err
+}
+
+// RoleDetailMapper Does the mapping from response to model.
+//
+//go:noinline
+func RoleDetailMapper(ctx context.Context, role *powerscale.V14AuthRoleExtended) (models.RoleDetailModel, error) {
+	model := models.RoleDetailModel{}
+	err := CopyFields(ctx, role, &model)
+	return model, err
+}
+
 // CreateRole Create a Role.
 func CreateRole(ctx context.Context, client *client.Client, role powerscale.V14AuthRole, roleModel models.RoleResourceModel) (*powerscale.CreateResponse, error) {
 	createParam := client.PscaleOpenAPIClient.AuthApi.CreateAuthv14AuthRole(ctx).V14AuthRole(role)

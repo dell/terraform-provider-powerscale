@@ -52,7 +52,7 @@ const (
 	// UpdateFileSystemErrorMsg specifies error details occurred while updating a File Systems.
 	UpdateFileSystemErrorMsg = "Could not update file systems "
 
-	// DeleteFileSystemErrorMsg specifies error details occurred while deleting an File Systems.
+	// DeleteFileSystemErrorMsg specifies error details occurred while deleting a File Systems.
 	DeleteFileSystemErrorMsg = "Could not delete file systems "
 
 	// ReadAdsProviderErrorMsg specifies error details occurred while reading Ads Providers.
