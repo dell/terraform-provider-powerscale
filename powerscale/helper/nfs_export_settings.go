@@ -30,6 +30,12 @@ func GetNfsExportSettings(ctx context.Context, client *client.Client) (*powersca
 	return nfsExportSettings, err
 }
 
+// GetNfsExportSettingsByZone retrieve nfs export settings by zone.
+func GetNfsExportSettingsByZone(ctx context.Context, client *client.Client, zone string) (*powerscale.V2NfsSettingsExport, error) {
+	nfsExportSettings, _, err := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv2NfsSettingsExport(ctx).Zone(zone).Execute()
+	return nfsExportSettings, err
+}
+
 // UpdateNfsExportSettings update nfs export settings.
 func UpdateNfsExportSettings(ctx context.Context, client *client.Client, nfsExportSettings powerscale.V2NfsSettingsExportSettings) error {
 	_, err := client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv2NfsSettingsExport(ctx).V2NfsSettingsExport(nfsExportSettings).Execute()
@@ -49,4 +55,16 @@ func FilterNfsExportSettings(ctx context.Context, client *client.Client, filter 
 	}
 	nfsExportSettings, _, err := exportRequest.Execute()
 	return nfsExportSettings, err
+}
+
+// SetDefaultValues set default values for nfs export settings
+func SetDefaultValues(nfsExportSettingsModel *models.NfsexportsettingsModel, nfsExportSettings *powerscale.V2NfsSettingsExportSettings) error {
+	if nfsExportSettings == nil {
+		return nil
+	}
+	if nfsExportSettingsModel.Snapshot.ValueString() == "-" {
+		value := "@DEFAULT"
+		nfsExportSettings.Snapshot = &value
+	}
+	return nil
 }
