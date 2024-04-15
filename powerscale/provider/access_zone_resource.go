@@ -325,7 +325,7 @@ func (r *AccessZoneResource) Update(ctx context.Context, req resource.UpdateRequ
 	if state.Name != plan.Name {
 		editValues.Name = plan.Name.ValueStringPointer()
 	}
-	if len(state.CustomAuthProviders.Elements()) != len(plan.CustomAuthProviders.Elements()) {
+	if !state.CustomAuthProviders.Equal(plan.CustomAuthProviders) {
 		resp.Diagnostics.Append(plan.CustomAuthProviders.ElementsAs(ctx, &editValues.AuthProviders, false)...)
 		if resp.Diagnostics.HasError() {
 			return
