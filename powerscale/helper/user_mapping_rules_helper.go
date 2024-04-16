@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/models"
@@ -29,6 +30,69 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+// UpdateUserMappingRulesDatasourceState updates datasource state.
+func UpdateUserMappingRulesDatasourceState(ctx context.Context, rulesState *models.UserMappingRulesDataSourceModel, rulesResponse *powerscale.V1MappingUsersRulesRules) (diags diag.Diagnostics) {
+	var resourcePlan models.UserMappingRulesResourceModel
+
+	if rulesState.Filter != nil {
+		var filteredRules []powerscale.V1MappingUsersRulesRule
+
+		if len(rulesState.Filter.Names) > 0 {
+			filteredRules = make([]powerscale.V1MappingUsersRulesRule, 0)
+			for _, rule := range rulesResponse.Rules {
+				for _, name := range rulesState.Filter.Names {
+					if rule.User1.User == name.ValueString() || rule.User2 != nil && rule.User2.User == name.ValueString() {
+						filteredRules = append(filteredRules, rule)
+						break
+					}
+				}
+			}
+			rulesResponse.Rules = filteredRules
+
+			var validRules []string
+			for _, name := range rulesState.Filter.Names {
+				for _, rule := range filteredRules {
+					if rule.User1.User == name.ValueString() || rule.User2 != nil && rule.User2.User == name.ValueString() {
+						validRules = append(validRules, fmt.Sprintf("Name: %s", name.ValueString()))
+						break
+					}
+				}
+			}
+
+			if len(validRules) != len(rulesState.Filter.Names) {
+				diags.AddError(
+					"error one or more of the filtered user names is invalid.",
+					fmt.Sprintf("valid users: [%v], filtered list: [%v]", strings.Join(validRules, " ; "), rulesState.Filter.Names),
+				)
+				return
+			}
+		}
+
+		if len(rulesState.Filter.Operators) > 0 {
+			filteredRules = make([]powerscale.V1MappingUsersRulesRule, 0)
+			for _, rule := range rulesResponse.Rules {
+				for _, operator := range rulesState.Filter.Operators {
+					if operator.ValueString() == rule.GetOperator() {
+						filteredRules = append(filteredRules, rule)
+						break
+					}
+				}
+
+			}
+			rulesResponse.Rules = filteredRules
+		}
+	}
+
+	if diags = UpdateUserMappingRulesState(ctx, &resourcePlan, rulesResponse); diags.HasError() {
+		return
+	}
+	rulesState.Parameters = resourcePlan.Parameters
+	rulesState.Rules = resourcePlan.Rules
+	rulesState.ID = resourcePlan.ID
+
+	return
+}
 
 // UpdateUserMappingRulesState updates resource state.
 func UpdateUserMappingRulesState(ctx context.Context, rulesState *models.UserMappingRulesResourceModel, rulesResponse *powerscale.V1MappingUsersRulesRules) (diags diag.Diagnostics) {

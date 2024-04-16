@@ -19,6 +19,24 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// UserMappingRulesDataSourceModel describes the data source data model.
+type UserMappingRulesDataSourceModel struct {
+	Parameters types.Object                `tfsdk:"user_mapping_rules_parameters"`
+	Rules      types.List                  `tfsdk:"user_mapping_rules"`
+	ID         types.String                `tfsdk:"id"`
+	Filter     *UserMappingRulesFilterType `tfsdk:"filter"`
+}
+
+// UserMappingRulesFilterType holds filter attribute for User Mapping Rules.
+type UserMappingRulesFilterType struct {
+	// names filter for source and target users
+	Names []types.String `tfsdk:"names"`
+	// operators filter for user mapping rules.
+	Operators []types.String `tfsdk:"operators"`
+	// defaults to System
+	Zone types.String `tfsdk:"zone"`
+}
+
 // UserMappingRulesResourceModel holds user mapping rules resource schema attribute details.
 type UserMappingRulesResourceModel struct {
 	ID         types.String `tfsdk:"id"`
