@@ -112,6 +112,30 @@ func TestAccRoleResourceErrorRead(t *testing.T) {
 				},
 				ExpectError: regexp.MustCompile("mock error"),
 			},
+			{
+				ResourceName: "powerscale_role.role_test",
+				ImportState:  true,
+				PreConfig: func() {
+					FunctionMocker.Release()
+					FunctionMocker = Mock(helper.GetRole).Return(&powerscale.V14AuthRolesExtended{}, nil).Build().
+						When(func(ctx context.Context, client *client.Client, roleModel models.RoleResourceModel) bool {
+							return FunctionMocker.Times() == 2
+						})
+				},
+				ExpectError: regexp.MustCompile("not found"),
+			},
+			{
+				ResourceName: "powerscale_role.role_test",
+				ImportState:  true,
+				PreConfig: func() {
+					FunctionMocker.Release()
+					FunctionMocker = Mock(helper.GetRole).Return(nil, fmt.Errorf("mock error")).Build().
+						When(func(ctx context.Context, client *client.Client, roleModel models.RoleResourceModel) bool {
+							return FunctionMocker.Times() == 2
+						})
+				},
+				ExpectError: regexp.MustCompile("mock error"),
+			},
 		},
 	})
 }
@@ -123,7 +147,7 @@ func TestAccRoleResourceErrorCreate(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfig + RoleInvalidResourceConfig,
-				ExpectError: regexp.MustCompile(".*Invalid privilege*."),
+				ExpectError: regexp.MustCompile(".*Bad Request*."),
 			},
 		},
 	})
@@ -321,7 +345,7 @@ func TestAccRoleResourceErrorUpdate(t *testing.T) {
 					FunctionMocker.Release()
 				},
 				Config:      ProviderConfig + RoleInvalidResourceConfig,
-				ExpectError: regexp.MustCompile(".*Invalid privilege*."),
+				ExpectError: regexp.MustCompile(".*Bad Request*."),
 			},
 		},
 	})

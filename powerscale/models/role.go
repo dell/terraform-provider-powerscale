@@ -31,3 +31,42 @@ type RoleResourceModel struct {
 	Privileges  types.List   `tfsdk:"privileges"`
 	Description types.String `tfsdk:"description"`
 }
+
+// RoleDataSourceModel describes the data source data model.
+type RoleDataSourceModel struct {
+	ID    types.String      `tfsdk:"id"`
+	Roles []RoleDetailModel `tfsdk:"roles_details"`
+
+	// Filters
+	RoleFilter *RoleFilterType `tfsdk:"filter"`
+}
+
+// RoleDetailModel Specifies the properties for a role.
+type RoleDetailModel struct {
+	// Specifies the ID of the role.
+	ID types.String `tfsdk:"id"`
+	// Specifies the description of the role.
+	Description types.String `tfsdk:"description"`
+	// Specifies the users or groups that have this role.
+	Members []V1AuthAccessAccessItemFileGroup `tfsdk:"members"`
+	// Specifies the name of the role.
+	Name types.String `tfsdk:"name"`
+	// Specifies the privileges granted by this role.
+	Privileges []V14AuthIDNtokenPrivilegeItem `tfsdk:"privileges"`
+}
+
+// V14AuthIDNtokenPrivilegeItem Specifies the system-defined privilege that may be granted to users.
+type V14AuthIDNtokenPrivilegeItem struct {
+	// Specifies the ID of the privilege.
+	ID types.String `tfsdk:"id"`
+	// Specifies the name of the privilege.
+	Name types.String `tfsdk:"name"`
+	// permission of the privilege, 'r' = read , 'x' = read-execute, 'w' = read-execute-write, '-' = no permission
+	Permission types.String `tfsdk:"permission"`
+}
+
+// RoleFilterType describes the filter data model.
+type RoleFilterType struct {
+	Names []types.String `tfsdk:"names"`
+	Zone  types.String   `tfsdk:"zone"`
+}
