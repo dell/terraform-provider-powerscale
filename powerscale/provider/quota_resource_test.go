@@ -221,6 +221,25 @@ func TestAccQuotaResourceReadError(t *testing.T) {
 	})
 }
 
+func TestAccQuotaResourceUpdateLinkError(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfig + QuotaResourceUnLink,
+			},
+			{
+				Config: ProviderConfig + QuotaResourceLink,
+				PreConfig: func() {
+					FunctionMocker = mockey.Mock(helper.LinkQuota).Return(fmt.Errorf("mock error")).Build()
+				},
+				ExpectError: regexp.MustCompile(".mock error"),
+			},
+		},
+	})
+}
+
 var QuotaResourceConfig = `
 resource "powerscale_quota" "quota_test" {
 	path = "/ifs/tfacc_quota_test"
@@ -446,6 +465,55 @@ resource "powerscale_quota" "quota_test" {
 	type = "user"
 	include_snapshots = false
 	zone = "System"
+	thresholds = {
+		percent_advisory = 10
+        percent_soft = 20
+		soft_grace = 120
+	    hard = 4000
+	}
+	ignore_limit_checks = true
+	container = true
+	enforced = false
+	thresholds_on = "applogicalsize"
+}
+`
+
+var QuotaResourceLink = `
+resource "powerscale_quota" "quota_test" {
+	path = "/ifs/tfacc_quota_test"
+	type = "user"
+	include_snapshots = false
+	zone = "System"
+	persona = {
+		id = "UID:1501"
+		name = "Guest"
+		type = "user"
+	}
+	thresholds = {
+		percent_advisory = 10
+        percent_soft = 20
+		soft_grace = 120
+	    hard = 4000
+	}
+	ignore_limit_checks = true
+	container = true
+	enforced = false
+	thresholds_on = "applogicalsize"
+	linked = true
+}
+`
+
+var QuotaResourceUnLink = `
+resource "powerscale_quota" "quota_test" {
+	path = "/ifs/tfacc_quota_test"
+	type = "user"
+	include_snapshots = false
+	zone = "System"
+	persona = {
+		id = "UID:1501"
+		name = "Guest"
+		type = "user"
+	}
 	thresholds = {
 		percent_advisory = 10
         percent_soft = 20

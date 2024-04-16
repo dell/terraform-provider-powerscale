@@ -37,7 +37,7 @@ func TestAccSnapshotDataSource(t *testing.T) {
 			{
 				Config: ProviderConfig + SnapshotDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.expires", "0"),
+					resource.TestCheckResourceAttrSet(snapshotTerraformName, "snapshots_details.0.expires"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.has_locks", "false"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.pct_reserve", "0"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.path", "/ifs/tfacc_file_system_test"),

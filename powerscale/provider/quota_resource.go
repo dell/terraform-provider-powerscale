@@ -249,8 +249,8 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 
 			// Optional after creation
 			"linked": schema.BoolAttribute{
-				Description:         "For user, group and directory quotas, true if the quota is linked and controlled by a parent default-* quota. Linked quotas cannot be modified until they are unlinked. Computed by PowerScale, do not set Linked while creating.",
-				MarkdownDescription: "For user, group and directory quotas, true if the quota is linked and controlled by a parent default-* quota. Linked quotas cannot be modified until they are unlinked. Computed by PowerScale, do not set Linked while creating.",
+				Description:         "For user, group and directory quotas, true if the quota is linked and controlled by a parent default-* quota. Linked quotas cannot be modified until they are unlinked. Set linked as true or false to link or unlink quota",
+				MarkdownDescription: "For user, group and directory quotas, true if the quota is linked and controlled by a parent default-* quota. Linked quotas cannot be modified until they are unlinked. Set linked as true or false to link or unlink quota",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -495,7 +495,8 @@ func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateReque
 		)
 		return
 	}
-	err = helper.UpdateQuota(ctx, r.client, quotaID, quotaToUpdate)
+
+	err = helper.UpdateQuota(ctx, r.client, quotaID, quotaToUpdate, quotaState.Linked.ValueBool())
 	if err != nil {
 		errStr := constants.UpdateQuotaErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
