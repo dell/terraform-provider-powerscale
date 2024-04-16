@@ -118,7 +118,7 @@ func TestAccNfsExportSettingsCreateMockErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = mockey.Mock(helper.GetNfsExportSettings).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetNfsExportSettingsByZone).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + nfsExportSettingsResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -167,7 +167,7 @@ func TestAccNfsExportSettingsUpdateMockErr(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
-					FunctionMocker = mockey.Mock(helper.GetNfsExportSettings).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetNfsExportSettingsByZone).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + nfsExportSettingsUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),

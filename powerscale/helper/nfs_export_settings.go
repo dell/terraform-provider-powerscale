@@ -24,12 +24,6 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 )
 
-// GetNfsExportSettings retrieve nfs export settings.
-func GetNfsExportSettings(ctx context.Context, client *client.Client) (*powerscale.V2NfsSettingsExport, error) {
-	nfsExportSettings, _, err := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv2NfsSettingsExport(ctx).Execute()
-	return nfsExportSettings, err
-}
-
 // GetNfsExportSettingsByZone retrieve nfs export settings by zone.
 func GetNfsExportSettingsByZone(ctx context.Context, client *client.Client, zone string) (*powerscale.V2NfsSettingsExport, error) {
 	nfsExportSettings, _, err := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv2NfsSettingsExport(ctx).Zone(zone).Execute()
@@ -37,8 +31,8 @@ func GetNfsExportSettingsByZone(ctx context.Context, client *client.Client, zone
 }
 
 // UpdateNfsExportSettings update nfs export settings.
-func UpdateNfsExportSettings(ctx context.Context, client *client.Client, nfsExportSettings powerscale.V2NfsSettingsExportSettings) error {
-	_, err := client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv2NfsSettingsExport(ctx).V2NfsSettingsExport(nfsExportSettings).Execute()
+func UpdateNfsExportSettings(ctx context.Context, client *client.Client, nfsExportSettings powerscale.V2NfsSettingsExportSettings, zone string) error {
+	_, err := client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv2NfsSettingsExport(ctx).V2NfsSettingsExport(nfsExportSettings).Zone(zone).Execute()
 	return err
 }
 
@@ -67,4 +61,12 @@ func SetDefaultValues(nfsExportSettingsModel *models.NfsexportsettingsModel, nfs
 		nfsExportSettings.Snapshot = &value
 	}
 	return nil
+}
+
+// GetSpecifiedZone retrieve zone from plan, or state if it is not defined in plan
+func GetSpecifiedZone(plan *models.NfsexportsettingsModel, state *models.NfsexportsettingsModel) string {
+	if plan.Zone.ValueString() != "" {
+		return plan.Zone.ValueString()
+	}
+	return state.Zone.ValueString()
 }
