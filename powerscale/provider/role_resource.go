@@ -83,7 +83,6 @@ func (r *RoleResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"type": schema.StringAttribute{
-							Optional:            true,
 							Computed:            true,
 							Description:         "Specifies the type of persona, which must be combined with a name.",
 							MarkdownDescription: "Specifies the type of persona, which must be combined with a name.",
@@ -96,16 +95,14 @@ func (r *RoleResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							},
 						},
 						"id": schema.StringAttribute{
-							Optional:            true,
-							Computed:            true,
-							Description:         "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
-							MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.",
+							Required:            true,
+							Description:         "Specifies the serialized form of a persona, which can be 'UID:0'",
+							MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0'",
 							Validators: []validator.String{
 								stringvalidator.LengthBetween(0, 261),
 							},
 						},
 						"name": schema.StringAttribute{
-							Optional:            true,
 							Computed:            true,
 							Description:         "Specifies the persona name, which must be combined with a type.",
 							MarkdownDescription: "Specifies the persona name, which must be combined with a type.",
@@ -146,7 +143,6 @@ func (r *RoleResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							},
 						},
 						"name": schema.StringAttribute{
-							Optional:            true,
 							Computed:            true,
 							Description:         "Specifies the name of the privilege.",
 							MarkdownDescription: "Specifies the name of the privilege.",
@@ -541,7 +537,6 @@ func (r *RoleResource) ImportState(ctx context.Context, req resource.ImportState
 
 	roleID := req.ID
 	var zoneID string
-	//requestID format is zoneID:groupName
 	if strings.Contains(req.ID, ":") {
 		params := strings.Split(req.ID, ":")
 		zoneID = strings.Trim(params[0], " ")

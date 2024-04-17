@@ -360,7 +360,7 @@ resource "powerscale_role" "role_test" {
 	description = "%s"
 	members = [
 		{
-			name = "admin"
+			id = "UID:10"
 		},
 		{
 			id = "UID:0"
@@ -381,7 +381,7 @@ resource "powerscale_role" "role_test" {
 	description = "%s"
 	members = [
 		{
-			name = "admin"
+			id = "UID:10"
 		},
 		{
 			id = "UID:0"

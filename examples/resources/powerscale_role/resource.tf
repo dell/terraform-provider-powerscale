@@ -28,18 +28,16 @@ resource "powerscale_role" "role_test" {
 
   # Optional fields both for creating and updating
   description = "role_test_description"
-  # To add members, please provide uid/gid or provide name and type
+  # To add members, the uid/gid is required. Please use user/user_group datasource to look up the uid/gid needed.
   members = [
     {
-      name = "admin",
-      type = "user"
+      id = "UID:10"
     },
     {
       id = "UID:0"
     },
     {
-      name = "guest",
-      type = "group"
+      id = "GID:31"
     }
   ]
   # To add privileges, the id is required. Please use role privilege datasource to look up the role privilege id needed.

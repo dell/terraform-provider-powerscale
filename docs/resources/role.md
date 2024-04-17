@@ -60,18 +60,16 @@ resource "powerscale_role" "role_test" {
 
   # Optional fields both for creating and updating
   description = "role_test_description"
-  # To add members, please provide uid/gid or provide name and type
+  # To add members, the uid/gid is required. Please use user/user_group datasource to look up the uid/gid needed.
   members = [
     {
-      name = "admin",
-      type = "user"
+      id = "UID:10"
     },
     {
       id = "UID:0"
     },
     {
-      name = "guest",
-      type = "group"
+      id = "GID:31"
     }
   ]
   # To add privileges, the id is required. Please use role privilege datasource to look up the role privilege id needed.
@@ -112,9 +110,12 @@ resource "powerscale_role" "role_test" {
 <a id="nestedatt--members"></a>
 ### Nested Schema for `members`
 
-Optional:
+Required:
 
-- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
+- `id` (String) Specifies the serialized form of a persona, which can be 'UID:0'
+
+Read-Only:
+
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
@@ -128,8 +129,11 @@ Required:
 
 Optional:
 
-- `name` (String) Specifies the name of the privilege.
 - `permission` (String) permission of the privilege, 'r' = read , 'x' = read-execute, 'w' = read-execute-write, '-' = no permission
+
+Read-Only:
+
+- `name` (String) Specifies the name of the privilege.
 
 ## Import
 
