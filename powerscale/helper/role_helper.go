@@ -101,20 +101,16 @@ func ReorderRoleMembers(localMembers types.List, remoteMembers types.List) (type
 		if !ok || localMemberObj.IsNull() || localMemberObj.IsUnknown() {
 			return types.List{}, errors.New("failed to reorder role members")
 		}
-		localMemberName := localMemberObj.Attributes()["name"]
 		localMemberID := localMemberObj.Attributes()["id"]
-		localMemberType := localMemberObj.Attributes()["type"]
 
 		for i, remoteMember := range remoteMembersList {
 			remoteMemberObj, ok := remoteMember.(basetypes.ObjectValue)
 			if !ok || remoteMemberObj.IsNull() || remoteMemberObj.IsUnknown() {
 				return types.List{}, errors.New("failed to reorder role members")
 			}
-			remoteMemberName := remoteMemberObj.Attributes()["name"]
 			remoteMemberID := remoteMemberObj.Attributes()["id"]
-			remoteMemberType := remoteMemberObj.Attributes()["type"]
 
-			if localMemberID == remoteMemberID || (localMemberType == remoteMemberType && localMemberName == remoteMemberName) || (localMemberType.IsUnknown() || localMemberType.IsNull()) && remoteMemberType.String() == "\"user\"" && localMemberName == remoteMemberName {
+			if localMemberID == remoteMemberID {
 				orderedMembers = append(orderedMembers, remoteMember)
 				addedRemoteMembers[i] = true
 				break
