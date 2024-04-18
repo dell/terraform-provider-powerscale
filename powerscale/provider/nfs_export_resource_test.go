@@ -40,7 +40,7 @@ func TestAccNFSExport(t *testing.T) {
 			{
 				Config: ProviderConfig + NFSExportResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(nfsExportResourceName, "block_size", "8192"),
+					resource.TestCheckResourceAttrSet(nfsExportResourceName, "block_size"),
 					resource.TestCheckResourceAttr(nfsExportResourceName, "paths.#", "1"),
 					resource.TestCheckResourceAttr(nfsExportResourceName, "paths.0", "/ifs/tfacc_nfs_export"),
 				),

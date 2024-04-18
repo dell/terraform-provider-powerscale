@@ -46,8 +46,34 @@ func GetQuota(ctx context.Context, client *client.Client, quotaID string, zone s
 }
 
 // UpdateQuota updates quota.
-func UpdateQuota(ctx context.Context, client *client.Client, quotaID string, updatedQuota powerscale.V12QuotaQuotaExtendedExtended) error {
+func UpdateQuota(ctx context.Context, client *client.Client, quotaID string, updatedQuota powerscale.V12QuotaQuotaExtendedExtended, linked bool) error {
+	doLink := false
+	if updatedQuota.Linked != nil && linked != *updatedQuota.Linked {
+		if *updatedQuota.Linked {
+			// if linking quota, need to update rest part at first
+			doLink = true
+		} else {
+			err := LinkQuota(ctx, client, quotaID, !linked)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	updatedQuota.Linked = nil
 	param := client.PscaleOpenAPIClient.QuotaApi.UpdateQuotav12QuotaQuota(ctx, quotaID).V12QuotaQuota(updatedQuota)
+	_, err := param.Execute()
+	if err != nil {
+		return err
+	}
+	if doLink {
+		err = LinkQuota(ctx, client, quotaID, !linked)
+	}
+	return err
+}
+
+// LinkQuota link or unlink quota.
+func LinkQuota(ctx context.Context, client *client.Client, quotaID string, linked bool) error {
+	param := client.PscaleOpenAPIClient.QuotaApi.UpdateQuotav12QuotaQuota(ctx, quotaID).V12QuotaQuota(powerscale.V12QuotaQuotaExtendedExtended{Linked: &linked})
 	_, err := param.Execute()
 	return err
 }
