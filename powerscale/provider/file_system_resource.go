@@ -256,13 +256,11 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 	errAuth := helper.ValidateUserAndGroup(ctx, r.client, plan.Owner, plan.Group, plan.QueryZone.ValueString())
 	if errAuth != nil {
-		errStr := constants.CreateFileSystemErrorMsg
-		message := helper.GetErrorString(errAuth, errStr)
+		message := helper.GetErrorString(errAuth, "")
 		resp.Diagnostics.AddError(
-			"Error creating File System",
+			"Error Validating User or Group",
 			message,
 		)
-		return
 	}
 
 	_, _, errCR := helper.ExecuteCreate(createReq)
@@ -311,13 +309,12 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 
 	_, _, err := helper.ExecuteSetACL(setACLReq)
 	if err != nil {
-		errStr := constants.CreateFileSystemErrorMsg + "with error: "
+		errStr := constants.SetFileSystemACLErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
-			"Error Setting User / Groups for the filesystem",
+			"File System created but failed to set its acl",
 			message,
 		)
-		return
 	}
 
 	// Get File system metadata
@@ -343,26 +340,6 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 			message,
 		)
 		return
-	}
-
-	if owner, ok := acl.GetOwnerOk(); ok {
-		if owner == nil || owner.Name == nil {
-			resp.Diagnostics.AddError(
-				"Error creating filesystem",
-				fmt.Sprintf("The filesystem was created but there was an issue setting ACL permissions because current user '%s' is an invalid owner", plan.Owner.Name),
-			)
-			return
-		}
-	}
-
-	if group, ok := acl.GetGroupOk(); ok {
-		if group == nil || group.Name == nil {
-			resp.Diagnostics.AddError(
-				"Error creating filesystem",
-				fmt.Sprintf("The filesystem was created but there was an issue setting ACL permissions because current group '%s' is an invalid group", plan.Group.Name),
-			)
-			return
-		}
 	}
 
 	// Update resource state
@@ -467,6 +444,10 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 	if planDirName != stateDirName {
 		resp.Diagnostics.AddError(constants.UpdateFileSystemErrorMsg, "Renaming Directory is not supported")
 		return
+	}
+
+	if diags := helper.UpdateFileSystemACL(ctx, r.client, planDirName, &plan, &state); diags.HasError() {
+		resp.Diagnostics.Append(diags...)
 	}
 
 	if err := helper.UpdateFileSystem(ctx, r.client, planDirName, &plan, &state); err != nil {

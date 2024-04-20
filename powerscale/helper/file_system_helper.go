@@ -345,17 +345,15 @@ func GetDirectoryPath(dirPath string, dirName string) string {
 const acl = "acl"
 const mode = "mode"
 
-// UpdateFileSystem Updates the file system attributes.
-func UpdateFileSystem(ctx context.Context, client *client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) error {
-
+// UpdateFileSystemACL Updates the file system Owner / Group.
+func UpdateFileSystemACL(ctx context.Context, client *client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) (diags diag.Diagnostics) {
 	// Update Owner / Group if modified
 	if plan.Owner.Name.ValueString() != state.Owner.Name.ValueString() || plan.Group.Name.ValueString() != state.Group.Name.ValueString() ||
 		plan.Owner.ID.ValueString() != state.Owner.ID.ValueString() || plan.Group.ID.ValueString() != state.Group.ID.ValueString() {
 		errAuth := ValidateUserAndGroup(ctx, client, plan.Owner, plan.Group, plan.QueryZone.ValueString())
 		if errAuth != nil {
-			errStr := constants.UpdateFileSystemErrorMsg
-			message := GetErrorString(errAuth, errStr)
-			return fmt.Errorf(message)
+			message := GetErrorString(errAuth, "")
+			diags.AddError("Error Validating User or Group", message)
 		}
 		setACLUpdReq := client.PscaleOpenAPIClient.NamespaceApi.SetAcl(ctx, dirPath)
 		setACLUpdReq = setACLUpdReq.Acl(true)
@@ -391,11 +389,17 @@ func UpdateFileSystem(ctx context.Context, client *client.Client, dirPath string
 
 		_, _, err := setACLUpdReq.Execute()
 		if err != nil {
-			errStr := constants.UpdateFileSystemErrorMsg + "Error Updating User / Groups for the filesystem with error: "
+			errStr := constants.SetFileSystemACLErrorMsg
 			message := GetErrorString(err, errStr)
-			return fmt.Errorf(message)
+			diags.AddError(fmt.Sprintf("Error updating the File system Acl - %s", dirPath), message)
+
 		}
 	}
+	return
+}
+
+// UpdateFileSystem Updates the file system attributes.
+func UpdateFileSystem(ctx context.Context, client *client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) error {
 	// Update Access Control if modified and supported
 	if !plan.AccessControl.IsNull() && plan.AccessControl.ValueString() != "" && plan.AccessControl.ValueString() != state.AccessControl.ValueString() {
 
@@ -442,15 +446,15 @@ func getNewAccessControlParams(accessControl string) (string, string) {
 // ValidateUserAndGroup check if owner/group information is correct.
 func ValidateUserAndGroup(ctx context.Context, client *client.Client, owner models.MemberObject, group models.MemberObject, accessZone string) error {
 	var ownerAuthID, groupAuthID string
-	if !owner.Name.IsNull() && !owner.Name.IsUnknown() {
-		ownerAuthID = owner.Name.ValueString()
-	} else if !owner.ID.IsNull() && !owner.ID.IsUnknown() {
+	if !owner.ID.IsNull() && !owner.ID.IsUnknown() {
 		ownerAuthID = owner.ID.ValueString()
+	} else if !owner.Name.IsNull() && !owner.Name.IsUnknown() {
+		ownerAuthID = owner.Name.ValueString()
 	}
-	if !group.Name.IsNull() && !group.Name.IsUnknown() {
-		groupAuthID = group.Name.ValueString()
-	} else if !group.ID.IsNull() && !group.ID.IsUnknown() {
+	if !group.ID.IsNull() && !group.ID.IsUnknown() {
 		groupAuthID = group.ID.ValueString()
+	} else if !group.Name.IsNull() && !group.Name.IsUnknown() {
+		groupAuthID = group.Name.ValueString()
 	}
 
 	// Validate owner information
@@ -471,7 +475,7 @@ func ValidateUserAndGroup(ctx context.Context, client *client.Client, owner mode
 	if ok && len(user) > 0 {
 		userEntity := user[0].OnDiskUserIdentity
 		if !owner.ID.IsUnknown() && *userEntity.Id != owner.ID.ValueString() || !owner.Name.IsUnknown() && *userEntity.Name != owner.Name.ValueString() || !owner.Type.IsUnknown() && *userEntity.Type != owner.Type.ValueString() {
-			return fmt.Errorf("incorrect owner information. Please make sure owner id, name, and type are valid")
+			return fmt.Errorf("incorrect owner information. Please make sure owner id, name, and type are matched")
 		}
 	} else {
 		return fmt.Errorf("unable to retrieve user information")
@@ -495,7 +499,7 @@ func ValidateUserAndGroup(ctx context.Context, client *client.Client, owner mode
 	if okGroup && len(grp) > 0 {
 		grpEntity := grp[0].Gid
 		if !group.ID.IsUnknown() && *grpEntity.Id != group.ID.ValueString() || !group.Name.IsUnknown() && *grpEntity.Name != group.Name.ValueString() || !group.Type.IsUnknown() && *grpEntity.Type != group.Type.ValueString() {
-			return fmt.Errorf("incorrect group information. Please make sure group id, name, and type are valid")
+			return fmt.Errorf("incorrect group information. Please make sure group id, name, and type are matched")
 		}
 	} else {
 		return fmt.Errorf("unable to retrieve group information")
