@@ -78,12 +78,12 @@ func TestAccAccessZoneA(t *testing.T) {
 					resource.TestCheckResourceAttr(accessZoneResourceName, "auth_providers.#", "3"),
 				),
 			},
-			// Reorder auth providers, then Read testing
+			// Update name, reorder auth providers, then Read testing
 			{
 				Config: ProviderConfig + AccessZoneResourceConfigReorderProvider,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(accessZoneResourceName, "name", "tfaccTestAccessZone5"),
-					resource.TestCheckResourceAttr(accessZoneResourceName, "id", "tfaccTestAccessZone5"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "name", "tfaccTestAccessZone5-1"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "id", "tfaccTestAccessZone5-1"),
 					resource.TestCheckResourceAttr(accessZoneResourceName, "groupnet", "groupnet0"),
 					resource.TestCheckResourceAttr(accessZoneResourceName, "path", "/ifs/home"),
 					resource.TestCheckResourceAttr(accessZoneResourceName, "auth_providers.0", "lsa-file-provider:System"),
@@ -309,7 +309,7 @@ resource "powerscale_accesszone" "zone" {
 var AccessZoneResourceConfigReorderProvider = `
 resource "powerscale_accesszone" "zone" {
 	# Required fields
-	name = "tfaccTestAccessZone5"
+	name = "tfaccTestAccessZone5-1"
 	groupnet = "groupnet0"
 	path = "/ifs/home"
   
