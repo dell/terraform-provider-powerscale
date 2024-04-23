@@ -929,7 +929,7 @@ func (r *NfsExportSettingsResource) Create(ctx context.Context, req resource.Cre
 		return
 	}
 
-	err = helper.UpdateNfsExportSettings(ctx, r.client, toUpdate)
+	err = helper.UpdateNfsExportSettings(ctx, r.client, toUpdate, plan.Zone.ValueString())
 	if err != nil {
 		errStr := constants.UpdateNfsExportSettingsErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -940,7 +940,7 @@ func (r *NfsExportSettingsResource) Create(ctx context.Context, req resource.Cre
 		return
 	}
 
-	settings, err := helper.GetNfsExportSettings(ctx, r.client)
+	settings, err := helper.GetNfsExportSettingsByZone(ctx, r.client, plan.Zone.ValueString())
 	if err != nil {
 		errStr := constants.ReadNfsExportSettingsErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -981,7 +981,7 @@ func (r *NfsExportSettingsResource) Read(ctx context.Context, req resource.ReadR
 		return
 	}
 
-	settings, err := helper.GetNfsExportSettings(ctx, r.client)
+	settings, err := helper.GetNfsExportSettingsByZone(ctx, r.client, state.Zone.ValueString())
 	if err != nil {
 		errStr := constants.ReadNfsExportSettingsErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -1016,6 +1016,13 @@ func (r *NfsExportSettingsResource) Update(ctx context.Context, req resource.Upd
 		return
 	}
 
+	var state models.NfsexportsettingsModel
+	diags = req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	var toUpdate powerscale.V2NfsSettingsExportSettings
 	// Get param from tf input
 	err := helper.ReadFromState(ctx, &plan, &toUpdate)
@@ -1037,7 +1044,9 @@ func (r *NfsExportSettingsResource) Update(ctx context.Context, req resource.Upd
 		return
 	}
 
-	err = helper.UpdateNfsExportSettings(ctx, r.client, toUpdate)
+	zone := helper.GetSpecifiedZone(&plan, &state)
+
+	err = helper.UpdateNfsExportSettings(ctx, r.client, toUpdate, zone)
 	if err != nil {
 		errStr := constants.UpdateNfsExportSettingsErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -1048,7 +1057,7 @@ func (r *NfsExportSettingsResource) Update(ctx context.Context, req resource.Upd
 		return
 	}
 
-	settings, err := helper.GetNfsExportSettings(ctx, r.client)
+	settings, err := helper.GetNfsExportSettingsByZone(ctx, r.client, zone)
 	if err != nil {
 		errStr := constants.ReadNfsExportSettingsErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -1056,7 +1065,6 @@ func (r *NfsExportSettingsResource) Update(ctx context.Context, req resource.Upd
 		return
 	}
 
-	var state models.NfsexportsettingsModel
 	err = helper.CopyFieldsToNonNestedModel(ctx, settings.GetSettings(), &state)
 	if err != nil {
 		resp.Diagnostics.AddError(

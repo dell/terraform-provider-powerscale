@@ -39,6 +39,9 @@ resource "powerscale_nfs_export_settings" "example" {
   #      id = "USER:nobody"
   #    }
   #  }
+  #
+  # Specifies the zone in which the export is valid. Notice that update this field will change the resource you manage.
+  #  zone = "System"
 }
 
 # After the execution of above resource block, NFS export settings would have been cached in terraform state file, or
