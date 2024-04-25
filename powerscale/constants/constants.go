@@ -313,6 +313,21 @@ const (
 	// DeleteFilePoolPolicyErrorMsg specifies error details occurred while deleting a file pool policy.
 	DeleteFilePoolPolicyErrorMsg = "Could not delete file pool policy "
 
+	// ReadS3BucketErrorMsg specifies error details occurred while reading s3 bucket.
+	ReadS3BucketErrorMsg = "Could not read s3 bucket "
+
+	// CreateS3BucketErrorMsg specifies error details occurred while creating s3 bucket.
+	CreateS3BucketErrorMsg = "Could not create s3 bucket "
+
+	// UpdateS3BucketErrorMsg specifies error details occurred while updating s3 bucket.
+	UpdateS3BucketErrorMsg = "Could not update s3 bucket "
+
+	// GetS3BucketErrorMsg specifies error details occurred while getting s3 bucket.
+	GetS3BucketErrorMsg = "Could not get s3 bucket "
+
+	// DeleteS3BucketErrorMsg specifies error details occurred while deleting s3 bucket.
+	DeleteS3BucketErrorMsg = "Could not delete s3 bucket "
+
 	// ReadNfsExportSettingsErrorMsg specifies error details occurred while reading nfs export settings.
 	ReadNfsExportSettingsErrorMsg = "Could not read nfs export settings "
 
