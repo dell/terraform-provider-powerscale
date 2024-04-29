@@ -18,6 +18,7 @@ limitations under the License.
 package provider
 
 import (
+	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -118,13 +119,17 @@ func TestFileSystemResource(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					metadataMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+					metadataMocker = mockey.Mock((*powerscale.NamespaceApiService).GetDirectoryMetadataExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+
 				},
 				ResourceName: fileSystemResourceName,
 				ImportState:  true,
 				ExpectError:  regexp.MustCompile(`.*mock error*.`),
 			},
-			// Import failure GetACL
+			// Import but GetACL failed and throw warning
 			{
 				PreConfig: func() {
 					if createMockerLocal != nil {
@@ -136,8 +141,10 @@ func TestFileSystemResource(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					metadataMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
-					setACLMockerLocal = mockey.Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+					setACLMockerLocal = mockey.Mock((*powerscale.NamespaceApiService).GetAclExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
 				},
 				ResourceName: fileSystemResourceName,
 				ImportState:  true,
@@ -165,6 +172,9 @@ func TestFileSystemResourceUpdate(t *testing.T) {
 					}
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
+					}
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
 					}
 				},
 				Config: ProviderConfig + FileSystemResourceUpdConfig,
@@ -203,6 +213,9 @@ func TestFileSystemResourceUpdateMetadataError(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
 				},
 				Config: ProviderConfig + FileSystemResourceUpdConfig,
 			},
@@ -218,8 +231,12 @@ func TestFileSystemResourceUpdateMetadataError(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					FunctionMocker = mockey.Mock(helper.UpdateFileSystem).Return(nil).Build()
-					metadataMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+					setACLMockerLocal = mockey.Mock(helper.UpdateFileSystemOwnerAndGroup).Return(nil).Build()
+					FunctionMocker = mockey.Mock(helper.UpdateFileSystemAccessControl).Return(nil).Build()
+					metadataMocker = mockey.Mock((*powerscale.NamespaceApiService).GetDirectoryMetadataExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -235,9 +252,8 @@ func TestFileSystemResourceUpdateGetAclError(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// Create and Read testing
+			// Create with ACL error and Read testing
 			{
-
 				PreConfig: func() {
 					if createMockerLocal != nil {
 						createMockerLocal.UnPatch()
@@ -247,6 +263,28 @@ func TestFileSystemResourceUpdateGetAclError(t *testing.T) {
 					}
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
+					}
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+					FunctionMocker = mockey.Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + FileSystemResourceUpdConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
 					}
 				},
 				Config: ProviderConfig + FileSystemResourceUpdConfig,
@@ -263,8 +301,10 @@ func TestFileSystemResourceUpdateGetAclError(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					createMockerLocal = mockey.Mock(helper.UpdateFileSystem).Return(nil).Build()
-					metadataMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+					createMockerLocal = mockey.Mock(helper.UpdateFileSystemAccessControl).Return(nil).Build()
 					FunctionMocker = mockey.Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
@@ -292,10 +332,13 @@ func TestFileSystemResourceUpdateUserErr(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
 				},
 				Config: ProviderConfig + FileSystemResourceUpdConfig,
 			},
-			//Update owner/group/accessControl, then Read testing
+			//Update owner/group/accessControl failed, but throw warning
 			{
 				PreConfig: func() {
 					if createMockerLocal != nil {
@@ -307,57 +350,13 @@ func TestFileSystemResourceUpdateUserErr(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					FunctionMocker = mockey.Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error updating user")).Build()
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+					FunctionMocker = mockey.Mock((*powerscale.NamespaceApiService).SetAclExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
-				ExpectError: regexp.MustCompile(`.*Error updating user*.`),
-			},
-		},
-	})
-}
-func TestFileSystemResourceUpdateACLErr(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			// Create and Read testing
-			{
-				PreConfig: func() {
-					if createMockerLocal != nil {
-						createMockerLocal.UnPatch()
-					}
-					if setACLMockerLocal != nil {
-						setACLMockerLocal.UnPatch()
-					}
-					if metadataMocker != nil {
-						metadataMocker.UnPatch()
-					}
-				},
-				Config: ProviderConfig + FileSystemResourceUpdConfig,
-			},
-			//Update owner/group/accessControl, then Read testing
-			{
-				PreConfig: func() {
-					FunctionMocker = mockey.Mock(helper.UpdateFileSystem).Return(fmt.Errorf("Error updating acl")).Build()
-				},
-				Config:      ProviderConfig + FileSystemUpdateResourceConfig,
-				ExpectError: regexp.MustCompile(`.*Error updating acl*.`),
-			},
-		},
-	})
-}
-func TestFileSystemResourceValidateOwnerErr(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			//Validate owner failed
-			{
-				PreConfig: func() {
-					FunctionMocker = mockey.Mock(helper.ValidateUserAndGroup).Return(fmt.Errorf("unable to validate user information with error")).Build()
-				},
-				Config:      ProviderConfig + FileSystemResourceConfig,
-				ExpectError: regexp.MustCompile(`.*unable to validate user information with error*.`),
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
 		},
 	})
@@ -370,6 +369,20 @@ func TestFileSystemResourceUpdateFail(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+				},
 				Config: ProviderConfig + FileSystemResourceUpdConfig,
 			},
 			//Update owner/group/accessControl, then Read testing
@@ -381,33 +394,6 @@ func TestFileSystemResourceUpdateFail(t *testing.T) {
 	})
 }
 
-func TestAccFileSystemResourceGetAclErr(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				PreConfig: func() {
-					if createMockerLocal != nil {
-						createMockerLocal.UnPatch()
-					}
-					if setACLMockerLocal != nil {
-						setACLMockerLocal.UnPatch()
-					}
-					if metadataMocker != nil {
-						metadataMocker.UnPatch()
-					}
-					createMockerLocal = mockey.Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
-					setACLMockerLocal = mockey.Mock(helper.ExecuteSetACL).Return(nil, nil, nil).Build()
-					metadataMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, nil).Build()
-					FunctionMocker = mockey.Mock(helper.GetDirectoryACL).Return(nil, fmt.Errorf("mock error")).Build()
-				},
-				Config:      ProviderConfig + FileSystemResourceConfig,
-				ExpectError: regexp.MustCompile(`.*mock error*.`),
-			},
-		},
-	})
-}
 func TestAccFileSystemResourceGetMetaErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -424,8 +410,10 @@ func TestAccFileSystemResourceGetMetaErr(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
 					createMockerLocal = mockey.Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
-					setACLMockerLocal = mockey.Mock(helper.ExecuteSetACL).Return(nil, nil, nil).Build()
 					FunctionMocker = mockey.Mock(helper.GetDirectoryMetadata).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemResourceConfig,
@@ -435,31 +423,6 @@ func TestAccFileSystemResourceGetMetaErr(t *testing.T) {
 	})
 }
 
-func TestAccFileSystemResourceSetAclErr(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				PreConfig: func() {
-					if createMockerLocal != nil {
-						createMockerLocal.UnPatch()
-					}
-					if setACLMockerLocal != nil {
-						setACLMockerLocal.UnPatch()
-					}
-					if metadataMocker != nil {
-						metadataMocker.UnPatch()
-					}
-					createMockerLocal = mockey.Mock(helper.ExecuteCreate).Return(nil, nil, nil).Build()
-					FunctionMocker = mockey.Mock(helper.ExecuteSetACL).Return(nil, nil, fmt.Errorf("mock error")).Build()
-				},
-				Config:      ProviderConfig + FileSystemResourceConfig,
-				ExpectError: regexp.MustCompile(`.*mock error*.`),
-			},
-		},
-	})
-}
 func TestAccFileSystemResourceCreateFSErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -476,10 +439,87 @@ func TestAccFileSystemResourceCreateFSErr(t *testing.T) {
 					if metadataMocker != nil {
 						metadataMocker.UnPatch()
 					}
-					FunctionMocker = mockey.Mock(helper.ExecuteCreate).Return(nil, nil, fmt.Errorf("mock error")).Build()
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+					FunctionMocker = mockey.Mock((*powerscale.NamespaceApiService).CreateDirectoryExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + FileSystemResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+		},
+	})
+}
+
+func TestAccFileSystemResourceDeleteMockErr(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + FileSystemResourceConfig,
+			},
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.UnPatch()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.UnPatch()
+					}
+					if metadataMocker != nil {
+						metadataMocker.UnPatch()
+					}
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+					createMockerLocal = mockey.Mock((*powerscale.NamespaceApiService).DeleteDirectoryExecute).When(func(r powerscale.ApiDeleteDirectoryRequest) bool {
+						return createMockerLocal.Times() == 1
+					}).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + FileSystemResourceConfig,
+				Destroy:     true,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+		},
+	})
+}
+
+func TestAccFileSystemResourceReleaseMock(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if createMockerLocal != nil {
+						createMockerLocal.Release()
+					}
+					if setACLMockerLocal != nil {
+						setACLMockerLocal.Release()
+					}
+					if metadataMocker != nil {
+						metadataMocker.Release()
+					}
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + FileSystemResourceConfig,
 			},
 		},
 	})

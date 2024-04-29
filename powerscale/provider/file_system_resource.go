@@ -19,11 +19,10 @@ package provider
 
 import (
 	"context"
-	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"path/filepath"
 	"regexp"
 	"terraform-provider-powerscale/client"
+
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
@@ -35,7 +34,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -136,6 +134,7 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 						Computed:            true,
 						Validators: []validator.String{
 							stringvalidator.OneOf("user"),
+							stringvalidator.LengthAtLeast(1),
 						},
 					},
 				},
@@ -171,6 +170,7 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 						Computed:            true,
 						Validators: []validator.String{
 							stringvalidator.OneOf("group"),
+							stringvalidator.LengthAtLeast(1),
 						},
 					},
 				},
@@ -254,82 +254,29 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	if !plan.AccessControl.IsNull() && (plan.AccessControl.ValueString() != "") {
 		createReq = createReq.XIsiIfsAccessControl(plan.AccessControl.ValueString())
 	}
-	errAuth := helper.ValidateUserAndGroup(ctx, r.client, plan.Owner, plan.Group, plan.QueryZone.ValueString())
-	if errAuth != nil {
-		errStr := constants.CreateFileSystemErrorMsg
-		message := helper.GetErrorString(errAuth, errStr)
-		resp.Diagnostics.AddError(
-			"Error creating File System",
-			message,
-		)
-		return
-	}
 
 	_, _, errCR := helper.ExecuteCreate(createReq)
 	if errCR != nil {
 		errStr := constants.CreateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(errCR, errStr)
-		resp.Diagnostics.AddError(
-			"Error creating File System",
-			message,
-		)
+		resp.Diagnostics.AddError("Error creating File System", message)
 		return
 	}
 
-	// set owner and group for file system
-	setACLReq := r.client.PscaleOpenAPIClient.NamespaceApi.SetAcl(ctx, dirPath)
-	setACLReq = setACLReq.Acl(true)
-
-	namespaceACLUserGroup := *powerscale.NewNamespaceAcl()
-	namespaceACLUserGroup.SetAuthoritative("mode")
-
-	owner := *powerscale.NewMemberObject()
-	if !plan.Owner.ID.IsNull() && !plan.Owner.ID.IsUnknown() {
-		owner.Id = plan.Owner.ID.ValueStringPointer()
-	}
-	if !plan.Owner.Name.IsNull() && !plan.Owner.Name.IsUnknown() {
-		owner.Name = plan.Owner.Name.ValueStringPointer()
-	}
-	if !plan.Owner.Type.IsNull() && !plan.Owner.Type.IsUnknown() {
-		owner.Type = plan.Owner.Type.ValueStringPointer()
-	}
-	namespaceACLUserGroup.SetOwner(owner)
-
-	group := *powerscale.NewMemberObject()
-	if !plan.Group.ID.IsNull() && !plan.Group.ID.IsUnknown() {
-		group.Id = plan.Group.ID.ValueStringPointer()
-	}
-	if !plan.Group.Name.IsNull() && !plan.Group.Name.IsUnknown() {
-		group.Name = plan.Group.Name.ValueStringPointer()
-	}
-	if !plan.Group.Type.IsNull() && !plan.Group.Type.IsUnknown() {
-		group.Type = plan.Group.Type.ValueStringPointer()
-	}
-	namespaceACLUserGroup.SetGroup(group)
-
-	setACLReq = setACLReq.NamespaceAcl(namespaceACLUserGroup)
-
-	_, _, err := helper.ExecuteSetACL(setACLReq)
-	if err != nil {
-		errStr := constants.CreateFileSystemErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error Setting User / Groups for the filesystem",
-			message,
-		)
-		return
+	if err := helper.UpdateFileSystemOwnerAndGroup(ctx, r.client, dirPath, &plan, &models.FileSystemResource{}); err != nil {
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Error setting the File system Resource - %s", dirPath), err.Error())
 	}
 
 	// Get File system metadata
 	meta, err := helper.GetDirectoryMetadata(ctx, r.client, dirPath)
-
 	if err != nil {
 		errStr := constants.CreateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error getting the metadata for the filesystem",
-			message,
-		)
+		resp.Diagnostics.AddError("Error getting the metadata for the filesystem", message)
+		// if err, revert create
+		if err = helper.DeleteFileSystem(ctx, r.client, dirPath); err != nil {
+			tflog.Error(ctx, fmt.Sprintf("Error deleting filesystem when reverting creation - %s", err.Error()))
+		}
 		return
 	}
 
@@ -338,38 +285,19 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	if err != nil {
 		errStr := constants.CreateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error getting the acl for the filesystem",
-			message,
-		)
+		resp.Diagnostics.AddError("Error getting the acl for the filesystem", message)
+		// if err, revert create
+		if err = helper.DeleteFileSystem(ctx, r.client, dirPath); err != nil {
+			tflog.Error(ctx, fmt.Sprintf("Error deleting filesystem when reverting creation - %s", err.Error()))
+		}
 		return
 	}
 
-	if owner, ok := acl.GetOwnerOk(); ok {
-		if owner == nil || owner.Name == nil {
-			resp.Diagnostics.AddError(
-				"Error creating filesystem",
-				fmt.Sprintf("The filesystem was created but there was an issue setting ACL permissions because current user '%s' is an invalid owner", plan.Owner.Name),
-			)
-			return
-		}
-	}
-
-	if group, ok := acl.GetGroupOk(); ok {
-		if group == nil || group.Name == nil {
-			resp.Diagnostics.AddError(
-				"Error creating filesystem",
-				fmt.Sprintf("The filesystem was created but there was an issue setting ACL permissions because current group '%s' is an invalid group", plan.Group.Name),
-			)
-			return
-		}
-	}
-
 	// Update resource state
-	var state models.FileSystemResource
-	helper.UpdateFileSystemResourceState(ctx, &plan, &state, acl, meta)
-	helper.UpdateFileSystemResourcePlanData(&plan, &state)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta); diags.WarningsCount() > 0 {
+		resp.Diagnostics.Append(diags...)
+	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 	tflog.Info(ctx, "Done with Create File System resource")
 }
 
@@ -392,10 +320,7 @@ func (r *FileSystemResource) Read(ctx context.Context, req resource.ReadRequest,
 	if err != nil {
 		errStr := constants.ReadFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error getting the metadata for the filesystem",
-			message,
-		)
+		resp.Diagnostics.AddError("Error getting the metadata for the filesystem", message)
 		return
 	}
 
@@ -404,18 +329,14 @@ func (r *FileSystemResource) Read(ctx context.Context, req resource.ReadRequest,
 	if err != nil {
 		errStr := constants.ReadFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error getting the acl for the filesystem",
-			message,
-		)
+		resp.Diagnostics.AddError("Error getting the acl for the filesystem", message)
 		return
 	}
 
-	// copy to model
-	var state models.FileSystemResource
-	helper.UpdateFileSystemResourceState(ctx, &plan, &state, acl, meta)
-	helper.UpdateFileSystemResourcePlanData(&plan, &state)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta); diags.WarningsCount() > 0 {
+		resp.Diagnostics.Append(diags...)
+	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 	tflog.Info(ctx, "Read File System Resource Complete.")
 }
 
@@ -431,15 +352,8 @@ func (r *FileSystemResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 	dirPath := helper.GetDirectoryPath(plan.DirectoryPath.ValueString(), plan.Name.ValueString())
-
-	_, _, err := r.client.PscaleOpenAPIClient.NamespaceApi.DeleteDirectory(ctx, dirPath).Execute()
-	if err != nil {
-		errStr := constants.DeleteFileSystemErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error Deleting filesystem",
-			message,
-		)
+	if err := helper.DeleteFileSystem(ctx, r.client, dirPath); err != nil {
+		resp.Diagnostics.AddError("Error Deleting filesystem", err.Error())
 		return
 	}
 	tflog.Info(ctx, "Delete File system complete")
@@ -469,11 +383,12 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	if err := helper.UpdateFileSystem(ctx, r.client, planDirName, &plan, &state); err != nil {
-		resp.Diagnostics.AddError(
-			fmt.Sprintf("Error updating the File system Resource - %s", planDirName),
-			err.Error(),
-		)
+	if err := helper.UpdateFileSystemOwnerAndGroup(ctx, r.client, planDirName, &plan, &state); err != nil {
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Error updating the File system Resource - %s", planDirName), err.Error())
+	}
+
+	if err := helper.UpdateFileSystemAccessControl(ctx, r.client, planDirName, &plan, &state); err != nil {
+		resp.Diagnostics.AddError(fmt.Sprintf("Error updating the File system Resource - %s", planDirName), err.Error())
 		return
 	}
 
@@ -482,10 +397,7 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 	if err != nil {
 		errStr := constants.UpdateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error getting the metadata for the filesystem",
-			message,
-		)
+		resp.Diagnostics.AddWarning("Error getting the metadata for the filesystem", message)
 		return
 	}
 
@@ -494,19 +406,17 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 	if err != nil {
 		errStr := constants.UpdateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error getting the acl for the filesystem",
-			message,
-		)
+		resp.Diagnostics.AddError("Error getting the acl for the filesystem", message)
 		return
 	}
 
 	// copy to model
-	helper.UpdateFileSystemResourceState(ctx, &plan, &state, acl, meta)
-	helper.UpdateFileSystemResourcePlanData(&plan, &state)
+	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta); diags.WarningsCount() > 0 {
+		resp.Diagnostics.Append(diags...)
+	}
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 	tflog.Info(ctx, "Updating File System complete.")
 }
 
@@ -520,10 +430,7 @@ func (r *FileSystemResource) ImportState(ctx context.Context, req resource.Impor
 	if err != nil {
 		errStr := constants.ReadFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error getting the metadata for the filesystem",
-			message,
-		)
+		resp.Diagnostics.AddError("Error getting the metadata for the filesystem", message)
 		return
 	}
 
@@ -532,23 +439,12 @@ func (r *FileSystemResource) ImportState(ctx context.Context, req resource.Impor
 	if err != nil {
 		errStr := constants.ReadFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error getting the acl for the filesystem",
-			message,
-		)
+		resp.Diagnostics.AddError("Error getting the acl for the filesystem", message)
 		return
 	}
 
 	// copy to model
-	helper.UpdateFileSystemResourceState(ctx, nil, &state, acl, meta)
-	state.ID = types.StringValue(id)
-	dir, name := filepath.Split(id)
-	dir = filepath.Clean(dir)
-	state.Name = types.StringValue(name)
-	state.DirectoryPath = types.StringValue(dir)
-	state.Overwrite = types.BoolValue(false)
-	state.Recursive = types.BoolValue(true)
-	state.AccessControl = state.Mode
+	helper.UpdateFileSystemResourceImportState(ctx, id, &state, acl, meta)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)

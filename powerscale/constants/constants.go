@@ -55,6 +55,9 @@ const (
 	// DeleteFileSystemErrorMsg specifies error details occurred while deleting a File Systems.
 	DeleteFileSystemErrorMsg = "Could not delete file systems "
 
+	// SetFileSystemACLErrorMsg specifies error details occurred while setting a File System acl.
+	SetFileSystemACLErrorMsg = "Could not set file system acl "
+
 	// ReadAdsProviderErrorMsg specifies error details occurred while reading Ads Providers.
 	ReadAdsProviderErrorMsg = "Could not read ads providers "
 
