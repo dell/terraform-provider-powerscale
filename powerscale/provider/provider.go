@@ -185,6 +185,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewFilePoolPolicyResource,
 		NewNfsExportSettingsResource,
 		NewNfsZoneSettingsResource,
+		NewNfsGlobalSettingsResource,
 		NewUserMappingRulesResource,
 		NewS3BucketResource,
 	}
