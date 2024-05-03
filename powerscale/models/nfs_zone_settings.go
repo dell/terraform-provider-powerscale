@@ -30,3 +30,26 @@ type NfsZoneSettingsResourceModel struct {
 	Nfsv4NoDomain        types.Bool   `tfsdk:"nfsv4_no_domain"`
 	Nfsv4NoDomainUids    types.Bool   `tfsdk:"nfsv4_no_domain_uids"`
 }
+
+// NfsZoneSettingsDataSourceModel defines the data source implementation.
+type NfsZoneSettingsDataSourceModel struct {
+	ID                    types.String           `tfsdk:"id"`
+	NfsZoneSettings       *NfsZoneSettings       `tfsdk:"nfs_zone_settings"`
+	NfsZoneSettingsFilter *NfsZoneSettingsFilter `tfsdk:"filter"`
+}
+
+// NfsZoneSettings specifies the configuration values for NFS Zone Settings.
+type NfsZoneSettings struct {
+	Nfsv4NoDomain        types.Bool   `tfsdk:"nfsv4_no_domain"`
+	Nfsv4NoDomainUids    types.Bool   `tfsdk:"nfsv4_no_domain_uids"`
+	Nfsv4AllowNumericIds types.Bool   `tfsdk:"nfsv4_allow_numeric_ids"`
+	Nfsv4NoNames         types.Bool   `tfsdk:"nfsv4_no_names"`
+	Nfsv4ReplaceDomain   types.Bool   `tfsdk:"nfsv4_replace_domain"`
+	Zone                 types.String `tfsdk:"zone"`
+	Nfsv4Domain          types.String `tfsdk:"nfsv4_domain"`
+}
+
+// NfsZoneSettingsFilter holds the filter conditions.
+type NfsZoneSettingsFilter struct {
+	Zone types.String `tfsdk:"zone"`
+}

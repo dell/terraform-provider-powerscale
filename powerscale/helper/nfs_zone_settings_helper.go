@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/models"
 )
 
 // GetNfsZoneSettings retrieve nfs zone settings.
@@ -38,4 +39,18 @@ func UpdateNfsZoneSettings(ctx context.Context, client *client.Client, nfsZoneSe
 	updateParam = updateParam.Zone(zone)
 	_, err := updateParam.Execute()
 	return err
+}
+
+// FilterNfsZoneSettings filter nfs zone settings.
+func FilterNfsZoneSettings(ctx context.Context, client *client.Client, filter *models.NfsZoneSettingsFilter) (*powerscale.V2NfsSettingsZone, error) {
+	filterParam := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv2NfsSettingsZone(ctx)
+
+	if filter != nil {
+		if zoneStr := filter.Zone.ValueString(); zoneStr != "" {
+			filterParam = filterParam.Zone(zoneStr)
+		}
+	}
+
+	nfsZoneSettings, _, err := filterParam.Execute()
+	return nfsZoneSettings, err
 }
