@@ -340,6 +340,12 @@ const (
 	// UpdateNfsZoneSettingsErrorMsg specifies error details occurred while updating nfs zone settings.
 	UpdateNfsZoneSettingsErrorMsg = "Could not update nfs zone settings "
 
+	// ReadNfsGlobalSettingsErrorMsg specifies error details occurred while reading nfs global settings.
+	ReadNfsGlobalSettingsErrorMsg = "Could not read nfs global settings "
+
+	// UpdateNfsGlobalSettingsErrorMsg specifies error details occurred while updating nfs global settings.
+	UpdateNfsGlobalSettingsErrorMsg = "Could not update nfs global settings "
+
 	// ReadUserMappingRulesErrorMsg specifies error details occurred while reading user mapping rules.
 	ReadUserMappingRulesErrorMsg = "Could not read user mapping rules "
 
