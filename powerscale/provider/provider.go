@@ -222,6 +222,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewNfsExportSettingsDataSource,
 		NewUserMappingRulesDataSource,
 		NewS3BucketDataSource,
+		NewNfsZoneSettingsDataSource,
 	}
 }
 
