@@ -354,4 +354,7 @@ const (
 
 	// ReadTestUserMappingErrorMsg specifies error details occurred while reading user mapping test.
 	ReadTestUserMappingErrorMsg = "Could not test user mapping "
+
+	// ReadSmbServerSettingsErrorMsg specifies error details occurred while reading smb server settings.
+	ReadSmbServerSettingsErrorMsg = "Could not read smb server settings "
 )
