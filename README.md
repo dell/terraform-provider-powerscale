@@ -21,7 +21,7 @@ limitations under the License.
 
 The Terraform Provider for Dell Technologies (Dell) PowerScale allows Data Center and IT administrators to use Hashicorp Terraform to automate and orchestrate the provisioning and management of Dell PowerScale storage systems.
 
-The Terraform Provider can be used to manage access zone, active directory, cluster, user, user group, file system, smb share, nfs export, snapshot, snapshot schedule, quota, groupnet, subnet, network pool, network settings, smart pool settings, ldap providers, network rule, file pool policy, ntp server, ntp settings, cluster email settings and acl settings.
+The Terraform Provider can be used to manage access zone, active directory, cluster, user, user group, file system, smb share, nfs export, snapshot, snapshot schedule, quota, groupnet, subnet, network pool, network settings, smart pool settings, ldap providers, network rule, file pool policy, ntp server, ntp settings, cluster email settings, acl settings, nfs export settings, role, user mapping rules and role privilege.
 
 The logged-in user configured in the Terraform provider must possess adequate permissions  against the target Dell PowerScale System
 
@@ -50,7 +50,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 | **Terraform Provider** | **PowerScale Version** | **OS**                    | **Terraform**               | **Golang** |
 |------------------------|:-----------------------|:--------------------------|-----------------------------|------------|
-| v1.2.0                 | 9.4 <br> 9.5 <br> 9.7  | ubuntu22.04 <br>  rhel9.x | 1.5.x <br> 1.6.x <br> 1.7.x | 1.21       |
+| v1.3.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.6.x <br> 1.7.x         | 1.21       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
 * Cluster
@@ -66,9 +66,12 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * Network Rule
 * Network Settings
 * NFS Export
+* NFS Export Settings
 * NTP Server
 * NTP Settings
 * Quota
+* Role
+* Role Privilege
 * Smart Pool Settings
 * SMB Share
 * Snapshot
@@ -76,6 +79,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * Subnet
 * User
 * User Group
+* User Mapping Rules
 
 ## List of Resources in Terraform Provider for Dell PowerScale
 * Access Zone
@@ -90,9 +94,11 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * Network Rule
 * Network Settings
 * NFS Export
+* NFS Export Settings
 * NTP Server
 * NTP Settings
 * Quota
+* Role
 * Smart Pool Settings
 * SMB Share
 * Snapshot
@@ -100,6 +106,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * Subnet
 * User
 * User Group
+* User Mapping Rules
 
 ## Installation and execution of Terraform Provider for Dell PowerScale
 
