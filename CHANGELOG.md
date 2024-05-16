@@ -123,3 +123,31 @@ N/A
 
 ## Bug Fixes
 N/A
+
+# v1.3.0 (Apr 30, 2024)
+## Release Summary
+The release supports resources and data sources mentioned in the Features section for Dell PowerScale.
+## Features
+
+### Data Sources:
+
+* `powerscale_nfs_export_settings` for reading nfs export settings in PowerScale.
+* `powerscale_role` for reading role in PowerScale.
+* `powerscale_role_privilege` for reading role privilege in PowerScale.
+* `powerscale_user_mapping_rules` for reading user mapping rules in PowerScale.
+
+
+### Resources
+
+* `powerscale_nfs_export_settings` for managing nfs export settings in PowerScale.
+* `powerscale_role` for managing role in PowerScale.
+* `powerscale_user_mapping_rules` for managing user mapping rules in PowerScale.
+
+### Others
+N/A
+
+## Enhancements
+N/A
+
+## Bug Fixes
+N/A

@@ -23,13 +23,6 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"errors"
 	"fmt"
-	"github.com/bytedance/mockey"
-	. "github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/joho/godotenv"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"log"
 	"net/http"
@@ -40,6 +33,14 @@ import (
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"github.com/bytedance/mockey"
+	. "github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/joho/godotenv"
+	"github.com/stretchr/testify/assert"
 )
 
 // testAccProtoV6ProviderFactories are used to instantiate a provider during

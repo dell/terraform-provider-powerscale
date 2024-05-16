@@ -188,6 +188,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewNfsGlobalSettingsResource,
 		NewUserMappingRulesResource,
 		NewS3BucketResource,
+		NewSmbShareSettingsResource,
 	}
 }
 
@@ -223,6 +224,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewUserMappingRulesDataSource,
 		NewS3BucketDataSource,
 		NewNfsZoneSettingsDataSource,
+		NewSmbServerSettingsDataSource,
 	}
 }
 
