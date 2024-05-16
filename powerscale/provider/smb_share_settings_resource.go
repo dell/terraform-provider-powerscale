@@ -511,7 +511,11 @@ func (r SmbShareSettingsResource) ImportState(ctx context.Context, request resou
 	tflog.Info(ctx, "Started importing smb share settings")
 
 	reqID := request.ID
+<<<<<<< HEAD
 	zone := strings.TrimSpace(reqID[len("smb_share_settings_"):])
+=======
+	zone := strings.TrimSpace(reqID)
+>>>>>>> 3835c1d (Implement smb share settings)
 
 	readSmbShareSettings, err := helper.GetSmbShareSettings(ctx, r.client, zone)
 	if err != nil {
