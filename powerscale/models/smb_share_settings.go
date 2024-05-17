@@ -54,3 +54,50 @@ type SmbShareSettingsResourceModel struct {
 	StrictLocking                  types.Bool   `tfsdk:"strict_locking"`
 	ContinuouslyAvailable          types.Bool   `tfsdk:"continuously_available"`
 }
+
+type SmbShareSettingsDatasourceModel struct {
+	ID                     types.String            `tfsdk:"id"`
+	SmbShareSettings       *SmbShareSettings       `tfsdk:"smb_share_settings"`
+	SmbShareSettingsFilter *SmbShareSettingsFilter `tfsdk:"filter"`
+}
+
+// SmbShareSettings specifies the configuration values for SMB share Settings.
+type SmbShareSettings struct {
+	CaWriteIntegrity               types.String `tfsdk:"ca_write_integrity"`
+	NtfsACLSupport                 types.Bool   `tfsdk:"ntfs_acl_support"`
+	DirectoryCreateMask            types.Int64  `tfsdk:"directory_create_mask"`
+	MangleMap                      types.List   `tfsdk:"mangle_map"`
+	CaTimeout                      types.Int64  `tfsdk:"ca_timeout"`
+	ChangeNotify                   types.String `tfsdk:"change_notify"`
+	StrictFlush                    types.Bool   `tfsdk:"strict_flush"`
+	StrictCaLockout                types.Bool   `tfsdk:"strict_ca_lockout"`
+	HostACL                        types.List   `tfsdk:"host_acl"`
+	AllowDeleteReadonly            types.Bool   `tfsdk:"allow_delete_readonly"`
+	CreatePermissions              types.String `tfsdk:"create_permissions"`
+	Zone                           types.String `tfsdk:"zone"`
+	AccessBasedEnumeration         types.Bool   `tfsdk:"access_based_enumeration"`
+	SparseFile                     types.Bool   `tfsdk:"sparse_file"`
+	FileCreateMode                 types.Int64  `tfsdk:"file_create_mode"`
+	FileFilterExtensions           types.List   `tfsdk:"file_filter_extensions"`
+	AccessBasedEnumerationRootOnly types.Bool   `tfsdk:"access_based_enumeration_root_only"`
+	FileCreateMask                 types.Int64  `tfsdk:"file_create_mask"`
+	CscPolicy                      types.String `tfsdk:"csc_policy"`
+	ImpersonateGuest               types.String `tfsdk:"impersonate_guest"`
+	ContinuouslyAvailable          types.Bool   `tfsdk:"continuously_available"`
+	StrictLocking                  types.Bool   `tfsdk:"strict_locking"`
+	DirectoryCreateMode            types.Int64  `tfsdk:"directory_create_mode"`
+	AllowExecuteAlways             types.Bool   `tfsdk:"allow_execute_always"`
+	HideDotFiles                   types.Bool   `tfsdk:"hide_dot_files"`
+	MangleByteStart                types.Int64  `tfsdk:"mangle_byte_start"`
+	Smb3EncryptionEnabled          types.Bool   `tfsdk:"smb3_encryption_enabled"`
+	FileFilterType                 types.String `tfsdk:"file_filter_type"`
+	Oplocks                        types.Bool   `tfsdk:"oplocks"`
+	ImpersonateUser                types.String `tfsdk:"impersonate_user"`
+	FileFilteringEnabled           types.Bool   `tfsdk:"file_filtering_enabled"`
+}
+
+// SmbShareSettingsFilter holds the filter conditions.
+type SmbShareSettingsFilter struct {
+	Zone  types.String `tfsdk:"zone"`
+	Scope types.String `tfsdk:"scope"`
+}

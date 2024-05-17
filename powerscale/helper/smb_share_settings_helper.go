@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/models"
 )
 
 // GetSmbShareSettings get smb share settings.
@@ -43,4 +44,22 @@ func UpdateSmbShareSettings(ctx context.Context, client *client.Client, v7SmbSet
 	}
 	_, err := updateParam.Execute()
 	return err
+}
+
+// FilterSmbShareSettings filter smb share settings.
+func FilterSmbShareSettings(ctx context.Context, client *client.Client, filter *models.SmbShareSettingsFilter) (*powerscale.V7SmbSettingsShare, error) {
+	filterParam := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv7SmbSettingsShare(ctx)
+
+	if filter != nil {
+		if scopeStr := filter.Scope.ValueString(); scopeStr != "" {
+			filterParam = filterParam.Scope(scopeStr)
+		}
+
+		if zoneStr := filter.Zone.ValueString(); zoneStr != "" {
+			filterParam = filterParam.Zone(zoneStr)
+		}
+	}
+
+	smbShareSettings, _, err := filterParam.Execute()
+	return smbShareSettings, err
 }
