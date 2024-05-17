@@ -221,6 +221,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewClusterEmailDataSource,
 		NewFilePoolPolicyDataSource,
 		NewNfsExportSettingsDataSource,
+		NewNfsGlobalSettingsDataSource,
 		NewUserMappingRulesDataSource,
 		NewS3BucketDataSource,
 		NewNfsZoneSettingsDataSource,
