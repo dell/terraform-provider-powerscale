@@ -51,8 +51,10 @@ limitations under the License.
 # After `terraform apply` of this example file it will create NFS export on specified paths on the PowerScale Array.
 # For more information, Please check the terraform state file.
 
-# PowerScale SMB shares provide clients network access to file system resources on the cluster
+# PowerScale SMB share settings provide clients network access to file system resources on the cluster
 resource "powerscale_smb_share_settings" "example" {
+  # Optional fields both for creating and updating
+  # Please check the acceptable inputs for each setting in the documentation
   access_based_enumeration = false
   #access_based_enumeration_root_only = false
   #allow_delete_readonly              = false
