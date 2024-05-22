@@ -30,3 +30,19 @@ type NamespaceACLResourceModel struct {
 	CustomACL     types.List   `tfsdk:"acl_custom"`
 	ACL           types.List   `tfsdk:"acl"`
 }
+
+// NamespaceACLDataSourceModel describes the data source data model.
+type NamespaceACLDataSourceModel struct {
+	Owner              types.Object            `tfsdk:"owner"`
+	Group              types.Object            `tfsdk:"group"`
+	Authoritative      types.String            `tfsdk:"authoritative"`
+	Mode               types.String            `tfsdk:"mode"`
+	ACL                types.List              `tfsdk:"acl"`
+	NamespaceACLFilter *NamespaceACLFilterType `tfsdk:"filter"`
+}
+
+// NamespaceACLFilterType describes the filter data model.
+type NamespaceACLFilterType struct {
+	Namespace types.String `tfsdk:"namespace"`
+	Nsaccess  types.Bool   `tfsdk:"nsaccess"`
+}

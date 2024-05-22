@@ -24,7 +24,7 @@ limitations under the License.
 # PowerScale Namespace ACL allow you to manage the access control list for a namespace.
 resource "powerscale_namespace_acl" "example_namespace_acl" {
   # Required and immutable once set
-  namespace = "ifs/home"
+  namespace = "ifs/example"
 
   #   # Optional query parameters
   #   nsaccess = true

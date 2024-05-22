@@ -100,3 +100,14 @@ func CheckNamespaceACLParam(requestBody *powerscale.NamespaceAcl) error {
 	}
 	return nil
 }
+
+// GetNamespaceACLDatasource retrieve Namespace ACL datasource information.
+func GetNamespaceACLDatasource(ctx context.Context, client *client.Client, model models.NamespaceACLDataSourceModel) (*powerscale.NamespaceAcl, error) {
+	queryParam := client.PscaleOpenAPIClient.NamespaceApi.GetAcl(ctx, model.NamespaceACLFilter.Namespace.ValueString())
+	queryParam = queryParam.Acl(true)
+	if !model.NamespaceACLFilter.Nsaccess.IsNull() {
+		queryParam = queryParam.Nsaccess(model.NamespaceACLFilter.Nsaccess.ValueBool())
+	}
+	namespaceACLResp, _, err := queryParam.Execute()
+	return namespaceACLResp, err
+}
