@@ -74,9 +74,15 @@ func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interfa
 		}
 		destinationField := getFieldByTfTag(destinationValue.Elem(), sourceFieldTag)
 		structType := reflect.TypeOf(source)
+		if structType.Kind() == reflect.Ptr {
+			structType = structType.Elem()
+		}
 		// For zero value (nil), the object still need to pass type information into it
 		if !sourceField.IsValid() {
 			destinationField = getFieldByTfTag(destinationValue.Elem(), sourceFieldTag)
+			if !destinationField.IsValid() {
+				continue
+			}
 			fieldType := structType.Field(i).Type
 			if fieldType.Kind() == reflect.Ptr {
 				fieldType = fieldType.Elem()
