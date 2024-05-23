@@ -74,8 +74,8 @@ func (d *SmbShareSettingsDataSource) Schema(_ context.Context, _ datasource.Sche
 				Attributes: map[string]schema.Attribute{
 					"ca_write_integrity": schema.StringAttribute{
 						Computed:            true,
-						Description:         "Specify the level of write-integrity on continuously available shares.",
-						MarkdownDescription: "Specify the level of write-integrity on continuously available shares.",
+						Description:         "Specify the level of write-integrity on continuously available shares. Acceptable values: none, write-read-coherent, full",
+						MarkdownDescription: "Specify the level of write-integrity on continuously available shares. Acceptable values: none, write-read-coherent, full",
 						Validators: []validator.String{
 							stringvalidator.OneOf(
 								"none",
@@ -107,8 +107,8 @@ func (d *SmbShareSettingsDataSource) Schema(_ context.Context, _ datasource.Sche
 					},
 					"change_notify": schema.StringAttribute{
 						Computed:            true,
-						Description:         "Specify level of change notification alerts on the share.",
-						MarkdownDescription: "Specify level of change notification alerts on the share.",
+						Description:         "Specify level of change notification alerts on the share. Acceptable values: all, norecurse, none",
+						MarkdownDescription: "Specify level of change notification alerts on the share. Acceptable values: all, norecurse, none",
 						Validators: []validator.String{
 							stringvalidator.OneOf(
 								"all",
@@ -140,8 +140,8 @@ func (d *SmbShareSettingsDataSource) Schema(_ context.Context, _ datasource.Sche
 					},
 					"create_permissions": schema.StringAttribute{
 						Computed:            true,
-						Description:         "Set the create permissions for new files and directories in share.",
-						MarkdownDescription: "Set the create permissions for new files and directories in share.",
+						Description:         "Set the create permissions for new files and directories in share. Acceptable values: default acl, inherit mode bits, use create mask and mode",
+						MarkdownDescription: "Set the create permissions for new files and directories in share. Acceptable values: default acl, inherit mode bits, use create mask and mode",
 						Validators: []validator.String{
 							stringvalidator.OneOf(
 								"default acl",
@@ -191,8 +191,8 @@ func (d *SmbShareSettingsDataSource) Schema(_ context.Context, _ datasource.Sche
 					},
 					"csc_policy": schema.StringAttribute{
 						Computed:            true,
-						Description:         "Client-side caching policy for the shares.",
-						MarkdownDescription: "Client-side caching policy for the shares.",
+						Description:         "Client-side caching policy for the shares. Acceptable values: manual, documents, programs, none",
+						MarkdownDescription: "Client-side caching policy for the shares. Acceptable values: manual, documents, programs, none",
 						Validators: []validator.String{
 							stringvalidator.OneOf(
 								"manual",
@@ -204,8 +204,8 @@ func (d *SmbShareSettingsDataSource) Schema(_ context.Context, _ datasource.Sche
 					},
 					"impersonate_guest": schema.StringAttribute{
 						Computed:            true,
-						Description:         "Specify the condition in which user access is done as the guest account.",
-						MarkdownDescription: "Specify the condition in which user access is done as the guest account.",
+						Description:         "Specify the condition in which user access is done as the guest account. Acceptable values: always, bad user, never",
+						MarkdownDescription: "Specify the condition in which user access is done as the guest account. Acceptable values: always, bad user, never",
 						Validators: []validator.String{
 							stringvalidator.OneOf(
 								"always",

@@ -20,9 +20,9 @@ limitations under the License.
 # Returns PowerScale SMB shares settings based on scope or zone filter
 data "powerscale_smb_share_settings" "test" {
   filter {
-       # Used for query parameter, supported by PowerScale Platform API
-     scope = "effective"
-     zone = "tfaccAccessZone"
+    # Used for query parameter, supported by PowerScale Platform API
+    scope = "effective"
+    zone  = "tfaccAccessZone"
   }
 }
 
