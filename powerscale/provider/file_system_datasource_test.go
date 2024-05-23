@@ -144,6 +144,23 @@ func TestAccFileSystemDataSourceGetMetaErr(t *testing.T) {
 	})
 }
 
+func TestAccFileSystemDataSourceReleaseMock(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.UnPatch()
+					}
+				},
+				Config: ProviderConfig + FileSystemDataSourceConfig,
+			},
+		},
+	})
+}
+
 var FileSystemDataSourceConfig = `
 data "powerscale_filesystem" "system" {
 	# Required parameter, path of the directory filesystem you would like to create a datasource out of 
