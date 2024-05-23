@@ -367,12 +367,15 @@ const (
 	// ReadTestUserMappingErrorMsg specifies error details occurred while reading user mapping test.
 	ReadTestUserMappingErrorMsg = "Could not test user mapping "
 
-	// ReadSmbServerSettingsErrorMsg specifies error details occurred while reading smb server settings.
-	ReadSmbServerSettingsErrorMsg = "Could not read smb server settings "
-
 	// ReadSMBShareSettingsErrorMsg specifies error details occurred while reading smb share settings.
 	ReadSMBShareSettingsErrorMsg = "Could not read SMB share settings "
 
 	// UpdateSMBShareSettingsErrorMsg specifies error details occurred while updating smb share settings.
 	UpdateSMBShareSettingsErrorMsg = "Could not update SMB share settings "
+
+	// ReadSmbServerSettingsErrorMsg specifies error details occurred while reading smb server settings.
+	ReadSmbServerSettingsErrorMsg = "Could not read smb server settings "
+
+	// UpdateSmbServerSettingsErrorMsg specifies error details occurred while updating smb server settings.
+	UpdateSmbServerSettingsErrorMsg = "Could not update smb server settings "
 )

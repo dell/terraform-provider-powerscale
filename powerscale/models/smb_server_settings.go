@@ -19,6 +19,35 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// SmbServerSettingsResourceModel defines the resource implementation.
+type SmbServerSettingsResourceModel struct {
+	ID                        types.String `tfsdk:"id"`
+	Scope                     types.String `tfsdk:"scope"`
+	SupportSmb2               types.Bool   `tfsdk:"support_smb2"`
+	SupportSmb3Encryption     types.Bool   `tfsdk:"support_smb3_encryption"`
+	AuditLogon                types.String `tfsdk:"audit_logon"`
+	SrvCPUMultiplier          types.Int64  `tfsdk:"srv_cpu_multiplier"`
+	ServerString              types.String `tfsdk:"server_string"`
+	Service                   types.Bool   `tfsdk:"service"`
+	SupportMultichannel       types.Bool   `tfsdk:"support_multichannel"`
+	DotSnapVisibleRoot        types.Bool   `tfsdk:"dot_snap_visible_root"`
+	OnefsNumWorkers           types.Int64  `tfsdk:"onefs_num_workers"`
+	SrvNumWorkers             types.Int64  `tfsdk:"srv_num_workers"`
+	EnableSecuritySignatures  types.Bool   `tfsdk:"enable_security_signatures"`
+	GuestUser                 types.String `tfsdk:"guest_user"`
+	RequireSecuritySignatures types.Bool   `tfsdk:"require_security_signatures"`
+	OnefsCPUMultiplier        types.Int64  `tfsdk:"onefs_cpu_multiplier"`
+	DotSnapAccessibleChild    types.Bool   `tfsdk:"dot_snap_accessible_child"`
+	AccessBasedShareEnum      types.Bool   `tfsdk:"access_based_share_enum"`
+	AuditFileshare            types.String `tfsdk:"audit_fileshare"`
+	DotSnapVisibleChild       types.Bool   `tfsdk:"dot_snap_visible_child"`
+	DotSnapAccessibleRoot     types.Bool   `tfsdk:"dot_snap_accessible_root"`
+	ServerSideCopy            types.Bool   `tfsdk:"server_side_copy"`
+	RejectUnencryptedAccess   types.Bool   `tfsdk:"reject_unencrypted_access"`
+	SupportNetbios            types.Bool   `tfsdk:"support_netbios"`
+	IgnoreEas                 types.Bool   `tfsdk:"ignore_eas"`
+}
+
 // SmbServerSettingsDataSourceModel defines the data source implementation.
 type SmbServerSettingsDataSourceModel struct {
 	ID                      types.String             `tfsdk:"id"`

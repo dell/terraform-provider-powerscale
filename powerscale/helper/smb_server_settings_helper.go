@@ -24,6 +24,22 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 )
 
+// GetSmbServerSettings retrieve smb server settings.
+func GetSmbServerSettings(ctx context.Context, client *client.Client, scope string) (*powerscale.V6SmbSettingsGlobal, error) {
+	getParam := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv7SmbSettingsGlobal(ctx)
+	getParam = getParam.Scope(scope)
+	smbServerSettings, _, err := getParam.Execute()
+	return smbServerSettings, err
+}
+
+// UpdateSmbServerSettings update smb server settings.
+func UpdateSmbServerSettings(ctx context.Context, client *client.Client, smbServerSettings powerscale.V6SmbSettingsGlobalSettings) error {
+	updateParam := client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv7SmbSettingsGlobal(ctx)
+	updateParam = updateParam.V7SmbSettingsGlobal(smbServerSettings)
+	_, err := updateParam.Execute()
+	return err
+}
+
 // FilterSmbServerSettings filter smb server settings.
 func FilterSmbServerSettings(ctx context.Context, client *client.Client, filter *models.SmbServerSettingsFilter) (*powerscale.V6SmbSettingsGlobal, error) {
 	filterParam := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv7SmbSettingsGlobal(ctx)
