@@ -27,6 +27,7 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -190,7 +191,8 @@ func (r *S3BucketResource) Create(ctx context.Context, request resource.CreateRe
 		"bucketeToCreate": bucketeToCreate,
 	})
 
-	bucket, err := helper.CreateS3Bucket(ctx, r.client, bucketeToCreate, bucketPlan.Zone.ValueString())
+	zone := bucketPlan.Zone
+	bucket, err := helper.CreateS3Bucket(ctx, r.client, bucketeToCreate, zone.ValueString())
 	if err != nil {
 		errStr := constants.CreateS3BucketErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -228,6 +230,22 @@ func (r *S3BucketResource) Create(ctx context.Context, request resource.CreateRe
 		)
 		return
 	}
+	if bucketPlan.ACL.IsNull() {
+		granteeType := map[string]attr.Type{
+			"id":   types.StringType,
+			"name": types.StringType,
+			"type": types.StringType,
+		}
+		aclType := map[string]attr.Type{
+			"grantee": types.ObjectType{
+				AttrTypes: granteeType,
+			},
+			"permission": types.StringType,
+		}
+		var aclObjects []attr.Value
+		bucketPlan.ACL, _ = types.ListValue(types.ObjectType{AttrTypes: aclType}, aclObjects)
+	}
+	bucketPlan.Zone = zone
 
 	diags = response.State.Set(ctx, bucketPlan)
 	response.Diagnostics.Append(diags...)
@@ -333,8 +351,8 @@ func (r *S3BucketResource) Update(ctx context.Context, request resource.UpdateRe
 		)
 		return
 	}
-	zoneName := bucketState.Zone.ValueString()
-	err = helper.UpdateS3Bucket(ctx, r.client, bucketID, zoneName, bucketToUpdate)
+	zone := bucketPlan.Zone
+	err = helper.UpdateS3Bucket(ctx, r.client, bucketID, zone.ValueString(), bucketToUpdate)
 	if err != nil {
 		errStr := constants.UpdateS3BucketErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -347,7 +365,7 @@ func (r *S3BucketResource) Update(ctx context.Context, request resource.UpdateRe
 	tflog.Debug(ctx, "calling get s3 bucket by ID on pscale client", map[string]interface{}{
 		"s3BucketID": bucketID,
 	})
-	updatedBucket, err := helper.GetS3Bucket(ctx, r.client, bucketID, zoneName)
+	updatedBucket, err := helper.GetS3Bucket(ctx, r.client, bucketID, zone.ValueString())
 	if err != nil {
 		errStr := constants.GetS3BucketErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -364,7 +382,7 @@ func (r *S3BucketResource) Update(ctx context.Context, request resource.UpdateRe
 		return
 	}
 
-	err = helper.CopyFieldsToNonNestedModel(ctx, updatedBucket.Buckets[0], &bucketState)
+	err = helper.CopyFieldsToNonNestedModel(ctx, updatedBucket.Buckets[0], &bucketPlan)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error reading s3 bucket",
@@ -373,7 +391,23 @@ func (r *S3BucketResource) Update(ctx context.Context, request resource.UpdateRe
 		return
 	}
 
-	diags = response.State.Set(ctx, bucketState)
+	if bucketPlan.ACL.IsNull() {
+		granteeType := map[string]attr.Type{
+			"id":   types.StringType,
+			"name": types.StringType,
+			"type": types.StringType,
+		}
+		aclType := map[string]attr.Type{
+			"grantee": types.ObjectType{
+				AttrTypes: granteeType,
+			},
+			"permission": types.StringType,
+		}
+		var aclObjects []attr.Value
+		bucketPlan.ACL, _ = types.ListValue(types.ObjectType{AttrTypes: aclType}, aclObjects)
+	}
+
+	diags = response.State.Set(ctx, bucketPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return

@@ -54,6 +54,9 @@ func ListS3Buckets(ctx context.Context, client *client.Client, bucketFilter *mod
 
 // CreateS3Bucket create s3 bucket.
 func CreateS3Bucket(ctx context.Context, client *client.Client, bucket powerscale.V10S3Bucket, zone string) (*powerscale.CreateResponse, error) {
+	if !bucket.HasAcl() {
+		bucket.SetAcl(make([]powerscale.V10S3BucketAclItem, 0))
+	}
 	param := client.PscaleOpenAPIClient.ProtocolsApi.CreateProtocolsv12S3Bucket(ctx).V12S3Bucket(bucket)
 	if len(zone) > 0 {
 		param = param.Zone(zone)
@@ -74,6 +77,9 @@ func GetS3Bucket(ctx context.Context, client *client.Client, bucketID string, zo
 
 // UpdateS3Bucket update s3 bucket.
 func UpdateS3Bucket(ctx context.Context, client *client.Client, bucketID string, zone string, bucketToUpdate powerscale.V10S3BucketExtendedExtended) error {
+	if !bucketToUpdate.HasAcl() {
+		bucketToUpdate.SetAcl(make([]powerscale.V10S3BucketAclItem, 0))
+	}
 	updateParam := client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv12S3Bucket(ctx, bucketID).V12S3Bucket(bucketToUpdate)
 	if len(zone) > 0 {
 		updateParam = updateParam.Zone(zone)
@@ -94,7 +100,9 @@ func DeleteS3Bucket(ctx context.Context, client *client.Client, bucketID string,
 
 // ValidateS3BucketUpdate validates if update params contain params only for creating.
 func ValidateS3BucketUpdate(plan models.S3BucketResource, state models.S3BucketResource) error {
-	if !plan.Zone.Equal(state.Zone) {
+	if !plan.Zone.Equal(state.Zone) &&
+		!((plan.Zone.ValueString() == "System" && len(state.Zone.ValueString()) == 0) ||
+			(state.Zone.ValueString() == "System" && len(plan.Zone.ValueString()) == 0)) {
 		return fmt.Errorf("do not update field Zone")
 	}
 
