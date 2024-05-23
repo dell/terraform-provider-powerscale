@@ -281,7 +281,179 @@ func BuildFilesystemDatasource(ctx context.Context, state *models.FileSystemData
 }
 
 // UpdateFileSystemResourceState Updates File System Resource State.
-func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemResource, state *models.FileSystemResource, acl *powerscale.NamespaceAcl, meta *powerscale.NamespaceMetadataList) {
+func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemResource, acl *powerscale.NamespaceAcl, meta *powerscale.NamespaceMetadataList) (diags diag.Diagnostics) {
+
+	for _, attribute := range meta.Attrs {
+		switch *attribute.Name {
+		case "type":
+			plan.Type = types.StringValue(*attribute.Value)
+		case "create_time":
+			plan.CreationTime = types.StringValue(*attribute.Value)
+		}
+	}
+	if plan.Type.IsUnknown() {
+		plan.Type = types.StringNull()
+	}
+	if plan.CreationTime.IsUnknown() {
+		plan.CreationTime = types.StringNull()
+	}
+	if owner, ok := acl.GetOwnerOk(); ok {
+		// setting owner type
+		// - if owner type is unknown, will set it to the actual type in response.
+		// - else the owner type in plan not equals the actual type value in the response,
+		// still keep the plan owner type value but will add a warning to the diagnostics to report actual owner type in response.
+		ownerResType := types.StringNull()
+		if owner.Type != nil {
+			ownerResType = types.StringValue(owner.GetType())
+		}
+		ownerTypeUnknown := false
+		if plan.Owner.Type.IsUnknown() {
+			ownerTypeUnknown = true
+			plan.Owner.Type = ownerResType
+		} else if !ownerResType.Equal(plan.Owner.Type) {
+			diags.AddWarning("File System ACL Owner type is invalid", fmt.Sprintf("File System ACL Owner type is invalid, actual type is '%s'", ownerResType.ValueString()))
+		}
+		if !plan.Owner.ID.IsUnknown() && plan.Owner.Name.IsUnknown() {
+			// when owner id is not empty in plan but owner name is empty, and will check if the owner id matches the actual id in response:
+			// - if the owner id match, keep the owner id and will set this unknown owner name to the actual name in response.
+			// - if the owner id don't match, still keep the plan owner id value but will add a warning to the diagnostics to report actual owner id in response,
+			// and revert the user's type to null if the type was empty.
+			plan.Owner.Name = types.StringNull()
+			ownerResID := types.StringValue(owner.GetId())
+			if !ownerResID.Equal(plan.Owner.ID) {
+				if ownerTypeUnknown {
+					plan.Owner.Type = types.StringNull()
+				}
+				diags.AddWarning("File System ACL Owner ID is invalid", fmt.Sprintf("File System ACL Owner ID is invalid, actual ID is '%s'", ownerResID.ValueString()))
+			} else {
+				if ownerName, ok := owner.GetNameOk(); ok {
+					plan.Owner.Name = types.StringValue(*ownerName)
+				}
+			}
+		} else if plan.Owner.ID.IsUnknown() && !plan.Owner.Name.IsUnknown() {
+			// when owner name is not empty in plan but owner id is empty, and will check if the owner name matches the actual name in response:
+			// - if the owner name match, keep the owner name and will set this unknown owner id to the actual id in response.
+			// - if the owner name don't match,  still keep the plan owner name value but will add a warning to the diagnostics to report actual owner name in response,
+			// and revert the user's type to null if the type was empty.
+			plan.Owner.ID = types.StringNull()
+			ownerResName := types.StringValue(owner.GetName())
+			if !ownerResName.Equal(plan.Owner.Name) {
+				if ownerTypeUnknown {
+					plan.Owner.Type = types.StringNull()
+				}
+				diags.AddWarning("File System ACL Owner Name is invalid", fmt.Sprintf("File System ACL Owner Name is invalid, actual Name is '%s'", ownerResName.ValueString()))
+			} else {
+				if ownerID, ok := owner.GetIdOk(); ok {
+					plan.Owner.ID = types.StringValue(*ownerID)
+				}
+			}
+		} else {
+			// when owner name and id are not empty in plan, and will check if the owner name and id match the actual name and id in response:
+			// - if the owner name match, keep the owner name; else still keep the plan owner name value but will add a warning to the diagnostics, and revert the user's type to null if the type was empty.
+			// - if the owner id match, keep the owner id; else still keep the plan owner id value but will add a warning to the diagnostics, and revert the user's type to null if the type was empty.
+			ownerResID := types.StringValue(owner.GetId())
+			if !ownerResID.Equal(plan.Owner.ID) {
+				if ownerTypeUnknown {
+					plan.Owner.Type = types.StringNull()
+				}
+				diags.AddWarning("File System ACL Owner ID is invalid", fmt.Sprintf("File System ACL Owner ID is invalid, actual ID is '%s'", ownerResID.ValueString()))
+			}
+			ownerResName := types.StringValue(owner.GetName())
+			if !ownerResName.Equal(plan.Owner.Name) {
+				if ownerTypeUnknown {
+					plan.Owner.Type = types.StringNull()
+				}
+				diags.AddWarning("File System ACL Owner Name is invalid", fmt.Sprintf("File System ACL Owner Name is invalid, actual Name is '%s'", ownerResName.ValueString()))
+			}
+		}
+	}
+	if group, ok := acl.GetGroupOk(); ok {
+		// setting group type
+		// - if group type is unknown, will set it to the actual type in response.
+		// - else the group type in plan not equals the actual type value in the response,
+		// still keep the plan group type value but will add a warning to the diagnostics to report actual group type in response.
+		groupResType := types.StringNull()
+		if group.Type != nil {
+			groupResType = types.StringValue(group.GetType())
+		}
+		groupTypeUnknown := false
+		if plan.Group.Type.IsUnknown() {
+			groupTypeUnknown = true
+			plan.Group.Type = groupResType
+		} else if !groupResType.Equal(plan.Group.Type) {
+			diags.AddWarning("File System ACL Group type is invalid", fmt.Sprintf("File System ACL Group type is invalid, actual type is '%s'", groupResType.ValueString()))
+		}
+		if !plan.Group.ID.IsUnknown() && plan.Group.Name.IsUnknown() {
+			// when group id is not empty in plan but group name is empty, and will check if the group id matches the actual id in response:
+			// - if the group id match, keep the group id and will set this unknown group name to the actual name in response.
+			// - if the group id don't match, still keep the plan group id value but will add a warning to the diagnostics to report actual group id in response,
+			// and revert the user's type to null if the type was empty.
+			plan.Group.Name = types.StringNull()
+			groupResID := types.StringValue(group.GetId())
+			if !groupResID.Equal(plan.Group.ID) {
+				if groupTypeUnknown {
+					plan.Group.Type = types.StringNull()
+				}
+				diags.AddWarning("File System ACL Group ID is invalid", fmt.Sprintf("File System ACL Group ID is invalid, actual ID is '%s'", groupResID.ValueString()))
+			} else {
+				if groupName, ok := group.GetNameOk(); ok {
+					plan.Group.Name = types.StringValue(*groupName)
+				}
+			}
+		} else if plan.Group.ID.IsUnknown() && !plan.Group.Name.IsUnknown() {
+			// when group name is not empty in plan but group id is empty, and will check if the group name matches the actual name in response:
+			// - if the group name match, keep the group name and will set this unknown group id to the actual id in response.
+			// - if the group name don't match,  still keep the plan group name value but will add a warning to the diagnostics to report actual group name in response,
+			// and revert the user's type to null if the type was empty.
+			plan.Group.ID = types.StringNull()
+			groupResName := types.StringValue(group.GetName())
+			if !groupResName.Equal(plan.Group.Name) {
+				if groupTypeUnknown {
+					plan.Group.Type = types.StringNull()
+				}
+				diags.AddWarning("File System ACL Group Name is invalid", fmt.Sprintf("File System ACL Group Name is invalid, actual Name is '%s'", groupResName.ValueString()))
+			} else {
+				if groupID, ok := group.GetIdOk(); ok {
+					plan.Group.ID = types.StringValue(*groupID)
+				}
+			}
+		} else {
+			// when group name and id are not empty in plan, and will check if the group name and id match the actual name and id in response:
+			// - if the group name match, keep the group name; else still keep the plan group name value but will add a warning to the diagnostics, and revert the user's type to null if the type was empty.
+			// - if the group id match, keep the group id; else still keep the plan group id value but will add a warning to the diagnostics, and revert the user's type to null if the type was empty.
+			groupResID := types.StringValue(group.GetId())
+			if !groupResID.Equal(plan.Group.ID) {
+				if groupTypeUnknown {
+					plan.Group.Type = types.StringNull()
+				}
+				diags.AddWarning("File System ACL Group ID is invalid", fmt.Sprintf("File System ACL Group ID is invalid, actual ID is '%s'", groupResID.ValueString()))
+			}
+			groupResName := types.StringValue(group.GetName())
+			if !groupResName.Equal(plan.Group.Name) {
+				if groupTypeUnknown {
+					plan.Group.Type = types.StringNull()
+				}
+				diags.AddWarning("File System ACL Group Name is invalid", fmt.Sprintf("File System ACL Group Name is invalid, actual Name is '%s'", groupResName.ValueString()))
+			}
+		}
+	}
+	if authoritative, ok := acl.GetAuthoritativeOk(); ok {
+		plan.Authoritative = types.StringValue(*authoritative)
+	} else if plan.Authoritative.IsUnknown() {
+		plan.Authoritative = types.StringNull()
+	}
+	if mode, ok := acl.GetModeOk(); ok {
+		plan.Mode = types.StringValue(*mode)
+	} else if plan.Mode.IsUnknown() {
+		plan.Mode = types.StringNull()
+	}
+	plan.ID = types.StringValue(GetDirectoryPath(plan.DirectoryPath.ValueString(), plan.Name.ValueString()))
+	plan.FullPath = types.StringValue("/" + plan.ID.ValueString())
+	return
+}
+
+// UpdateFileSystemResourceImportState Updates File System Resource Import State.
+func UpdateFileSystemResourceImportState(ctx context.Context, id string, state *models.FileSystemResource, acl *powerscale.NamespaceAcl, meta *powerscale.NamespaceMetadataList) {
 
 	for _, attribute := range meta.Attrs {
 		switch *attribute.Name {
@@ -320,18 +492,15 @@ func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemR
 	if mode, ok := acl.GetModeOk(); ok {
 		state.Mode = types.StringValue(*mode)
 	}
-}
-
-// UpdateFileSystemResourcePlanData Updates File System Resource State from plan data.
-func UpdateFileSystemResourcePlanData(plan *models.FileSystemResource, state *models.FileSystemResource) {
-	state.ID = types.StringValue(GetDirectoryPath(plan.DirectoryPath.ValueString(), plan.Name.ValueString()))
-	state.FullPath = types.StringValue("/" + state.ID.ValueString())
-	state.Name = plan.Name
-	state.DirectoryPath = plan.DirectoryPath
-	state.Overwrite = plan.Overwrite
-	state.Recursive = plan.Recursive
-	state.AccessControl = plan.AccessControl
-	state.QueryZone = plan.QueryZone
+	state.ID = types.StringValue(id)
+	dir, name := filepath.Split(id)
+	dir = filepath.Clean(dir)
+	name = filepath.Clean(name)
+	state.Name = types.StringValue(name)
+	state.DirectoryPath = types.StringValue("/" + dir)
+	state.Overwrite = types.BoolValue(false)
+	state.Recursive = types.BoolValue(true)
+	state.AccessControl = state.Mode
 }
 
 // GetDirectoryPath Gets the final directory path(dirPath+dirName).
@@ -345,18 +514,11 @@ func GetDirectoryPath(dirPath string, dirName string) string {
 const acl = "acl"
 const mode = "mode"
 
-// UpdateFileSystem Updates the file system attributes.
-func UpdateFileSystem(ctx context.Context, client *client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) error {
-
+// UpdateFileSystemOwnerAndGroup Updates the file system Owner and Group.
+func UpdateFileSystemOwnerAndGroup(ctx context.Context, client *client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) error {
 	// Update Owner / Group if modified
 	if plan.Owner.Name.ValueString() != state.Owner.Name.ValueString() || plan.Group.Name.ValueString() != state.Group.Name.ValueString() ||
 		plan.Owner.ID.ValueString() != state.Owner.ID.ValueString() || plan.Group.ID.ValueString() != state.Group.ID.ValueString() {
-		errAuth := ValidateUserAndGroup(ctx, client, plan.Owner, plan.Group, plan.QueryZone.ValueString())
-		if errAuth != nil {
-			errStr := constants.UpdateFileSystemErrorMsg
-			message := GetErrorString(errAuth, errStr)
-			return fmt.Errorf(message)
-		}
 		setACLUpdReq := client.PscaleOpenAPIClient.NamespaceApi.SetAcl(ctx, dirPath)
 		setACLUpdReq = setACLUpdReq.Acl(true)
 
@@ -391,11 +553,16 @@ func UpdateFileSystem(ctx context.Context, client *client.Client, dirPath string
 
 		_, _, err := setACLUpdReq.Execute()
 		if err != nil {
-			errStr := constants.UpdateFileSystemErrorMsg + "Error Updating User / Groups for the filesystem with error: "
+			errStr := constants.SetFileSystemACLErrorMsg
 			message := GetErrorString(err, errStr)
-			return fmt.Errorf(message)
+			return fmt.Errorf("error setting the File system Acl for %s: %s", dirPath, message)
 		}
 	}
+	return nil
+}
+
+// UpdateFileSystemAccessControl Updates the file system access control.
+func UpdateFileSystemAccessControl(ctx context.Context, client *client.Client, dirPath string, plan *models.FileSystemResource, state *models.FileSystemResource) error {
 	// Update Access Control if modified and supported
 	if !plan.AccessControl.IsNull() && plan.AccessControl.ValueString() != "" && plan.AccessControl.ValueString() != state.AccessControl.ValueString() {
 
@@ -414,7 +581,7 @@ func UpdateFileSystem(ctx context.Context, client *client.Client, dirPath string
 
 		_, _, err := setACLUpdReq.Execute()
 		if err != nil {
-			errStr := constants.UpdateFileSystemErrorMsg + "Error Updating AccessControl for the filesystem with error: "
+			errStr := constants.SetFileSystemACLErrorMsg + "Error Updating AccessControl for the filesystem with error: "
 			message := GetErrorString(err, errStr)
 			return fmt.Errorf(message)
 		}
@@ -439,76 +606,18 @@ func getNewAccessControlParams(accessControl string) (string, string) {
 	}
 }
 
-// ValidateUserAndGroup check if owner/group information is correct.
-func ValidateUserAndGroup(ctx context.Context, client *client.Client, owner models.MemberObject, group models.MemberObject, accessZone string) error {
-	var ownerAuthID, groupAuthID string
-	if !owner.Name.IsNull() && !owner.Name.IsUnknown() {
-		ownerAuthID = owner.Name.ValueString()
-	} else if !owner.ID.IsNull() && !owner.ID.IsUnknown() {
-		ownerAuthID = owner.ID.ValueString()
-	}
-	if !group.Name.IsNull() && !group.Name.IsUnknown() {
-		groupAuthID = group.Name.ValueString()
-	} else if !group.ID.IsNull() && !group.ID.IsUnknown() {
-		groupAuthID = group.ID.ValueString()
-	}
-
-	// Validate owner information
-	userReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, ownerAuthID)
-
-	// If zone filter is set use it otherwise leave blank and it will use the default zone
-	if accessZone != "" {
-		userReq = userReq.Zone(accessZone)
-	}
-
-	users, _, err := userReq.Execute()
-	if err != nil {
-		errStr := "unable to validate user information with error: "
-		message := GetErrorString(err, errStr)
-		return fmt.Errorf(message)
-	}
-	user, ok := users.GetUsersOk()
-	if ok && len(user) > 0 {
-		userEntity := user[0].OnDiskUserIdentity
-		if !owner.ID.IsUnknown() && *userEntity.Id != owner.ID.ValueString() || !owner.Name.IsUnknown() && *userEntity.Name != owner.Name.ValueString() || !owner.Type.IsUnknown() && *userEntity.Type != owner.Type.ValueString() {
-			return fmt.Errorf("incorrect owner information. Please make sure owner id, name, and type are valid")
-		}
-	} else {
-		return fmt.Errorf("unable to retrieve user information")
-	}
-
-	// Validate group information
-	groupReq := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthGroup(ctx, groupAuthID)
-
-	// If zone filter is set use it otherwise leave blank and it will use the default zone
-	if accessZone != "" {
-		groupReq = groupReq.Zone(accessZone)
-	}
-
-	groups, _, err := groupReq.Execute()
-	if err != nil {
-		errStr := "unable to validate group information with error: "
-		message := GetErrorString(err, errStr)
-		return fmt.Errorf(message)
-	}
-	grp, okGroup := groups.GetGroupsOk()
-	if okGroup && len(grp) > 0 {
-		grpEntity := grp[0].Gid
-		if !group.ID.IsUnknown() && *grpEntity.Id != group.ID.ValueString() || !group.Name.IsUnknown() && *grpEntity.Name != group.Name.ValueString() || !group.Type.IsUnknown() && *grpEntity.Type != group.Type.ValueString() {
-			return fmt.Errorf("incorrect group information. Please make sure group id, name, and type are valid")
-		}
-	} else {
-		return fmt.Errorf("unable to retrieve group information")
-	}
-	return nil
-}
-
 // ExecuteCreate executes the create file system request.
 func ExecuteCreate(reqCreate powerscale.ApiCreateDirectoryRequest) (map[string]interface{}, *http.Response, error) {
 	return reqCreate.Execute()
 }
 
-// ExecuteSetACL executes the create set ACL for file system request.
-func ExecuteSetACL(reqSetACL powerscale.ApiSetAclRequest) (map[string]interface{}, *http.Response, error) {
-	return reqSetACL.Execute()
+// DeleteFileSystem Deletes a filesystem.
+func DeleteFileSystem(ctx context.Context, client *client.Client, dirPath string) error {
+
+	if _, _, err := client.PscaleOpenAPIClient.NamespaceApi.DeleteDirectory(ctx, dirPath).Execute(); err != nil {
+		errStr := constants.DeleteFileSystemErrorMsg
+		message := GetErrorString(err, errStr)
+		return fmt.Errorf("error deleting filesystem - %s : %s", dirPath, message)
+	}
+	return nil
 }
