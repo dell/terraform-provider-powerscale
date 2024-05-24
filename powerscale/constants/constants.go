@@ -360,4 +360,10 @@ const (
 
 	// ReadSmbServerSettingsErrorMsg specifies error details occurred while reading smb server settings.
 	ReadSmbServerSettingsErrorMsg = "Could not read smb server settings "
+
+	// ReadSMBShareSettingsErrorMsg specifies error details occurred while reading smb share settings.
+	ReadSMBShareSettingsErrorMsg = "Could not read SMB share settings "
+
+	// UpdateSMBShareSettingsErrorMsg specifies error details occurred while updating smb share settings.
+	UpdateSMBShareSettingsErrorMsg = "Could not update SMB share settings "
 )
