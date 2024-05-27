@@ -21,46 +21,49 @@ limitations under the License.
 
 # PowerScale SMB share settings provide clients network access to file system resources on the cluster
 resource "powerscale_smb_share_settings" "example" {
+
+  # Required field both for creating and updating
+  zone = "System"
+
   # Optional fields both for creating and updating
   # Please check the acceptable inputs for each setting in the documentation
-  access_based_enumeration = false
-  #access_based_enumeration_root_only = false
-  #allow_delete_readonly              = false
-  #allow_execute_always               = false
-  #ca_timeout                         = 120
+  #access_based_enumeration           = true
+  #access_based_enumeration_root_only = true
+  #allow_delete_readonly              = true
+  #allow_execute_always               = true
+  #ca_timeout                         = 12
   #ca_write_integrity                 = "write-read-coherent"
-  #change_notify                      = "norecurse"
+  #change_notify                      = "none"
   #create_permissions                 = "default acl"
-  directory_create_mask = 0
-  #directory_create_mode              = 292
+  #directory_create_mask              = 0
+  #directory_create_mode              = 0
   #file_create_mask                   = 448
   #file_create_mode                   = 64
   #file_filter_extensions             = []
   #file_filter_type                   = "deny"
-  #file_filtering_enabled             = false
-  #hide_dot_files                     = false
+  #file_filtering_enabled             = true
+  #hide_dot_files                     = true
   #host_acl                           = []
   #impersonate_guest                  = "never"
-  #mangle_byte_start                  = 60672
+  #mangle_byte_start                  = 258
   #mangle_map                         = [
   #    "0x01-0x1F:-1",
   #    "0x22:-1",
   #    "0x2A:-1",
   #    "0x3A:-1",
   #    "0x3C:-1",
-  #    "0x3E:-1",
+  #   "0x3E:-1",
   #    "0x3F:-1",
   #    "0x5C:-1",
   #]
   #ntfs_acl_support                   = true
   #oplocks                            = true
-  #smb3_encryption_enabled            = false
-  #sparse_file                        = false
+  #smb3_encryption_enabled            = true
+  #sparse_file                        = true
   #strict_ca_lockout                  = true
   #strict_flush                       = true
-  #strict_locking                     = false
-  zone = "System"
-  #scope = "effective"
+  #strict_locking                     = true
+  #scope                             = "effective"
 }
 
 # After the execution of above resource block, an SMB share would have been created on the PowerScale array.

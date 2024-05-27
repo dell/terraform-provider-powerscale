@@ -161,8 +161,7 @@ func (r *SmbShareSettingsResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: "Handle SMB flush operations.",
 			},
 			"zone": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
+				Required:            true,
 				Description:         "Name of the access zone in which to update settings",
 				MarkdownDescription: "Name of the access zone in which to update settings",
 				Validators: []validator.String{
