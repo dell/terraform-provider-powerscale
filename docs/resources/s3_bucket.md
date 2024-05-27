@@ -66,7 +66,7 @@ resource "powerscale_s3_bucket" "s3_bucket_example" {
 
   # Optional attributes, can be updated
   #
-  # By default acl is empty. To add an acl item, both grantee and permission are required.
+  # By default acl is an empty list. To add an acl item, both grantee and permission are required.
   # Accepted values for permission are: READ, WRITE, READ_ACP, WRITE_ACP, FULL_CONTROL 
   # acl = [{
   #   grantee = {

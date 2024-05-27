@@ -74,6 +74,7 @@ func TestAccS3BucketResource(t *testing.T) {
 					resource.TestCheckResourceAttr("powerscale_s3_bucket.bucket_test", "name", bucketName),
 					resource.TestCheckResourceAttr("powerscale_s3_bucket.bucket_test", "description", "Updated Description"),
 					resource.TestCheckResourceAttr("powerscale_s3_bucket.bucket_test", "object_acl_policy", "deny"),
+					resource.TestCheckResourceAttr("powerscale_s3_bucket.bucket_test", "acl.#", "0"),
 				),
 			},
 		},
@@ -319,13 +320,6 @@ resource "powerscale_s3_bucket" "bucket_test" {
 	path = "/ifs/%s"
 	create_path = true
 	zone = "System"
-	acl = [{
-		grantee = {
-			name = "Everyone"
-			type = "wellknown"
-		}
-		permission = "FULL_CONTROL"
-	}]
 	description = "Updated Description"
 	object_acl_policy = "deny"
 }
