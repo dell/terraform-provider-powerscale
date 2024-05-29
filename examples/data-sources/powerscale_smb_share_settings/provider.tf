@@ -23,8 +23,8 @@ terraform {
 }
 
 provider "powerscale" {
-  username = "root"
-  password = "Password123!"
-  endpoint = "https://10.225.108.112:8080"
-  insecure = true
+  username = var.username
+  password = var.password
+  endpoint = var.endpoint
+  insecure = var.insecure
 }

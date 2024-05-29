@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -364,7 +364,6 @@ func (d *SmbShareSettingsDataSource) Read(ctx context.Context, req datasource.Re
 
 	state.SmbShareSettings = &settings
 	state.ID = types.StringValue(idValue)
-	//state.SmbShareSettings.Zone = types.StringValue(zoneStr)
 
 	state.SmbShareSettingsFilter = config.SmbShareSettingsFilter
 
