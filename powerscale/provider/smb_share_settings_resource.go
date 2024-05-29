@@ -408,6 +408,7 @@ func (r SmbShareSettingsResource) Read(ctx context.Context, request resource.Rea
 	zone := shareState.Zone.ValueString()
 	scope := shareState.Scope.ValueString()
 	shareResponse, err := helper.GetSmbShareSettings(ctx, r.client, scope, zone)
+
 	if err != nil {
 		errStr := constants.ReadSMBShareSettingsErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
