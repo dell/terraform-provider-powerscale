@@ -112,6 +112,15 @@ const (
 	// UpdateACLSettingsErrorMsg specifies error details occurred while updating ACL Settings.
 	UpdateACLSettingsErrorMsg = "Could not update acl settings "
 
+	// ReadNamespaceACLErrorMsg specifies error details occurred while reading Namespace ACL.
+	ReadNamespaceACLErrorMsg = "Could not read namespace acl "
+
+	// CreateNamespaceACLErrorMsg specifies error details occurred while creating Namespace ACL.
+	CreateNamespaceACLErrorMsg = "Could not create namespace acl "
+
+	// UpdateNamespaceACLErrorMsg specifies error details occurred while updating Namespace ACL.
+	UpdateNamespaceACLErrorMsg = "Could not update namespace acl "
+
 	// ReadRolePrivilegeErrorMsg specifies error details occurred while reading Role Privilege.
 	ReadRolePrivilegeErrorMsg = "Could not read role privilege "
 
