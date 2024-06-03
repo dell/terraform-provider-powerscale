@@ -3,22 +3,5 @@
 # documentation for this file can be found at:
 # https://help.github.com/en/articles/about-code-owners
 
-# These are the default owners for the code and will
-# be requested for review when someone opens a pull request.
-# order is alphabetical for easier maintenance.
-#
-# Akash Shendge (shenda1)
-# Connar Doria (doriac11)
-# Forrest Xia (forrestxia)
-# Haiming Tan (tanh17)
-# Jason Jin (NavisJ)
-# Nikita Joshi (nikitajoshi1)
-# Peter Cao (P-Cao)
-# Ray Liu (RayLiu7)
-# Shekhar Joshi (shekhar-j)
-# Tao He (taohe1012)
-# Varun Chinta (varunchinta)
-# Yiming Bao (baoy1)
-
 # for all files:
-* @shenda1 @forrestxia @baoy1 @taohe1012 @P-Cao @tanh17 @NavisJ @doriac11 @varunchinta @nikitajoshi1 @shekhar-j @RayLiu7
+* @shenda1 @forrestxia @baoy1 @taohe1012 @P-Cao @tanh17 @doriac11 @varunchinta @nikitajoshi1 @shekhar-j @RayLiu7 @vangork @sapana05 @MangirishK
