@@ -405,7 +405,7 @@ resource "powerscale_namespace_acl" "namespace_acl_test" {
 		}
 	},
 	{
-		accessrights = ["dir_gen_read","dir_gen_write"]
+		accessrights = ["dir_gen_read","dir_gen_execute"]
 		accesstype = "allow"
 		inherit_flags = []
 		"trustee": {
