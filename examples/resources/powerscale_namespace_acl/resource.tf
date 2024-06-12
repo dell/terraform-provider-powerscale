@@ -69,3 +69,16 @@ resource "powerscale_namespace_acl" "example_namespace_acl" {
 # After the execution of above resource block, Namespace ACL would have been cached in terraform state file, or
 # Namespace ACL would have been updated on PowerScale.
 # For more information, Please check the terraform state file.
+
+# Example: A comparison of accessrights between acl_custom (user raw configuration) and acl (array effective settings)
+# |                  acl_custom                   |        acl        |    note   |
+# |-----------------------------------------------|-------------------|-----------|
+# |          "dir_gen_all","dir_gen_read"         |   "dir_gen_all"   |     1     |
+# |                 "generic_read"                |   "dir_gen_read"  |     2     |
+# | "traverse", "std_read_dac", "std_synchronize" | "dir_gen_execute" |     3     |
+#
+# Note:
+# 1. "dir_gen_read" will be merged into "dir_gen_all"
+# 2. "generic_read" will be converted to "dir_gen_read" for a directory
+# 3. "traverse", "std_read_dac", "std_synchronize" will be combined to "dir_gen_execute"
+# These examples are only typical cases for your reference. Not all cases are listed.
