@@ -98,7 +98,7 @@ resource "powerscale_smb_share_settings" "example" {
   #scope                             = "effective"
 }
 
-# After the execution of above resource block, an SMB share would have been created on the PowerScale array.
+# After the execution of above resource block, an SMB share Settings would have been created on the PowerScale array.
 # For more information, Please check the terraform state file.
 ```
 
