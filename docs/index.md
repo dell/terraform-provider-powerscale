@@ -53,7 +53,7 @@ terraform {
   required_providers {
     powerscale = {
       source  = "registry.terraform.io/dell/powerscale"
-      version = "1.1.0"
+      version = "1.4.0"
     }
   }
 }
@@ -137,6 +137,16 @@ resource "powerscale_user" "example_user" {
   enabled = true
 }
 
+resource "powerscale_user" "testUser1" {
+  name       = "example_user1"
+  query_zone = powerscale_accesszone.zone.name
+}
+
+resource "powerscale_user" "testUser2" {
+  name       = "example_user2"
+  query_zone = powerscale_accesszone.zone.name
+}
+
 resource "powerscale_user_group" "example_user_group" {
   name  = "example_user_group"
   users = [powerscale_user.example_user.name]
@@ -187,6 +197,136 @@ resource "powerscale_smb_share" "share_example" {
       }
     }
   ]
+}
+
+resource "powerscale_role" "role_test" {
+  name        = "role_test"
+  zone        = powerscale_accesszone.zone.name
+  description = "tfacc for role test"
+  members = [
+    {
+      id = format("%s:%s", "UID", powerscale_user.testUser1.uid)
+    },
+  ]
+  privileges = [
+    {
+      id         = "ISI_PRIV_LOGIN_PAPI",
+      permission = "r"
+    }
+  ]
+}
+
+resource "powerscale_nfs_export_settings" "example" {
+  map_failure = {
+    enabled       = false
+    primary_group = {}
+    user = {
+      id = format("%s:%s", "UID", powerscale_user.testUser1.uid)
+    }
+  }
+  map_root = {
+    enabled       = true
+    primary_group = {}
+    user = {
+      id = format("%s:%s", "UID", powerscale_user.testUser1.uid)
+    }
+  }
+  zone = powerscale_accesszone.zone.name
+}
+
+resource "powerscale_user_mapping_rules" "testUserMappingRules" {
+  zone = powerscale_accesszone.zone.name
+  parameters = {
+    default_unix_user = {
+      user = "Guest"
+    }
+  }
+  rules = [
+    {
+      operator = "insert",
+      options = {
+        break = true,
+        default_user = {
+          user = "Guest"
+        },
+        group  = true,
+        groups = true,
+        user   = true
+      },
+      target_user = {
+        user = powerscale_user.testUser2.name
+      },
+      source_user = {
+        user = powerscale_user.testUser1.name
+      }
+    },
+  ]
+  test_mapping_users = [
+    {
+      name = powerscale_user.testUser1.name
+    },
+    {
+      name = powerscale_user.testUser2.name
+    }
+  ]
+}
+
+resource "powerscale_namespace_acl" "example_namespace_acl" {
+  namespace = powerscale_filesystem.example_file_system.id
+  acl_custom = [
+    {
+      accessrights = [
+        "dir_gen_read",
+        "dir_gen_write",
+        "dir_gen_execute",
+        "std_write_dac",
+        "delete_child",
+      ]
+      accesstype    = "allow"
+      inherit_flags = []
+      trustee = {
+        id = format("%s:%s", "UID", powerscale_user.example_user.uid)
+      }
+    },
+    {
+      accessrights = [
+        "dir_gen_read",
+        "dir_gen_write",
+        "dir_gen_execute",
+        "delete_child",
+      ]
+      accesstype    = "allow"
+      inherit_flags = []
+      trustee = {
+        id = format("%s:%s", "GID", powerscale_user_group.example_user_group.gid)
+      }
+    },
+  ]
+}
+
+resource "powerscale_s3_bucket" "s3_bucket_example" {
+  name        = "s3-bucket-example"
+  path        = powerscale_filesystem.example_file_system.full_path
+  create_path = false
+  owner       = "Guest"
+  zone        = powerscale_accesszone.zone.name
+  acl = [{
+    grantee = {
+      name = powerscale_user.example_user.name
+      type = "user"
+    }
+    permission = "FULL_CONTROL"
+  }]
+  description       = "tfacc-s3-bucket-test creation"
+  object_acl_policy = "replace"
+}
+
+resource "powerscale_smb_share_settings" "example" {
+  access_based_enumeration           = true
+  access_based_enumeration_root_only = true
+  allow_delete_readonly              = false
+  ca_timeout                         = 60
+  zone                               = powerscale_accesszone.zone.name
 }
 ```
 
