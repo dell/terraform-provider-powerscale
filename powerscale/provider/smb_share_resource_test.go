@@ -269,6 +269,7 @@ resource "powerscale_smb_share" "share_test" {
 			}
 		}
 	]
+	ca_timeout = 120
 	zone = "System"
 }
 `, shareName, shareName)
@@ -290,6 +291,7 @@ resource "powerscale_smb_share" "share_test" {
 			}
 		}
 	]
+	ca_timeout = 120
 }
 `, shareName, shareName)
 
