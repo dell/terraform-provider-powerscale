@@ -21,9 +21,9 @@ limitations under the License.
 
 The Terraform Provider for Dell Technologies (Dell) PowerScale allows Data Center and IT administrators to use Hashicorp Terraform to automate and orchestrate the provisioning and management of Dell PowerScale storage systems.
 
-The Terraform Provider can be used to manage access zone, active directory, cluster, user, user group, file system, smb share, nfs export, snapshot, snapshot schedule, quota, groupnet, subnet, network pool, network settings, smart pool settings, ldap providers, network rule, file pool policy, ntp server, ntp settings, cluster email settings, acl settings, nfs export settings, role, user mapping rules and role privilege.
+The Terraform Provider can be used to manage access zone, active directory, cluster, user, user group, file system, smb share, nfs export, snapshot, snapshot schedule, quota, groupnet, subnet, network pool, network settings, smart pool settings, ldap providers, network rule, file pool policy, ntp server, ntp settings, cluster email settings, acl settings, nfs export settings, role, user mapping rules, role privilege, s3 bucket, nfs global settings, nfs zone settings, smb share settings, smb server settings, namespace acl.
 
-The logged-in user configured in the Terraform provider must possess adequate permissions  against the target Dell PowerScale System
+The logged-in user configured in the Terraform provider must possess adequate permissions against the target Dell PowerScale System.
 
 ## Table of Contents
 
@@ -50,7 +50,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 | **Terraform Provider** | **PowerScale Version** | **OS**                    | **Terraform**               | **Golang** |
 |------------------------|:-----------------------|:--------------------------|-----------------------------|------------|
-| v1.3.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.6.x <br> 1.7.x         | 1.21       |
+| v1.4.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.7.x <br> 1.8.x         | 1.22       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
 * Cluster
@@ -62,18 +62,24 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * File System
 * Groupnet
 * LDAP Provider
+* Namespace ACL
 * Network Pool
 * Network Rule
 * Network Settings
 * NFS Export
 * NFS Export Settings
+* NFS Global Settings
+* NFS Zone Settings
 * NTP Server
 * NTP Settings
 * Quota
 * Role
 * Role Privilege
+* S3 Bucket
 * Smart Pool Settings
+* SMB Server Settings
 * SMB Share
+* SMB Share Settings
 * Snapshot
 * Snapshot Schedule
 * Subnet
@@ -90,17 +96,23 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * File System
 * Groupnet
 * LDAP Provider
+* Namespace ACL
 * Network Pool
 * Network Rule
 * Network Settings
 * NFS Export
 * NFS Export Settings
+* NFS Global Settings
+* NFS Zone Settings
 * NTP Server
 * NTP Settings
 * Quota
 * Role
+* S3 Bucket
 * Smart Pool Settings
+* SMB Server Settings
 * SMB Share
+* SMB Share Settings
 * Snapshot
 * Snapshot Schedule
 * Subnet
@@ -119,7 +131,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerscale = { 
-      version = "1.2.0"
+      version = "1.4.0"
       source = "registry.terraform.io/dell/powerscale"
     }
   }
