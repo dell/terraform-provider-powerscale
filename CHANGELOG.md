@@ -151,3 +151,36 @@ N/A
 
 ## Bug Fixes
 N/A
+
+# v1.4.0 (Jun 28, 2024)
+## Release Summary
+The release supports resources and data sources mentioned in the Features section for Dell PowerScale.
+## Features
+
+### Data Sources:
+
+* `powerscale_s3_bucket` for reading s3 bucket in PowerScale.
+* `powerscale_nfs_global_settings` for reading nfs global settings in PowerScale.
+* `powerscale_nfs_zone_settings` for reading nfs zone settings in PowerScale.
+* `powerscale_smb_share_settings` for reading smb share settings in PowerScale.
+* `powerscale_smb_server_settings` for reading smb server settings in PowerScale.
+* `powerscale_namespace_acl` for reading namespace acl in PowerScale.
+
+
+### Resources
+
+* `powerscale_s3_bucket` for managing s3 bucket in PowerScale.
+* `powerscale_nfs_global_settings` for managing nfs global settings in PowerScale.
+* `powerscale_nfs_zone_settings` for managing nfs zone settings in PowerScale.
+* `powerscale_smb_share_settings` for managing smb share settings in PowerScale.
+* `powerscale_smb_server_settings` for managing smb server settings in PowerScale.
+* `powerscale_namespace_acl` for managing namespace acl in PowerScale.
+
+### Others
+N/A
+
+## Enhancements
+N/A
+
+## Bug Fixes
+N/A
