@@ -24,6 +24,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -75,11 +76,64 @@ func (r *S3KeyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 
 // S3KeyResourceSchema describe s3 key management schema
 func S3KeyResourceSchema() map[string]schema.Attribute {
-	return map[string]schema.Attribute{}
+	return map[string]schema.Attribute{
+		"id": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: "Unique identifier of the S3 key.",
+			Description:         "Unique identifier of the S3 key.",
+		},
+		"user": schema.StringAttribute{
+			Required:            true,
+			MarkdownDescription: "The username to create the S3 key. Required.",
+			Description:         "The username to create the S3 key. Required.",
+		},
+		"zone": schema.StringAttribute{
+			Required:            true,
+			MarkdownDescription: "The zone of the user. Required.",
+			Description:         "The zone of the user. Required.",
+		},
+		"existing_key_expiry_time": schema.Int64Attribute{
+			Optional:            true,
+			Default:             int64default.StaticInt64(0),
+			MarkdownDescription: "The expiry of the old secret key in minutes. Optional, default is 0.",
+			Description:         "The expiry of the old secret key in minutes. Optional, default is 0.",
+		},
+		"access_id": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: "The access id of the key. Computed.",
+			Description:         "The access id of the key. Computed.",
+		},
+		"secret_key": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: "The secret key of the key. Computed.",
+			Description:         "The secret key of the key. Computed.",
+		},
+		"secret_key_timestamp": schema.Int64Attribute{
+			Computed:            true,
+			MarkdownDescription: "The timestamp of the secret key. Computed.",
+			Description:         "The timestamp of the secret key. Computed.",
+		},
+		"old_secret_key": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: "The secret key of the old key. Computed.",
+			Description:         "The secret key of the old key. Computed.",
+		},
+		"old_key_expiry": schema.Int64Attribute{
+			Computed:            true,
+			MarkdownDescription: "The expiry of the old key. Computed.",
+			Description:         "The expiry of the old key. Computed.",
+		},
+		"old_key_timestamp": schema.Int64Attribute{
+			Computed:            true,
+			MarkdownDescription: "The timestamp of the old key. Computed.",
+			Description:         "The timestamp of the old key. Computed.",
+		},
+	}
 }
 
 // Create allocates the resource.
 func (r *S3KeyResource) Create(ctx context.Context, request resource.CreateRequest, response *resource.CreateResponse) {
+
 }
 
 // Read reads data from the resource.
