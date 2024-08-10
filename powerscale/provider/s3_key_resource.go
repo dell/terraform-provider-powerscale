@@ -36,7 +36,7 @@ import (
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
 	_ resource.Resource = &S3KeyResource{}
-	// _ resource.ResourceWithImportState = &S3KeyResource{} (can't support import due to secret key not present during read-refresh response)
+	// _ resource.ResourceWithImportState = &S3KeyResource{} (can't support import due to secret key not present during read-refresh response).
 )
 
 // NewS3KeyResource returns the S3 Bucket resource object.
@@ -80,7 +80,7 @@ func (r *S3KeyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 	}
 }
 
-// S3KeyResourceSchema describe s3 key management schema
+// S3KeyResourceSchema describe s3 key management schema.
 func S3KeyResourceSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"access_id": schema.StringAttribute{
@@ -112,8 +112,8 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 		},
 		"existing_key_expiry_time": schema.Int64Attribute{
 			Optional:            true,
-			MarkdownDescription: "The expiry of the old secret key in minutes. Optional, default is 0. It will be applicable only if old_secret_key is exist.",
-			Description:         "The expiry of the old secret key in minutes. Optional, default is 0. It will be applicable only if old_secret_key is exist.",
+			MarkdownDescription: "The expiry of the old secret key in minutes. Optional. It will be applicable only if old_secret_key is exist.",
+			Description:         "The expiry of the old secret key in minutes. Optional. It will be applicable only if old_secret_key is exist.",
 		},
 		"secret_key": schema.StringAttribute{
 			Computed:            true,
@@ -157,7 +157,11 @@ func (r *S3KeyResource) Create(ctx context.Context, request resource.CreateReque
 		response.Diagnostics.AddError("Error creating s3 key ", err.Error())
 		return
 	}
-	helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
+	err = helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
+	if err != nil {
+		response.Diagnostics.AddError("Error creating s3 key ", err.Error())
+		return
+	}
 	response.State.Set(ctx, s3key)
 }
 
@@ -189,7 +193,10 @@ func (r *S3KeyResource) Read(ctx context.Context, request resource.ReadRequest, 
 		response.Diagnostics.AddWarning(errMsg, errMsg)
 		s3key.SecretKey = types.StringValue(errMsg)
 	}
-	helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
+	err = helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
+	if err != nil {
+		response.Diagnostics.AddError("Error reading s3 key ", err.Error())
+	}
 	response.State.Set(ctx, s3key)
 }
 
@@ -218,9 +225,12 @@ func (r *S3KeyResource) Update(ctx context.Context, request resource.UpdateReque
 	if int64(resp.Keys.GetOldKeyTimestamp()) == s3KeyState.SecretKeyTimestamp.ValueInt64() {
 		resp.Keys.SetOldSecretKey(s3KeyState.SecretKey.ValueString())
 	}
-	helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
+	err = helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
+	if err != nil {
+		response.Diagnostics.AddError("Error updating s3 key ", err.Error())
+		return
+	}
 	response.State.Set(ctx, s3key)
-
 }
 
 // Delete deletes the resource.
@@ -241,4 +251,3 @@ func (r S3KeyResource) Delete(ctx context.Context, request resource.DeleteReques
 
 	response.State.RemoveResource(ctx)
 }
-
