@@ -31,7 +31,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -155,9 +154,7 @@ func (r *S3KeyResource) Create(ctx context.Context, request resource.CreateReque
 	// call create s3key
 	resp, err := helper.GenerateS3Key(ctx, r.client, s3key)
 	if err != nil {
-		response.Diagnostics.AddError("Error creating s3 key ",
-			fmt.Sprintf("Could not create S3 key %s with error: %s", s3key.User.ValueString(), err.Error()),
-		)
+		response.Diagnostics.AddError("Error creating s3 key ", err.Error())
 		return
 	}
 	helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
@@ -174,27 +171,23 @@ func (r *S3KeyResource) Read(ctx context.Context, request resource.ReadRequest, 
 		return
 	}
 
-	// request.Private.SetKey(ctx,"")
 	// call get s3key
 	resp, err := helper.GetS3Key(ctx, r.client, s3key)
 	if err != nil {
-		response.Diagnostics.AddError("Error reading s3 key ",
-			fmt.Sprintf("Could not read S3 key %s with error: %s", s3key.User.ValueString(), err.Error()),
-		)
+		response.Diagnostics.AddError("Error reading s3 key ", err.Error())
 		return
 	}
-	
+
 	// precheck to invalidate the refresh
+	errMsg := "[UNKNOWN KEY] Key Generated Outside of Terraform"
+	if resp.Keys.GetOldKeyTimestamp() != int32(s3key.SecretKeyTimestamp.ValueInt64()) {
+		s3key.OldSecretKey = types.StringValue(errMsg)
+	} else {
+		s3key.OldSecretKey = s3key.SecretKey
+	}
 	if resp.Keys.GetSecretKeyTimestamp() != int32(s3key.SecretKeyTimestamp.ValueInt64()) {
-		response.Diagnostics.AddWarning("Unknown Key - Generated Outside of Terraform", "Unknown Key - Generated Outside of Terraform")
-		s3key.SecretKey = types.StringValue("<Unknown Key - Generated Outside of Terraform>")
-		
-		if resp.Keys.GetOldKeyTimestamp() == int32(s3key.SecretKeyTimestamp.ValueInt64()) {
-			s3key.OldSecretKey = s3key.SecretKey
-		} else {
-			s3key.OldSecretKey = types.StringValue("<Unknown Key - Generated Outside of Terraform>")	
-		}
-		
+		response.Diagnostics.AddWarning(errMsg, errMsg)
+		s3key.SecretKey = types.StringValue(errMsg)
 	}
 	helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
 	response.State.Set(ctx, s3key)
@@ -219,15 +212,12 @@ func (r *S3KeyResource) Update(ctx context.Context, request resource.UpdateReque
 	// call update s3key
 	resp, err := helper.GenerateS3Key(ctx, r.client, s3key)
 	if err != nil {
-		response.Diagnostics.AddError("Error updating s3 key ",
-			fmt.Sprintf("Could not update S3 key %s with error: %s", s3key.User.ValueString(), err.Error()),
-		)
+		response.Diagnostics.AddError("Error updating s3 key ", err.Error())
 		return
 	}
 	if int64(resp.Keys.GetOldKeyTimestamp()) == s3KeyState.SecretKeyTimestamp.ValueInt64() {
 		resp.Keys.SetOldSecretKey(s3KeyState.SecretKey.ValueString())
 	}
-	tflog.Info(ctx, "old secret key is: " + resp.Keys.GetOldSecretKey())
 	helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
 	response.State.Set(ctx, s3key)
 
@@ -245,11 +235,10 @@ func (r S3KeyResource) Delete(ctx context.Context, request resource.DeleteReques
 	// call delete s3key
 	err := helper.DeleteS3Key(ctx, r.client, s3key)
 	if err != nil {
-		response.Diagnostics.AddError("Error deleting s3 key ",
-			fmt.Sprintf("Could not delete S3 key %s with error: %s", s3key.User.ValueString(), err.Error()),
-		)
+		response.Diagnostics.AddError("Error deleting s3 key ", err.Error())
 		return
 	}
 
 	response.State.RemoveResource(ctx)
 }
+

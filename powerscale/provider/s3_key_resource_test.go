@@ -25,107 +25,58 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
+func TestAccS3KeyResourceErrorCreate(t *testing.T) {
+	var S3KeyResourceConfigCreateError = tfConfig("tf_err_test", "invalid", "invalid", 80)
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfig + S3KeyResourceConfigCreateError,
+				ExpectError: regexp.MustCompile(".*Error creating s3 key*."),
+			},
+		},
+	})
+}
+
 func TestAccS3KeyResource(t *testing.T) {
+	var S3KeyResourceConfig = tfConfig("tf_test", "tf_user", "System", 40)
+	var S3KeyResourceConfigUpdate = tfConfig("tf_test", "tf_user", "System", 80)
+	var S3KeyResourceConfigUpdateError = tfConfig("tf_test", "tf_user", "System", -80)
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
+
 				Config: ProviderConfig + S3KeyResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_key.key_test", "id", "123"),
+					resource.TestCheckResourceAttr("powerscale_s3_key.tf_test", "user", "tf_user"),
 				),
 			},
 			// Update
 			{
 				Config: ProviderConfig + S3KeyResourceConfigUpdate,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_key.key_test", "id", "123"),
+					resource.TestCheckResourceAttr("powerscale_s3_key.tf_test", "user", "tf_user"),
 				),
 			},
-		},
-	})
-}
-
-func TestAccS3KeyResourceErrorRead(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			// Create and Read testing
+			// Update Error testing
 			{
-				Config: ProviderConfig + S3KeyResourceConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_key.key_test", "id", "123"),
-				),
+				Config:      ProviderConfig + S3KeyResourceConfigUpdateError,
+				ExpectError: regexp.MustCompile(".*Error updating s3 key*."),
 			},
 		},
 	})
 }
 
-func TestAccS3KeyResourceErrorUpdate(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			// Create and Read testing
-			{
-				Config: ProviderConfig + S3KeyResourceConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_key.key_test", "name", "123"),
-					resource.TestCheckResourceAttr("powerscale_s3_key.key_test", "id", "123"),
-				),
-			},
-			// Update
-			{
-				Config:      ProviderConfig + S3KeyResourceConfigUpdate,
-				ExpectError: regexp.MustCompile(".key"),
-			},
-		},
-	})
+func tfConfig(resource, user, zone string, expiry int) string {
+	return fmt.Sprintf(`
+resource "powerscale_s3_key" "%s" {
+    user = "%s"
+    zone = "%s"
+    existing_key_expiry_time = %d
 }
-
-func TestAccS3KeyResourceErrorCreate(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				Config:      ProviderConfig + S3KeyInvalidResourceConfig,
-				ExpectError: regexp.MustCompile(".*Bad Request*."),
-			},
-		},
-	})
+`, resource, user, zone, expiry)
 }
-
-func TestAccS3KeyResourceErrorCopyField(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			// Create and Read testing
-			{
-				Config: ProviderConfig + S3KeyResourceConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_key.key_test", "id", "123"),
-				),
-			},
-		},
-	})
-}
-
-var S3KeyResourceConfig = fmt.Sprintf(`
-resource "powerscale_s3_key" "key_test" {
-}
-`)
-
-var S3KeyInvalidResourceConfig = fmt.Sprintf(`
-resource "powerscale_s3_key" "key_test" {
-}
-`)
-
-var S3KeyResourceConfigUpdate = fmt.Sprintf(`
-resource "powerscale_s3_key" "key_test" {
-}
-`)
