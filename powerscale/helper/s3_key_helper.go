@@ -21,45 +21,40 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/models"
 )
 
-type S3keyHelper struct {
-	client                *client.Client
-	v10S3KeyId, zone      string
-	existingKeyExpiryTime int32
+// GenerateS3Key generates S3 Key.
+func GenerateS3Key(ctx context.Context, c *client.Client, state models.S3KeyResourceData) (*powerscale.Createv10S3KeyResponse, error) {
+	param := c.PscaleOpenAPIClient.ProtocolsApi.CreateProtocolsv10S3Key(ctx, state.User.ValueString())
+	param = param.Force(true)
+	if len(state.Zone.ValueString()) > 0 {
+		param = param.Zone(state.Zone.ValueString())
+	}
+	expiryTime := int32(state.ExistingKeyExpiryTime.ValueInt64())
+	eket := powerscale.V10S3Key{
+		ExistingKeyExpiryTime: &expiryTime,
+	}
+	param = param.V10S3Key(eket)
+	response, _, err := param.Execute()
+	return response, err
 }
 
-// CreateS3Key create s3 bucket.
-func (skh *S3keyHelper) CreateS3Key(ctx context.Context) (*powerscale.Createv10S3KeyResponseKeys, error) {
-	param := skh.client.PscaleOpenAPIClient.ProtocolsApi.CreateProtocolsv10S3Key(ctx, skh.v10S3KeyId)
-	if skh.existingKeyExpiryTime > 0 {
-		ex := powerscale.V10S3Key{
-			ExistingKeyExpiryTime: &skh.existingKeyExpiryTime,
-		}
-		param = param.V10S3Key(ex)
-	}
-	if len(skh.zone) > 0 {
-		param = param.Zone(skh.zone)
+// GetS3Key gets S3 Key.
+func GetS3Key(ctx context.Context, c *client.Client, state models.S3KeyResourceData) (*powerscale.V10S3Keys, error) {
+	param := c.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv10S3Key(ctx, state.User.ValueString())
+	if len(state.Zone.ValueString()) > 0 {
+		param = param.Zone(state.Zone.ValueString())
 	}
 	response, _, err := param.Execute()
-	return &response.Keys, err
+	return response, err
 }
 
-// GetS3Key gets S3 Bucket.
-func (skh *S3keyHelper) GetS3Key(ctx context.Context) (*powerscale.V10S3KeysKeys, error) {
-	param := skh.client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv10S3Key(ctx, skh.v10S3KeyId)
-	if len(skh.zone) > 0 {
-		param = param.Zone(skh.zone)
-	}
-	response, _, err := param.Execute()
-	return &response.Keys, err
-}
-
-// DeleteS3Key delete s3 bucket.
-func (skh *S3keyHelper) DeleteS3Key(ctx context.Context) error {
-	param := skh.client.PscaleOpenAPIClient.ProtocolsApi.DeleteProtocolsv10S3Key(ctx, skh.v10S3KeyId)
-	if len(skh.zone) > 0 {
-		param = param.Zone(skh.zone)
+// DeleteS3Key delete s3 Key.
+func DeleteS3Key(ctx context.Context, c *client.Client, state models.S3KeyResourceData) error {
+	param := c.PscaleOpenAPIClient.ProtocolsApi.DeleteProtocolsv10S3Key(ctx, state.User.ValueString())
+	if len(state.Zone.ValueString()) > 0 {
+		param = param.Zone(state.Zone.ValueString())
 	}
 	_, err := param.Execute()
 	return err

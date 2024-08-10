@@ -21,10 +21,17 @@ import (
 	"context"
 	"fmt"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/helper"
+	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -77,7 +84,7 @@ func (r *S3KeyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 // S3KeyResourceSchema describe s3 key management schema
 func S3KeyResourceSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
-		"id": schema.StringAttribute{
+		"access_id": schema.StringAttribute{
 			Computed:            true,
 			MarkdownDescription: "Unique identifier of the S3 key.",
 			Description:         "Unique identifier of the S3 key.",
@@ -86,22 +93,28 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 			Required:            true,
 			MarkdownDescription: "The username to create the S3 key. Required.",
 			Description:         "The username to create the S3 key. Required.",
+			Validators: []validator.String{
+				stringvalidator.LengthAtLeast(1),
+			},
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.RequiresReplaceIfConfigured(),
+			},
 		},
 		"zone": schema.StringAttribute{
 			Required:            true,
 			MarkdownDescription: "The zone of the user. Required.",
 			Description:         "The zone of the user. Required.",
+			Validators: []validator.String{
+				stringvalidator.LengthAtLeast(1),
+			},
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.RequiresReplaceIfConfigured(),
+			},
 		},
 		"existing_key_expiry_time": schema.Int64Attribute{
 			Optional:            true,
-			Default:             int64default.StaticInt64(0),
-			MarkdownDescription: "The expiry of the old secret key in minutes. Optional, default is 0.",
-			Description:         "The expiry of the old secret key in minutes. Optional, default is 0.",
-		},
-		"access_id": schema.StringAttribute{
-			Computed:            true,
-			MarkdownDescription: "The access id of the key. Computed.",
-			Description:         "The access id of the key. Computed.",
+			MarkdownDescription: "The expiry of the old secret key in minutes. Optional, default is 0. It will be applicable only if old_secret_key is exist.",
+			Description:         "The expiry of the old secret key in minutes. Optional, default is 0. It will be applicable only if old_secret_key is exist.",
 		},
 		"secret_key": schema.StringAttribute{
 			Computed:            true,
@@ -133,17 +146,110 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 
 // Create allocates the resource.
 func (r *S3KeyResource) Create(ctx context.Context, request resource.CreateRequest, response *resource.CreateResponse) {
-
+	var s3key models.S3KeyResourceData
+	diags := request.Plan.Get(ctx, &s3key)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+	// call create s3key
+	resp, err := helper.GenerateS3Key(ctx, r.client, s3key)
+	if err != nil {
+		response.Diagnostics.AddError("Error creating s3 key ",
+			fmt.Sprintf("Could not create S3 key %s with error: %s", s3key.User.ValueString(), err.Error()),
+		)
+		return
+	}
+	helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
+	response.State.Set(ctx, s3key)
 }
 
 // Read reads data from the resource.
 func (r *S3KeyResource) Read(ctx context.Context, request resource.ReadRequest, response *resource.ReadResponse) {
+
+	var s3key models.S3KeyResourceData
+	diags := request.State.Get(ctx, &s3key)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	// request.Private.SetKey(ctx,"")
+	// call get s3key
+	resp, err := helper.GetS3Key(ctx, r.client, s3key)
+	if err != nil {
+		response.Diagnostics.AddError("Error reading s3 key ",
+			fmt.Sprintf("Could not read S3 key %s with error: %s", s3key.User.ValueString(), err.Error()),
+		)
+		return
+	}
+	
+	// precheck to invalidate the refresh
+	if resp.Keys.GetSecretKeyTimestamp() != int32(s3key.SecretKeyTimestamp.ValueInt64()) {
+		response.Diagnostics.AddWarning("Unknown Key - Generated Outside of Terraform", "Unknown Key - Generated Outside of Terraform")
+		s3key.SecretKey = types.StringValue("<Unknown Key - Generated Outside of Terraform>")
+		
+		if resp.Keys.GetOldKeyTimestamp() == int32(s3key.SecretKeyTimestamp.ValueInt64()) {
+			s3key.OldSecretKey = s3key.SecretKey
+		} else {
+			s3key.OldSecretKey = types.StringValue("<Unknown Key - Generated Outside of Terraform>")	
+		}
+		
+	}
+	helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
+	response.State.Set(ctx, s3key)
 }
 
 // Update updates the resource state.
 func (r *S3KeyResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
+
+	var s3key models.S3KeyResourceData
+	diags := request.Plan.Get(ctx, &s3key)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	var s3KeyState models.S3KeyResourceData
+	diags = response.State.Get(ctx, &s3KeyState)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+	// call update s3key
+	resp, err := helper.GenerateS3Key(ctx, r.client, s3key)
+	if err != nil {
+		response.Diagnostics.AddError("Error updating s3 key ",
+			fmt.Sprintf("Could not update S3 key %s with error: %s", s3key.User.ValueString(), err.Error()),
+		)
+		return
+	}
+	if int64(resp.Keys.GetOldKeyTimestamp()) == s3KeyState.SecretKeyTimestamp.ValueInt64() {
+		resp.Keys.SetOldSecretKey(s3KeyState.SecretKey.ValueString())
+	}
+	tflog.Info(ctx, "old secret key is: " + resp.Keys.GetOldSecretKey())
+	helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
+	response.State.Set(ctx, s3key)
+
 }
 
 // Delete deletes the resource.
 func (r S3KeyResource) Delete(ctx context.Context, request resource.DeleteRequest, response *resource.DeleteResponse) {
+
+	var s3key models.S3KeyResourceData
+	diags := request.State.Get(ctx, &s3key)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+	// call delete s3key
+	err := helper.DeleteS3Key(ctx, r.client, s3key)
+	if err != nil {
+		response.Diagnostics.AddError("Error deleting s3 key ",
+			fmt.Sprintf("Could not delete S3 key %s with error: %s", s3key.User.ValueString(), err.Error()),
+		)
+		return
+	}
+
+	response.State.RemoveResource(ctx)
 }

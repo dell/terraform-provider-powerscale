@@ -21,14 +21,13 @@ import "github.com/hashicorp/terraform-plugin-framework/types"
 
 // create struct to unmarshall tfsdk schema defined in S3KeyResourceSchema()
 type S3KeyResourceData struct {
-	ID                    types.String `tfsdk:"id"`
+	AccessID              types.String `tfsdk:"access_id"`
 	User                  types.String `tfsdk:"user"`
 	Zone                  types.String `tfsdk:"zone"`
 	ExistingKeyExpiryTime types.Int64  `tfsdk:"existing_key_expiry_time"`
-	AccessID              types.String `tfsdk:"access_id"`
 	SecretKey             types.String `tfsdk:"secret_key"`
 	SecretKeyTimestamp    types.Int64  `tfsdk:"secret_key_timestamp"`
 	OldSecretKey          types.String `tfsdk:"old_secret_key"`
-	OldSecretKeyExpiry    types.Int64  `tfsdk:"old_secret_key_expiry"`
+	OldKeyExpiry          types.Int64  `tfsdk:"old_key_expiry"`
 	OldKeyTimestamp       types.Int64  `tfsdk:"old_key_timestamp"`
 }
