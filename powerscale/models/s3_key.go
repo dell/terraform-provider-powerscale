@@ -19,7 +19,7 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// create struct to unmarshall tfsdk schema defined in S3KeyResourceSchema().
+// S3KeyResourceData struct to unmarshall tfsdk schema defined in S3KeyResourceSchema().
 type S3KeyResourceData struct {
 	AccessID              types.String `tfsdk:"access_id"`
 	User                  types.String `tfsdk:"user"`
