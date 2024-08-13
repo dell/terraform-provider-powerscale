@@ -378,4 +378,10 @@ const (
 
 	// UpdateSmbServerSettingsErrorMsg specifies error details occurred while updating smb server settings.
 	UpdateSmbServerSettingsErrorMsg = "Could not update smb server settings "
+
+	// ReadSmbServerSettingsErrorMsg specifies error details occurred while reading SNMP server settings.
+	ReadClusterSNMPSettingsErrorMsg = "Could not read cluster SNMP settings "
+
+	// UpdateClusterEmailSettingsErrorMsg specifies error details occurred while updating cluster SNMP settings.
+	UpdateClusterSNMPSettingsErrorMsg = "Could not update cluster SNMP settings "
 )
