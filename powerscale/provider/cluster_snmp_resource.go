@@ -26,11 +26,12 @@ var _ resource.Resource = &ClusterSnmpResource{}
 var _ resource.ResourceWithConfigure = &ClusterSnmpResource{}
 var _ resource.ResourceWithImportState = &ClusterSnmpResource{}
 
-// ClusterSnmpResource is a resource that manages ClusterSnmp entities.
+// NewClusterSnmpResource is a resource that manages ClusterSnmp entities.
 func NewClusterSnmpResource() resource.Resource {
 	return &ClusterSnmpResource{}
 }
 
+// ClusterSnmpResource represents SNMP resource struct.
 type ClusterSnmpResource struct {
 	client *client.Client
 }

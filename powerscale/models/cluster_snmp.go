@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// ClusterSnmpModel is the model for the Cluster SNMP.
+// ClusterSNMPModel is the model for the Cluster SNMP.
 type ClusterSNMPModel struct {
 	ID                  types.String `tfsdk:"id"`
 	Service             types.Bool   `tfsdk:"enabled"`

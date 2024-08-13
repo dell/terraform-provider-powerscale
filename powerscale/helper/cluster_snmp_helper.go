@@ -26,18 +26,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// GetClusterEmail retrieve cluster email.
+// GetClusterSNMP retrieve cluster email.
 func GetClusterSNMP(ctx context.Context, client *client.Client) (*powerscale.V16SnmpSettings, error) {
 	clusterSNMP, _, err := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv16SnmpSettings(ctx).Execute()
 	return clusterSNMP, err
 }
 
-// UpdateClusterEmail update cluster email.
+// UpdateClusterSNMP update cluster email.
 func UpdateClusterSNMP(ctx context.Context, client *client.Client, v1ClusterSNMP powerscale.V16SnmpSettingsExtended) error {
 	_, err := client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv16SnmpSettings(ctx).V16SnmpSettings(v1ClusterSNMP).Execute()
 	return err
 }
 
+// UpdateclusterSNMPResourceState update data to state.
 func UpdateclusterSNMPResourceState(ctx context.Context, plan, clusterSNMPModel *models.ClusterSNMPModel, clusterSNMPResponse *powerscale.V16SnmpSettingsSettings) {
 	clusterSNMPModel.ID = types.StringValue("cluster_snmp")
 	clusterSNMPModel.Service = types.BoolValue(*clusterSNMPResponse.Service)

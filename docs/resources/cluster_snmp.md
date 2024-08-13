@@ -56,7 +56,7 @@ limitations under the License.
 # PowerScale Cluster SNMP Settings allow you to change the settings of SNMP
 resource "powerscale_cluster_snmp" "example_snmp_settings" {
   # Required field
-  enabled = true // enables/disables cluster SNMP Settings
+  enabled = true //enables/disables cluster SNMP Settings
 
   # Optional fields both for creating and updating
 
