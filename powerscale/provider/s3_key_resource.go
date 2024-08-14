@@ -90,8 +90,8 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 		},
 		"user": schema.StringAttribute{
 			Required:            true,
-			MarkdownDescription: "The username to create the S3 key. Required.",
-			Description:         "The username to create the S3 key. Required.",
+			MarkdownDescription: "The username to create the S3 key.",
+			Description:         "The username to create the S3 key.",
 			Validators: []validator.String{
 				stringvalidator.LengthAtLeast(1),
 			},
@@ -101,8 +101,8 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 		},
 		"zone": schema.StringAttribute{
 			Required:            true,
-			MarkdownDescription: "The zone of the user. Required.",
-			Description:         "The zone of the user. Required.",
+			MarkdownDescription: "The zone of the user.",
+			Description:         "The zone of the user.",
 			Validators: []validator.String{
 				stringvalidator.LengthAtLeast(1),
 			},
@@ -184,11 +184,13 @@ func (r *S3KeyResource) Read(ctx context.Context, request resource.ReadRequest, 
 
 	// precheck to invalidate the refresh
 	errMsg := "[UNKNOWN KEY] Key Generated Outside of Terraform"
+	// A discrepancy between the old key timestamp and the secret key timestamp indicates that the key was created externally, not through Terraform.
 	if resp.Keys.GetOldKeyTimestamp() != int32(s3key.SecretKeyTimestamp.ValueInt64()) {
 		s3key.OldSecretKey = types.StringValue(errMsg)
 	} else {
 		s3key.OldSecretKey = s3key.SecretKey
 	}
+	// the secret key's timestamp not align post get key, it implies the key was generated outside of Terraform.
 	if resp.Keys.GetSecretKeyTimestamp() != int32(s3key.SecretKeyTimestamp.ValueInt64()) {
 		response.Diagnostics.AddWarning(errMsg, errMsg)
 		s3key.SecretKey = types.StringValue(errMsg)
@@ -196,6 +198,7 @@ func (r *S3KeyResource) Read(ctx context.Context, request resource.ReadRequest, 
 	err = helper.CopyFieldsToNonNestedModel(ctx, resp.Keys, &s3key)
 	if err != nil {
 		response.Diagnostics.AddError("Error reading s3 key ", err.Error())
+		return
 	}
 	response.State.Set(ctx, s3key)
 }
