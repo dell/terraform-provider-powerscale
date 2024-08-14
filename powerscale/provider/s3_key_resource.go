@@ -162,7 +162,8 @@ func (r *S3KeyResource) Create(ctx context.Context, request resource.CreateReque
 		response.Diagnostics.AddError("Error creating s3 key ", err.Error())
 		return
 	}
-	response.State.Set(ctx, s3key)
+	diags = response.State.Set(ctx, s3key)
+	response.Diagnostics.Append(diags...)
 }
 
 // Read reads data from the resource.
@@ -200,7 +201,8 @@ func (r *S3KeyResource) Read(ctx context.Context, request resource.ReadRequest, 
 		response.Diagnostics.AddError("Error reading s3 key ", err.Error())
 		return
 	}
-	response.State.Set(ctx, s3key)
+	diags = response.State.Set(ctx, s3key)
+	response.Diagnostics.Append(diags...)
 }
 
 // Update updates the resource state.
@@ -234,6 +236,8 @@ func (r *S3KeyResource) Update(ctx context.Context, request resource.UpdateReque
 		return
 	}
 	response.State.Set(ctx, s3key)
+	diags = response.State.Set(ctx, s3key)
+	response.Diagnostics.Append(diags...)
 }
 
 // Delete deletes the resource.
