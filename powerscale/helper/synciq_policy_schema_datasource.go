@@ -24,7 +24,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// GetSyncIQPolicySchema get cluster node schema.
+// SynciqpolicyDatasourceSchema is a function that returns the schema for SyncIQPolicyDataSource
 func SynciqpolicyDatasourceSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
 		Attributes: SyncIQPolicyDataSourceSchema(),

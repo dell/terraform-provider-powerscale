@@ -52,7 +52,7 @@ type V14SyncPolicyExtendedModel struct {
 	FileMatchingPattern               V1SyncJobPolicyFileMatchingPatternModel `tfsdk:"file_matching_pattern"`
 	ForceInterface                    types.Bool                              `tfsdk:"force_interface"`
 	HasSyncState                      types.Bool                              `tfsdk:"has_sync_state"`
-	Id                                types.String                            `tfsdk:"id"`
+	ID                                types.String                            `tfsdk:"id"`
 	IgnoreRecursiveQuota              types.Bool                              `tfsdk:"ignore_recursive_quota"`
 	JobDelay                          types.Int64                             `tfsdk:"job_delay"`
 	LastJobState                      types.String                            `tfsdk:"last_job_state"`
@@ -64,7 +64,7 @@ type V14SyncPolicyExtendedModel struct {
 	Name                              types.String                            `tfsdk:"name"`
 	NextRun                           types.Int64                             `tfsdk:"next_run"`
 	OcspAddress                       types.String                            `tfsdk:"ocsp_address"`
-	OcspIssuerCertificateId           types.String                            `tfsdk:"ocsp_issuer_certificate_id"`
+	OcspIssuerCertificateID           types.String                            `tfsdk:"ocsp_issuer_certificate_id"`
 	PasswordSet                       types.Bool                              `tfsdk:"password_set"`
 	Priority                          types.Int64                             `tfsdk:"priority"`
 	ReportMaxAge                      types.Int64                             `tfsdk:"report_max_age"`
@@ -77,7 +77,7 @@ type V14SyncPolicyExtendedModel struct {
 	SkipWhenSourceUnmodified          types.Bool                              `tfsdk:"skip_when_source_unmodified"`
 	SnapshotSyncExisting              types.Bool                              `tfsdk:"snapshot_sync_existing"`
 	SnapshotSyncPattern               types.String                            `tfsdk:"snapshot_sync_pattern"`
-	SourceCertificateId               types.String                            `tfsdk:"source_certificate_id"`
+	SourceCertificateID               types.String                            `tfsdk:"source_certificate_id"`
 	SourceDomainMarked                types.Bool                              `tfsdk:"source_domain_marked"`
 	SourceExcludeDirectories          []types.String                          `tfsdk:"source_exclude_directories"`
 	SourceIncludeDirectories          []types.String                          `tfsdk:"source_include_directories"`
@@ -88,7 +88,7 @@ type V14SyncPolicyExtendedModel struct {
 	SourceSnapshotPattern             types.String                            `tfsdk:"source_snapshot_pattern"`
 	SyncExistingSnapshotExpiration    types.Bool                              `tfsdk:"sync_existing_snapshot_expiration"`
 	SyncExistingTargetSnapshotPattern types.String                            `tfsdk:"sync_existing_target_snapshot_pattern"`
-	TargetCertificateId               types.String                            `tfsdk:"target_certificate_id"`
+	TargetCertificateID               types.String                            `tfsdk:"target_certificate_id"`
 	TargetCompareInitialSync          types.Bool                              `tfsdk:"target_compare_initial_sync"`
 	TargetDetectModifications         types.Bool                              `tfsdk:"target_detect_modifications"`
 	TargetHost                        types.String                            `tfsdk:"target_host"`

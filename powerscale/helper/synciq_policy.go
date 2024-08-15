@@ -22,10 +22,12 @@ func GetSyncIQPolicyByID(ctx context.Context, client *client.Client, id string) 
 	return resp, err
 }
 
+// SyncIQPolicyDataSourceResponse is the union of all response types for syncIQ policy datasource
 type SyncIQPolicyDataSourceResponse interface {
 	powerscale.V14SyncPolicyExtended | powerscale.V14SyncPolicyExtendedExtendedExtended
 }
 
+// NewSyncIQPolicyDataSource creates a new SyncIQPolicyDataSource from datasource responses
 func NewSyncIQPolicyDataSource[V SyncIQPolicyDataSourceResponse](ctx context.Context, policies []V) (*models.SyncIQPolicyDataSource, error) {
 	var err error
 	ret := models.SyncIQPolicyDataSource{
@@ -39,7 +41,7 @@ func NewSyncIQPolicyDataSource[V SyncIQPolicyDataSourceResponse](ctx context.Con
 		ret.Policies[i] = item
 	}
 	if len(ret.Policies) == 1 {
-		ret.ID = ret.Policies[0].Id
+		ret.ID = ret.Policies[0].ID
 	}
 	return &ret, err
 }
