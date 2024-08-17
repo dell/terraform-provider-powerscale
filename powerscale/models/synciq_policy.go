@@ -27,7 +27,7 @@ type SyncIQPolicyDataSource struct {
 	Policies []V14SyncPolicyExtendedModel `tfsdk:"policies"`
 }
 
-// V14SyncPolicyExtendedModel is the tfsdk model of V14SyncPolicyExtended
+// V14SyncPolicyExtendedModel is the tfsdk model of V14SyncPolicyExtended.
 type V14SyncPolicyExtendedModel struct {
 	AcceleratedFailback               types.Bool                              `tfsdk:"accelerated_failback"`
 	Action                            types.String                            `tfsdk:"action"`
@@ -100,17 +100,17 @@ type V14SyncPolicyExtendedModel struct {
 	WorkersPerNode                    types.Int64                             `tfsdk:"workers_per_node"`
 }
 
-// V1SyncJobPolicyFileMatchingPatternModel is the tfsdk model of V1SyncJobPolicyFileMatchingPattern
+// V1SyncJobPolicyFileMatchingPatternModel is the tfsdk model of V1SyncJobPolicyFileMatchingPattern.
 type V1SyncJobPolicyFileMatchingPatternModel struct {
 	OrCriteria []V1SyncJobPolicyFileMatchingPatternOrCriteriaItemModel `tfsdk:"or_criteria"`
 }
 
-// V1SyncJobPolicyFileMatchingPatternOrCriteriaItemModel is the tfsdk model of V1SyncJobPolicyFileMatchingPatternOrCriteriaItem
+// V1SyncJobPolicyFileMatchingPatternOrCriteriaItemModel is the tfsdk model of V1SyncJobPolicyFileMatchingPatternOrCriteriaItem.
 type V1SyncJobPolicyFileMatchingPatternOrCriteriaItemModel struct {
 	AndCriteria []V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModel `tfsdk:"and_criteria"`
 }
 
-// V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModel is the tfsdk model of V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItem
+// V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModel is the tfsdk model of V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItem.
 type V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModel struct {
 	AttributeExists types.Bool   `tfsdk:"attribute_exists"`
 	CaseSensitive   types.Bool   `tfsdk:"case_sensitive"`
@@ -121,7 +121,7 @@ type V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModel struct
 	WholeWord       types.Bool   `tfsdk:"whole_word"`
 }
 
-// V1SyncPolicySourceNetworkModel is the tfsdk model of V1SyncPolicySourceNetwork
+// V1SyncPolicySourceNetworkModel is the tfsdk model of V1SyncPolicySourceNetwork.
 type V1SyncPolicySourceNetworkModel struct {
 	Pool   types.String `tfsdk:"pool"`
 	Subnet types.String `tfsdk:"subnet"`

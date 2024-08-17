@@ -24,14 +24,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// SynciqpolicyDatasourceSchema is a function that returns the schema for SyncIQPolicyDataSource
+// SynciqpolicyDatasourceSchema is a function that returns the schema for SyncIQPolicyDataSource.
 func SynciqpolicyDatasourceSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
 		Attributes: SyncIQPolicyDataSourceSchema(),
 	}
 }
 
-// SyncIQPolicyDataSourceSchema is a function that returns the schema for SyncIQPolicyDataSource
+// SyncIQPolicyDataSourceSchema is a function that returns the schema for SyncIQPolicyDataSource.
 func SyncIQPolicyDataSourceSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"id": schema.StringAttribute{
@@ -49,7 +49,7 @@ func SyncIQPolicyDataSourceSchema() map[string]schema.Attribute {
 	}
 }
 
-// V14SyncPolicyExtendedModelSchema is a function that returns the schema for V14SyncPolicyExtendedModel
+// V14SyncPolicyExtendedModelSchema is a function that returns the schema for V14SyncPolicyExtendedModel.
 func V14SyncPolicyExtendedModelSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"accelerated_failback": schema.BoolAttribute{
@@ -405,7 +405,7 @@ func V14SyncPolicyExtendedModelSchema() map[string]schema.Attribute {
 	}
 }
 
-// V1SyncJobPolicyFileMatchingPatternModelSchema is a function that returns the schema for V1SyncJobPolicyFileMatchingPatternModel
+// V1SyncJobPolicyFileMatchingPatternModelSchema is a function that returns the schema for V1SyncJobPolicyFileMatchingPatternModel.
 func V1SyncJobPolicyFileMatchingPatternModelSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"or_criteria": schema.ListNestedAttribute{
@@ -417,7 +417,7 @@ func V1SyncJobPolicyFileMatchingPatternModelSchema() map[string]schema.Attribute
 	}
 }
 
-// V1SyncJobPolicyFileMatchingPatternOrCriteriaItemModelSchema is a function that returns the schema for V1SyncJobPolicyFileMatchingPatternOrCriteriaItemModel
+// V1SyncJobPolicyFileMatchingPatternOrCriteriaItemModelSchema is a function that returns the schema for V1SyncJobPolicyFileMatchingPatternOrCriteriaItemModel.
 func V1SyncJobPolicyFileMatchingPatternOrCriteriaItemModelSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"and_criteria": schema.ListNestedAttribute{
@@ -429,7 +429,7 @@ func V1SyncJobPolicyFileMatchingPatternOrCriteriaItemModelSchema() map[string]sc
 	}
 }
 
-// V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModelSchema is a function that returns the schema for V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModel
+// V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModelSchema is a function that returns the schema for V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModel.
 func V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModelSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"attribute_exists": schema.BoolAttribute{
@@ -470,7 +470,7 @@ func V1SyncJobPolicyFileMatchingPatternOrCriteriaItemAndCriteriaItemModelSchema(
 	}
 }
 
-// V1SyncPolicySourceNetworkModelSchema is a function that returns the schema for V1SyncPolicySourceNetworkModel
+// V1SyncPolicySourceNetworkModelSchema is a function that returns the schema for V1SyncPolicySourceNetworkModel.
 func V1SyncPolicySourceNetworkModelSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"pool": schema.StringAttribute{
