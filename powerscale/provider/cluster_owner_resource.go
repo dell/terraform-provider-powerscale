@@ -19,6 +19,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -97,6 +98,7 @@ func (r *ClusterOwnerResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.RegexMatches(regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`), "must be a valid email"),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -133,6 +135,7 @@ func (r *ClusterOwnerResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.RegexMatches(regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`), "must be a valid email"),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},

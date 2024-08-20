@@ -57,11 +57,11 @@ limitations under the License.
 resource "powerscale_cluster_owner" "test" {
   company          = "company_name"
   location         = "location"
-  primary_email    = "primary_email"
+  primary_email    = "primary_email@example.com"
   primary_name     = "primary_name"
   primary_phone1   = "123456789"
   primary_phone2   = "987654321"
-  secondary_email  = "secondary_email"
+  secondary_email  = "secondary_email@example.com"
   secondary_name   = "secondary_name"
   secondary_phone1 = "678912345"
   secondary_phone2 = "987612345"
