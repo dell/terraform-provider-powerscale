@@ -117,6 +117,7 @@ func (r *ClusterOwnerResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.RegexMatches(regexp.MustCompile(`^\+?[1-9]\d{0,2}[-\s.]?\(?\d{1,4}\)?[-\s.]?\d{1,4}[-\s.]?\d{1,9}$`), "must be a valid phone number"),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -126,6 +127,7 @@ func (r *ClusterOwnerResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.RegexMatches(regexp.MustCompile(`^\+?[1-9]\d{0,2}[-\s.]?\(?\d{1,4}\)?[-\s.]?\d{1,4}[-\s.]?\d{1,9}$`), "must be a valid phone number"),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -154,6 +156,7 @@ func (r *ClusterOwnerResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.RegexMatches(regexp.MustCompile(`^\+?[1-9]\d{0,2}[-\s.]?\(?\d{1,4}\)?[-\s.]?\d{1,4}[-\s.]?\d{1,9}$`), "must be a valid phone number"),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -163,6 +166,7 @@ func (r *ClusterOwnerResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.RegexMatches(regexp.MustCompile(`^\+?[1-9]\d{0,2}[-\s.]?\(?\d{1,4}\)?[-\s.]?\d{1,4}[-\s.]?\d{1,9}$`), "must be a valid phone number"),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},

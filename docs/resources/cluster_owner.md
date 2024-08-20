@@ -59,12 +59,12 @@ resource "powerscale_cluster_owner" "test" {
   location         = "location"
   primary_email    = "primary_email@example.com"
   primary_name     = "primary_name"
-  primary_phone1   = "123456789"
-  primary_phone2   = "987654321"
+  primary_phone1   = "+91-12345-67890"
+  primary_phone2   = "+1 123-456-7890" # primary alternate phone number
   secondary_email  = "secondary_email@example.com"
   secondary_name   = "secondary_name"
-  secondary_phone1 = "678912345"
-  secondary_phone2 = "987612345"
+  secondary_phone1 = "+44 (20) 1234 5678"
+  secondary_phone2 = "+1 (800) 555-5555" # secondary alternate phone number
 }
 
 # After the execution of above resource block, Cluster Owner Settings would have been cached in terraform state file, and
