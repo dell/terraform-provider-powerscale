@@ -313,6 +313,12 @@ const (
 	// UpdateClusterEmailSettingsErrorMsg specifies error details occurred while updating cluster email settings.
 	UpdateClusterEmailSettingsErrorMsg = "Could not update cluster email settings "
 
+	// ReadClusterOwnerSettingsErrorMsg specifies error details occurred while reading cluster owner settings.
+	ReadClusterOwnerSettingsErrorMsg = "Could not read cluster owner settings "
+
+	// UpdateClusterOwnerSettingsErrorMsg specifies error details occurred while updating cluster owner settings.
+	UpdateClusterOwnerSettingsErrorMsg = "Could not update cluster owner settings "
+
 	// ReadFilePoolPolicyErrorMsg specifies error details occurred while reading file pool policy.
 	ReadFilePoolPolicyErrorMsg = "Could not read file pool policies "
 
