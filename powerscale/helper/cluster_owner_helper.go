@@ -40,6 +40,7 @@ func UpdateClusterOwner(ctx context.Context, client *client.Client, v1ClusterOwn
 	return err
 }
 
+// ManageClusterOwner for common operation for the Create and Update.
 func ManageClusterOwner(ctx context.Context, client *client.Client, plan models.ClusterOwner) (state models.ClusterOwner, resp diag.Diagnostics) {
 	var toUpdate powerscale.V1ClusterOwner
 	// Get param from tf input
