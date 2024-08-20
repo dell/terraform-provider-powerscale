@@ -315,18 +315,6 @@ resource "powerscale_cluster_owner" "test" {
 }
 `
 
-var clusterOwnerUserTemplateSetResourceConfig = `
-resource "powerscale_cluster_owner" "test" {
-	company = "company_name"
-}
-`
-
-var clusterOwnerUserTemplateEmptyResourceConfig = `
-resource "powerscale_cluster_owner" "test" {
-	company = ""
-}
-`
-
 var clusterOwnerUpdateResourceConfig = `
 resource "powerscale_cluster_owner" "test" {
 	company = "company_name_update"

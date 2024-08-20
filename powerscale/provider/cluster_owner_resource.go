@@ -188,6 +188,7 @@ func (r *ClusterOwnerResource) Configure(ctx context.Context, req resource.Confi
 	r.client = pscaleClient
 }
 
+// ValidateConfig validate config of the resource.
 func (r *ClusterOwnerResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
 	// Retrieve values from plan
 	var cfg models.ClusterOwner
