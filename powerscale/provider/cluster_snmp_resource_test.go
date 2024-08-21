@@ -49,7 +49,7 @@ func TestAccClusterSnmpResource_Update(t *testing.T) {
 					resource.TestCheckResourceAttrSet(clusterSNMPResourceName, "id"),
 					resource.TestCheckResourceAttr(clusterSNMPResourceName, "enabled", "true"),
 				),
-			},			
+			},
 			// Read testing
 			{
 				PreConfig: func() {
@@ -119,7 +119,6 @@ func TestAccClusterSnmpResource_Update(t *testing.T) {
 		},
 	})
 }
-
 
 // TestAccClusterSnmpResource_Create - Tests the mock errors during the create operation of the cluster SNMP resource
 func TestAccClusterSnmpResourceCreateMockErr(t *testing.T) {
@@ -288,4 +287,3 @@ resource "powerscale_cluster_snmp" "test" {
 var clusterSnmpResourceEmptyConfig = `
 resource "powerscale_cluster_snmp" "test" {}
 `
-
