@@ -192,6 +192,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewSmbShareSettingsResource,
 		NewSmbServerSettingsResource,
 		NewClusterSnmpResource,
+		NewS3KeyResource,
 		NewClusterOwnerResource,
 	}
 }
