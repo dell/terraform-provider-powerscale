@@ -38,3 +38,4 @@ website/vendor
 *coverage.out*
 *powerscale-go-client
 terraform-provider-powerscale
+/test/

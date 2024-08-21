@@ -49,7 +49,7 @@ type UserMappingRulesResourceModel struct {
 	TestMappingUserResults types.List       `tfsdk:"mapping_users"`
 }
 
-// V1MappingUsersRulesRule struct for V1MappingUsersRulesRule
+// V1MappingUsersRulesRule struct for V1MappingUsersRulesRule.
 type V1MappingUsersRulesRule struct {
 	Operator types.String `tfsdk:"operator"`
 	Options  types.Object `tfsdk:"options"`
@@ -75,7 +75,7 @@ type V1MappingUsersRulesRuleOptions struct {
 	User types.Bool `tfsdk:"user"`
 }
 
-// V1MappingUsersRulesRuleUser2 struct for V1MappingUsersRulesRuleUser2
+// V1MappingUsersRulesRuleUser2 struct for V1MappingUsersRulesRuleUser2.
 type V1MappingUsersRulesRuleUser2 struct {
 	// Specifies the domain of the user that is being mapped.
 	Domain types.String `tfsdk:"domain"`
@@ -83,7 +83,7 @@ type V1MappingUsersRulesRuleUser2 struct {
 	User types.String `tfsdk:"user"`
 }
 
-// V1MappingUsersLookupMappingItem struct for V1MappingUsersLookupMappingItem
+// V1MappingUsersLookupMappingItem struct for V1MappingUsersLookupMappingItem.
 type V1MappingUsersLookupMappingItem struct {
 	User                   types.Object `tfsdk:"user"`
 	Privileges             types.List   `tfsdk:"privileges"`
