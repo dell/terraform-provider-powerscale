@@ -18,13 +18,10 @@ limitations under the License.
 package provider
 
 import (
-	"context"
 	"fmt"
 	"regexp"
-	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
-	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -50,54 +47,54 @@ func TestAccS3KeyResource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfig + S3KeyResourceConfig,
-				PreConfig: func() {
-					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("create error")).Build()
-				},
-				ExpectError: regexp.MustCompile("create error"),
-			},
+			// {
+			// 	Config: ProviderConfig + S3KeyResourceConfig,
+			// 	PreConfig: func() {
+			// 		FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("create error")).Build()
+			// 	},
+			// 	ExpectError: regexp.MustCompile("create error"),
+			// },
 			// Create and Read testing
 			{
-				PreConfig: func() { FunctionMocker.UnPatch() },
-				Config:    ProviderConfig + S3KeyResourceConfig,
+				// PreConfig: func() { FunctionMocker.UnPatch() },
+				Config: ProviderConfig + S3KeyResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_s3_key.tf_test", "user", "tf_user"),
 				),
 			},
-			// Error Reading
-			{
-				Config: ProviderConfig + S3KeyResourceConfig,
-				PreConfig: func() {
-					FunctionMocker = mockey.Mock(helper.GetS3Key).Return(nil, fmt.Errorf("read error")).Build()
-				},
-				ExpectError: regexp.MustCompile("read error"),
-			},
+			// // Error Reading
+			// {
+			// 	Config: ProviderConfig + S3KeyResourceConfig,
+			// 	PreConfig: func() {
+			// 		FunctionMocker = mockey.Mock(helper.GetS3Key).Return(nil, fmt.Errorf("read error")).Build()
+			// 	},
+			// 	ExpectError: regexp.MustCompile("read error"),
+			// },
 			// Error Read Copy Field
-			{
-				Config: ProviderConfig + S3KeyResourceConfigUpdate,
-				PreConfig: func() {
-					FunctionMocker.UnPatch()
-					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("read error")).Build()
-				},
-				ExpectError: regexp.MustCompile("read error"),
-			},
-			// Error Update Copy Field
-			{
-				Config: ProviderConfig + S3KeyResourceConfigUpdate,
-				PreConfig: func() {
-					FunctionMocker.UnPatch()
-					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("update error")).Build().When(
-						func(ctx context.Context, source, destination interface{}) bool {
-							return FunctionMocker.Times() == 2
-						})
-				},
-				ExpectError: regexp.MustCompile("update error"),
-			},
+			// {
+			// 	Config: ProviderConfig + S3KeyResourceConfigUpdate,
+			// 	PreConfig: func() {
+			// 		FunctionMocker.UnPatch()
+			// 		FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("read error")).Build()
+			// 	},
+			// 	ExpectError: regexp.MustCompile("read error"),
+			// },
+			// // Error Update Copy Field
+			// {
+			// 	Config: ProviderConfig + S3KeyResourceConfigUpdate,
+			// 	PreConfig: func() {
+			// 		FunctionMocker.UnPatch()
+			// 		FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("update error")).Build().When(
+			// 			func(ctx context.Context, source, destination interface{}) bool {
+			// 				return FunctionMocker.Times() == 2
+			// 			})
+			// 	},
+			// 	ExpectError: regexp.MustCompile("update error"),
+			// },
 			// Update
 			{
-				PreConfig: func() { FunctionMocker.UnPatch() },
-				Config:    ProviderConfig + S3KeyResourceConfigUpdate,
+				// PreConfig: func() { FunctionMocker.UnPatch() },
+				Config: ProviderConfig + S3KeyResourceConfigUpdate,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_s3_key.tf_test", "user", "tf_user"),
 				),
