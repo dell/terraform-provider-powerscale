@@ -1,3 +1,18 @@
+/*
+Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+
+Licensed under the Mozilla Public License Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://mozilla.org/MPL/2.0/
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package provider
 
 import (
@@ -7,6 +22,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/boolvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -46,8 +62,8 @@ func (r *ClusterSnmpResource) Schema(ctx context.Context, req resource.SchemaReq
 	// Schema describes the resource arguments.
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "This resource is used to manage the Cluster SNMP entity of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.",
-		Description:         "This resource is used to manage the Cluster SNMP entity of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.",
+		MarkdownDescription: "This resource is used to manage the Cluster SNMP settings of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.",
+		Description:         "This resource is used to manage the Cluster SNMP settings of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "ID of the Cluster SNMP.",
@@ -171,45 +187,11 @@ func (r *ClusterSnmpResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	var toUpdate powerscale.V16SnmpSettingsExtended
-	// Get param from tf input
-	err := helper.ReadFromState(ctx, &plan, &toUpdate)
-	if err != nil {
-		errStr := constants.UpdateClusterSNMPSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster SNMP",
-			fmt.Sprintf("Could not read cluster SNMP param with error: %s", message),
-		)
+	diags := r.UpdateClusterSNMP(ctx, plan, &state)
+	if diags.HasError() {
 		return
 	}
 
-	toUpdate.Service = mapBoolValue(plan.Service.ValueBool())
-	err = helper.UpdateClusterSNMP(ctx, r.client, toUpdate)
-	if err != nil {
-		errStr := constants.UpdateClusterSNMPSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster SNMP",
-			message,
-		)
-		return
-	}
-
-	clusterSNMP, err := helper.GetClusterSNMP(ctx, r.client)
-	if err != nil {
-		errStr := constants.ReadClusterSNMPSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error fetching updated cluster SNMP settings",
-			message,
-		)
-		return
-	}
-	helper.UpdateclusterSNMPResourceState(ctx, &plan, &state, clusterSNMP.Settings)
-
-	state.SnmpV3Password = types.StringValue(plan.SnmpV3Password.ValueString())
-	state.SnmpV3PrivPassword = types.StringValue(plan.SnmpV3PrivPassword.ValueString())
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	tflog.Info(ctx, "Done with Create Cluster SNMP resource state")
@@ -261,44 +243,10 @@ func (r *ClusterSnmpResource) Update(ctx context.Context, req resource.UpdateReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	var toUpdate powerscale.V16SnmpSettingsExtended
-	// Get param from tf input
-	err := helper.ReadFromState(ctx, plan, &toUpdate)
-	if err != nil {
-		errStr := constants.UpdateClusterSNMPSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster SNMP settings",
-			fmt.Sprintf("Could not read cluster SNMP settings param with error: %s", message),
-		)
+	diags := r.UpdateClusterSNMP(ctx, plan, &state)
+	if diags.HasError() {
 		return
 	}
-	toUpdate.Service = mapBoolValue(plan.Service.ValueBool())
-	err = helper.UpdateClusterSNMP(ctx, r.client, toUpdate)
-	if err != nil {
-		errStr := constants.UpdateClusterSNMPSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster SNMP",
-			message,
-		)
-		return
-	}
-
-	tflog.Debug(ctx, "calling get cluster SNMP settings on powerscale client")
-	clusterSNMP, err := helper.GetClusterSNMP(ctx, r.client)
-	if err != nil {
-		errStr := constants.ReadClusterSNMPSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error fetching updated cluster SNMP settings",
-			message,
-		)
-		return
-	}
-
-	helper.UpdateclusterSNMPResourceState(ctx, &plan, &state, clusterSNMP.Settings)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -344,4 +292,53 @@ func (r *ClusterSnmpResource) ImportState(ctx context.Context, req resource.Impo
 
 func mapBoolValue(v bool) *bool {
 	return &v
+}
+
+// UpdateClusterSNMP is a common function that both Create and Update functions can call to update cluster SNMP.
+func (r *ClusterSnmpResource) UpdateClusterSNMP(ctx context.Context, plan models.ClusterSNMPModel, state *models.ClusterSNMPModel) diag.Diagnostics {
+	tflog.Info(ctx, "Creating Cluster SNMP Settings resource state")
+	var diags diag.Diagnostics
+	var toUpdate powerscale.V16SnmpSettingsExtended
+
+	// Get param from tf input
+	err := helper.ReadFromState(ctx, &plan, &toUpdate)
+	if err != nil {
+		errStr := constants.UpdateClusterSNMPSettingsErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		diags.AddError(
+			"Error updating cluster SNMP",
+			fmt.Sprintf("Could not read cluster SNMP param with error: %s", message),
+		)
+		return diags
+	}
+
+	toUpdate.Service = mapBoolValue(plan.Service.ValueBool())
+	err = helper.UpdateClusterSNMP(ctx, r.client, toUpdate)
+	if err != nil {
+		errStr := constants.UpdateClusterSNMPSettingsErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		diags.AddError(
+			"Error updating cluster SNMP",
+			message,
+		)
+		return diags
+	}
+
+	tflog.Debug(ctx, "calling get cluster SNMP settings on powerscale client")
+	clusterSNMP, err := helper.GetClusterSNMP(ctx, r.client)
+	if err != nil {
+		errStr := constants.ReadClusterSNMPSettingsErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		diags.AddError(
+			"Error fetching updated cluster SNMP settings",
+			message,
+		)
+		return diags
+	}
+
+	helper.UpdateclusterSNMPResourceState(ctx, &plan, state, clusterSNMP.Settings)
+
+	state.SnmpV3Password = types.StringValue(plan.SnmpV3Password.ValueString())
+	state.SnmpV3PrivPassword = types.StringValue(plan.SnmpV3PrivPassword.ValueString())
+	return diags
 }

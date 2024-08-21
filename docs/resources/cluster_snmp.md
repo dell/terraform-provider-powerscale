@@ -19,12 +19,12 @@ linkTitle: "powerscale_cluster_snmp"
 page_title: "powerscale_cluster_snmp Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This resource is used to manage the Cluster SNMP entity of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.
+  This resource is used to manage the Cluster SNMP settings of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.
 ---
 
 # powerscale_cluster_snmp (Resource)
 
-This resource is used to manage the Cluster SNMP entity of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.
+This resource is used to manage the Cluster SNMP settings of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.
 
 
 ## Example Usage
@@ -99,7 +99,7 @@ resource "powerscale_cluster_snmp" "example_snmp_settings" {
 Import is supported using the following syntax:
 
 ```shell
-# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
