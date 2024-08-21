@@ -3,6 +3,7 @@ package provider
 import (
 	"fmt"
 	"regexp"
+	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
 	"github.com/bytedance/mockey"
@@ -20,7 +21,7 @@ func TestAccS3GlobalSettingResource(t *testing.T) {
 			{
 				Config: ProviderConfig + testAccS3GlobalSettingConfig(),
 				PreConfig: func() {
-					FunctionMocker = mockey.Mock(SetGlobalSetting).Return(nil, fmt.Errorf("create error")).Build()
+					FunctionMocker = mockey.Mock(helper.SetGlobalSetting).Return(nil, fmt.Errorf("create error")).Build()
 				},
 				ExpectError: regexp.MustCompile("create error"),
 			},
@@ -28,7 +29,7 @@ func TestAccS3GlobalSettingResource(t *testing.T) {
 				Config: ProviderConfig + testAccS3GlobalSettingUpdateConfig(),
 				PreConfig: func() {
 					FunctionMocker.UnPatch()
-					FunctionMocker = mockey.Mock(GetGlobalSetting).Return(fmt.Errorf("read error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetGlobalSetting).Return(fmt.Errorf("read error")).Build()
 				},
 				ExpectError: regexp.MustCompile("read error"),
 			},
@@ -61,7 +62,7 @@ func TestAccS3GlobalSettingResource(t *testing.T) {
 
 			{
 				PreConfig: func() {
-					FunctionMocker = mockey.Mock(GetGlobalSetting).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetGlobalSetting).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:            ProviderConfig + testAccS3GlobalSettingImportError(),
 				ResourceName:      "powerscale_s3_global_settings.s3_import",
