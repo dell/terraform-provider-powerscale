@@ -289,7 +289,7 @@ func (r *ClusterOwnerResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	state.ID = types.StringValue("cluster_email")
+	state.ID = types.StringValue("cluster_owner")
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
