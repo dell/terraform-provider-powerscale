@@ -214,6 +214,9 @@ const (
 	// ListSnapshotSchedulesMsg specifies error details occurred while listing snapshot schedules.
 	ListSnapshotSchedulesMsg = "Could not list snapshot schedules "
 
+	// ListSynciqPoliciesMsg specifies error details occurred while listing snapshot schedules.
+	ListSynciqPoliciesMsg = "Could not list SyncIQ policies "
+
 	// ReadSnapshotScheduleErrorMessage specifies error details occurred while reading Snapshot schedule.
 	ReadSnapshotScheduleErrorMessage = "Could not read snapshot schedule"
 
