@@ -1,3 +1,19 @@
+/*
+Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+
+Licensed under the Mozilla Public License Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://mozilla.org/MPL/2.0/
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package provider
 
 import (
@@ -15,7 +31,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
-// TestAccClusterSnmpResource - Tests the creation of a cluster SNMP resource
+// TestAccClusterSnmpResource - Tests the creation of a cluster SNMP resource.
 func TestAccClusterSnmpResource(t *testing.T) {
 	var clusterSNMPResourceName = "powerscale_cluster_snmp.test"
 	resource.Test(t, resource.TestCase{
@@ -34,7 +50,7 @@ func TestAccClusterSnmpResource(t *testing.T) {
 	})
 }
 
-// TestAccClusterSnmpResource_Update - Tests the update of a cluster SNMP resource along with error mocking
+// TestAccClusterSnmpResource_Update - Tests the update of a cluster SNMP resource along with error mocking.
 func TestAccClusterSnmpResource_Update(t *testing.T) {
 	var clusterSNMPResourceName = "powerscale_cluster_snmp.test"
 	resource.Test(t, resource.TestCase{
@@ -120,7 +136,7 @@ func TestAccClusterSnmpResource_Update(t *testing.T) {
 	})
 }
 
-// TestAccClusterSnmpResource_Create - Tests the mock errors during the create operation of the cluster SNMP resource
+// TestAccClusterSnmpResource_Create - Tests the mock errors during the create operation of the cluster SNMP resource.
 func TestAccClusterSnmpResourceCreateMockErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -157,7 +173,7 @@ func TestAccClusterSnmpResourceCreateMockErr(t *testing.T) {
 	})
 }
 
-// TestAccClusterSnmpResource_Update - Tests the mock errors during the update operation of the cluster SNMP resource
+// TestAccClusterSnmpResource_Update - Tests the mock errors during the update operation of the cluster SNMP resource.
 func TestAccClusterSnmpResourceUpdateMockErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -194,7 +210,7 @@ func TestAccClusterSnmpResourceUpdateMockErr(t *testing.T) {
 	})
 }
 
-// TestAccClusterSnmpResource_Import - Tests the mock errors during the import of the cluster SNMP resource
+// TestAccClusterSnmpResource_Import - Tests the mock errors during the import of the cluster SNMP resource.
 func TestAccClusterSnmpResourceImportMockErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -221,7 +237,7 @@ func TestAccClusterSnmpResourceImportMockErr(t *testing.T) {
 	})
 }
 
-// TestAccClusterSnmpResource_Import - Tests the import of the cluster SNMP resource
+// TestAccClusterSnmpResource_Import - Tests the import of the cluster SNMP resource.
 func TestAccClusterSnmpResource_Import(t *testing.T) {
 	var clusterSNMPResourceName = "powerscale_cluster_snmp.test"
 	resource.Test(t, resource.TestCase{
@@ -275,13 +291,17 @@ func TestAccClusterSnmpResource_Import(t *testing.T) {
 
 var clusterSnmpResourceUpdateConfig = `
 resource "powerscale_cluster_snmp" "test" {
-	enabled = false	
+	enabled = false
+	snmp_v1_v2c_access = false
+	read_only_community = "read_only_community"
 }
 `
 
 var clusterSnmpResourceConfig = `
 resource "powerscale_cluster_snmp" "test" {
 	enabled = true
+	snmp_v1_v2c_access = true
+	read_only_community = "read_only_community"
 }
 `
 var clusterSnmpResourceEmptyConfig = `

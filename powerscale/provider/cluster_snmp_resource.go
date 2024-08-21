@@ -88,6 +88,7 @@ func (r *ClusterSnmpResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "The SNMPv1/v2c access for the Cluster SNMP.",
 				Computed:            true,
 				Optional:            true,
+				Validators:          []validator.Bool{boolvalidator.AlsoRequires(path.MatchRoot("read_only_community"))},
 			},
 			"snmp_v3_access": schema.BoolAttribute{
 				Description:         "The SNMPv3 access for the Cluster SNMP.",
