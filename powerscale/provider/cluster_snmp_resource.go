@@ -190,6 +190,7 @@ func (r *ClusterSnmpResource) Create(ctx context.Context, req resource.CreateReq
 
 	diags := r.UpdateClusterSNMP(ctx, plan, &state)
 	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
 		return
 	}
 
@@ -246,6 +247,7 @@ func (r *ClusterSnmpResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 	diags := r.UpdateClusterSNMP(ctx, plan, &state)
 	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
 		return
 	}
 
