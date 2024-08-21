@@ -60,7 +60,7 @@ func TestAccS3KeyResource(t *testing.T) {
 			// Create and Read testing
 			{
 				PreConfig: func() { FunctionMocker.UnPatch() },
-				Config: ProviderConfig + S3KeyResourceConfig,
+				Config:    ProviderConfig + S3KeyResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_s3_key.tf_test", "user", "tf_user"),
 				),
@@ -97,7 +97,7 @@ func TestAccS3KeyResource(t *testing.T) {
 			// Update
 			{
 				PreConfig: func() { FunctionMocker.UnPatch() },
-				Config: ProviderConfig + S3KeyResourceConfigUpdate,
+				Config:    ProviderConfig + S3KeyResourceConfigUpdate,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_s3_key.tf_test", "user", "tf_user"),
 				),
