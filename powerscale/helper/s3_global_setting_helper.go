@@ -2,8 +2,8 @@ package helper
 
 import (
 	"context"
-	"terraform-provider-powerscale/client"
 	powerscale "dell/powerscale-go-client"
+	"terraform-provider-powerscale/client"
 )
 
 // GetS3GlobalSetting gets S3 GlobalSetting.
@@ -20,5 +20,3 @@ func UpdateS3GlobalSetting(ctx context.Context, client *client.Client, GlobalSet
 	_, err := updateParam.Execute()
 	return err
 }
-
-
