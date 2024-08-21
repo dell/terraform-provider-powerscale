@@ -32,8 +32,8 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource                = &S3GlobalSettingResource{}
-	// _ resource.ResourceWithImportState = &S3GlobalSettingResource{}
+	_ resource.Resource = &S3GlobalSettingResource{}
+    _ resource.ResourceWithImportState = &S3GlobalSettingResource{}
 )
 
 // NewS3GlobalSettingResource returns the S3 Global Setting resource object.
@@ -82,7 +82,8 @@ func S3GlobalSettingResourceSchema() map[string]schema.Attribute {
 		"service": schema.BoolAttribute{
 			Description:         "Specifies if the service is enabled.",
 			MarkdownDescription: "Specifies if the service is enabled.",
-			Required:            true,
+			Optional:            true,
+			Computed:            true,
 		},
 		"https_only": schema.BoolAttribute{
 			Description:         "Specifies if the service is HTTPS only.",
@@ -105,67 +106,69 @@ func S3GlobalSettingResourceSchema() map[string]schema.Attribute {
 	}
 }
 
-func (r *S3GlobalSettingResource) SetGlobalSettings(ctx context.Context, config models.S3GlobalSettingResource) error {
-
-	httpPortValue := int32(config.HTTPPort.ValueInt64())
-	httpsPortValue := int32(config.HTTPSPort.ValueInt64())
-
-	setGlobalSettings := powerscale.V10S3SettingsGlobalSettings{
-		Service:   config.Service.ValueBoolPointer(),
-		HttpsOnly: config.HTTPSOnly.ValueBoolPointer(),
-		HttpPort:  (*int32)(&httpPortValue),
-		HttpsPort: (*int32)(&httpsPortValue),
-	}
-
-	err := helper.UpdateS3GlobalSetting(ctx, r.client, setGlobalSettings)
+// setGlobalSetting updates the S3 Global Setting.
+func (r *S3GlobalSettingResource) setGlobalSetting(ctx context.Context, s3GSPlan models.S3GlobalSettingResource) (models.S3GlobalSettingResource, error) {
+	var toUpdate powerscale.V10S3SettingsGlobalSettings
+	err := helper.ReadFromState(ctx, &s3GSPlan, &toUpdate)
 	if err != nil {
-		return err
+		return models.S3GlobalSettingResource{}, err
 	}
-
-	// get s3 global settings
-	err = r.RefreshS3GlobalSetting(ctx, config)
+	err = helper.UpdateS3GlobalSetting(ctx, r.client, toUpdate)
 	if err != nil {
-		return err 
+		return models.S3GlobalSettingResource{}, err
 	}
-	return nil 
-}
-
-func (r *S3GlobalSettingResource) RefreshS3GlobalSetting(ctx context.Context, config models.S3GlobalSettingResource) error {
 	globalSettings, err := helper.GetS3GlobalSetting(ctx, r.client)
 	if err != nil {
-		return err 
+		return models.S3GlobalSettingResource{}, err
 	}
-
-	err = helper.CopyFieldsToNonNestedModel(ctx, globalSettings.GetSettings(), &config)
+	var state models.S3GlobalSettingResource
+	err = helper.CopyFieldsToNonNestedModel(ctx, globalSettings.GetSettings(), &state)
 	if err != nil {
-		return err
+		return models.S3GlobalSettingResource{}, err
 	}
-	return nil 
+	return state, nil
 }
 
 // Create allocates the resource.
 func (r *S3GlobalSettingResource) Create(ctx context.Context, request resource.CreateRequest, response *resource.CreateResponse) {
 	tflog.Info(ctx, "Creating S3 Global Setting")
 
-	var s3GlobalSetting models.S3GlobalSettingResource
-	diags := request.Plan.Get(ctx, &s3GlobalSetting)
-
+	var s3GSPlan models.S3GlobalSettingResource
+	diags := request.Plan.Get(ctx, &s3GSPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
 	}
-	err := r.SetGlobalSettings(ctx, s3GlobalSetting)
-	if err != nil {
-		response.Diagnostics.AddError("Error creating S3 Global Setting ", err.Error())
-		return 
+	state, err := r.setGlobalSetting(ctx, s3GSPlan)
+	if  err != nil {
+		response.Diagnostics.AddError("Error creating s3 global setting",
+			fmt.Sprintf("Could not create s3 global setting with error: %s", err.Error()),
+		)
+		return
 	}
-	diags = response.State.Set(ctx, &s3GlobalSetting)
+	diags = response.State.Set(ctx, &state)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
 	}
 	tflog.Info(ctx, "Create s3 Global Setting completed")
 }
+
+// getGlobalSetting reads the S3 Global Setting.
+func (r *S3GlobalSettingResource) getGlobalSetting(ctx context.Context, s3GlobalSettingState models.S3GlobalSettingResource) error {
+	globalSettings, err := helper.GetS3GlobalSetting(ctx, r.client)
+	if err != nil {
+		return err
+	}
+	err = helper.CopyFieldsToNonNestedModel(ctx, globalSettings.GetSettings(), &s3GlobalSettingState)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
+
 
 // Read reads data from the resource.
 func (r *S3GlobalSettingResource) Read(ctx context.Context, request resource.ReadRequest, response *resource.ReadResponse) {
@@ -177,11 +180,14 @@ func (r *S3GlobalSettingResource) Read(ctx context.Context, request resource.Rea
 		return
 	}
 
-	err := r.RefreshS3GlobalSetting(ctx, s3GlobalSettingState)
+	err := r.getGlobalSetting(ctx, s3GlobalSettingState)
 	if err != nil {
-		response.Diagnostics.AddError("Error reading S3 Global Setting ", err.Error())
+		response.Diagnostics.AddError("Error reading s3 global setting",
+			fmt.Sprintf("Could not read s3 global setting with error: %s", err.Error()),
+		)
 		return
 	}
+
 	diags = response.State.Set(ctx, &s3GlobalSettingState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -190,23 +196,26 @@ func (r *S3GlobalSettingResource) Read(ctx context.Context, request resource.Rea
 	tflog.Info(ctx, "Read S3 Global Setting completed")
 }
 
+
 // Update updates the resource state.
 func (r *S3GlobalSettingResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
 	tflog.Info(ctx, "Updating S3 Global Setting")
-	var s3GlobalSetting models.S3GlobalSettingResource
-	diags := request.Plan.Get(ctx, &s3GlobalSetting)
+	var s3GSPlan models.S3GlobalSettingResource
+	diags := request.Plan.Get(ctx, &s3GSPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
 	}
 
-	err := r.SetGlobalSettings(ctx, s3GlobalSetting)
-	if err != nil {
-		response.Diagnostics.AddError("Error updating S3 Global Setting ", err.Error())
+	state, err := r.setGlobalSetting(ctx, s3GSPlan)
+	if  err != nil {
+		response.Diagnostics.AddError("Error updating s3 global setting",
+			fmt.Sprintf("Could not update s3 global setting with error: %s", err.Error()),
+		)
 		return
 	}
 
-	diags = response.State.Set(ctx, s3GlobalSetting)
+	diags = response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
@@ -222,13 +231,18 @@ func (r S3GlobalSettingResource) Delete(ctx context.Context, request resource.De
 }
 
 // ImportState imports the resource state.
-// func (r S3GlobalSettingResource) ImportState(ctx context.Context, request resource.ImportStateRequest, response *resource.ImportStateResponse) {
-// 	tflog.Info(ctx, "Importing S3 Global Setting resource")
-// 	var s3GlobalSettingState models.S3GlobalSettingResource
-
-// 	response.Diagnostics.Append(response.State.Set(ctx, s3GlobalSettingState)...)
-// 	if response.Diagnostics.HasError() {
-// 		return
-// 	}
-// 	tflog.Info(ctx, "Import S3 Global Setting completed")
-// }
+func (r S3GlobalSettingResource) ImportState(ctx context.Context, request resource.ImportStateRequest, response *resource.ImportStateResponse) {
+	var s3GlobalSettingState models.S3GlobalSettingResource
+	err := r.getGlobalSetting(ctx, s3GlobalSettingState)
+	if err != nil {
+		response.Diagnostics.AddError("Error importing s3 global setting",
+			fmt.Sprintf("Could not import s3 global setting with error: %s", err.Error()),
+		)
+		return
+	}
+	diag := response.State.Set(ctx, s3GlobalSettingState)
+	response.Diagnostics.Append(diag...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+}
