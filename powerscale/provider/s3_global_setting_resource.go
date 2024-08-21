@@ -77,6 +77,7 @@ func (r *S3GlobalSettingResource) Schema(ctx context.Context, req resource.Schem
 	}
 }
 
+// S3GlobalSettingResourceSchema returns the S3 Global Setting resource schema.
 func S3GlobalSettingResourceSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"service": schema.BoolAttribute{
@@ -129,7 +130,7 @@ func SetGlobalSetting(ctx context.Context, client *client.Client, s3GSPlan model
 	return state, nil
 }
 
-// getGlobalSetting reads the S3 Global Setting.
+// GetGlobalSetting reads the S3 Global Setting.
 func GetGlobalSetting(ctx context.Context, client *client.Client, s3GlobalSettingState models.S3GlobalSettingResource) error {
 	globalSettings, err := helper.GetS3GlobalSetting(ctx, client)
 	if err != nil {
