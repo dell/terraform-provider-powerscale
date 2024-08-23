@@ -316,6 +316,12 @@ const (
 	// UpdateClusterEmailSettingsErrorMsg specifies error details occurred while updating cluster email settings.
 	UpdateClusterEmailSettingsErrorMsg = "Could not update cluster email settings "
 
+	// ReadClusterOwnerSettingsErrorMsg specifies error details occurred while reading cluster owner settings.
+	ReadClusterOwnerSettingsErrorMsg = "Could not read cluster owner settings "
+
+	// UpdateClusterOwnerSettingsErrorMsg specifies error details occurred while updating cluster owner settings.
+	UpdateClusterOwnerSettingsErrorMsg = "Could not update cluster owner settings "
+
 	// ReadFilePoolPolicyErrorMsg specifies error details occurred while reading file pool policy.
 	ReadFilePoolPolicyErrorMsg = "Could not read file pool policies "
 
@@ -381,4 +387,10 @@ const (
 
 	// UpdateSmbServerSettingsErrorMsg specifies error details occurred while updating smb server settings.
 	UpdateSmbServerSettingsErrorMsg = "Could not update smb server settings "
+
+	// ReadClusterSNMPSettingsErrorMsg specifies error details occurred while reading SNMP server settings.
+	ReadClusterSNMPSettingsErrorMsg = "Could not read cluster SNMP settings "
+
+	// UpdateClusterSNMPSettingsErrorMsg specifies error details occurred while updating cluster SNMP settings.
+	UpdateClusterSNMPSettingsErrorMsg = "Could not update cluster SNMP settings "
 )

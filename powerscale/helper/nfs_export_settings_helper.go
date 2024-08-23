@@ -51,7 +51,7 @@ func FilterNfsExportSettings(ctx context.Context, client *client.Client, filter 
 	return nfsExportSettings, err
 }
 
-// SetDefaultValues set default values for nfs export settings
+// SetDefaultValues set default values for nfs export settings.
 func SetDefaultValues(nfsExportSettingsModel *models.NfsexportsettingsModel, nfsExportSettings *powerscale.V2NfsSettingsExportSettings) error {
 	if nfsExportSettings == nil {
 		return nil
@@ -63,7 +63,7 @@ func SetDefaultValues(nfsExportSettingsModel *models.NfsexportsettingsModel, nfs
 	return nil
 }
 
-// GetSpecifiedZone retrieve zone from plan, or state if it is not defined in plan
+// GetSpecifiedZone retrieve zone from plan, or state if it is not defined in plan.
 func GetSpecifiedZone(plan *models.NfsexportsettingsModel, state *models.NfsexportsettingsModel) string {
 	if plan.Zone.ValueString() != "" {
 		return plan.Zone.ValueString()
