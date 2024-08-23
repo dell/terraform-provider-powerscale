@@ -28,8 +28,29 @@ data "powerscale_synciq_policy" "all_policies" {
 
 # Output value of above block by executing 'terraform output' command.
 # The user can use the fetched information by the variable data.powerscale_synciq_policy.all_policies.policies
-output "powerscale_synciq_policies" {
+output "powerscale_synciq_all_policies" {
   value = data.powerscale_synciq_policy.all_policies.policies
+}
+
+# The user can use the fetched policy by ID by the variable data.powerscale_synciq_policy.one.policies[0]
+output "policyByID" {
+  value = data.powerscale_synciq_policy.one.policies[0]
+}
+
+# Get syncIQ policy by name
+# Step 1: We shall use the datasource to get all the policies as shown above
+# Step 2: We index them by name
+locals {
+  policiesByName = { for policy in data.powerscale_synciq_policy.all_policies.policies : policy.name => policy }
+}
+
+# Syep 3: The user can use the fetched policy by name by the variable local.policiesByName["<anme>"]
+output "policiesByName" {
+  value = {
+    "aut" = local.policiesByName["aut_synciq_report_policy_01"]
+    "but" = local.policiesByName["but_synciq_report_policy_01"]
+    "cut" = local.policiesByName["cut_synciq_report_policy_01"]
+  }
 }
 
 # After the successful execution of above said block, We can see the output value by executing 'terraform output' command.
