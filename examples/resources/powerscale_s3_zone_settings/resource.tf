@@ -16,14 +16,14 @@ limitations under the License.
 */
 
 # Available actions: Create, Update, Delete and Import
-# After `terraform apply` of this example file it will modify S3 Global Settings on  the PowerScale Array.
+# After `terraform apply` of this example file it will modify S3 Zone Settings on  the PowerScale Array.
 # For more information, Please check the terraform state file.
 
 # PowerScale S3 Zone settings allows you to configure S3 Zone settings on PowerScale.
 resource "powerscale_s3_zone_settings" "s3_zone_setting" {
   zone                         = "tfacc-test"
   root_path                    = "/ifs/"
-  base_domain                  = ""
+  base_domain                  = "dell.com"
   bucket_directory_create_mode = 511
   object_acl_policy            = "deny"
 }
