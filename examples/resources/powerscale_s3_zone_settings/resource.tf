@@ -25,5 +25,5 @@ resource "powerscale_s3_zone_settings" "s3_zone_setting" {
   root_path                    = "/ifs/"
   base_domain                  = "dell.com"
   bucket_directory_create_mode = 511
-  object_acl_policy            = "deny"
+  object_acl_policy            = "deny" # replace or deny
 }
