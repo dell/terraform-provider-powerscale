@@ -3,12 +3,13 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"fmt"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
 
 // GetS3ZoneSetting gets S3 ZoneSetting.
-func GetS3ZoneSetting(ctx context.Context, client *client.Client, state models.S3ZoneSettingsResource) (*powerscale.V10S3SettingsZone, error) {
+func GetS3ZoneSetting(ctx context.Context, client *client.Client, state *models.S3ZoneSettingsResource) (*powerscale.V10S3SettingsZone, error) {
 	param := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv10S3SettingsZone(ctx)
 	if len(state.Zone.ValueString()) > 0 {
 		param = param.Zone(state.Zone.ValueString())
@@ -30,6 +31,9 @@ func UpdateS3ZoneSetting(ctx context.Context, client *client.Client, state model
 	}
 	updateParam = updateParam.V10S3SettingsZone(toUpdate)
 	_, err = updateParam.Execute()
+	if err != nil {
+		err = fmt.Errorf(GetErrorString(err, "s3 zone setting update error: "))
+	}
 	return err
 }
 
@@ -39,7 +43,7 @@ func SetZoneSetting(ctx context.Context, client *client.Client, s3ZSPlan models.
 	if err != nil {
 		return models.S3ZoneSettingsResource{}, err
 	}
-	ZoneSettings, err := GetS3ZoneSetting(ctx, client, s3ZSPlan)
+	ZoneSettings, err := GetS3ZoneSetting(ctx, client, &s3ZSPlan)
 	if err != nil {
 		return models.S3ZoneSettingsResource{}, err
 	}
@@ -53,12 +57,12 @@ func SetZoneSetting(ctx context.Context, client *client.Client, s3ZSPlan models.
 }
 
 // GetZoneSetting reads the S3 Zone Settings.
-func GetZoneSetting(ctx context.Context, client *client.Client, s3ZoneSettingState models.S3ZoneSettingsResource) error {
+func GetZoneSetting(ctx context.Context, client *client.Client, s3ZoneSettingState *models.S3ZoneSettingsResource) error {
 	ZoneSettings, err := GetS3ZoneSetting(ctx, client, s3ZoneSettingState)
 	if err != nil {
 		return err
 	}
-	err = CopyFieldsToNonNestedModel(ctx, ZoneSettings.GetSettings(), &s3ZoneSettingState)
+	err = CopyFieldsToNonNestedModel(ctx, ZoneSettings.GetSettings(), s3ZoneSettingState)
 	if err != nil {
 		return err
 	}

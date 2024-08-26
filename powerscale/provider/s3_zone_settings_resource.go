@@ -50,7 +50,7 @@ type S3ZoneSettingsResource struct {
 	client *client.Client
 }
 
-// Configure implements resource.ResourceWithConfigure
+// Configure implements resource.ResourceWithConfigure.
 func (r *S3ZoneSettingsResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
@@ -84,8 +84,8 @@ func (r *S3ZoneSettingsResource) Schema(_ context.Context, _ resource.SchemaRequ
 func S3ZoneSettingsSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"zone": schema.StringAttribute{
-			MarkdownDescription: "Zone",
-			Description:         "Zone",
+			MarkdownDescription: "The name of the access zone you want to update settings for s3 service",
+			Description:         "The name of the access zone you want to update settings for s3 service",
 			Required:            true,
 			PlanModifiers: []planmodifier.String{
 				stringplanmodifier.RequiresReplaceIfConfigured(),
@@ -99,20 +99,23 @@ func S3ZoneSettingsSchema() map[string]schema.Attribute {
 			Computed:            true,
 		},
 		"bucket_directory_create_mode": schema.Int64Attribute{
-			MarkdownDescription: "Bucket Directory Create Mode for S3 zone",
-			Description:         "Bucket Directory Create Mode for S3 zone",
+			MarkdownDescription: " The permission mode for creating bucket directories.",
+			Description:         " The permission mode for creating bucket directories.",
 			Optional:            true,
 			Computed:            true,
 		},
 		"object_acl_policy": schema.StringAttribute{
-			MarkdownDescription: "Object Acl Policy for S3 zone",
-			Description:         "Object Acl Policy for S3 zone",
+			MarkdownDescription: "The default policy for object access control lists (ACLs), which can be either “replace” or “deny”",
+			Description:         "The default policy for object access control lists (ACLs), which can be either “replace” or “deny”",
 			Optional:            true,
 			Computed:            true,
+			Validators: []validator.String{
+				stringvalidator.OneOf("replace", "deny"),
+			},
 		},
 		"root_path": schema.StringAttribute{
-			MarkdownDescription: "Root Path",
-			Description:         "Root Path",
+			MarkdownDescription: " The root path for the S3 bucket.",
+			Description:         " The root path for the S3 bucket.",
 			Optional:            true,
 			Computed:            true,
 		},
@@ -156,7 +159,7 @@ func (r *S3ZoneSettingsResource) Read(ctx context.Context, req resource.ReadRequ
 		return
 	}
 
-	err := helper.GetZoneSetting(ctx, r.client, state)
+	err := helper.GetZoneSetting(ctx, r.client, &state)
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading s3 zone settings ", err.Error())
 		return
@@ -208,7 +211,7 @@ func (r *S3ZoneSettingsResource) Delete(ctx context.Context, req resource.Delete
 	tflog.Trace(ctx, "resource_S3ZoneSettings delete: finished")
 }
 
-// ImportState import state for existing S3ZoneSettings
+// ImportState import state for existing S3ZoneSettings.
 func (r S3ZoneSettingsResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("zone"), req, resp)
 }

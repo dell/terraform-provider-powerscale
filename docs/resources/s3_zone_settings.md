@@ -66,14 +66,14 @@ resource "powerscale_s3_zone_settings" "s3_zone_setting" {
 
 ### Required
 
-- `zone` (String) Zone
+- `zone` (String) The name of the access zone you want to update settings for s3 service
 
 ### Optional
 
 - `base_domain` (String) Base Domain for S3 zone
-- `bucket_directory_create_mode` (Number) Bucket Directory Create Mode for S3 zone
-- `object_acl_policy` (String) Object Acl Policy for S3 zone
-- `root_path` (String) Root Path
+- `bucket_directory_create_mode` (Number) The permission mode for creating bucket directories.
+- `object_acl_policy` (String) The default policy for object access control lists (ACLs), which can be either “replace” or “deny”
+- `root_path` (String) The root path for the S3 bucket.
 
 ## Import
 

@@ -17,11 +17,11 @@ func TestAccS3ZoneSettingResource(t *testing.T) {
 		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// Error in setGlobalSetting
+			// Error in setzoneSetting
 			{
 				Config: ProviderConfig + testAccS3ZoneSettingConfig(),
 				PreConfig: func() {
-					FunctionMocker = mockey.Mock(helper.SetGlobalSetting).Return(nil, fmt.Errorf("create error")).Build()
+					FunctionMocker = mockey.Mock(helper.SetZoneSetting).Return(nil, fmt.Errorf("create error")).Build()
 				},
 				ExpectError: regexp.MustCompile("create error"),
 			},
@@ -29,7 +29,7 @@ func TestAccS3ZoneSettingResource(t *testing.T) {
 				Config: ProviderConfig + testAccS3ZoneSettingUpdateConfig(),
 				PreConfig: func() {
 					FunctionMocker.UnPatch()
-					FunctionMocker = mockey.Mock(helper.GetGlobalSetting).Return(fmt.Errorf("read error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetZoneSetting).Return(fmt.Errorf("read error")).Build()
 				},
 				ExpectError: regexp.MustCompile("read error"),
 			},
@@ -37,19 +37,19 @@ func TestAccS3ZoneSettingResource(t *testing.T) {
 				PreConfig: func() { FunctionMocker.UnPatch() },
 				Config:    ProviderConfig + testAccS3ZoneSettingConfig(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_global_setting", "service", "true"),
-					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_global_setting", "https_only", "false"),
-					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_global_setting", "http_port", "9097"),
-					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_global_setting", "https_port", "9098"),
+					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "zone", "System"),
+					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "root_path", "/ifs"),
+					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "base_domain", "dell"),
+					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "object_acl_policy", "deny"),
 				),
 			},
 			{
 				Config: ProviderConfig + testAccS3ZoneSettingUpdateConfig(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_global_setting", "service", "false"),
-					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_global_setting", "https_only", "true"),
-					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_global_setting", "http_port", "9099"),
-					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_global_setting", "https_port", "9100"),
+					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "zone", "System"),
+					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "root_path", "/ifs"),
+					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "base_domain", "dell.com"),
+					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "object_acl_policy", "replace"),
 				),
 			},
 
@@ -62,7 +62,7 @@ func TestAccS3ZoneSettingResource(t *testing.T) {
 
 			{
 				PreConfig: func() {
-					FunctionMocker = mockey.Mock(helper.GetGlobalSetting).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetZoneSetting).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:            ProviderConfig + testAccS3ZoneSettingImportError(),
 				ResourceName:      "powerscale_s3_zone_settings.s3_import",
@@ -77,20 +77,20 @@ func TestAccS3ZoneSettingResource(t *testing.T) {
 
 func testAccS3ZoneSettingConfig() string {
 	return `
-resource "powerscale_s3_zone_settings" "s3_global_setting" {
+resource "powerscale_s3_zone_settings" "s3_zone_setting" {
   zone                        = "System"
-  root_path                   = "/data/s3_buckets"
-  base_domain                 = "dell.com"
+  root_path                   = "/ifs"
+  base_domain                 = "dell"
   bucket_directory_create_mode = 511
-  object_acl_policy           = "replace"
+  object_acl_policy           = "deny"
 }`
 }
 
 func testAccS3ZoneSettingUpdateConfig() string {
 	return `
-resource "powerscale_s3_zone_settings" "s3_global_setting" {
+resource "powerscale_s3_zone_settings" "s3_zone_setting" {
   zone                        = "System"
-  root_path                   = "/data/s3_buckets/zone"
+  root_path                   = "/ifs"
   base_domain                 = "dell.com"
   bucket_directory_create_mode = 511
   object_acl_policy           = "replace"
