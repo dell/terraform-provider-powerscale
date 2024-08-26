@@ -126,6 +126,7 @@ func ManageClusterTime(ctx context.Context, client *client.Client, plan models.C
 	return state, nil
 }
 
+// ReadClusterTimeDetails read cluster Time details.
 func ReadClusterTimeDetails(ctx context.Context, client *client.Client, plan models.ClusterTime) (state models.ClusterTime, resp diag.Diagnostics) {
 	clusterTime, err := GetClusterTime(ctx, client)
 	if err != nil {

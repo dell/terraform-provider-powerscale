@@ -29,6 +29,7 @@ type ClusterTime struct {
 	Path         types.String `tfsdk:"path"`
 }
 
+// ClusterTimezoneSetting struct for ClusterTimezoneSetting.
 type ClusterTimezoneSetting struct {
 	Settings *ClusterConfigTimezone `tfsdk:"settings"`
 }
