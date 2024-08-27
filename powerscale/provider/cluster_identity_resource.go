@@ -38,6 +38,7 @@ var (
 	_ resource.ResourceWithImportState = &ClusterIdentityResource{}
 )
 
+// NewClusterIdentityResource is a helper function to create the resource.
 func NewClusterIdentityResource() resource.Resource {
 	return &ClusterIdentityResource{}
 }
