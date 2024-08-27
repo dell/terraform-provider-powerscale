@@ -45,7 +45,7 @@ func TestAccS3ZoneSettingResource(t *testing.T) {
 			},
 			{
 				PreConfig: func() { FunctionMocker.UnPatch() },
-				Config: ProviderConfig + testAccS3ZoneSettingUpdateConfig(),
+				Config:    ProviderConfig + testAccS3ZoneSettingUpdateConfig(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "zone", "System"),
 					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "root_path", "/ifs"),
