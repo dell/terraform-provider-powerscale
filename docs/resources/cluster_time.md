@@ -19,12 +19,12 @@ linkTitle: "powerscale_cluster_time"
 page_title: "powerscale_cluster_time Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This resource is used to manage the Cluster Time Settings entity of PowerScale Array. PowerScale Cluster Time Settings provide the ability to configure Time settings on the cluster.We can Create, Update and Delete the Cluster Time Settings using this resource. We can also import existing Cluster Time Settings from PowerScale array. Note that, Cluster Time Settings is the native functionality of PowerScale. When creating the resource, we actually load Cluster Time Settings from PowerScale to the resource state.
+  This resource is used to manage the Cluster Time settings of PowerScale Array. We can Create, Update and Delete the Cluster Time using this resource. We can also import an existing Cluster Time from PowerScale array.
 ---
 
 # powerscale_cluster_time (Resource)
 
-This resource is used to manage the Cluster Time Settings entity of PowerScale Array. PowerScale Cluster Time Settings provide the ability to configure Time settings on the cluster.We can Create, Update and Delete the Cluster Time Settings using this resource. We can also import existing Cluster Time Settings from PowerScale array. Note that, Cluster Time Settings is the native functionality of PowerScale. When creating the resource, we actually load Cluster Time Settings from PowerScale to the resource state.
+This resource is used to manage the Cluster Time settings of PowerScale Array. We can Create, Update and Delete the Cluster Time using this resource. We can also import an existing Cluster Time from PowerScale array.
 
 
 ## Example Usage
