@@ -26,14 +26,6 @@ func TestAccS3ZoneSettingResource(t *testing.T) {
 				ExpectError: regexp.MustCompile("create error"),
 			},
 			{
-				Config: ProviderConfig + testAccS3ZoneSettingUpdateConfig(),
-				PreConfig: func() {
-					FunctionMocker.UnPatch()
-					FunctionMocker = mockey.Mock(helper.GetZoneSetting).Return(fmt.Errorf("read error")).Build()
-				},
-				ExpectError: regexp.MustCompile("read error"),
-			},
-			{
 				PreConfig: func() { FunctionMocker.UnPatch() },
 				Config:    ProviderConfig + testAccS3ZoneSettingConfig(),
 				Check: resource.ComposeTestCheckFunc(
@@ -45,6 +37,15 @@ func TestAccS3ZoneSettingResource(t *testing.T) {
 			},
 			{
 				Config: ProviderConfig + testAccS3ZoneSettingUpdateConfig(),
+				PreConfig: func() {
+					FunctionMocker.UnPatch()
+					FunctionMocker = mockey.Mock(helper.GetZoneSetting).Return(fmt.Errorf("read error")).Build()
+				},
+				ExpectError: regexp.MustCompile("read error"),
+			},
+			{
+				PreConfig: func() { FunctionMocker.UnPatch() },
+				Config:    ProviderConfig + testAccS3ZoneSettingUpdateConfig(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "zone", "System"),
 					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "root_path", "/ifs"),
@@ -52,7 +53,6 @@ func TestAccS3ZoneSettingResource(t *testing.T) {
 					resource.TestCheckResourceAttr("powerscale_s3_zone_settings.s3_zone_setting", "object_acl_policy", "replace"),
 				),
 			},
-
 			{
 				Config:        ProviderConfig + testAccS3ZoneSettingImportError(),
 				ResourceName:  "powerscale_s3_zone_settings.s3_import",
