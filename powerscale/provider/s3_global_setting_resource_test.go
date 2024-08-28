@@ -62,7 +62,7 @@ func TestAccS3GlobalSettingResource(t *testing.T) {
 			},
 			{
 				PreConfig: func() { FunctionMocker.UnPatch() },
-				Config: ProviderConfig + testAccS3GlobalSettingUpdateConfig(),
+				Config:    ProviderConfig + testAccS3GlobalSettingUpdateConfig(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "service", "true"),
 					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "https_only", "true"),
