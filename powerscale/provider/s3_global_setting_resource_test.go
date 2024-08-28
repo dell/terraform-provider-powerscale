@@ -43,6 +43,16 @@ func TestAccS3GlobalSettingResource(t *testing.T) {
 				ExpectError: regexp.MustCompile("create error"),
 			},
 			{
+				PreConfig: func() { FunctionMocker.UnPatch() },
+				Config:    ProviderConfig + testAccS3GlobalSettingConfig(),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "service", "false"),
+					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "https_only", "false"),
+					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "http_port", "9097"),
+					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "https_port", "9098"),
+				),
+			},
+			{
 				Config: ProviderConfig + testAccS3GlobalSettingUpdateConfig(),
 				PreConfig: func() {
 					FunctionMocker.UnPatch()
@@ -52,21 +62,12 @@ func TestAccS3GlobalSettingResource(t *testing.T) {
 			},
 			{
 				PreConfig: func() { FunctionMocker.UnPatch() },
-				Config:    ProviderConfig + testAccS3GlobalSettingConfig(),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "service", "true"),
-					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "https_only", "false"),
-					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "http_port", "9097"),
-					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "https_port", "9098"),
-				),
-			},
-			{
 				Config: ProviderConfig + testAccS3GlobalSettingUpdateConfig(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "service", "false"),
+					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "service", "true"),
 					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "https_only", "true"),
-					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "http_port", "9099"),
-					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "https_port", "9100"),
+					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "http_port", "9020"),
+					resource.TestCheckResourceAttr("powerscale_s3_global_settings.s3_global_setting", "https_port", "9021"),
 				),
 			},
 
@@ -95,7 +96,7 @@ func TestAccS3GlobalSettingResource(t *testing.T) {
 func testAccS3GlobalSettingConfig() string {
 	return `
 resource "powerscale_s3_global_settings" "s3_global_setting" {
-	service = true
+	service = false
 	https_only = false
 	http_port = 9097
 	https_port = 9098
@@ -105,10 +106,10 @@ resource "powerscale_s3_global_settings" "s3_global_setting" {
 func testAccS3GlobalSettingUpdateConfig() string {
 	return `
 resource "powerscale_s3_global_settings" "s3_global_setting" {
-	service = false
+	service = true
 	https_only = true
-	http_port = 9099
-	https_port = 9100
+	http_port = 9020
+	https_port = 9021
 }`
 }
 
