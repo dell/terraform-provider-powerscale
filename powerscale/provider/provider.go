@@ -195,6 +195,10 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewS3KeyResource,
 		NewClusterOwnerResource,
 		NewSyncIQGlobalSettingsResource,
+		NewS3GlobalSettingResource,
+		NewS3ZoneSettingsResource,
+		NewClusterIdentityResource,
+		NewClusterTimeResource,
 	}
 }
 

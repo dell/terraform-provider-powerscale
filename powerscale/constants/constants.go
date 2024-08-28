@@ -322,6 +322,18 @@ const (
 	// UpdateClusterOwnerSettingsErrorMsg specifies error details occurred while updating cluster owner settings.
 	UpdateClusterOwnerSettingsErrorMsg = "Could not update cluster owner settings "
 
+	// ReadClusterTimeSettingsErrorMsg specifies error details occurred while reading cluster time settings.
+	ReadClusterTimeSettingsErrorMsg = "Could not read cluster time settings "
+
+	// UpdateClusterTimeSettingsErrorMsg specifies error details occurred while updating cluster time settings.
+	UpdateClusterTimeSettingsErrorMsg = "Could not update cluster time settings "
+
+	// ReadClusterTimezoneSettingsErrorMsg specifies error details occurred while reading cluster timezone settings.
+	ReadClusterTimezoneSettingsErrorMsg = "Could not read cluster timezone settings "
+
+	// UpdateClusterTimezoneSettingsErrorMsg specifies error details occurred while updating cluster timezone settings.
+	UpdateClusterTimezoneSettingsErrorMsg = "Could not update cluster timezone settings "
+
 	// ReadFilePoolPolicyErrorMsg specifies error details occurred while reading file pool policy.
 	ReadFilePoolPolicyErrorMsg = "Could not read file pool policies "
 
@@ -399,4 +411,9 @@ const (
 
 	// ReadSyncIQGlobalSettingsErrorMsg specifies error details occurred while reading SyncIQ Global settings.
 	ReadSyncIQGlobalSettingsErrorMsg = "Could not read  synciq global settings "
+	// UpdateClusterIdentitySettingsErrorMsg specifies error details occurred while updating cluster identity settings.
+	UpdateClusterIdentitySettingsErrorMsg = "Could not update cluster identity settings "
+
+	// ReadClusterIdentitySettingsErrorMsg specifies error details occurred while reading cluster identity settings.
+	ReadClusterIdentitySettingsErrorMsg = "Could not read cluster identity settings "
 )

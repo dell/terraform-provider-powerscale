@@ -83,7 +83,18 @@ type ClusterConfigDevice struct {
 	Lnn types.Int64 `tfsdk:"lnn"`
 }
 
-// ClusterIdentity Unprivileged cluster information for display when logging in.
+// ClusterIdentityResource Unprivileged cluster information for display when logging in.
+type ClusterIdentityResource struct {
+	ID types.String `tfsdk:"id"`
+	// A description of the cluster.
+	Description types.String `tfsdk:"description"`
+	// Logon information
+	Logon types.Object `tfsdk:"logon"`
+	// The name of the cluster.
+	Name types.String `tfsdk:"name"`
+}
+
+// ClusterIdentity Unprivileged cluster information for display with cluster Identity datasource.
 type ClusterIdentity struct {
 	// A description of the cluster.
 	Description types.String `tfsdk:"description"`
