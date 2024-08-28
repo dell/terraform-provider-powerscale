@@ -167,7 +167,7 @@ func ReadClusterTimeDetails(ctx context.Context, client *client.Client, plan mod
 
 	state.Path = types.StringValue(clusterConfigTimezone.Settings.Path.ValueString())
 
-	state.TimeMillis = types.Int32Value(int32(*clusterTime.Nodes[0].Time))
+	state.TimeMillis = types.Int32Value(*clusterTime.Nodes[0].Time)
 
 	return state, resp
 }
