@@ -24,10 +24,22 @@ limitations under the License.
 # PowerScale Cluster identity Settings allow you to change the settings of identity
 resource "powerscale_cluster_identity" "example_identity_settings" {
   # Optional fields both for creating and updating
-  name        = "cluster1"
+
+  # The name for this cluster.
+  # It must contain only alphanumeric characters, underscores, and hyphens.
+  # Spaces are not allowed.
+  # The name must be unique within the cluster.
+  name = "cluster1"
+
+  # The description of the cluster.
   description = "cluster1 description"
+
+  # The information displayed when a user logs in to the cluster.
   logon = {
-    motd = "motd", motd_header = "motd header"
+    # The message of the day.
+    motd = "motd"
+    # The header to the message of the day.
+    motd_header = "motd header"
   }
 }
 # After the execution of above resource block, Cluster identity Settings would have been cached in terraform state file, or
