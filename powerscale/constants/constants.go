@@ -405,4 +405,10 @@ const (
 
 	// UpdateClusterSNMPSettingsErrorMsg specifies error details occurred while updating cluster SNMP settings.
 	UpdateClusterSNMPSettingsErrorMsg = "Could not update cluster SNMP settings "
+
+	// UpdateClusterIdentitySettingsErrorMsg specifies error details occurred while updating cluster identity settings.
+	UpdateClusterIdentitySettingsErrorMsg = "Could not update cluster identity settings "
+
+	// ReadClusterIdentitySettingsErrorMsg specifies error details occurred while reading cluster identity settings.
+	ReadClusterIdentitySettingsErrorMsg = "Could not read cluster identity settings "
 )
