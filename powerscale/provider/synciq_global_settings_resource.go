@@ -49,7 +49,7 @@ func NewSyncIQGlobalSettingsResource() resource.Resource {
 	return &SyncIQGlobalSettingsResource{}
 }
 
-// NewSyncIQGlobalSettingsResource defines the resource implementation.
+// SyncIQGlobalSettingsResource defines the resource implementation.
 type SyncIQGlobalSettingsResource struct {
 	client *client.Client
 }
@@ -433,7 +433,6 @@ func (r *SyncIQGlobalSettingsResource) Update(ctx context.Context, req resource.
 			return
 		}
 	}
-	
 
 	err = helper.UpdateSyncIQGlobalSettings(ctx, r.client, toUpdate)
 	if err != nil {

@@ -30,8 +30,6 @@ import (
 	//"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
-
-
 // TestAccSyncIQGlobalSettingsResource - Tests the creation of a syncIQ global settings resource.
 func TestAccSyncIQGlobalSettingsResource(t *testing.T) {
 	var syncIQGlobalSettingsResource = "powerscale_synciq_global_settings.test"
@@ -219,7 +217,7 @@ func TestAccSyncIQGlobalSettingsResourceUpdateMockErr(t *testing.T) {
 	})
 }
 
-//TestAccSyncIQGlobalSettingsResourceImportMockErr - Tests the mock errors during the import of the SyncIQ Global Settings resource.
+// TestAccSyncIQGlobalSettingsResourceImportMockErr - Tests the mock errors during the import of the SyncIQ Global Settings resource.
 func TestAccSyncIQGlobalSettingsResourceImportMockErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -249,10 +247,10 @@ func TestAccSyncIQGlobalSettingsResourceImportMockErr(t *testing.T) {
 					}
 					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
-				Config:            ProviderConfig + SyncIQGlobalSettingsResourceConfig,
-				ResourceName:      "powerscale_synciq_global_settings.test",
-				ImportState:       true,
-				ExpectError:       regexp.MustCompile(`.*mock error*.`),
+				Config:       ProviderConfig + SyncIQGlobalSettingsResourceConfig,
+				ResourceName: "powerscale_synciq_global_settings.test",
+				ImportState:  true,
+				ExpectError:  regexp.MustCompile(`.*mock error*.`),
 			},
 		},
 	})

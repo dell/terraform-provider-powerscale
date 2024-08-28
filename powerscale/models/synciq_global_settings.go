@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,13 +18,14 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// SyncIQGlobalSettingsModel struct for SyncIQ global settings
 type SyncIQGlobalSettingsModel struct {
 	PreferredRpoAlert                     types.Int64  `tfsdk:"preferred_rpo_alert"`
 	PasswordSet                           types.Bool   `tfsdk:"password_set"`
 	Service                               types.String `tfsdk:"service"`
-	ClusterCertificateId                  types.String `tfsdk:"cluster_certificate_id"`
+	ClusterCertificateID                  types.String `tfsdk:"cluster_certificate_id"`
 	MaxConcurrentJobs                     types.Int64  `tfsdk:"max_concurrent_jobs"`
-	OcspIssuerCertificateId               types.String `tfsdk:"ocsp_issuer_certificate_id"`
+	OcspIssuerCertificateID               types.String `tfsdk:"ocsp_issuer_certificate_id"`
 	ReportMaxCount                        types.Int64  `tfsdk:"report_max_count"`
 	ForceInterface                        types.Bool   `tfsdk:"force_interface"`
 	OcspAddress                           types.String `tfsdk:"ocsp_address"`
@@ -44,8 +45,3 @@ type SyncIQGlobalSettingsModel struct {
 	ReportEmail                           types.Set    `tfsdk:"report_email"`
 	Password                              types.String `tfsdk:"password"`
 }
-
-// type GlobalSettingsSourceNetwork struct {
-// 	Subnet types.String `tfsdk:"subnet"`
-// 	Pool types.String `tfsdk:"pool"`
-// }
