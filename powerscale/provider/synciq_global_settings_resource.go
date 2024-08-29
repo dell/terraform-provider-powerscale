@@ -18,20 +18,15 @@ package provider
 
 import (
 	"context"
-	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"terraform-provider-powerscale/client"
-	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -183,12 +178,6 @@ func (r *SyncIQGlobalSettingsResource) Schema(ctx context.Context, req resource.
 					stringvalidator.LengthBetween(0, 255),
 				},
 			},
-			"password_set": schema.BoolAttribute{
-				Description:         "Indicates if a password is set for authentication. Password value is not shown with GET.",
-				MarkdownDescription: "Indicates if a password is set for authentication. Password value is not shown with GET.",
-				Optional:            true,
-				Computed:            true,
-			},
 			"service_history_max_age": schema.Int64Attribute{
 				Description:         "Maximum age of service information to maintain, in seconds.",
 				MarkdownDescription: "Maximum age of service information to maintain, in seconds.",
@@ -239,14 +228,6 @@ func (r *SyncIQGlobalSettingsResource) Schema(ctx context.Context, req resource.
 				Description:         "The interval (in seconds) in which treewalk syncs are forced to checkpoint.",
 				MarkdownDescription: "The interval (in seconds) in which treewalk syncs are forced to checkpoint.",
 			},
-			"password": schema.StringAttribute{
-				Optional:            true,
-				Description:         "The password for cluster authentication",
-				MarkdownDescription: "The password for cluster authentication",
-				Validators: []validator.String{
-					stringvalidator.LengthBetween(1, 255),
-				},
-			},
 		},
 	}
 }
@@ -274,82 +255,20 @@ func (r *SyncIQGlobalSettingsResource) Configure(ctx context.Context, req resour
 
 // Create allocates the resource.
 func (r *SyncIQGlobalSettingsResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var diags diag.Diagnostics
 	tflog.Info(ctx, "Creating SyncIQ Global Settings resource state")
 	// Read Terraform plan into the model
 	var plan models.SyncIQGlobalSettingsModel
-	var toUpdate powerscale.V16SyncSettingsExtended
+	var state models.SyncIQGlobalSettingsModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	err := helper.ReadFromState(ctx, &plan, &toUpdate)
-	if err != nil {
-		errStr := constants.UpdateSyncIQGlobalSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating synciq global settings",
-			fmt.Sprintf("Could not read synciq global setting param with error: %s", message),
-		)
-		return
-	}
-
-	if !plan.ReportEmail.IsUnknown() {
-		diags.Append(plan.ReportEmail.ElementsAs(ctx, &toUpdate.ReportEmail, true)...)
-	}
-
-	if toUpdate.SourceNetwork != nil {
-		if (toUpdate.SourceNetwork.Subnet == "" && toUpdate.SourceNetwork.Pool != "") || (toUpdate.SourceNetwork.Subnet != "" && toUpdate.SourceNetwork.Pool == "") {
-			resp.Diagnostics.AddError(
-				"Valid value for both subnet and pool needs to be provided",
-				"Please either provide value for both subnet and pool or else keep both as empty",
-			)
-			return
-		}
-	}
-
-	err = helper.UpdateSyncIQGlobalSettings(ctx, r.client, toUpdate)
-	if err != nil {
-		errStr := constants.UpdateSyncIQGlobalSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating synciq global settings",
-			message,
-		)
-		return
-	}
-
-	globalSetting, err := helper.GetSyncIQGlobalSettings(ctx, r.client)
-	if err != nil {
-		errStr := constants.ReadSyncIQGlobalSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating synciq global settings",
-			message,
-		)
-		return
-	}
-	var state models.SyncIQGlobalSettingsModel
-	err = helper.CopyFields(ctx, globalSetting.Settings, &state)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error copying fields of synciq global settings resource",
-			err.Error(),
-		)
-		return
-	}
-
-	sourceNetwork, emailObj, diags := getSourceNetworkAndEmail(globalSetting)
+	diags := helper.ManageSyncIQGlobalSettings(ctx, plan, &state, r.client)
 	if diags.HasError() {
-		resp.Diagnostics.AddError(
-			"Error copying fields of synciq global settings resource",
-			"Error occurred while copying source network or report email",
-		)
+		resp.Diagnostics.Append(diags...)
 		return
 	}
-	state.SourceNetwork = sourceNetwork
-	state.ReportEmail = emailObj
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -363,36 +282,11 @@ func (r *SyncIQGlobalSettingsResource) Read(ctx context.Context, req resource.Re
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	globalSettings, err := helper.GetSyncIQGlobalSettings(ctx, r.client)
-	if err != nil {
-		errStr := constants.ReadSyncIQGlobalSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating synciq global settings",
-			message,
-		)
-		return
-	}
-	err = helper.CopyFields(ctx, globalSettings.Settings, &state)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error copying fields of synciq global settings resource",
-			err.Error(),
-		)
-		return
-	}
-
-	sourceNetwork, emailObj, diags := getSourceNetworkAndEmail(globalSettings)
+	diags := helper.ManageReadSyncIQGlobalSettings(ctx, &state, r.client)
 	if diags.HasError() {
-		resp.Diagnostics.AddError(
-			"Error copying fields of synciq global settings resource",
-			"Error occurred while copying source network or report email",
-		)
+		resp.Diagnostics.Append(diags...)
 		return
 	}
-	state.SourceNetwork = sourceNetwork
-	state.ReportEmail = emailObj
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -401,80 +295,20 @@ func (r *SyncIQGlobalSettingsResource) Read(ctx context.Context, req resource.Re
 
 // Update updates the resource state.
 func (r *SyncIQGlobalSettingsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var diags diag.Diagnostics
 	tflog.Info(ctx, "Updating SyncIQ global settings resource...")
 	var plan models.SyncIQGlobalSettingsModel
+	var state models.SyncIQGlobalSettingsModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	var toUpdate powerscale.V16SyncSettingsExtended
-	// Get param from tf input
-	err := helper.ReadFromState(ctx, &plan, &toUpdate)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error updating SyncIQ global settings",
-			fmt.Sprintf("Could not read SyncIQ global settings param with error: %s", err.Error()),
-		)
-		return
-	}
-
-	if !plan.ReportEmail.IsUnknown() {
-		diags.Append(plan.ReportEmail.ElementsAs(ctx, &toUpdate.ReportEmail, true)...)
-	}
-
-	if toUpdate.SourceNetwork != nil {
-		if (toUpdate.SourceNetwork.Subnet == "" && toUpdate.SourceNetwork.Pool != "") || (toUpdate.SourceNetwork.Subnet != "" && toUpdate.SourceNetwork.Pool == "") {
-			resp.Diagnostics.AddError(
-				"Valid value for both subnet and pool needs to be provided",
-				"Please either provide value for both subnet and pool or else keep both as empty",
-			)
-			return
-		}
-	}
-
-	err = helper.UpdateSyncIQGlobalSettings(ctx, r.client, toUpdate)
-	if err != nil {
-		errStr := constants.UpdateSyncIQGlobalSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating synciq global settings",
-			message,
-		)
-		return
-	}
-
-	globalSetting, err := helper.GetSyncIQGlobalSettings(ctx, r.client)
-	if err != nil {
-		errStr := constants.ReadSyncIQGlobalSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating synciq global settings",
-			message,
-		)
-		return
-	}
-	var state models.SyncIQGlobalSettingsModel
-	err = helper.CopyFields(ctx, globalSetting.Settings, &state)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error copying fields of synciq global settings resource",
-			err.Error(),
-		)
-		return
-	}
-
-	sourceNetwork, emailObj, diags := getSourceNetworkAndEmail(globalSetting)
+	diags := helper.ManageSyncIQGlobalSettings(ctx, plan, &state, r.client)
 	if diags.HasError() {
-		resp.Diagnostics.AddError(
-			"Error copying fields of synciq global settings resource",
-			"Error occurred while copying source network or report email",
-		)
+		resp.Diagnostics.Append(diags...)
 		return
 	}
-	state.SourceNetwork = sourceNetwork
-	state.ReportEmail = emailObj
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -499,80 +333,11 @@ func (r *SyncIQGlobalSettingsResource) ImportState(ctx context.Context, req reso
 	tflog.Info(ctx, "Importing Cluster Identity resource state")
 
 	var state models.SyncIQGlobalSettingsModel
-	globalSetting, err := helper.GetSyncIQGlobalSettings(ctx, r.client)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error retrieving SyncIQ Global Settings resource",
-			err.Error(),
-		)
-		return
-	}
 
-	err = helper.CopyFields(ctx, globalSetting.Settings, &state)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error copying fields of synciq global settings resource",
-			err.Error(),
-		)
-		return
-	}
-
-	sourceNetwork, emailObj, diags := getSourceNetworkAndEmail(globalSetting)
+	diags := helper.ManageReadSyncIQGlobalSettings(ctx, &state, r.client)
 	if diags.HasError() {
-		resp.Diagnostics.AddError(
-			"Error copying fields of synciq global settings resource",
-			"Error occurred while copying source network or report email",
-		)
+		resp.Diagnostics.Append(diags...)
 		return
 	}
-	state.SourceNetwork = sourceNetwork
-	state.ReportEmail = emailObj
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-}
-
-func getSourceNetworkAndEmail(globalSetting *powerscale.V16SyncSettings) (basetypes.ObjectValue, basetypes.SetValue, diag.Diagnostics) {
-	var sourceNetworkObject basetypes.ObjectValue
-	var diags diag.Diagnostics
-	var emailObj basetypes.SetValue
-	if globalSetting.Settings.SourceNetwork != nil {
-		sourceNetworkObjectType := map[string]attr.Type{
-			"subnet": types.StringType,
-			"pool":   types.StringType,
-		}
-
-		sourceNetworkElemMap := map[string]attr.Value{
-			"subnet": types.StringValue(globalSetting.Settings.SourceNetwork.Subnet),
-			"pool":   types.StringValue(globalSetting.Settings.SourceNetwork.Pool),
-		}
-
-		sourceNetworkObject, diags = types.ObjectValue(sourceNetworkObjectType, sourceNetworkElemMap)
-		if diags.HasError() {
-			diags.Append(diags...)
-		}
-	} else {
-		sourceNetworkObjectType := map[string]attr.Type{
-			"subnet": types.StringType,
-			"pool":   types.StringType,
-		}
-
-		SourceNetworkElemMap := map[string]attr.Value{
-			"subnet": types.StringValue(""),
-			"pool":   types.StringValue(""),
-		}
-
-		sourceNetworkObject, diags = types.ObjectValue(sourceNetworkObjectType, SourceNetworkElemMap)
-		if diags.HasError() {
-			diags.Append(diags...)
-		}
-	}
-	emails := []attr.Value{}
-	for _, email := range globalSetting.Settings.ReportEmail {
-		emails = append(emails, types.StringValue(email))
-	}
-	emailObj, diags = types.SetValue(types.StringType, emails)
-	if diags.HasError() {
-		diags.Append(diags...)
-	}
-
-	return sourceNetworkObject, emailObj, diags
 }

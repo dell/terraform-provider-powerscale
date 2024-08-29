@@ -260,10 +260,6 @@ var SyncIQGlobalSettingsResourceConfig = `
 resource "powerscale_synciq_global_settings" "test" {
 	preferred_rpo_alert = 3
 	report_email = ["mail1@dell.com", "mail2@dell.com"]
-	source_network = {
-		subnet = "subnet0",
-		pool = "pool0"
-	}
    restrict_target_network = true
    rpo_alerts           = true
    service              = "paused"
@@ -274,10 +270,6 @@ var SyncIQGlobalSettingsResourceConfigUpdate = `
 resource "powerscale_synciq_global_settings" "test" {
 	preferred_rpo_alert = 5
 	report_email = ["mail2@dell.com", "mail3@dell.com"]
-	source_network = {
-		subnet = "",
-		pool = ""
-	}
    restrict_target_network = true
    rpo_alerts           = true
    service              = "paused"

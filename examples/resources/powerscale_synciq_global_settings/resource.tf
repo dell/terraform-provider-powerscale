@@ -27,7 +27,6 @@ resource "powerscale_synciq_global_settings" "example" {
   }
   report_email            = ["example1@mail.com", "example2@mail.com"]
   renegotiation_period    = 28800
-  password_set            = false
   service                 = "paused"
   rpo_alerts              = true
   restrict_target_network = true

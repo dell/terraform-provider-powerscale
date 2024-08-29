@@ -59,7 +59,6 @@ resource "powerscale_synciq_global_settings" "example" {
   }
   report_email            = ["example1@mail.com", "example2@mail.com"]
   renegotiation_period    = 28800
-  password_set            = false
   service                 = "paused"
   rpo_alerts              = true
   restrict_target_network = true
@@ -84,8 +83,6 @@ resource "powerscale_synciq_global_settings" "example" {
 - `max_concurrent_jobs` (Number) The max concurrent jobs that SyncIQ can support. This number is based on the size of the current cluster and the current SyncIQ worker throttle rule.
 - `ocsp_address` (String) The address of the OCSP responder to which to connect.
 - `ocsp_issuer_certificate_id` (String) The ID of the certificate authority that issued the certificate whose revocation status is being checked.
-- `password` (String) The password for cluster authentication
-- `password_set` (Boolean) Indicates if a password is set for authentication. Password value is not shown with GET.
 - `preferred_rpo_alert` (Number) If specified, display as default RPO Alert value for new policy creation via WebUI.
 - `renegotiation_period` (Number) If specified, the duration to persist encrypted connection before forcing a renegotiation.
 - `report_email` (Set of String) Email sync reports to these addresses.

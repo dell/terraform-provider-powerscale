@@ -21,7 +21,6 @@ import "github.com/hashicorp/terraform-plugin-framework/types"
 // SyncIQGlobalSettingsModel struct for SyncIQ global settings
 type SyncIQGlobalSettingsModel struct {
 	PreferredRpoAlert                     types.Int64  `tfsdk:"preferred_rpo_alert"`
-	PasswordSet                           types.Bool   `tfsdk:"password_set"`
 	Service                               types.String `tfsdk:"service"`
 	ClusterCertificateID                  types.String `tfsdk:"cluster_certificate_id"`
 	MaxConcurrentJobs                     types.Int64  `tfsdk:"max_concurrent_jobs"`
@@ -43,5 +42,4 @@ type SyncIQGlobalSettingsModel struct {
 	ReportMaxAge                          types.Int64  `tfsdk:"report_max_age"`
 	RestrictTargetNetwork                 types.Bool   `tfsdk:"restrict_target_network"`
 	ReportEmail                           types.Set    `tfsdk:"report_email"`
-	Password                              types.String `tfsdk:"password"`
 }
