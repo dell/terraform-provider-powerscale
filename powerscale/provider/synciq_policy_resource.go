@@ -20,14 +20,14 @@ package provider
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
-	"encoding/json"
 	"fmt"
-	"os"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
+	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -47,11 +47,6 @@ func NewSynciqPolicyResource() resource.Resource {
 // synciqPolicyResource defines the resource implementation.
 type synciqPolicyResource struct {
 	client *client.Client
-}
-
-// ImportState implements resource.ResourceWithImportState.
-func (r *synciqPolicyResource) ImportState(context.Context, resource.ImportStateRequest, *resource.ImportStateResponse) {
-	panic("unimplemented")
 }
 
 // Configure implements resource.ResourceWithConfigure.
@@ -87,9 +82,8 @@ func (r *synciqPolicyResource) Metadata(ctx context.Context, req resource.Metada
 
 // The function to be called when a resource is created.
 func (s *synciqPolicyResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Info(ctx, "Creating Cluster Email Settings resource state")
 	// Read Terraform plan into the model
-	var plan SynciqpolicyModel
+	var plan models.SynciqpolicyResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -99,38 +93,25 @@ func (s *synciqPolicyResource) Create(ctx context.Context, req resource.CreateRe
 	// Get param from tf input
 	err := helper.ReadFromState(ctx, &plan, &toUpdate)
 	if err != nil {
-		errStr := constants.UpdateClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			fmt.Sprintf("Could not read cluster email param with error: %s", message),
+			"Error reading create plan",
+			err.Error(),
 		)
 		return
 	}
 
-	respC, _, err := s.client.PscaleOpenAPIClient.SyncApi.CreateSyncv14SyncPolicy(context.Background()).V14SyncPolicy(toUpdate).Execute()
+	id, err := helper.CreateSyncIQPolicy(ctx, s.client, toUpdate)
 	if err != nil {
 		errStr := constants.UpdateClusterEmailSettingsErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
-			"Error updating cluster email",
+			"Error creating syncIQ Policy",
 			message,
 		)
 		return
 	}
 
-	// clusterEmail, err := helper.GetClusterEmail(ctx, r.client)
-	respR, _, err := s.client.PscaleOpenAPIClient.SyncApi.GetSyncv14SyncPolicy(context.Background(), respC.Id).Execute()
-	if err != nil {
-		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			message,
-		)
-		return
-	}
-	state, dgs := s.GetState(ctx, respR)
+	state, dgs := s.GetStateById(ctx, id)
 	resp.Diagnostics.Append(dgs...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -141,27 +122,33 @@ func (s *synciqPolicyResource) Create(ctx context.Context, req resource.CreateRe
 	tflog.Info(ctx, "Done with Create Cluster Email resource state")
 }
 
+func (s *synciqPolicyResource) GetStateById(ctx context.Context, id string) (models.SynciqpolicyResourceModel, diag.Diagnostics) {
+	var dgs diag.Diagnostics
+	resp, err := helper.GetSyncIQPolicyByID(ctx, s.client, id)
+	if err != nil {
+		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		dgs.AddError(
+			"Error reading syncIQ Policy",
+			message,
+		)
+		return models.SynciqpolicyResourceModel{}, dgs
+	}
+	state, diags := helper.NewSynciqpolicyResourceModel(ctx, resp)
+	dgs.Append(diags...)
+	return state, dgs
+}
+
 // The function to be called when a resource is read.
 func (s *synciqPolicyResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Info(ctx, "Creating Cluster Email Settings resource state")
 	// Read Terraform plan into the model
-	var oldState SynciqpolicyModel
+	var oldState models.SynciqpolicyResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &oldState)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	respR, _, err := s.client.PscaleOpenAPIClient.SyncApi.GetSyncv14SyncPolicy(context.Background(), oldState.Id.ValueString()).Execute()
-	if err != nil {
-		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			message,
-		)
-		return
-	}
-	state, dgs := s.GetState(ctx, respR)
+	state, dgs := s.GetStateById(ctx, oldState.Id.ValueString())
 	resp.Diagnostics.Append(dgs...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -169,14 +156,12 @@ func (s *synciqPolicyResource) Read(ctx context.Context, req resource.ReadReques
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-	tflog.Info(ctx, "Done with Create Cluster Email resource state")
 }
 
 // The function to be called when a resource is updated.
 func (s *synciqPolicyResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Info(ctx, "Creating Cluster Email Settings resource state")
 	// Read Terraform plan into the model
-	var plan, OldState SynciqpolicyModel
+	var plan, OldState models.SynciqpolicyResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -191,40 +176,32 @@ func (s *synciqPolicyResource) Update(ctx context.Context, req resource.UpdateRe
 	var toUpdate powerscale.V14SyncPolicyExtendedExtended
 	err := helper.ReadFromState(ctx, &plan, &toUpdate)
 	if err != nil {
-		errStr := constants.UpdateClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			fmt.Sprintf("Could not read cluster email param with error: %s", message),
+			"Error reading update plan",
+			err.Error(),
 		)
 		return
 	}
-	reqJson, _ := json.MarshalIndent(toUpdate, "", "  ")
-	fmt.Fprintf(os.Stdout, "Response from `SyncApi.GetSyncv14SyncPolicy` after Update: %s\n", string(reqJson))
 
-	_, err = s.client.PscaleOpenAPIClient.SyncApi.UpdateSyncv14SyncPolicy(context.Background(), OldState.Id.ValueString()).V14SyncPolicy(toUpdate).Execute()
+	// if file matching pattern is null then set it to empty
+	if plan.FileMatchingPattern.IsNull() {
+		toUpdate.FileMatchingPattern = &powerscale.V1SyncJobPolicyFileMatchingPattern{
+			OrCriteria: make([]powerscale.V1SyncJobPolicyFileMatchingPatternOrCriteriaItem, 0),
+		}
+	}
+
+	err = helper.UpdateSyncIQPolicy(ctx, s.client, OldState.Id.ValueString(), toUpdate)
 	if err != nil {
-		errStr := constants.UpdateClusterEmailSettingsErrorMsg + "with error: "
+		errStr := "Could not update syncIQ Policy with error: "
 		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
-			"Error updating cluster email",
+			"Error updating syncIQ Policy",
 			message,
 		)
 		return
 	}
 
-	// clusterEmail, err := helper.GetClusterEmail(ctx, r.client)
-	respR, _, err := s.client.PscaleOpenAPIClient.SyncApi.GetSyncv14SyncPolicy(context.Background(), OldState.Id.ValueString()).Execute()
-	if err != nil {
-		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			message,
-		)
-		return
-	}
-	state, dgs := s.GetState(ctx, respR)
+	state, dgs := s.GetStateById(ctx, OldState.Id.ValueString())
 	resp.Diagnostics.Append(dgs...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -232,44 +209,38 @@ func (s *synciqPolicyResource) Update(ctx context.Context, req resource.UpdateRe
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-	tflog.Info(ctx, "Done with Create Cluster Email resource state")
-}
-
-func (s *synciqPolicyResource) GetState(ctx context.Context, respR *powerscale.V14SyncPoliciesExtended) (SynciqpolicyModel, diag.Diagnostics) {
-	var state SynciqpolicyModel
-	var dgs diag.Diagnostics
-	source := respR.Policies[0]
-	err := helper.CopyFieldsToNonNestedModel(ctx, source, &state)
-	if err != nil {
-		dgs.AddError(
-			"Error copying fields of cluster email resource",
-			err.Error(),
-		)
-		return state, dgs
-	}
-	return state, nil
 }
 
 // The function to be called when a resource is deleted.
 func (s *synciqPolicyResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Info(ctx, "Creating Cluster Email Settings resource state")
 	// Read Terraform plan into the model
-	var state SynciqpolicyModel
+	var state models.SynciqpolicyResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	_, err := s.client.PscaleOpenAPIClient.SyncApi.DeleteSyncv14SyncPolicy(context.Background(), state.Id.ValueString()).Execute()
+	err := helper.DeleteSyncIQPolicy(ctx, s.client, state.Id.ValueString())
 	if err != nil {
-		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
+		errStr := "Could not delete syncIQ Policy with error: "
 		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
-			"Error deleting cluster email",
+			"Error deleting syncIQ Policy",
 			message,
 		)
 		return
 	}
 
 	resp.State.RemoveResource(ctx)
+}
+
+// ImportState implements resource.ResourceWithImportState.
+func (r *synciqPolicyResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	id, err := helper.GetSyncIQPolicyIDByName(ctx, r.client, req.ID)
+	if err != nil {
+		resp.Diagnostics.AddError("Error getting SyncIQ Policy", err.Error())
+		return
+	}
+	req.ID = id
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }

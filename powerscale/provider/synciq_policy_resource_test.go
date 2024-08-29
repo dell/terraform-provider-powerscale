@@ -18,19 +18,25 @@ limitations under the License.
 package provider
 
 import (
+	"fmt"
+	"regexp"
+	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccSynciqPolicyResource(t *testing.T) {
-	var policyTerraformName = "powerscale_synciq_policy.policy"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// filter read testing
+			// mock create plan reading error test
 			{
+				PreConfig: func() {
+					FunctionMocker = mockey.Mock(helper.ReadFromState).Return(fmt.Errorf("mock create plan read error")).Build()
+				},
 				Config: ProviderConfig + `
 				resource "powerscale_synciq_policy" "policy" {
 					name = "tfaccPolicy"
@@ -38,6 +44,65 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 					source_root_path = "/ifs"
 					target_host = "10.10.10.10"
 					target_path = "/ifs/tfaccSink"
+				}`,
+				ExpectError: regexp.MustCompile("mock create plan read error"),
+			},
+			// create test positive
+			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+				},
+				Config: ProviderConfig + `
+				resource "powerscale_synciq_policy" "policy" {
+					name = "tfaccPolicy"
+					action = "sync"
+					source_root_path = "/ifs"
+					target_host = "10.10.10.10"
+					target_path = "/ifs/tfaccSink"
+				}
+				`,
+				ExpectNonEmptyPlan: true,
+			},
+			// import negative
+			{
+				ResourceName:  "powerscale_synciq_policy.policy",
+				ImportState:   true,
+				ImportStateId: "non-existing",
+				ExpectError:   regexp.MustCompile("not found"),
+			},
+			// import positive
+			{
+				ResourceName:  "powerscale_synciq_policy.policy",
+				ImportState:   true,
+				ImportStateId: "tfaccPolicy",
+			},
+			// mock update plan reading error test
+			{
+				PreConfig: func() {
+					FunctionMocker = mockey.Mock(helper.ReadFromState).Return(fmt.Errorf("mock update plan reading error")).Build()
+				},
+				Config: ProviderConfig + `
+				resource "powerscale_synciq_policy" "policy" {
+					name = "tfaccPolicy2"
+					action = "sync"
+					source_root_path = "/ifs"
+					target_host = "10.10.10.10"
+					target_path = "/ifs/tfaccSink"
+				}`,
+				ExpectError: regexp.MustCompile("mock update plan reading error"),
+			},
+			// update positive
+			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+				},
+				Config: ProviderConfig + `
+				resource "powerscale_synciq_policy" "policy" {
+					name = "tfaccPolicy2"
+					action = "sync"
+					source_root_path = "/ifs"
+					target_host = "10.10.10.10"
+					target_path = "/ifs/tfaccSink2"
 
 					file_matching_pattern = {
 						or_criteria = [
@@ -54,14 +119,76 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 					}
 				}
 				`,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(policyTerraformName, "name", "tfaccPolicy"),
-					resource.TestCheckResourceAttr(policyTerraformName, "action", "sync"),
-					resource.TestCheckResourceAttr(policyTerraformName, "source_root_path", "/ifs"),
-					resource.TestCheckResourceAttr(policyTerraformName, "target_path", "/ifs/tfaccSink"),
-				),
+				ExpectNonEmptyPlan: true,
 			},
+			// create negative - Existing name
 			{
+				Config: ProviderConfig + `
+				resource "powerscale_synciq_policy" "policy" {
+					name = "tfaccPolicy2"
+					action = "sync"
+					source_root_path = "/ifs"
+					target_host = "10.10.10.10"
+					target_path = "/ifs/tfaccSink2"
+
+					file_matching_pattern = {
+						or_criteria = [
+							{
+								and_criteria = [
+									{
+										type = "name"
+										value = "tfacc"
+										operator = "=="
+									}
+								]
+							}
+						]
+					}
+				}
+
+				resource "powerscale_synciq_policy" "policy2" {
+					name = "tfaccPolicy2"
+					action = "sync"
+					source_root_path = "/ifs"
+					target_host = "10.10.10.10"
+					target_path = "/ifs/tfaccSink2"
+				}
+				`,
+				ExpectError: regexp.MustCompile("Error creating syncIQ Policy"),
+			},
+			// update negative - Invalid source root path
+			// root path needs to start with /ifs
+			{
+				Config: ProviderConfig + `
+				resource "powerscale_synciq_policy" "policy" {
+					name = "tfaccPolicy2"
+					action = "sync"
+					source_root_path = "/invalid"
+					target_host = "10.10.10.10"
+					target_path = "/ifs/tfaccSink2"
+
+					file_matching_pattern = {
+						or_criteria = [
+							{
+								and_criteria = [
+									{
+										type = "name"
+										value = "tfacc"
+										operator = "=="
+									}
+								]
+							}
+						]
+					}
+				}
+				`,
+				ExpectError: regexp.MustCompile(".*Could not update syncIQ Policy.*"),
+			},
+			// mock destroy error
+			{
+				PreConfig: func() {
+					FunctionMocker = mockey.Mock(helper.DeleteSyncIQPolicy).Return(fmt.Errorf("mock delete error")).Build()
+				},
 				Config: ProviderConfig + `
 				resource "powerscale_synciq_policy" "policy" {
 					name = "tfaccPolicy2"
@@ -71,12 +198,33 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 					target_path = "/ifs/tfaccSink2"
 				}
 				`,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(policyTerraformName, "name", "tfaccPolicy2"),
-					resource.TestCheckResourceAttr(policyTerraformName, "action", "sync"),
-					resource.TestCheckResourceAttr(policyTerraformName, "source_root_path", "/ifs"),
-					resource.TestCheckResourceAttr(policyTerraformName, "target_path", "/ifs/tfaccSink2"),
-				),
+				Destroy:     true,
+				ExpectError: regexp.MustCompile("mock delete error"),
+			},
+			// mock refresh error
+			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+					FunctionMocker = mockey.Mock(helper.GetSyncIQPolicyByID).Return(nil, fmt.Errorf("mock read error")).Build()
+				},
+				RefreshState: true,
+				ExpectError:  regexp.MustCompile("mock read error"),
+			},
+			// update positive - Remove all file matching patterns
+			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+				},
+				Config: ProviderConfig + `
+				resource "powerscale_synciq_policy" "policy" {
+					name = "tfaccPolicy2"
+					action = "sync"
+					source_root_path = "/ifs"
+					target_host = "10.10.10.10"
+					target_path = "/ifs/tfaccSink2"
+				}
+				`,
+				ExpectNonEmptyPlan: true,
 			},
 		},
 	})

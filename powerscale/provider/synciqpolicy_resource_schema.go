@@ -20,6 +20,7 @@ package provider
 import (
 	"context"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
@@ -28,79 +29,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
-
-type SynciqpolicyModel struct {
-	AcceleratedFailback               types.Bool   `tfsdk:"accelerated_failback"`
-	Action                            types.String `tfsdk:"action"`
-	AllowCopyFb                       types.Bool   `tfsdk:"allow_copy_fb"`
-	BandwidthReservation              types.Int64  `tfsdk:"bandwidth_reservation"`
-	Changelist                        types.Bool   `tfsdk:"changelist"`
-	CheckIntegrity                    types.Bool   `tfsdk:"check_integrity"`
-	CloudDeepCopy                     types.String `tfsdk:"cloud_deep_copy"`
-	DeleteQuotas                      types.Bool   `tfsdk:"delete_quotas"`
-	Description                       types.String `tfsdk:"description"`
-	DisableFileSplit                  types.Bool   `tfsdk:"disable_file_split"`
-	DisableFofb                       types.Bool   `tfsdk:"disable_fofb"`
-	DisableQuotaTmpDir                types.Bool   `tfsdk:"disable_quota_tmp_dir"`
-	DisableStf                        types.Bool   `tfsdk:"disable_stf"`
-	EnableHashTmpdir                  types.Bool   `tfsdk:"enable_hash_tmpdir"`
-	Enabled                           types.Bool   `tfsdk:"enabled"`
-	EncryptionCipherList              types.String `tfsdk:"encryption_cipher_list"`
-	ExpectedDataloss                  types.Bool   `tfsdk:"expected_dataloss"`
-	FileMatchingPattern               types.Object `tfsdk:"file_matching_pattern"`
-	ForceInterface                    types.Bool   `tfsdk:"force_interface"`
-	IgnoreRecursiveQuota              types.Bool   `tfsdk:"ignore_recursive_quota"`
-	JobDelay                          types.Int64  `tfsdk:"job_delay"`
-	LinkedServicePolicies             types.List   `tfsdk:"linked_service_policies"`
-	LogLevel                          types.String `tfsdk:"log_level"`
-	LogRemovedFiles                   types.Bool   `tfsdk:"log_removed_files"`
-	Name                              types.String `tfsdk:"name"`
-	OcspAddress                       types.String `tfsdk:"ocsp_address"`
-	OcspIssuerCertificateId           types.String `tfsdk:"ocsp_issuer_certificate_id"`
-	Password                          types.String `tfsdk:"password"`
-	Priority                          types.Int64  `tfsdk:"priority"`
-	ReportMaxAge                      types.Int64  `tfsdk:"report_max_age"`
-	ReportMaxCount                    types.Int64  `tfsdk:"report_max_count"`
-	RestrictTargetNetwork             types.Bool   `tfsdk:"restrict_target_network"`
-	RpoAlert                          types.Int64  `tfsdk:"rpo_alert"`
-	Schedule                          types.String `tfsdk:"schedule"`
-	ServicePolicy                     types.Bool   `tfsdk:"service_policy"`
-	SkipLookup                        types.Bool   `tfsdk:"skip_lookup"`
-	SkipWhenSourceUnmodified          types.Bool   `tfsdk:"skip_when_source_unmodified"`
-	SnapshotSyncExisting              types.Bool   `tfsdk:"snapshot_sync_existing"`
-	SnapshotSyncPattern               types.String `tfsdk:"snapshot_sync_pattern"`
-	SourceExcludeDirectories          types.List   `tfsdk:"source_exclude_directories"`
-	SourceIncludeDirectories          types.List   `tfsdk:"source_include_directories"`
-	SourceNetwork                     types.Object `tfsdk:"source_network"`
-	SourceRootPath                    types.String `tfsdk:"source_root_path"`
-	SourceSnapshotArchive             types.Bool   `tfsdk:"source_snapshot_archive"`
-	SourceSnapshotExpiration          types.Int64  `tfsdk:"source_snapshot_expiration"`
-	SourceSnapshotPattern             types.String `tfsdk:"source_snapshot_pattern"`
-	SyncExistingSnapshotExpiration    types.Bool   `tfsdk:"sync_existing_snapshot_expiration"`
-	SyncExistingTargetSnapshotPattern types.String `tfsdk:"sync_existing_target_snapshot_pattern"`
-	TargetCertificateId               types.String `tfsdk:"target_certificate_id"`
-	TargetCompareInitialSync          types.Bool   `tfsdk:"target_compare_initial_sync"`
-	TargetDetectModifications         types.Bool   `tfsdk:"target_detect_modifications"`
-	TargetHost                        types.String `tfsdk:"target_host"`
-	TargetPath                        types.String `tfsdk:"target_path"`
-	TargetSnapshotAlias               types.String `tfsdk:"target_snapshot_alias"`
-	TargetSnapshotArchive             types.Bool   `tfsdk:"target_snapshot_archive"`
-	TargetSnapshotExpiration          types.Int64  `tfsdk:"target_snapshot_expiration"`
-	TargetSnapshotPattern             types.String `tfsdk:"target_snapshot_pattern"`
-	WorkersPerNode                    types.Int64  `tfsdk:"workers_per_node"`
-	Conflicted                        types.Bool   `tfsdk:"conflicted"`
-	DatabaseMirrored                  types.Bool   `tfsdk:"database_mirrored"`
-	Encrypted                         types.Bool   `tfsdk:"encrypted"`
-	HasSyncState                      types.Bool   `tfsdk:"has_sync_state"`
-	Id                                types.String `tfsdk:"id"`
-	LastJobState                      types.String `tfsdk:"last_job_state"`
-	LastStarted                       types.Int64  `tfsdk:"last_started"`
-	LastSuccess                       types.Int64  `tfsdk:"last_success"`
-	NextRun                           types.Int64  `tfsdk:"next_run"`
-	PasswordSet                       types.Bool   `tfsdk:"password_set"`
-	SourceCertificateId               types.String `tfsdk:"source_certificate_id"`
-	SourceDomainMarked                types.Bool   `tfsdk:"source_domain_marked"`
-}
 
 func SynciqpolicyResourceSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
@@ -227,7 +155,6 @@ func SynciqpolicyResourceSchema(ctx context.Context) schema.Schema {
 			},
 			"file_matching_pattern": schema.SingleNestedAttribute{
 				Optional:            true,
-				Computed:            true,
 				Description:         "A file matching pattern, organized as an OR'ed set of AND'ed file criteria, for example ((a AND b) OR (x AND y)) used to define a set of files with specific properties.  Policies of type 'sync' cannot use 'path' or time criteria in their matching patterns, but policies of type 'copy' can use all listed criteria.",
 				MarkdownDescription: "A file matching pattern, organized as an OR'ed set of AND'ed file criteria, for example ((a AND b) OR (x AND y)) used to define a set of files with specific properties.  Policies of type 'sync' cannot use 'path' or time criteria in their matching patterns, but policies of type 'copy' can use all listed criteria.",
 				Attributes: map[string]schema.Attribute{
@@ -318,13 +245,16 @@ func SynciqpolicyResourceSchema(ctx context.Context) schema.Schema {
 											},
 										},
 									},
+									Validators: []validator.List{
+										listvalidator.SizeAtLeast(1),
+									},
 								},
 							},
 						},
+						Validators: []validator.List{
+							listvalidator.SizeAtLeast(1),
+						},
 					},
-				},
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"force_interface": schema.BoolAttribute{
