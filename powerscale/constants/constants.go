@@ -413,5 +413,5 @@ const (
 	ReadClusterIdentitySettingsErrorMsg = "Could not read cluster identity settings "
 
 	// ListSynciqRulesMsg specifies error details occurred while listing snapshot schedules.
-	ListSynciqRulesMsg = "Could not list SyncIQ policies "
+	ListSynciqRulesMsg = "Could not list SyncIQ rules "
 )
