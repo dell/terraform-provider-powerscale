@@ -57,6 +57,7 @@ func GetSyncIQPolicyByID(ctx context.Context, client *client.Client, id string) 
 	return resp, err
 }
 
+// CreateSyncIQPolicy creates the sync iq policy.
 func CreateSyncIQPolicy(ctx context.Context, client *client.Client, policy powerscale.V14SyncPolicy) (string, error) {
 	resp, _, err := client.PscaleOpenAPIClient.SyncApi.CreateSyncv14SyncPolicy(ctx).V14SyncPolicy(policy).Execute()
 	if err != nil {
@@ -65,11 +66,13 @@ func CreateSyncIQPolicy(ctx context.Context, client *client.Client, policy power
 	return resp.Id, nil
 }
 
+// DeleteSyncIQPolicy deletes the sync iq policy.
 func DeleteSyncIQPolicy(ctx context.Context, client *client.Client, id string) error {
 	_, err := client.PscaleOpenAPIClient.SyncApi.DeleteSyncv14SyncPolicy(ctx, id).Execute()
 	return err
 }
 
+// UpdateSyncIQPolicy updates the sync iq policy.
 func UpdateSyncIQPolicy(ctx context.Context, client *client.Client, id string, policy powerscale.V14SyncPolicyExtendedExtended) error {
 	_, err := client.PscaleOpenAPIClient.SyncApi.UpdateSyncv14SyncPolicy(ctx, id).V14SyncPolicy(policy).Execute()
 	return err
@@ -99,6 +102,7 @@ func NewSyncIQPolicyDataSource[V SyncIQPolicyDataSourceResponse](ctx context.Con
 	return &ret, err
 }
 
+// NewSynciqpolicyResourceModel creates a new SynciqpolicyResourceModel from resource read response.
 func NewSynciqpolicyResourceModel(ctx context.Context, respR *powerscale.V14SyncPoliciesExtended) (models.SynciqpolicyResourceModel, diag.Diagnostics) {
 	var state models.SynciqpolicyResourceModel
 	var dgs diag.Diagnostics

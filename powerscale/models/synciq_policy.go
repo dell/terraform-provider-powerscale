@@ -127,8 +127,7 @@ type V1SyncPolicySourceNetworkModel struct {
 	Subnet types.String `tfsdk:"subnet"`
 }
 
-// Resource Model
-
+// SynciqpolicyResourceModel - SyncIQ Policy Resource Model.
 type SynciqpolicyResourceModel struct {
 	AcceleratedFailback               types.Bool   `tfsdk:"accelerated_failback"`
 	Action                            types.String `tfsdk:"action"`
@@ -156,7 +155,7 @@ type SynciqpolicyResourceModel struct {
 	LogRemovedFiles                   types.Bool   `tfsdk:"log_removed_files"`
 	Name                              types.String `tfsdk:"name"`
 	OcspAddress                       types.String `tfsdk:"ocsp_address"`
-	OcspIssuerCertificateId           types.String `tfsdk:"ocsp_issuer_certificate_id"`
+	OcspIssuerCertificateID           types.String `tfsdk:"ocsp_issuer_certificate_id"`
 	Password                          types.String `tfsdk:"password"`
 	Priority                          types.Int64  `tfsdk:"priority"`
 	ReportMaxAge                      types.Int64  `tfsdk:"report_max_age"`
@@ -178,7 +177,7 @@ type SynciqpolicyResourceModel struct {
 	SourceSnapshotPattern             types.String `tfsdk:"source_snapshot_pattern"`
 	SyncExistingSnapshotExpiration    types.Bool   `tfsdk:"sync_existing_snapshot_expiration"`
 	SyncExistingTargetSnapshotPattern types.String `tfsdk:"sync_existing_target_snapshot_pattern"`
-	TargetCertificateId               types.String `tfsdk:"target_certificate_id"`
+	TargetCertificateID               types.String `tfsdk:"target_certificate_id"`
 	TargetCompareInitialSync          types.Bool   `tfsdk:"target_compare_initial_sync"`
 	TargetDetectModifications         types.Bool   `tfsdk:"target_detect_modifications"`
 	TargetHost                        types.String `tfsdk:"target_host"`
@@ -192,12 +191,12 @@ type SynciqpolicyResourceModel struct {
 	DatabaseMirrored                  types.Bool   `tfsdk:"database_mirrored"`
 	Encrypted                         types.Bool   `tfsdk:"encrypted"`
 	HasSyncState                      types.Bool   `tfsdk:"has_sync_state"`
-	Id                                types.String `tfsdk:"id"`
+	ID                                types.String `tfsdk:"id"`
 	LastJobState                      types.String `tfsdk:"last_job_state"`
 	LastStarted                       types.Int64  `tfsdk:"last_started"`
 	LastSuccess                       types.Int64  `tfsdk:"last_success"`
 	NextRun                           types.Int64  `tfsdk:"next_run"`
 	PasswordSet                       types.Bool   `tfsdk:"password_set"`
-	SourceCertificateId               types.String `tfsdk:"source_certificate_id"`
+	SourceCertificateID               types.String `tfsdk:"source_certificate_id"`
 	SourceDomainMarked                types.Bool   `tfsdk:"source_domain_marked"`
 }

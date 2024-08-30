@@ -50,7 +50,7 @@ type synciqPolicyResource struct {
 }
 
 // Configure implements resource.ResourceWithConfigure.
-func (r *synciqPolicyResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (s *synciqPolicyResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -67,20 +67,20 @@ func (r *synciqPolicyResource) Configure(ctx context.Context, req resource.Confi
 		return
 	}
 
-	r.client = pscaleClient
+	s.client = pscaleClient
 }
 
 // Schema implements resource.Resource.
-func (r *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = SynciqpolicyResourceSchema(ctx)
 }
 
 // Metadata describes the resource arguments.
-func (r *synciqPolicyResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (s *synciqPolicyResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_synciq_policy"
 }
 
-// The function to be called when a resource is created.
+// Create - The function to be called when a resource is created.
 func (s *synciqPolicyResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Read Terraform plan into the model
 	var plan models.SynciqpolicyResourceModel
@@ -111,7 +111,7 @@ func (s *synciqPolicyResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	state, dgs := s.GetStateById(ctx, id)
+	state, dgs := s.GetStateByID(ctx, id)
 	resp.Diagnostics.Append(dgs...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -122,7 +122,8 @@ func (s *synciqPolicyResource) Create(ctx context.Context, req resource.CreateRe
 	tflog.Info(ctx, "Done with Create Cluster Email resource state")
 }
 
-func (s *synciqPolicyResource) GetStateById(ctx context.Context, id string) (models.SynciqpolicyResourceModel, diag.Diagnostics) {
+// GetStateByID - returns the state by id.
+func (s *synciqPolicyResource) GetStateByID(ctx context.Context, id string) (models.SynciqpolicyResourceModel, diag.Diagnostics) {
 	var dgs diag.Diagnostics
 	resp, err := helper.GetSyncIQPolicyByID(ctx, s.client, id)
 	if err != nil {
@@ -139,7 +140,7 @@ func (s *synciqPolicyResource) GetStateById(ctx context.Context, id string) (mod
 	return state, dgs
 }
 
-// The function to be called when a resource is read.
+// Read - The function to be called when a resource is read.
 func (s *synciqPolicyResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Read Terraform plan into the model
 	var oldState models.SynciqpolicyResourceModel
@@ -148,7 +149,7 @@ func (s *synciqPolicyResource) Read(ctx context.Context, req resource.ReadReques
 		return
 	}
 
-	state, dgs := s.GetStateById(ctx, oldState.Id.ValueString())
+	state, dgs := s.GetStateByID(ctx, oldState.ID.ValueString())
 	resp.Diagnostics.Append(dgs...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -158,7 +159,7 @@ func (s *synciqPolicyResource) Read(ctx context.Context, req resource.ReadReques
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
-// The function to be called when a resource is updated.
+// Update - The function to be called when a resource is updated.
 func (s *synciqPolicyResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Read Terraform plan into the model
 	var plan, OldState models.SynciqpolicyResourceModel
@@ -190,7 +191,7 @@ func (s *synciqPolicyResource) Update(ctx context.Context, req resource.UpdateRe
 		}
 	}
 
-	err = helper.UpdateSyncIQPolicy(ctx, s.client, OldState.Id.ValueString(), toUpdate)
+	err = helper.UpdateSyncIQPolicy(ctx, s.client, OldState.ID.ValueString(), toUpdate)
 	if err != nil {
 		errStr := "Could not update syncIQ Policy with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -201,7 +202,7 @@ func (s *synciqPolicyResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	state, dgs := s.GetStateById(ctx, OldState.Id.ValueString())
+	state, dgs := s.GetStateByID(ctx, OldState.ID.ValueString())
 	resp.Diagnostics.Append(dgs...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -211,7 +212,7 @@ func (s *synciqPolicyResource) Update(ctx context.Context, req resource.UpdateRe
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
-// The function to be called when a resource is deleted.
+// Delete - The function to be called when a resource is deleted.
 func (s *synciqPolicyResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	// Read Terraform plan into the model
 	var state models.SynciqpolicyResourceModel
@@ -220,7 +221,7 @@ func (s *synciqPolicyResource) Delete(ctx context.Context, req resource.DeleteRe
 		return
 	}
 
-	err := helper.DeleteSyncIQPolicy(ctx, s.client, state.Id.ValueString())
+	err := helper.DeleteSyncIQPolicy(ctx, s.client, state.ID.ValueString())
 	if err != nil {
 		errStr := "Could not delete syncIQ Policy with error: "
 		message := helper.GetErrorString(err, errStr)
