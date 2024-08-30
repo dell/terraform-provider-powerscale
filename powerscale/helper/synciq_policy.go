@@ -32,6 +32,17 @@ import (
 // GetAllSyncIQPolicies retrieve the cluster information.
 func GetAllSyncIQPolicies(ctx context.Context, client *client.Client) (*powerscale.V14SyncPolicies, error) {
 	resp, _, err := client.PscaleOpenAPIClient.SyncApi.ListSyncv14SyncPolicies(context.Background()).Execute()
+	if err != nil {
+		return resp, err
+	}
+	for resp.Resume != nil {
+		respAdd, _, errAdd := client.PscaleOpenAPIClient.SyncApi.ListSyncv14SyncPolicies(context.Background()).Resume(*resp.Resume).Execute()
+		if errAdd != nil {
+			return resp, errAdd
+		}
+		resp.Resume = respAdd.Resume
+		resp.Policies = append(resp.Policies, respAdd.Policies...)
+	}
 	return resp, err
 }
 
