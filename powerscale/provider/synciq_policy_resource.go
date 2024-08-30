@@ -70,11 +70,6 @@ func (s *synciqPolicyResource) Configure(ctx context.Context, req resource.Confi
 	s.client = pscaleClient
 }
 
-// Schema implements resource.Resource.
-func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRequest, resp *resource.SchemaResponse) {
-	resp.Schema = SynciqpolicyResourceSchema(ctx)
-}
-
 // Metadata describes the resource arguments.
 func (s *synciqPolicyResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_synciq_policy"
@@ -236,8 +231,8 @@ func (s *synciqPolicyResource) Delete(ctx context.Context, req resource.DeleteRe
 }
 
 // ImportState implements resource.ResourceWithImportState.
-func (r *synciqPolicyResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	id, err := helper.GetSyncIQPolicyIDByName(ctx, r.client, req.ID)
+func (s *synciqPolicyResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	id, err := helper.GetSyncIQPolicyIDByName(ctx, s.client, req.ID)
 	if err != nil {
 		resp.Diagnostics.AddError("Error getting SyncIQ Policy", err.Error())
 		return

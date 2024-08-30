@@ -22,6 +22,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
@@ -30,8 +31,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func SynciqpolicyResourceSchema(ctx context.Context) schema.Schema {
-	return schema.Schema{
+// Schema implements resource.Resource.
+func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"accelerated_failback": schema.BoolAttribute{
 				Optional:            true,
