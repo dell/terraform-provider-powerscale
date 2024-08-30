@@ -61,7 +61,6 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 					target_path = "/ifs/tfaccSink"
 				}
 				`,
-				ExpectNonEmptyPlan: true,
 			},
 			// import negative
 			{
@@ -119,7 +118,6 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 					}
 				}
 				`,
-				ExpectNonEmptyPlan: true,
 			},
 			// create negative - Existing name
 			{
@@ -224,7 +222,6 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 					target_path = "/ifs/tfaccSink2"
 				}
 				`,
-				ExpectNonEmptyPlan: true,
 			},
 		},
 	})
