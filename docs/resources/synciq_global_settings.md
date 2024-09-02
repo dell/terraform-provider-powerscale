@@ -54,7 +54,7 @@ limitations under the License.
 resource "powerscale_synciq_global_settings" "example" {
   preferred_rpo_alert = 3
   source_network = {
-    subnet = "sunbet0"
+    subnet = "subnet0"
     pool   = "pool0"
   }
   report_email            = ["example1@mail.com", "example2@mail.com"]

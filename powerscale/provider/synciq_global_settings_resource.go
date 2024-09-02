@@ -56,6 +56,7 @@ func (r *SyncIQGlobalSettingsResource) Metadata(ctx context.Context, req resourc
 	resp.TypeName = req.ProviderTypeName + "_synciq_global_settings"
 }
 
+// ConfigValidators validates that atleast one of the attribute must be there.
 func (r *SyncIQGlobalSettingsResource) ConfigValidators(ctx context.Context) []resource.ConfigValidator {
 	return []resource.ConfigValidator{
 		resourcevalidator.AtLeastOneOf(

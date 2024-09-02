@@ -153,7 +153,7 @@ func ManageReadSyncIQGlobalSettings(ctx context.Context, state *models.SyncIQGlo
 	return diags
 }
 
-// ManageReadSyncIQGlobalSettings does the read functionality for SyncIQ global settings datasource
+// ManageReadDataSourceSyncIQGlobalSettings does the read functionality for SyncIQ global settings datasource
 func ManageReadDataSourceSyncIQGlobalSettings(ctx context.Context, state *models.SyncIQGlobalSettingsDataSourceModel, client *client.Client) diag.Diagnostics {
 	var diags diag.Diagnostics
 	globalSettings, err := GetSyncIQGlobalSettings(ctx, client)
