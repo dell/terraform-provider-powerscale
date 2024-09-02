@@ -156,17 +156,7 @@ resource "powerscale_synciq_policy" "policy" {
 
 ### Read-Only
 
-- `database_mirrored` (Boolean) If true, SyncIQ databases have been mirrored.
-- `encrypted` (Boolean) If true, syncs will be encrypted.
-- `has_sync_state` (Boolean) This field is false if the policy is in its initial sync state and true otherwise.  Setting this field to false will reset the policy's sync state.
 - `id` (String) The system ID given to this sync policy.
-- `last_job_state` (String) This is the state of the most recent job for this policy.
-- `last_started` (Number) The most recent time a job was started for this policy.  Value is null if the policy has never been run.
-- `last_success` (Number) Timestamp of last known successfully completed synchronization.  Value is null if the policy has never completed successfully.
-- `next_run` (Number) This is the next time a job is scheduled to run for this policy in Unix epoch seconds.  This field is null if the job is not scheduled.
-- `password_set` (Boolean) Indicates if a password is set for accessing the target cluster. Password value is not shown with GET.
-- `source_certificate_id` (String) The ID of the source cluster certificate being used for encryption.
-- `source_domain_marked` (Boolean) If true, the source root path has been domain marked with a SyncIQ domain.
 
 <a id="nestedatt--file_matching_pattern"></a>
 ### Nested Schema for `file_matching_pattern`

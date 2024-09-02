@@ -195,6 +195,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewS3KeyResource,
 		NewClusterOwnerResource,
 		NewSynciqPolicyResource,
+		NewSyncIQGlobalSettingsResource,
 		NewS3GlobalSettingResource,
 		NewS3ZoneSettingsResource,
 		NewClusterIdentityResource,
@@ -239,6 +240,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewSmbServerSettingsDataSource,
 		NewSmbShareSettingsDataSource,
 		NewSyncIQPolicyDataSource,
+		NewSyncIQGlobalSettingsDataSource,
 	}
 }
 
