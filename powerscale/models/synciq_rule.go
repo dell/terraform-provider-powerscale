@@ -85,7 +85,7 @@ type SyncIQRuleResource struct {
 
 // SyncIQRuleResourceSchedule defines the schedule of a SyncIQ rule.
 type SyncIQRuleResourceSchedule struct {
-	End        types.String `tfsdk:"end"`
-	Begin      types.String `tfsdk:"begin"`
-	DaysOfWeek types.Set    `tfsdk:"days_of_week"`
+	End        *string  `tfsdk:"end"`
+	Begin      *string  `tfsdk:"begin"`
+	DaysOfWeek []string `tfsdk:"days_of_week"`
 }

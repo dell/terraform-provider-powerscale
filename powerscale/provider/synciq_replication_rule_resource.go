@@ -25,34 +25,35 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
-	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ datasource.DataSource = &SyncIQRuleResource{}
+var _ resource.Resource = &SyncIQRuleResource{}
 
 // NewSyncIQRuleResource creates a new data source.
-func NewSyncIQRuleResource() datasource.DataSource {
+func NewSyncIQRuleResource() resource.Resource {
 	return &SyncIQRuleResource{}
 }
 
-// SyncIQRuleResource defines the data source implementation.
+// SyncIQRuleResource defines the resource implementation.
 type SyncIQRuleResource struct {
 	client *client.Client
 }
 
-// Metadata describes the data source arguments.
-func (d *SyncIQRuleResource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+// Metadata describes the resource arguments.
+func (d *SyncIQRuleResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_synciq_rule"
 }
 
 // Schema describes the data source arguments.
-func (d *SyncIQRuleResource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *SyncIQRuleResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = helper.SyncIQRuleResourceSchema(ctx)
 }
 
 // Configure configures the data source.
-func (d *SyncIQRuleResource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (d *SyncIQRuleResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -62,7 +63,7 @@ func (d *SyncIQRuleResource) Configure(ctx context.Context, req datasource.Confi
 
 	if !ok {
 		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
+			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -72,24 +73,46 @@ func (d *SyncIQRuleResource) Configure(ctx context.Context, req datasource.Confi
 	d.client = pscaleClient
 }
 
-// Read reads data from the data source.
-func (d *SyncIQRuleResource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+// Create allocates the resource.
+func (d *SyncIQRuleResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan models.SyncIQRuleResource
+	// Read Terraform plan data into the model
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// create
+	apiReq := helper.GetRequestFromSynciqRuleResource(ctx, plan)
+	id, err := helper.CreateSyncIQRule(ctx, d.client, apiReq)
+	if err != nil {
+		errStr := constants.ListSynciqRulesMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError("Error creating syncIQ rule", message)
+		return
+	}
+
+	// read state
+	state, dgs := d.Get(ctx, id)
+	resp.Diagnostics.Append(dgs...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+}
+
+// Read reads data for the resource.
+func (d *SyncIQRuleResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Read Terraform configuration data into the model
 	var data models.SyncIQRuleResource
-	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	id := data.ID.ValueString()
-	config, err := helper.GetSyncIQRuleByID(ctx, d.client, id)
-	if err != nil {
-		errStr := constants.ListSynciqRulesMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError("Error reading syncIQ rules", message)
-		return
-	}
-	state, dgs := helper.NewSyncIQRuleResource(ctx, config.GetRules()[0])
+	state, dgs := d.Get(ctx, id)
 	resp.Diagnostics.Append(dgs...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -97,4 +120,76 @@ func (d *SyncIQRuleResource) Read(ctx context.Context, req datasource.ReadReques
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
+}
+
+// Get fetches the resource state
+func (d *SyncIQRuleResource) Get(ctx context.Context, id string) (models.SyncIQRuleResource, diag.Diagnostics) {
+	// Read Terraform configuration data into the model
+	var ret models.SyncIQRuleResource
+	var dgs diag.Diagnostics
+	config, err := helper.GetSyncIQRuleByID(ctx, d.client, id)
+	if err != nil {
+		errStr := constants.ListSynciqRulesMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		dgs.AddError("Error reading syncIQ rules", message)
+		return ret, dgs
+	}
+	state, diags := helper.NewSyncIQRuleResource(ctx, config.GetRules()[0])
+	dgs.Append(diags...)
+	return state, dgs
+}
+
+// Update updates the resource.
+func (d *SyncIQRuleResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan, state models.SyncIQRuleResource
+	// Read Terraform plan data into the model
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Read Terraform state data into the model
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// update
+	apiReq := helper.GetRequestFromSynciqRuleResource(ctx, plan)
+	err := helper.UpdateSyncIQRule(ctx, d.client, state.ID.ValueString(), apiReq)
+	if err != nil {
+		errStr := constants.ListSynciqRulesMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError("Error creating syncIQ rule", message)
+		return
+	}
+
+	// read state
+	state, dgs := d.Get(ctx, state.ID.ValueString())
+	resp.Diagnostics.Append(dgs...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+}
+
+// Delete implements resource.Resource.
+func (d *SyncIQRuleResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state models.SyncIQRuleResource
+	// Read Terraform state data into the model
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	err := helper.DeleteSyncIQRule(ctx, d.client, state.ID.ValueString())
+	if err != nil {
+		errStr := constants.ListSynciqRulesMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError("Error deleting syncIQ rule", message)
+		return
+	}
+
+	resp.State.RemoveResource(ctx)
 }

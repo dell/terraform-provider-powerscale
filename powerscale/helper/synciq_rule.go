@@ -27,6 +27,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 // GetAllSyncIQRules retrieve the cluster information.
@@ -51,8 +52,20 @@ func CreateSyncIQRule(ctx context.Context, client *client.Client, v3SyncRule pow
 }
 
 // UpdateSyncIQRule updates SyncIQRule.
-func UpdateSyncIQRule(ctx context.Context, client *client.Client, id string, v3SyncRule powerscale.V3SyncRuleExtendedExtended) error {
-	_, err := client.PscaleOpenAPIClient.SyncApi.UpdateSyncv3SyncRule(context.Background(), id).V3SyncRule(v3SyncRule).Execute()
+func UpdateSyncIQRule(ctx context.Context, client *client.Client, id string, v3SyncRule powerscale.V3SyncRule) error {
+	req := powerscale.V3SyncRuleExtendedExtended{
+		Description: v3SyncRule.Description,
+		Enabled:     v3SyncRule.Enabled,
+		Limit:       &v3SyncRule.Limit,
+		Schedule:    v3SyncRule.Schedule,
+	}
+	_, err := client.PscaleOpenAPIClient.SyncApi.UpdateSyncv3SyncRule(context.Background(), id).V3SyncRule(req).Execute()
+	return err
+}
+
+// DeleteSyncIQRule deletes SyncIQRule.
+func DeleteSyncIQRule(ctx context.Context, client *client.Client, id string) error {
+	_, err := client.PscaleOpenAPIClient.SyncApi.DeleteSyncv3SyncRule(context.Background(), id).Execute()
 	return err
 }
 
@@ -90,8 +103,8 @@ func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExte
 		Limit:       types.Int64Value(int64(source.Limit)),
 	}
 	schedule := models.SyncIQRuleResourceSchedule{
-		End:   types.StringPointerValue(source.Schedule.End),
-		Begin: types.StringPointerValue(source.Schedule.Begin),
+		End:   source.Schedule.End,
+		Begin: source.Schedule.Begin,
 	}
 
 	daysOfWeek := make([]string, 0)
@@ -116,17 +129,67 @@ func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExte
 	if source.Schedule.Sunday != nil && *source.Schedule.Sunday {
 		daysOfWeek = append(daysOfWeek, "sunday")
 	}
-	daysOfWeekSet, dgs := types.SetValueFrom(ctx, types.StringType, daysOfWeek)
-	schedule.DaysOfWeek = daysOfWeekSet
+	schedule.DaysOfWeek = daysOfWeek
 
 	scheduleObj, dgsObj := types.ObjectValueFrom(ctx, map[string]attr.Type{
 		"begin": types.StringType,
 		"end":   types.StringType,
-		"days_of_thr_week": types.SetType{
+		"days_of_week": types.SetType{
 			ElemType: types.StringType,
 		},
 	}, schedule)
-	dgs.Append(dgsObj...)
 	ret.Schedule = scheduleObj
-	return ret, dgs
+	return ret, dgsObj
+}
+
+func GetRequestFromSynciqRuleResource(ctx context.Context, plan models.SyncIQRuleResource) powerscale.V3SyncRule {
+	ret := powerscale.V3SyncRule{
+		Type:        plan.Type.ValueString(),
+		Limit:       int32(plan.Limit.ValueInt64()),
+		Description: GetKnownStringPointer(plan.Description),
+		Enabled:     GetKnownBoolPointer(plan.Enabled),
+	}
+	if plan.Schedule.IsUnknown() || plan.Schedule.IsNull() {
+		return ret
+	}
+	var schedule models.SyncIQRuleResourceSchedule
+	plan.Schedule.As(ctx, &schedule, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
+	ret.Schedule = &powerscale.V1SyncRuleSchedule{
+		Begin: schedule.Begin,
+		End:   schedule.End,
+	}
+	if schedule.DaysOfWeek == nil {
+		return ret
+	}
+	// set all values to false to start with
+	ret.Schedule.Monday = New(false)
+	ret.Schedule.Tuesday = New(false)
+	ret.Schedule.Wednesday = New(false)
+	ret.Schedule.Thursday = New(false)
+	ret.Schedule.Friday = New(false)
+	ret.Schedule.Saturday = New(false)
+	ret.Schedule.Sunday = New(false)
+	// set specified values to false
+	for _, day := range schedule.DaysOfWeek {
+		switch day {
+		case "monday":
+			ret.Schedule.Monday = New(true)
+		case "tuesday":
+			ret.Schedule.Tuesday = New(true)
+		case "wednesday":
+			ret.Schedule.Wednesday = New(true)
+		case "thursday":
+			ret.Schedule.Thursday = New(true)
+		case "friday":
+			ret.Schedule.Friday = New(true)
+		case "saturday":
+			ret.Schedule.Saturday = New(true)
+		case "sunday":
+			ret.Schedule.Sunday = New(true)
+		}
+	}
+	return ret
 }

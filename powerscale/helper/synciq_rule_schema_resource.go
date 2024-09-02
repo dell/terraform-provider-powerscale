@@ -22,7 +22,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -54,11 +54,13 @@ func SyncIQRuleResourceSchema(ctx context.Context) schema.Schema {
 				MarkdownDescription: "Amount the specified system resource type is limited by this rule.  Units are kb/s for bandwidth, files/s for file-count, processing percentage used for cpu, or percentage of maximum available workers.",
 			},
 			"description": schema.StringAttribute{
+				Optional:            true,
 				Computed:            true,
 				Description:         "User-entered description of this performance rule.",
 				MarkdownDescription: "User-entered description of this performance rule.",
 			},
 			"enabled": schema.BoolAttribute{
+				Optional:            true,
 				Computed:            true,
 				Description:         "Whether this performance rule is currently in effect during its specified intervals.",
 				MarkdownDescription: "Whether this performance rule is currently in effect during its specified intervals.",
@@ -69,6 +71,7 @@ func SyncIQRuleResourceSchema(ctx context.Context) schema.Schema {
 				MarkdownDescription: "The system ID given to this performance rule.",
 			},
 			"schedule": schema.SingleNestedAttribute{
+				Optional:            true,
 				Computed:            true,
 				Description:         "A schedule defining when during a week this performance rule is in effect.  If unspecified or null, the schedule will always be in effect.",
 				MarkdownDescription: "A schedule defining when during a week this performance rule is in effect.  If unspecified or null, the schedule will always be in effect.",
