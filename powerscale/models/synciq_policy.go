@@ -188,15 +188,5 @@ type SynciqpolicyResourceModel struct {
 	TargetSnapshotPattern             types.String `tfsdk:"target_snapshot_pattern"`
 	WorkersPerNode                    types.Int64  `tfsdk:"workers_per_node"`
 	Conflicted                        types.Bool   `tfsdk:"conflicted"`
-	DatabaseMirrored                  types.Bool   `tfsdk:"database_mirrored"`
-	Encrypted                         types.Bool   `tfsdk:"encrypted"`
-	HasSyncState                      types.Bool   `tfsdk:"has_sync_state"`
 	ID                                types.String `tfsdk:"id"`
-	LastJobState                      types.String `tfsdk:"last_job_state"`
-	LastStarted                       types.Int64  `tfsdk:"last_started"`
-	LastSuccess                       types.Int64  `tfsdk:"last_success"`
-	NextRun                           types.Int64  `tfsdk:"next_run"`
-	PasswordSet                       types.Bool   `tfsdk:"password_set"`
-	SourceCertificateID               types.String `tfsdk:"source_certificate_id"`
-	SourceDomainMarked                types.Bool   `tfsdk:"source_domain_marked"`
 }

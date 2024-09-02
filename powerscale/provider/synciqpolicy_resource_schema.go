@@ -572,63 +572,10 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Description:         "NOTE: This field should not be changed without the help of PowerScale support.  If true, the most recent run of this policy encountered an error and this policy will not start any more scheduled jobs until this field is manually set back to 'false'.",
 				MarkdownDescription: "NOTE: This field should not be changed without the help of PowerScale support.  If true, the most recent run of this policy encountered an error and this policy will not start any more scheduled jobs until this field is manually set back to 'false'.",
 			},
-			"database_mirrored": schema.BoolAttribute{
-				Computed:            true,
-				Description:         "If true, SyncIQ databases have been mirrored.",
-				MarkdownDescription: "If true, SyncIQ databases have been mirrored.",
-			},
-			"encrypted": schema.BoolAttribute{
-				Computed:            true,
-				Description:         "If true, syncs will be encrypted.",
-				MarkdownDescription: "If true, syncs will be encrypted.",
-			},
-			"has_sync_state": schema.BoolAttribute{
-				Computed:            true,
-				Description:         "This field is false if the policy is in its initial sync state and true otherwise.  Setting this field to false will reset the policy's sync state.",
-				MarkdownDescription: "This field is false if the policy is in its initial sync state and true otherwise.  Setting this field to false will reset the policy's sync state.",
-			},
 			"id": schema.StringAttribute{
 				Computed:            true,
 				Description:         "The system ID given to this sync policy.",
 				MarkdownDescription: "The system ID given to this sync policy.",
-			},
-			"last_job_state": schema.StringAttribute{
-				Computed:            true,
-				Description:         "This is the state of the most recent job for this policy.",
-				MarkdownDescription: "This is the state of the most recent job for this policy.",
-			},
-			"last_started": schema.Int64Attribute{
-				Computed:            true,
-				Description:         "The most recent time a job was started for this policy.  Value is null if the policy has never been run.",
-				MarkdownDescription: "The most recent time a job was started for this policy.  Value is null if the policy has never been run.",
-			},
-			"last_success": schema.Int64Attribute{
-				Computed:            true,
-				Description:         "Timestamp of last known successfully completed synchronization.  Value is null if the policy has never completed successfully.",
-				MarkdownDescription: "Timestamp of last known successfully completed synchronization.  Value is null if the policy has never completed successfully.",
-			},
-			"next_run": schema.Int64Attribute{
-				Computed:            true,
-				Description:         "This is the next time a job is scheduled to run for this policy in Unix epoch seconds.  This field is null if the job is not scheduled.",
-				MarkdownDescription: "This is the next time a job is scheduled to run for this policy in Unix epoch seconds.  This field is null if the job is not scheduled.",
-			},
-			"password_set": schema.BoolAttribute{
-				Computed:            true,
-				Description:         "Indicates if a password is set for accessing the target cluster. Password value is not shown with GET.",
-				MarkdownDescription: "Indicates if a password is set for accessing the target cluster. Password value is not shown with GET.",
-			},
-			"source_certificate_id": schema.StringAttribute{
-				Computed:            true,
-				Description:         "The ID of the source cluster certificate being used for encryption.",
-				MarkdownDescription: "The ID of the source cluster certificate being used for encryption.",
-				Validators: []validator.String{
-					stringvalidator.LengthBetween(0, 255),
-				},
-			},
-			"source_domain_marked": schema.BoolAttribute{
-				Computed:            true,
-				Description:         "If true, the source root path has been domain marked with a SyncIQ domain.",
-				MarkdownDescription: "If true, the source root path has been domain marked with a SyncIQ domain.",
 			},
 		},
 	}

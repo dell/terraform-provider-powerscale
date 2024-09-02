@@ -22,14 +22,12 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"terraform-provider-powerscale/client"
-	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -60,7 +58,7 @@ func (s *synciqPolicyResource) Configure(ctx context.Context, req resource.Confi
 
 	if !ok {
 		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
+			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -97,7 +95,7 @@ func (s *synciqPolicyResource) Create(ctx context.Context, req resource.CreateRe
 
 	id, err := helper.CreateSyncIQPolicy(ctx, s.client, toUpdate)
 	if err != nil {
-		errStr := constants.UpdateClusterEmailSettingsErrorMsg + "with error: "
+		errStr := "Could not create syncIQ Policy with error: "
 		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
 			"Error creating syncIQ Policy",
@@ -114,7 +112,6 @@ func (s *synciqPolicyResource) Create(ctx context.Context, req resource.CreateRe
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-	tflog.Info(ctx, "Done with Create Cluster Email resource state")
 }
 
 // GetStateByID - returns the state by id.
@@ -122,7 +119,7 @@ func (s *synciqPolicyResource) GetStateByID(ctx context.Context, id string) (mod
 	var dgs diag.Diagnostics
 	resp, err := helper.GetSyncIQPolicyByID(ctx, s.client, id)
 	if err != nil {
-		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
+		errStr := "Could not get syncIQ Policy with error: "
 		message := helper.GetErrorString(err, errStr)
 		dgs.AddError(
 			"Error reading syncIQ Policy",
