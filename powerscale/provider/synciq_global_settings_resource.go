@@ -36,9 +36,9 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource              = &SyncIQGlobalSettingsResource{}
-	_ resource.ResourceWithConfigure = &SyncIQGlobalSettingsResource{}
-	//_ resource.ResourceWithImportState = &SyncIQGlobalSettingsResource{}
+	_ resource.Resource                = &SyncIQGlobalSettingsResource{}
+	_ resource.ResourceWithConfigure   = &SyncIQGlobalSettingsResource{}
+	_ resource.ResourceWithImportState = &SyncIQGlobalSettingsResource{}
 )
 
 // NewSyncIQGlobalSettingsResource creates a new resource.

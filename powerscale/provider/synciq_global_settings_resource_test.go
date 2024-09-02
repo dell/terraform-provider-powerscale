@@ -27,7 +27,6 @@ import (
 
 	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	//"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 // TestAccSyncIQGlobalSettingsResource - Tests the creation of a syncIQ global settings resource.

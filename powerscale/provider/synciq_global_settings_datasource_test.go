@@ -18,12 +18,12 @@ limitations under the License.
 package provider
 
 import (
-	"fmt"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
 	"github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -48,16 +48,18 @@ func TestAccSyncIQGlobalSettingsDataSourceAll(t *testing.T) {
 }
 
 func TestAccGlobalSettingsDataSourceReadingErr(t *testing.T) {
+	diags := diag.Diagnostics{}
+	diags.AddError("mock err", "mock err")
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
-					FunctionMocker = mockey.Mock(helper.ManageReadDataSourceSyncIQGlobalSettings).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.ManageReadDataSourceSyncIQGlobalSettings).Return(diags).Build()
 				},
 				Config:      ProviderConfig + SyncIQSettingsDatasourceConfig,
-				ExpectError: regexp.MustCompile(`.*mock error*.`),
+				ExpectError: regexp.MustCompile(`.*mock err*.`),
 			},
 		},
 	})
