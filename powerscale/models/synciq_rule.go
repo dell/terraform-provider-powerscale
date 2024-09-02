@@ -66,3 +66,26 @@ type Schedule struct {
 	// Thursday indicates if the rule is in effect on Thursday.
 	Thursday types.Bool `tfsdk:"thursday"`
 }
+
+// SyncIQRuleResource defines the model of a SyncIQ rule.
+type SyncIQRuleResource struct {
+	// Type is the type of the rule.
+	Type types.String `tfsdk:"type"`
+	// Description is the description of the rule.
+	Description types.String `tfsdk:"description"`
+	// Enabled indicates if the rule is enabled.
+	Enabled types.Bool `tfsdk:"enabled"`
+	// ID is the unique identifier of the rule.
+	ID types.String `tfsdk:"id"`
+	// Limit is the limit of the rule.
+	Limit types.Int64 `tfsdk:"limit"`
+	// Schedule is the schedule of the rule.
+	Schedule types.Object `tfsdk:"schedule"`
+}
+
+// SyncIQRuleResourceSchedule defines the schedule of a SyncIQ rule.
+type SyncIQRuleResourceSchedule struct {
+	End        types.String `tfsdk:"end"`
+	Begin      types.String `tfsdk:"begin"`
+	DaysOfWeek types.Set    `tfsdk:"days_of_week"`
+}

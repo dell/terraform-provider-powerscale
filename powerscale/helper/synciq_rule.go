@@ -24,6 +24,8 @@ import (
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -37,6 +39,21 @@ func GetAllSyncIQRules(ctx context.Context, client *client.Client) (*powerscale.
 func GetSyncIQRuleByID(ctx context.Context, client *client.Client, id string) (*powerscale.V3SyncRulesExtended, error) {
 	resp, _, err := client.PscaleOpenAPIClient.SyncApi.GetSyncv3SyncRule(context.Background(), id).Execute()
 	return resp, err
+}
+
+// CreateSyncIQRule creates SyncIQRule.
+func CreateSyncIQRule(ctx context.Context, client *client.Client, v3SyncRule powerscale.V3SyncRule) (string, error) {
+	respC, _, err := client.PscaleOpenAPIClient.SyncApi.CreateSyncv3SyncRule(context.Background()).V3SyncRule(v3SyncRule).Execute()
+	if err != nil {
+		return "", err
+	}
+	return respC.Id, nil
+}
+
+// UpdateSyncIQRule updates SyncIQRule.
+func UpdateSyncIQRule(ctx context.Context, client *client.Client, id string, v3SyncRule powerscale.V3SyncRuleExtendedExtended) error {
+	_, err := client.PscaleOpenAPIClient.SyncApi.UpdateSyncv3SyncRule(context.Background(), id).V3SyncRule(v3SyncRule).Execute()
+	return err
 }
 
 // SyncIQRuleDataSourceResponse represents a generic for SyncIQRuleDataSource response.
@@ -61,4 +78,55 @@ func NewSyncIQRuleDataSource[V SyncIQRuleDataSourceResponse](ctx context.Context
 		ret.ID = ret.Rules[0].ID
 	}
 	return &ret, err
+}
+
+// NewSyncIQRuleDataSource creates a new SyncIQRuleDataSource from datasource responses.
+func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExtendedExtendedExtended) (models.SyncIQRuleResource, diag.Diagnostics) {
+	ret := models.SyncIQRuleResource{
+		Type:        types.StringValue(source.Type),
+		Description: types.StringValue(source.Description),
+		Enabled:     types.BoolValue(source.Enabled),
+		ID:          types.StringValue(source.Id),
+		Limit:       types.Int64Value(int64(source.Limit)),
+	}
+	schedule := models.SyncIQRuleResourceSchedule{
+		End:   types.StringPointerValue(source.Schedule.End),
+		Begin: types.StringPointerValue(source.Schedule.Begin),
+	}
+
+	daysOfWeek := make([]string, 0)
+	if source.Schedule.Monday != nil && *source.Schedule.Monday {
+		daysOfWeek = append(daysOfWeek, "monday")
+	}
+	if source.Schedule.Tuesday != nil && *source.Schedule.Tuesday {
+		daysOfWeek = append(daysOfWeek, "tuesday")
+	}
+	if source.Schedule.Wednesday != nil && *source.Schedule.Wednesday {
+		daysOfWeek = append(daysOfWeek, "wednesday")
+	}
+	if source.Schedule.Thursday != nil && *source.Schedule.Thursday {
+		daysOfWeek = append(daysOfWeek, "thursday")
+	}
+	if source.Schedule.Friday != nil && *source.Schedule.Friday {
+		daysOfWeek = append(daysOfWeek, "friday")
+	}
+	if source.Schedule.Saturday != nil && *source.Schedule.Saturday {
+		daysOfWeek = append(daysOfWeek, "saturday")
+	}
+	if source.Schedule.Sunday != nil && *source.Schedule.Sunday {
+		daysOfWeek = append(daysOfWeek, "sunday")
+	}
+	daysOfWeekSet, dgs := types.SetValueFrom(ctx, types.StringType, daysOfWeek)
+	schedule.DaysOfWeek = daysOfWeekSet
+
+	scheduleObj, dgsObj := types.ObjectValueFrom(ctx, map[string]attr.Type{
+		"begin": types.StringType,
+		"end":   types.StringType,
+		"days_of_thr_week": types.SetType{
+			ElemType: types.StringType,
+		},
+	}, schedule)
+	dgs.Append(dgsObj...)
+	ret.Schedule = scheduleObj
+	return ret, dgs
 }
