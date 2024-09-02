@@ -153,6 +153,42 @@ func ManageReadSyncIQGlobalSettings(ctx context.Context, state *models.SyncIQGlo
 	return diags
 }
 
+// ManageReadSyncIQGlobalSettings does the read functionality for SyncIQ global settings datasource
+func ManageReadDataSourceSyncIQGlobalSettings(ctx context.Context, state *models.SyncIQGlobalSettingsDataSourceModel, client *client.Client) diag.Diagnostics {
+	var diags diag.Diagnostics
+	globalSettings, err := GetSyncIQGlobalSettings(ctx, client)
+	if err != nil {
+		errStr := constants.ReadSyncIQGlobalSettingsErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		diags.AddError(
+			"Error reading synciq global settings",
+			message,
+		)
+		return diags
+	}
+	err = CopyFields(ctx, globalSettings.Settings, state)
+	if err != nil {
+		diags.AddError(
+			"Error copying fields of synciq global settings resource",
+			err.Error(),
+		)
+		return diags
+	}
+
+	sourceNetwork, emailObj, diags := GetSourceNetworkAndEmail(globalSettings)
+	if diags.HasError() {
+		diags.AddError(
+			"Error copying fields of synciq global settings resource",
+			"Error occurred while copying source network or report email",
+		)
+		return diags
+	}
+	state.SourceNetwork = sourceNetwork
+	state.ReportEmail = emailObj
+
+	return diags
+}
+
 // GetSourceNetworkAndEmail returns the object and set value for source network and report email attributes.
 func GetSourceNetworkAndEmail(globalSetting *powerscale.V16SyncSettings) (basetypes.ObjectValue, basetypes.SetValue, diag.Diagnostics) {
 	var sourceNetworkObject basetypes.ObjectValue

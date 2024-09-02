@@ -23,7 +23,9 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
@@ -52,6 +54,32 @@ type SyncIQGlobalSettingsResource struct {
 // Metadata describes the resource arguments.
 func (r *SyncIQGlobalSettingsResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_synciq_global_settings"
+}
+
+func (r *SyncIQGlobalSettingsResource) ConfigValidators(ctx context.Context) []resource.ConfigValidator {
+	return []resource.ConfigValidator{
+		resourcevalidator.AtLeastOneOf(
+			path.MatchRoot("preferred_rpo_alert"),
+			path.MatchRoot("renegotiation_period"),
+			path.MatchRoot("report_email"),
+			path.MatchRoot("report_max_age"),
+			path.MatchRoot("report_max_count"),
+			path.MatchRoot("restrict_target_network"),
+			path.MatchRoot("rpo_alerts"),
+			path.MatchRoot("bandwidth_reservation_reserve_percentage"),
+			path.MatchRoot("cluster_certificate_id"),
+			path.MatchRoot("encryption_cipher_list"),
+			path.MatchRoot("encryption_required"),
+			path.MatchRoot("force_interface"),
+			path.MatchRoot("max_concurrent_jobs"),
+			path.MatchRoot("ocsp_address"),
+			path.MatchRoot("ocsp_issuer_certificate_id"),
+			path.MatchRoot("use_workers_per_node"),
+			path.MatchRoot("bandwidth_reservation_reserve_absolute"),
+			path.MatchRoot("source_network"),
+			path.MatchRoot("tw_chkpt_interval"),
+		),
+	}
 }
 
 // Schema describes the resource arguments.
