@@ -21,22 +21,72 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"errors"
+	"fmt"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 // GetAllSyncIQPolicies retrieve the cluster information.
 func GetAllSyncIQPolicies(ctx context.Context, client *client.Client) (*powerscale.V14SyncPolicies, error) {
 	resp, _, err := client.PscaleOpenAPIClient.SyncApi.ListSyncv14SyncPolicies(context.Background()).Execute()
+	if err != nil {
+		return resp, err
+	}
+	for resp.Resume != nil {
+		respAdd, _, errAdd := client.PscaleOpenAPIClient.SyncApi.ListSyncv14SyncPolicies(context.Background()).Resume(*resp.Resume).Execute()
+		if errAdd != nil {
+			return resp, errAdd
+		}
+		resp.Resume = respAdd.Resume
+		resp.Policies = append(resp.Policies, respAdd.Policies...)
+	}
 	return resp, err
+}
+
+// GetSyncIQPolicyIDByName retrieve the cluster information.
+func GetSyncIQPolicyIDByName(ctx context.Context, client *client.Client, name string) (string, error) {
+	policies, err := GetAllSyncIQPolicies(ctx, client)
+	if err != nil {
+		errStr := "Could not get list of SyncIQ policies with error: "
+		message := GetErrorString(err, errStr)
+		return "", errors.New(message)
+	}
+	for _, policy := range policies.Policies {
+		if policy.Name == name {
+			return policy.Id, nil
+		}
+	}
+	return "", fmt.Errorf("policy by name %s not found", name)
 }
 
 // GetSyncIQPolicyByID retrieve the cluster information.
 func GetSyncIQPolicyByID(ctx context.Context, client *client.Client, id string) (*powerscale.V14SyncPoliciesExtended, error) {
 	resp, _, err := client.PscaleOpenAPIClient.SyncApi.GetSyncv14SyncPolicy(context.Background(), id).Execute()
 	return resp, err
+}
+
+// CreateSyncIQPolicy creates the sync iq policy.
+func CreateSyncIQPolicy(ctx context.Context, client *client.Client, policy powerscale.V14SyncPolicy) (string, error) {
+	resp, _, err := client.PscaleOpenAPIClient.SyncApi.CreateSyncv14SyncPolicy(ctx).V14SyncPolicy(policy).Execute()
+	if err != nil {
+		return "", err
+	}
+	return resp.Id, nil
+}
+
+// DeleteSyncIQPolicy deletes the sync iq policy.
+func DeleteSyncIQPolicy(ctx context.Context, client *client.Client, id string) error {
+	_, err := client.PscaleOpenAPIClient.SyncApi.DeleteSyncv14SyncPolicy(ctx, id).Execute()
+	return err
+}
+
+// UpdateSyncIQPolicy updates the sync iq policy.
+func UpdateSyncIQPolicy(ctx context.Context, client *client.Client, id string, policy powerscale.V14SyncPolicyExtendedExtended) error {
+	_, err := client.PscaleOpenAPIClient.SyncApi.UpdateSyncv14SyncPolicy(ctx, id).V14SyncPolicy(policy).Execute()
+	return err
 }
 
 // SyncIQPolicyDataSourceResponse is the union of all response types for syncIQ policy datasource.
@@ -61,4 +111,25 @@ func NewSyncIQPolicyDataSource[V SyncIQPolicyDataSourceResponse](ctx context.Con
 		ret.ID = ret.Policies[0].ID
 	}
 	return &ret, err
+}
+
+// NewSynciqpolicyResourceModel creates a new SynciqpolicyResourceModel from resource read response.
+func NewSynciqpolicyResourceModel(ctx context.Context, respR *powerscale.V14SyncPoliciesExtended) (models.SynciqpolicyResourceModel, diag.Diagnostics) {
+	var state models.SynciqpolicyResourceModel
+	var dgs diag.Diagnostics
+	source := respR.Policies[0]
+
+	if source.FileMatchingPattern != nil && len(source.FileMatchingPattern.OrCriteria) == 0 {
+		source.FileMatchingPattern = nil
+	}
+	err := CopyFieldsToNonNestedModel(ctx, source, &state)
+	if err != nil {
+		dgs.AddError(
+			"Error copying fields of SyncIQ Policy resource",
+			err.Error(),
+		)
+		return state, dgs
+	}
+
+	return state, nil
 }
