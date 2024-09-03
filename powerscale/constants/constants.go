@@ -406,9 +406,17 @@ const (
 	// UpdateClusterSNMPSettingsErrorMsg specifies error details occurred while updating cluster SNMP settings.
 	UpdateClusterSNMPSettingsErrorMsg = "Could not update cluster SNMP settings "
 
+	// UpdateSyncIQGlobalSettingsErrorMsg specifies error details occurred while updating synciq global settings settings.
+	UpdateSyncIQGlobalSettingsErrorMsg = "Could not update SyncIQ global settings "
+
+	// ReadSyncIQGlobalSettingsErrorMsg specifies error details occurred while reading SyncIQ Global settings.
+	ReadSyncIQGlobalSettingsErrorMsg = "Could not read  synciq global settings "
 	// UpdateClusterIdentitySettingsErrorMsg specifies error details occurred while updating cluster identity settings.
 	UpdateClusterIdentitySettingsErrorMsg = "Could not update cluster identity settings "
 
 	// ReadClusterIdentitySettingsErrorMsg specifies error details occurred while reading cluster identity settings.
 	ReadClusterIdentitySettingsErrorMsg = "Could not read cluster identity settings "
+
+	// ListSynciqRulesMsg specifies error details occurred while listing snapshot schedules.
+	ListSynciqRulesMsg = "Could not list SyncIQ rules "
 )
