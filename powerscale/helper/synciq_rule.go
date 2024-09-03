@@ -33,6 +33,18 @@ import (
 // GetAllSyncIQRules retrieve the cluster information.
 func GetAllSyncIQRules(ctx context.Context, client *client.Client) (*powerscale.V3SyncRules, error) {
 	resp, _, err := client.PscaleOpenAPIClient.SyncApi.ListSyncv3SyncRules(context.Background()).Execute()
+	if err != nil {
+		return resp, err
+	}
+	// Pagination
+	for resp.Resume != "" {
+		respAdd, _, errAdd := client.PscaleOpenAPIClient.SyncApi.ListSyncv3SyncRules(context.Background()).Resume(resp.Resume).Execute()
+		if errAdd != nil {
+			return resp, errAdd
+		}
+		resp.Resume = respAdd.Resume
+		resp.Rules = append(resp.Rules, respAdd.Rules...)
+	}
 	return resp, err
 }
 
