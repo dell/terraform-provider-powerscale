@@ -34,38 +34,16 @@ func getCopyrightYear(filePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("git-log: (", string(output), ") ")
+	fmt.Println(filePath, "git-log: (", string(output), ") ")
 	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
 	// if newly created
 	if lines[0] == "" {
 		return currYear, nil
 	}
-
 	startYear := lines[0]
-
-	// check git status of file
-	cmd = exec.Command("bash", "-c", "git status --porcelain "+filePath)
-	output, err = cmd.Output()
-	if err != nil {
-		return "", err
-	}
-
-	// if modified
-	if string(output) != "" {
-		// if createYear equals to now
-		if startYear == currYear {
-			return currYear, nil
-		}
-		// otherwise
-		return fmt.Sprintf("%s-%s", startYear, currYear), nil
-	}
-
-	// if not modified and created in this year
 	if len(lines) == 1 {
 		return startYear, nil
 	}
-
-	// if not modified and created in some other year
 	endYear := lines[len(lines)-1]
 	return startYear + "-" + endYear, nil
 }
