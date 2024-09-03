@@ -37,6 +37,7 @@ func getCopyrightYear(filePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	fmt.Println("git-log: (", string(output),") ")
 	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
 	if lines[0] != "" && lines[0] != modYear {
 		return lines[0] + "-" + modYear, nil
