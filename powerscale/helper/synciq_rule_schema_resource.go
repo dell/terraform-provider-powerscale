@@ -56,8 +56,8 @@ func SyncIQRuleResourceSchema(ctx context.Context) schema.Schema {
 			"description": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "User-entered description of this performance rule.",
-				MarkdownDescription: "User-entered description of this performance rule.",
+				Description:         "Description of this performance rule.",
+				MarkdownDescription: "Description of this performance rule.",
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
@@ -90,9 +90,9 @@ func SyncIQRuleResourceSchema(ctx context.Context) schema.Schema {
 					},
 					"days_of_week": schema.SetAttribute{
 						Description: "Set of days of the week during which this rule is in effect." +
-							" Accepted values are 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'.",
+							" Accepted values are 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'. At least one day must be set.",
 						MarkdownDescription: "Set of days of the week during which this rule is in effect." +
-							" Accepted values are `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`.",
+							" Accepted values are `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`. At least one day must be set.",
 						Optional:    true,
 						Computed:    true,
 						ElementType: types.StringType,

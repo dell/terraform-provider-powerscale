@@ -93,7 +93,7 @@ func NewSyncIQRuleDataSource[V SyncIQRuleDataSourceResponse](ctx context.Context
 	return &ret, err
 }
 
-// NewSyncIQRuleDataSource creates a new SyncIQRuleDataSource from datasource responses.
+// NewSyncIQRuleDataSource creates a new SyncIQRuleDataSource from resource responses.
 func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExtendedExtendedExtended) (models.SyncIQRuleResource, diag.Diagnostics) {
 	ret := models.SyncIQRuleResource{
 		Type:        types.StringValue(source.Type),
@@ -142,6 +142,7 @@ func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExte
 	return ret, dgsObj
 }
 
+// GetRequestFromSynciqRuleResource creates a new SyncIQRule API request from resource plan.
 func GetRequestFromSynciqRuleResource(ctx context.Context, plan models.SyncIQRuleResource) powerscale.V3SyncRule {
 	ret := powerscale.V3SyncRule{
 		Type:        plan.Type.ValueString(),

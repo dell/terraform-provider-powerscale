@@ -27,6 +27,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
+// TestAccSynciqRuleResource tests the syncIQ rule resource
 func TestAccSynciqRuleResource(t *testing.T) {
 	var resourceName = "powerscale_synciq_rule.test"
 	resource.Test(t, resource.TestCase{
