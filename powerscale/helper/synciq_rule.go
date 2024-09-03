@@ -105,7 +105,7 @@ func NewSyncIQRuleDataSource[V SyncIQRuleDataSourceResponse](ctx context.Context
 	return &ret, err
 }
 
-// NewSyncIQRuleDataSource creates a new SyncIQRuleDataSource from resource responses.
+// NewSyncIQRuleResource creates a new SyncIQRuleResource from resource responses.
 func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExtendedExtendedExtended) (models.SyncIQRuleResource, diag.Diagnostics) {
 	ret := models.SyncIQRuleResource{
 		Type:        types.StringValue(source.Type),

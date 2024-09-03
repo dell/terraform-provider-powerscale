@@ -19,6 +19,7 @@ package helper
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// GetKnownStringPointer returns a pointer to the string value if it is known, otherwise nil
 func GetKnownStringPointer(in types.String) *string {
 	if in.IsUnknown() {
 		return nil
@@ -26,6 +27,7 @@ func GetKnownStringPointer(in types.String) *string {
 	return in.ValueStringPointer()
 }
 
+// GetKnownBoolPointer returns a pointer to the bool value if it is known, otherwise nil
 func GetKnownBoolPointer(in types.Bool) *bool {
 	if in.IsUnknown() {
 		return nil
@@ -33,6 +35,7 @@ func GetKnownBoolPointer(in types.Bool) *bool {
 	return in.ValueBoolPointer()
 }
 
+// New returns a pointer to a copy of the given value.
 func New[T any](in T) *T {
 	return &in
 }

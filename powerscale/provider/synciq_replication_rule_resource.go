@@ -132,7 +132,7 @@ func (d *SyncIQRuleResource) Read(ctx context.Context, req resource.ReadRequest,
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
-// Get fetches the resource state
+// Get fetches the resource state.
 func (d *SyncIQRuleResource) Get(ctx context.Context, id string) (models.SyncIQRuleResource, diag.Diagnostics) {
 	// Read Terraform configuration data into the model
 	var ret models.SyncIQRuleResource
