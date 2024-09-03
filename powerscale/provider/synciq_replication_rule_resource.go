@@ -26,11 +26,16 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &SyncIQRuleResource{}
+var (
+	_ resource.Resource                = &SyncIQRuleResource{}
+	_ resource.ResourceWithConfigure   = &SyncIQRuleResource{}
+	_ resource.ResourceWithImportState = &SyncIQRuleResource{}
+)
 
 // NewSyncIQRuleResource creates a new data source.
 func NewSyncIQRuleResource() resource.Resource {
@@ -40,6 +45,11 @@ func NewSyncIQRuleResource() resource.Resource {
 // SyncIQRuleResource defines the resource implementation.
 type SyncIQRuleResource struct {
 	client *client.Client
+}
+
+// ImportState implements resource.ResourceWithImportState.
+func (d *SyncIQRuleResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 // Metadata describes the resource arguments.
@@ -160,7 +170,7 @@ func (d *SyncIQRuleResource) Update(ctx context.Context, req resource.UpdateRequ
 	if err != nil {
 		errStr := constants.ListSynciqRulesMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError("Error creating syncIQ rule", message)
+		resp.Diagnostics.AddError("Error updating syncIQ rule", message)
 		return
 	}
 

@@ -18,16 +18,32 @@ limitations under the License.
 package provider
 
 import (
+	"fmt"
+	"regexp"
+	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccSynciqRuleResource(t *testing.T) {
+	var resourceName = "powerscale_synciq_rule.test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// invalid create
+			{
+				Config: ProviderConfig + `
+				resource "powerscale_synciq_rule" "test" {
+					type = "bandwidth"
+					limit = -200
+					description = "tfacc created"
+				}
+				`,
+				ExpectError: regexp.MustCompile(`.*Error creating syncIQ rule*.`),
+			},
 			// Create
 			{
 				Config: ProviderConfig + `
@@ -37,6 +53,18 @@ func TestAccSynciqRuleResource(t *testing.T) {
 					description = "tfacc created"
 				}
 				`,
+			},
+			// check that import is creating correct state
+			{
+				ResourceName: resourceName,
+				ImportState:  true,
+			},
+			// import with invalid ID
+			{
+				ResourceName:  resourceName,
+				ImportState:   true,
+				ImportStateId: "invalid",
+				ExpectError:   regexp.MustCompile(`.*Error reading syncIQ rule*.`),
 			},
 			// Update
 			{
@@ -52,6 +80,22 @@ func TestAccSynciqRuleResource(t *testing.T) {
 					}
 				}
 				`,
+			},
+			// invalid update with wrong schedule
+			{
+				Config: ProviderConfig + `
+				resource "powerscale_synciq_rule" "test" {
+					type = "bandwidth"
+					limit = 20000
+					description = "tfacc updated"
+					enabled = true
+					schedule = {
+						begin = "invalid"
+						end = "22:59",
+					}
+				}
+				`,
+				ExpectError: regexp.MustCompile(`.*Error updating syncIQ rule*.`),
 			},
 			// Add days of week
 			{
@@ -69,7 +113,7 @@ func TestAccSynciqRuleResource(t *testing.T) {
 				}
 				`,
 			},
-			// remove days of week
+			// mock delete error
 			{
 				Config: ProviderConfig + `
 				resource "powerscale_synciq_rule" "test" {
@@ -77,6 +121,33 @@ func TestAccSynciqRuleResource(t *testing.T) {
 					limit = 20000
 					description = "tfacc updated"
 					enabled = true
+					schedule = {
+						begin = "01:00",
+						end = "22:59",
+						days_of_week = ["monday", "wednesday", "thursday"]
+					}
+				}
+				`,
+				Destroy: true,
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					FunctionMocker = mockey.Mock(helper.DeleteSyncIQRule).Return(fmt.Errorf("mock delete error")).Build()
+				},
+				ExpectError: regexp.MustCompile(`.*Error deleting syncIQ rule*.`),
+			},
+			// remove days of week
+			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+				},
+				Config: ProviderConfig + `
+				resource "powerscale_synciq_rule" "test" {
+					type = "bandwidth"
+					limit = 20000
+					description = "tfacc updated"
+					enabled = false
 					schedule = {
 						begin = "01:00",
 						end = "22:59",

@@ -97,6 +97,7 @@ func SyncIQRuleResourceSchema(ctx context.Context) schema.Schema {
 						Computed:    true,
 						ElementType: types.StringType,
 						Validators: []validator.Set{
+							setvalidator.SizeAtLeast(1),
 							setvalidator.ValueStringsAre(
 								stringvalidator.OneOf(
 									"monday",
