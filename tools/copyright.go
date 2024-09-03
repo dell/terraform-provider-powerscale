@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"sync"
 )
 
 // getCopyrightYear get copyright year from git log and file modify time.
@@ -30,36 +29,31 @@ func getCopyrightYear(filePath string) (string, error) {
 
 // main function to traveser docs folder and update copyright year.
 func main() {
-	var wg sync.WaitGroup
+
 	err := filepath.Walk("docs/", func(path string, info os.FileInfo, err error) error {
 		if err != nil || info.IsDir() {
 			return err
 		}
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
 
-			file, err := os.ReadFile(path)
-			if err != nil {
-				return
-			}
+		file, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
 
-			year, err := getCopyrightYear(path)
-			if err != nil {
-				return
-			}
+		year, err := getCopyrightYear(path)
+		if err != nil {
+			return err
+		}
 
-			replacedFile := strings.ReplaceAll(string(file), "<copyright-year>", year)
-			err = os.WriteFile(path, []byte(replacedFile), 0644)
-			if err != nil {
-				return
-			}
+		replacedFile := strings.ReplaceAll(string(file), "<copyright-year>", year)
+		err = os.WriteFile(path, []byte(replacedFile), 0644)
+		if err != nil {
+			return err
+		}
 
-			println("Copyright Years: " + year + " " + path)
-		}()
+		println("Copyright Years: " + year + " " + path)
 		return nil
 	})
-	wg.Wait()
 	if err != nil {
 		return
 	}
