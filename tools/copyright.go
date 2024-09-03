@@ -23,26 +23,51 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 // getCopyrightYear get copyright year from git log and file modify time.
 func getCopyrightYear(filePath string) (string, error) {
-	file, err := os.Stat(filePath)
-	if err != nil {
-		return "", err
-	}
-	modYear := fmt.Sprintf("%d", file.ModTime().Year())
+	currYear := fmt.Sprintf("%d", time.Now().Year())
 	cmd := exec.Command("bash", "-c", "git log --follow --format=%cd --date=format:%Y "+filePath+" | sort -u")
 	output, err := cmd.Output()
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("git-log: (", string(output),") ")
+	fmt.Println("git-log: (", string(output), ") ")
 	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
-	if lines[0] != "" && lines[0] != modYear {
-		return lines[0] + "-" + modYear, nil
+	// if newly created
+	if lines[0] == "" {
+		return currYear, nil
 	}
-	return modYear, nil
+
+	startYear := lines[0]
+
+	// check git status of file
+	cmd = exec.Command("bash", "-c", "git status --porcelain "+filePath)
+	output, err = cmd.Output()
+	if err != nil {
+		return "", err
+	}
+
+	// if modified
+	if string(output) != "" {
+		// if createYear equals to now
+		if startYear == currYear {
+			return currYear, nil
+		}
+		// otherwise
+		return fmt.Sprintf("%s-%s", startYear, currYear), nil
+	}
+
+	// if not modified and created in this year
+	if len(lines) == 1 {
+		return startYear, nil
+	}
+
+	// if not modified and created in some other year
+	endYear := lines[len(lines)-1]
+	return startYear + "-" + endYear, nil
 }
 
 // main function to traveser docs folder and update copyright year.
