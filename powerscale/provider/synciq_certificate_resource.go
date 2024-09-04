@@ -25,7 +25,6 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -83,12 +82,18 @@ func (r *SyncIQPeerCertificateResource) Schema(ctx context.Context, req resource
 				MarkdownDescription: "Administrator specified name identifier.",
 				Optional:            true,
 				Computed:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"description": schema.StringAttribute{
 				Description:         "Description field associated with a certificate provided for administrative convenience.",
 				MarkdownDescription: "Description field associated with a certificate provided for administrative convenience.",
 				Optional:            true,
 				Computed:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 		},
 	}
@@ -240,5 +245,11 @@ func (r *SyncIQPeerCertificateResource) Delete(ctx context.Context, req resource
 
 // ImportState imports the resource.
 func (r *SyncIQPeerCertificateResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	state := models.SyncIQPeerCertificateResource{
+		ID:          types.StringValue(req.ID),
+		Path:        "/dummy",
+		Description: types.StringNull(),
+		Name:        types.StringNull(),
+	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
