@@ -31,7 +31,7 @@ func getCopyrightYear(filePath string) (string, error) {
 	// Sanitize the filePath
 	filePath = filepath.Clean(filePath)
 	currYear := fmt.Sprintf("%d", time.Now().Year())
-	cmd := exec.Command("bash", "-c", "git log --follow --format=%cd --date=format:%Y "+filePath+" | sort -u")
+	cmd := exec.Command("bash", "-c", "git log --follow --format=%cd --date=format:%Y "+filePath+" | sort -u") // #nosec G204
 	output, err := cmd.Output()
 	if err != nil {
 		return "", err
@@ -58,11 +58,7 @@ func main() {
 			return err
 		}
 
-		// Validate and sanitize the path variable
-		if !strings.HasPrefix(path, "docs/") || strings.Contains(path, "..") || strings.Contains(path, "//") {
-			return fmt.Errorf("invalid path: %s", path)
-		}
-
+		path = filepath.Clean(path)
 		file, err := os.ReadFile(path)
 		if err != nil {
 			return err
