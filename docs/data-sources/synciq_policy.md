@@ -75,7 +75,7 @@ locals {
   policiesByName = { for policy in data.powerscale_synciq_policy.all_policies.policies : policy.name => policy }
 }
 
-# Syep 3: The user can use the fetched policy by name by the variable local.policiesByName["<anme>"]
+# Step 3: The user can use the fetched policy by name by the variable local.policiesByName["<name>"]
 output "policiesByName" {
   value = {
     "aut" = local.policiesByName["aut_synciq_report_policy_01"]
