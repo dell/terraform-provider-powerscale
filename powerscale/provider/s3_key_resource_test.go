@@ -43,9 +43,9 @@ func TestAccS3KeyResourceErrorCreate(t *testing.T) {
 }
 
 func TestAccS3KeyResource(t *testing.T) {
-	var S3KeyResourceConfig = tfConfig("tf_test", "tf_user", "System", 40)
-	var S3KeyResourceConfigUpdate = tfConfig("tf_test", "tf_user", "System", 80)
-	var S3KeyResourceConfigUpdateError = tfConfig("tf_test", "tf_user", "System", -80)
+	var S3KeyResourceConfig = tfConfig("tf_test", "tfaccUserCreation", "System", 40)
+	var S3KeyResourceConfigUpdate = tfConfig("tf_test", "tfaccUserCreation", "System", 80)
+	var S3KeyResourceConfigUpdateError = tfConfig("tf_test", "tfaccUserCreation", "System", -80)
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -62,7 +62,7 @@ func TestAccS3KeyResource(t *testing.T) {
 				PreConfig: func() { FunctionMocker.UnPatch() },
 				Config:    ProviderConfig + S3KeyResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_key.tf_test", "user", "tf_user"),
+					resource.TestCheckResourceAttr("powerscale_s3_key.tf_test", "user", "tfaccUserCreation"),
 				),
 			},
 			// Error Reading
@@ -99,7 +99,7 @@ func TestAccS3KeyResource(t *testing.T) {
 				PreConfig: func() { FunctionMocker.UnPatch() },
 				Config:    ProviderConfig + S3KeyResourceConfigUpdate,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_s3_key.tf_test", "user", "tf_user"),
+					resource.TestCheckResourceAttr("powerscale_s3_key.tf_test", "user", "tfaccUserCreation"),
 				),
 			},
 			// Update Error testing
@@ -113,15 +113,15 @@ func TestAccS3KeyResource(t *testing.T) {
 
 func tfConfig(resource, user, zone string, expiry int) string {
 	return fmt.Sprintf(`
-resource "powerscale_user" "tf_user" {
-	name = "tf_user"
+resource "powerscale_user" "tfaccUserCreation" {
+	name = "tfaccUserCreation"
 }
 resource "powerscale_s3_key" "%s" {
     user = "%s"
     zone = "%s"
     existing_key_expiry_time = %d
 	depends_on = [
-		powerscale_user.tf_user
+		powerscale_user.tfaccUserCreation
 	]
 }
 `, resource, user, zone, expiry)

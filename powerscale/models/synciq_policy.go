@@ -126,3 +126,67 @@ type V1SyncPolicySourceNetworkModel struct {
 	Pool   types.String `tfsdk:"pool"`
 	Subnet types.String `tfsdk:"subnet"`
 }
+
+// SynciqpolicyResourceModel - SyncIQ Policy Resource Model.
+type SynciqpolicyResourceModel struct {
+	AcceleratedFailback               types.Bool   `tfsdk:"accelerated_failback"`
+	Action                            types.String `tfsdk:"action"`
+	AllowCopyFb                       types.Bool   `tfsdk:"allow_copy_fb"`
+	BandwidthReservation              types.Int64  `tfsdk:"bandwidth_reservation"`
+	Changelist                        types.Bool   `tfsdk:"changelist"`
+	CheckIntegrity                    types.Bool   `tfsdk:"check_integrity"`
+	CloudDeepCopy                     types.String `tfsdk:"cloud_deep_copy"`
+	DeleteQuotas                      types.Bool   `tfsdk:"delete_quotas"`
+	Description                       types.String `tfsdk:"description"`
+	DisableFileSplit                  types.Bool   `tfsdk:"disable_file_split"`
+	DisableFofb                       types.Bool   `tfsdk:"disable_fofb"`
+	DisableQuotaTmpDir                types.Bool   `tfsdk:"disable_quota_tmp_dir"`
+	DisableStf                        types.Bool   `tfsdk:"disable_stf"`
+	EnableHashTmpdir                  types.Bool   `tfsdk:"enable_hash_tmpdir"`
+	Enabled                           types.Bool   `tfsdk:"enabled"`
+	EncryptionCipherList              types.String `tfsdk:"encryption_cipher_list"`
+	ExpectedDataloss                  types.Bool   `tfsdk:"expected_dataloss"`
+	FileMatchingPattern               types.Object `tfsdk:"file_matching_pattern"`
+	ForceInterface                    types.Bool   `tfsdk:"force_interface"`
+	IgnoreRecursiveQuota              types.Bool   `tfsdk:"ignore_recursive_quota"`
+	JobDelay                          types.Int64  `tfsdk:"job_delay"`
+	LinkedServicePolicies             types.List   `tfsdk:"linked_service_policies"`
+	LogLevel                          types.String `tfsdk:"log_level"`
+	LogRemovedFiles                   types.Bool   `tfsdk:"log_removed_files"`
+	Name                              types.String `tfsdk:"name"`
+	OcspAddress                       types.String `tfsdk:"ocsp_address"`
+	OcspIssuerCertificateID           types.String `tfsdk:"ocsp_issuer_certificate_id"`
+	Password                          types.String `tfsdk:"password"`
+	Priority                          types.Int64  `tfsdk:"priority"`
+	ReportMaxAge                      types.Int64  `tfsdk:"report_max_age"`
+	ReportMaxCount                    types.Int64  `tfsdk:"report_max_count"`
+	RestrictTargetNetwork             types.Bool   `tfsdk:"restrict_target_network"`
+	RpoAlert                          types.Int64  `tfsdk:"rpo_alert"`
+	Schedule                          types.String `tfsdk:"schedule"`
+	ServicePolicy                     types.Bool   `tfsdk:"service_policy"`
+	SkipLookup                        types.Bool   `tfsdk:"skip_lookup"`
+	SkipWhenSourceUnmodified          types.Bool   `tfsdk:"skip_when_source_unmodified"`
+	SnapshotSyncExisting              types.Bool   `tfsdk:"snapshot_sync_existing"`
+	SnapshotSyncPattern               types.String `tfsdk:"snapshot_sync_pattern"`
+	SourceExcludeDirectories          types.List   `tfsdk:"source_exclude_directories"`
+	SourceIncludeDirectories          types.List   `tfsdk:"source_include_directories"`
+	SourceNetwork                     types.Object `tfsdk:"source_network"`
+	SourceRootPath                    types.String `tfsdk:"source_root_path"`
+	SourceSnapshotArchive             types.Bool   `tfsdk:"source_snapshot_archive"`
+	SourceSnapshotExpiration          types.Int64  `tfsdk:"source_snapshot_expiration"`
+	SourceSnapshotPattern             types.String `tfsdk:"source_snapshot_pattern"`
+	SyncExistingSnapshotExpiration    types.Bool   `tfsdk:"sync_existing_snapshot_expiration"`
+	SyncExistingTargetSnapshotPattern types.String `tfsdk:"sync_existing_target_snapshot_pattern"`
+	TargetCertificateID               types.String `tfsdk:"target_certificate_id"`
+	TargetCompareInitialSync          types.Bool   `tfsdk:"target_compare_initial_sync"`
+	TargetDetectModifications         types.Bool   `tfsdk:"target_detect_modifications"`
+	TargetHost                        types.String `tfsdk:"target_host"`
+	TargetPath                        types.String `tfsdk:"target_path"`
+	TargetSnapshotAlias               types.String `tfsdk:"target_snapshot_alias"`
+	TargetSnapshotArchive             types.Bool   `tfsdk:"target_snapshot_archive"`
+	TargetSnapshotExpiration          types.Int64  `tfsdk:"target_snapshot_expiration"`
+	TargetSnapshotPattern             types.String `tfsdk:"target_snapshot_pattern"`
+	WorkersPerNode                    types.Int64  `tfsdk:"workers_per_node"`
+	Conflicted                        types.Bool   `tfsdk:"conflicted"`
+	ID                                types.String `tfsdk:"id"`
+}
