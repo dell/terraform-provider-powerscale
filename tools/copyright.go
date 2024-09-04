@@ -28,6 +28,8 @@ import (
 
 // getCopyrightYear get copyright year from git log and file modify time.
 func getCopyrightYear(filePath string) (string, error) {
+	// Sanitize the filePath
+	filePath = filepath.Clean(filePath)
 	currYear := fmt.Sprintf("%d", time.Now().Year())
 	cmd := exec.Command("bash", "-c", "git log --follow --format=%cd --date=format:%Y "+filePath+" | sort -u")
 	output, err := cmd.Output()
@@ -56,6 +58,11 @@ func main() {
 			return err
 		}
 
+		// Validate and sanitize the path variable
+		if !strings.HasPrefix(path, "docs/") || strings.Contains(path, "..") || strings.Contains(path, "//") {
+			return fmt.Errorf("invalid path: %s", path)
+		}
+
 		file, err := os.ReadFile(path)
 		if err != nil {
 			return err
@@ -67,7 +74,7 @@ func main() {
 		}
 
 		replacedFile := strings.ReplaceAll(string(file), "<copyright-year>", year)
-		err = os.WriteFile(path, []byte(replacedFile), 0644)
+		err = os.WriteFile(path, []byte(replacedFile), 0600)
 		if err != nil {
 			return err
 		}
