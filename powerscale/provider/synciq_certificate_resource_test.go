@@ -19,7 +19,9 @@ package provider
 
 import (
 	"fmt"
+	"os"
 	"regexp"
+	"strings"
 	"testing"
 
 	"terraform-provider-powerscale/powerscale/helper"
@@ -30,6 +32,51 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
+
+func getPeerCertProvisionerConfig() string {
+	username := os.Getenv("POWERSCALE_USERNAME")
+	password := os.Getenv("POWERSCALE_PASSWORD")
+	endpoint := os.Getenv("POWERSCALE_ENDPOINT")
+	ip := strings.TrimPrefix(endpoint, "https://")
+	ip = strings.TrimPrefix(ip, "http://")
+	ip = strings.Split(ip, ":")[0]
+	return fmt.Sprintf(`
+	locals {
+		cert_dir = "/ifs/testAccPeerCertDir"
+		key = "${local.cert_dir}/testAccPeerCertKey.pem"
+		cert = "${local.cert_dir}/testAccPeerCert.pem"
+		subj = "/C=US/ST=California/L=The Cloud/O=Dell/OU=ISG/CN=test_acc_user"
+	}
+	
+	resource "terraform_data" "certificate" {
+		connection {
+			type     = "ssh"
+			user     = "%s"
+			password = "%s"
+			host     = "%s"
+		}
+		input = {
+			dir = local.cert_dir
+			cert = local.cert
+		}
+		provisioner "remote-exec" {
+			inline = [
+				"mkdir ${local.cert_dir}",
+				"openssl req -x509 -days 365 -newkey rsa:4096 -keyout ${local.key} -out ${local.cert} -nodes -subj \"${local.subj}\"",
+			]
+		}
+		provisioner "remote-exec" {
+			when = destroy
+			inline = ["rm -rf ${self.output.dir}"]
+		}
+	}
+	
+	`,
+		username,
+		password,
+		ip,
+	)
+}
 
 // TestAccSyncIQCertificateResource - Tests syncIQ peer certificate resource.
 func TestAccSyncIQCertificateResource(t *testing.T) {
@@ -45,10 +92,11 @@ func TestAccSyncIQCertificateResource(t *testing.T) {
 				`,
 				ExpectError: regexp.MustCompile(`.*Failed to create SyncIQ Peer Certificate.*`),
 			},
+			// create valid
 			{
-				Config: ProviderConfig + `
+				Config: ProviderConfig + getPeerCertProvisionerConfig() + `
 				resource "powerscale_synciq_certificate" "test" {
-					path = "/ifs/tfacc_certs/tfacc_peer_cert.pem"
+					path = terraform_data.certificate.output.cert
 					name = "tfaccTest"
 					description = "Tfacc Test"
 				}
@@ -78,9 +126,9 @@ func TestAccSyncIQCertificateResource(t *testing.T) {
 			},
 			// mock delete error
 			{
-				Config: ProviderConfig + `
+				Config: ProviderConfig + getPeerCertProvisionerConfig() + `
 				resource "powerscale_synciq_certificate" "test" {
-					path = "/ifs/tfacc_certs/tfacc_peer_cert.pem"
+					path = terraform_data.certificate.output.cert
 					name = "tfaccTest"
 					description = "Tfacc Test"
 				}
@@ -96,9 +144,9 @@ func TestAccSyncIQCertificateResource(t *testing.T) {
 			},
 			// mock update error
 			{
-				Config: ProviderConfig + `
+				Config: ProviderConfig + getPeerCertProvisionerConfig() + `
 				resource "powerscale_synciq_certificate" "test" {
-					path = "/ifs/tfacc_certs/tfacc_peer_cert.pem"
+					path = terraform_data.certificate.output.cert
 					name = "tfaccTest2"
 					description = "Tfacc Test"
 				}
@@ -114,9 +162,9 @@ func TestAccSyncIQCertificateResource(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker.Release()
 				},
-				Config: ProviderConfig + `
+				Config: ProviderConfig + getPeerCertProvisionerConfig() + `
 				resource "powerscale_synciq_certificate" "test" {
-					path = "/ifs/tfacc_certs/tfacc_peer_cert.pem"
+					path = terraform_data.certificate.output.cert
 					name = "tfaccTest2"
 					description = "Tfacc Test 2"
 				}
@@ -137,17 +185,17 @@ func TestAccSyncIQCertificateResourceMinimal(t *testing.T) {
 						FunctionMocker.Release()
 					}
 				},
-				Config: ProviderConfig + `
+				Config: ProviderConfig + getPeerCertProvisionerConfig() + `
 				resource "powerscale_synciq_certificate" "test" {
-					path = "/ifs/tfacc_certs/tfacc_peer_cert.pem"
+					path = terraform_data.certificate.output.cert
 				}
 				`,
 			},
 			{
 				// Add name and description
-				Config: ProviderConfig + `
+				Config: ProviderConfig + getPeerCertProvisionerConfig() + `
 				resource "powerscale_synciq_certificate" "test" {
-					path = "/ifs/tfacc_certs/tfacc_peer_cert.pem"
+					path = terraform_data.certificate.output.cert
 					name = "tfaccTest2"
 					description = "Tfacc Test 2"
 				}
@@ -155,9 +203,9 @@ func TestAccSyncIQCertificateResourceMinimal(t *testing.T) {
 			},
 			// remove name and description
 			{
-				Config: ProviderConfig + `
+				Config: ProviderConfig + getPeerCertProvisionerConfig() + `
 				resource "powerscale_synciq_certificate" "test" {
-					path = "/ifs/tfacc_certs/tfacc_peer_cert.pem"
+					path = terraform_data.certificate.output.cert
 				}
 				`,
 				PlanOnly:           true,
