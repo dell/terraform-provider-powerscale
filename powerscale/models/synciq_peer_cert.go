@@ -18,7 +18,7 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// SyncIQPeerCertificateResource struct for SyncIQ certificate resource
+// SyncIQPeerCertificateResource struct for SyncIQ certificate resource.
 type SyncIQPeerCertificateResource struct {
 	ID          types.String `tfsdk:"id"`
 	Path        string       `tfsdk:"path"`

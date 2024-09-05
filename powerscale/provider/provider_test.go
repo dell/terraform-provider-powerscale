@@ -71,7 +71,7 @@ func init() {
 
 	powerscaleUsername = os.Getenv("POWERSCALE_USERNAME")
 	powerscalePassword = os.Getenv("POWERSCALE_PASSWORD")
-	powerscaleEndpoint := os.Getenv("POWERSCALE_ENDPOINT")
+	powerscaleEndpoint = os.Getenv("POWERSCALE_ENDPOINT")
 	authType := os.Getenv("POWERSCALE_AUTH_TYPE")
 	timeout := os.Getenv("POWERSCALE_TIMEOUT")
 	insecure := os.Getenv("POWERSCALE_INSECURE")

@@ -151,7 +151,7 @@ func (r *SyncIQPeerCertificateResource) Create(ctx context.Context, req resource
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
-// get state
+// get state.
 func (r *SyncIQPeerCertificateResource) get(ctx context.Context, id, path string) (models.SyncIQPeerCertificateResource, error) {
 	certResp, err := helper.ReadPeerCert(ctx, r.client, id)
 	if err != nil {

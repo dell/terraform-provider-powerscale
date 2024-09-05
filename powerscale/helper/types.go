@@ -15,7 +15,7 @@ package helper
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// GetKnownStringPointer returns a pointer to the string value if it is known, otherwise nil
+// GetKnownStringPointer returns a pointer to the string value if it is known, otherwise nil.
 func GetKnownStringPointer(in types.String) *string {
 	if in.IsUnknown() {
 		return nil
