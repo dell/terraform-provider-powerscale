@@ -52,13 +52,6 @@ resource "powerscale_cluster_time" "test" {
 }
 `
 
-var clusterTimeResourceConfig = `
-resource "powerscale_cluster_time" "test" {
-	date = "01/12/2024"
-  	time = "00:32"
-}
-`
-
 var clusterTimeResourceConfigUpdate = `
 resource "powerscale_cluster_time" "test" {
 	date = "12/12/2024"
