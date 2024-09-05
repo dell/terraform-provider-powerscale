@@ -19,9 +19,7 @@ package provider
 
 import (
 	"fmt"
-	"os"
 	"regexp"
-	"strings"
 	"testing"
 
 	"terraform-provider-powerscale/powerscale/helper"
@@ -34,12 +32,6 @@ import (
 )
 
 func getPeerCertProvisionerConfig() string {
-	username := os.Getenv("POWERSCALE_USERNAME")
-	password := os.Getenv("POWERSCALE_PASSWORD")
-	endpoint := os.Getenv("POWERSCALE_ENDPOINT")
-	ip := strings.TrimPrefix(endpoint, "https://")
-	ip = strings.TrimPrefix(ip, "http://")
-	ip = strings.Split(ip, ":")[0]
 	return fmt.Sprintf(`
 	locals {
 		cert_dir = "/ifs/testAccPeerCertDir"
@@ -54,6 +46,7 @@ func getPeerCertProvisionerConfig() string {
 			user     = "%s"
 			password = "%s"
 			host     = "%s"
+			port     = %s
 		}
 		input = {
 			dir = local.cert_dir
@@ -72,9 +65,10 @@ func getPeerCertProvisionerConfig() string {
 	}
 	
 	`,
-		username,
-		password,
-		ip,
+		powerscaleUsername,
+		powerscalePassword,
+		powerScaleSSHIP,
+		powerscaleSSHPort,
 	)
 }
 
