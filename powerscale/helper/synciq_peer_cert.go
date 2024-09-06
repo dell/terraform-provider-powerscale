@@ -38,6 +38,23 @@ func ReadPeerCert(ctx context.Context, client *client.Client, id string) (*power
 	return resp, err
 }
 
+// ListPeerCerts lists all Peer Certificates.
+func ListPeerCerts(ctx context.Context, client *client.Client) (*powerscale.V7CertificatesPeer, error) {
+	resp, _, err := client.PscaleOpenAPIClient.SyncApi.ListSyncv7CertificatesPeer(context.Background()).Execute()
+	if err != nil {
+		return resp, err
+	}
+	if resp.Resume != nil {
+		respAdd, _, errAdd := client.PscaleOpenAPIClient.SyncApi.ListSyncv7CertificatesPeer(context.Background()).Resume(*resp.Resume).Execute()
+		if errAdd != nil {
+			return resp, errAdd
+		}
+		resp.Resume = respAdd.Resume
+		resp.Certificates = append(resp.Certificates, respAdd.Certificates...)
+	}
+	return resp, err
+}
+
 // UpdatePeerCert updates a Peer Certificate.
 func UpdatePeerCert(ctx context.Context, client *client.Client, id string, req powerscale.V16CertificatesSyslogIdParams) error {
 	_, err := client.PscaleOpenAPIClient.SyncApi.UpdateSyncv7CertificatesPeerById(context.Background(), id).V7CertificatesPeerIdParams(req).Execute()
