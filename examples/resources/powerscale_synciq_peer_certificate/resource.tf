@@ -41,7 +41,7 @@ resource "terraform_data" "cert" {
 }
 
 # PowerScale Sync IQ Peer Certificates can be used to establish trust to the peer/target cluster where files are to be replicated to. 
-resource "powerscale_synciq_certificate" "certificate" {
+resource "powerscale_synciq_peer_certificate" "certificate" {
   depends_on = [terraform_data.cert]
   // required
   // Cannot be updated, requires-replace

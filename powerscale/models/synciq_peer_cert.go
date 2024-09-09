@@ -25,3 +25,9 @@ type SyncIQPeerCertificateResource struct {
 	Name        types.String `tfsdk:"name"`
 	Description types.String `tfsdk:"description"`
 }
+
+// PeerCertificateDataSourceModel struct for SyncIQ certificate data source.
+type PeerCertificateDataSourceModel struct {
+	ID           types.String `tfsdk:"id"`
+	Certificates types.List   `tfsdk:"certificates"`
+}
