@@ -14,15 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-title: "powerscale_synciq_certificate resource"
-linkTitle: "powerscale_synciq_certificate"
-page_title: "powerscale_synciq_certificate Resource - terraform-provider-powerscale"
+title: "powerscale_synciq_peer_certificate resource"
+linkTitle: "powerscale_synciq_peer_certificate"
+page_title: "powerscale_synciq_peer_certificate Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
   This resource is used to manage the SyncIQ Peer Certificate entity of PowerScale Array. We can Create, Read, Update and Delete the SyncIQ Peer Certificate using this resource. We can also import existing SyncIQ Peer Certificate from PowerScale array.
 ---
 
-# powerscale_synciq_certificate (Resource)
+# powerscale_synciq_peer_certificate (Resource)
 
 This resource is used to manage the SyncIQ Peer Certificate entity of PowerScale Array. We can Create, Read, Update and Delete the SyncIQ Peer Certificate using this resource. We can also import existing SyncIQ Peer Certificate from PowerScale array.
 
@@ -73,7 +73,7 @@ resource "terraform_data" "cert" {
 }
 
 # PowerScale Sync IQ Peer Certificates can be used to establish trust to the peer/target cluster where files are to be replicated to. 
-resource "powerscale_synciq_certificate" "certificate" {
+resource "powerscale_synciq_peer_certificate" "certificate" {
   depends_on = [terraform_data.cert]
   // required
   // Cannot be updated, requires-replace
@@ -127,14 +127,14 @@ Import is supported using the following syntax:
 # A Peer Certificate can be imported either by using name (if non-empty) or ID.
 
 # The command to import by ID is
-# terraform import powerscale_synciq_certificate.certificate <certificate ID>
+# terraform import powerscale_synciq_peer_certificate.certificate <certificate ID>
 # Example:
-terraform import powerscale_synciq_certificate.certificate "08834c2212932cdeb75d61f9ff661892c97afe500152b70e50a8248188fe7e27"
+terraform import powerscale_synciq_peer_certificate.certificate "08834c2212932cdeb75d61f9ff661892c97afe500152b70e50a8248188fe7e27"
 
 # The command to import by name is
-# terraform import powerscale_synciq_certificate.certificate2 <name:certificate name>
+# terraform import powerscale_synciq_peer_certificate.certificate2 <name:certificate name>
 # Example:
-terraform import powerscale_synciq_certificate.certificate2 "name:peer_certificate_01"
+terraform import powerscale_synciq_peer_certificate.certificate2 "name:peer_certificate_01"
 
 # after running any of these commands, populate the path field with the value "/dummy" to start managing this resource. Add other fields as required.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.

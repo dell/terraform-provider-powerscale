@@ -26,9 +26,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccSyncIQCertificateDatasource(t *testing.T) {
+func TestAccSyncIQPeerCertificateDatasource(t *testing.T) {
 	certRs := getPeerCertProvisionerConfig() + `
-	resource "powerscale_synciq_certificate" "test" {
+	resource "powerscale_synciq_peer_certificate" "test" {
 		path = terraform_data.certificate.output.cert
 		name = "tfaccTest"
 		description = "Tfacc Test"
@@ -42,7 +42,7 @@ func TestAccSyncIQCertificateDatasource(t *testing.T) {
 			// read invalid ID
 			{
 				Config: ProviderConfig + `
-				data "powerscale_synciq_certificate" "test" {
+				data "powerscale_synciq_peer_certificate" "test" {
 					id = "invalid"
 				}
 				`,
@@ -51,19 +51,19 @@ func TestAccSyncIQCertificateDatasource(t *testing.T) {
 			// Read valid ID
 			{
 				Config: ProviderConfig + certRs + `
-				data "powerscale_synciq_certificate" "test" {
-					id = powerscale_synciq_certificate.test.id
+				data "powerscale_synciq_peer_certificate" "test" {
+					id = powerscale_synciq_peer_certificate.test.id
 				}
 				`,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.powerscale_synciq_certificate.test", "certificates.#"),
-					resource.TestCheckResourceAttr("data.powerscale_synciq_certificate.test", "certificates.#", "1"),
+					resource.TestCheckResourceAttrSet("data.powerscale_synciq_peer_certificate.test", "certificates.#"),
+					resource.TestCheckResourceAttr("data.powerscale_synciq_peer_certificate.test", "certificates.#", "1"),
 				),
 			},
 			// read all mock error
 			{
 				Config: ProviderConfig + certRs + `
-				data "powerscale_synciq_certificate" "test" {
+				data "powerscale_synciq_peer_certificate" "test" {
 				}
 				`,
 				PreConfig: func() {
@@ -77,11 +77,11 @@ func TestAccSyncIQCertificateDatasource(t *testing.T) {
 					FunctionMocker.Release()
 				},
 				Config: ProviderConfig + certRs + `
-				data "powerscale_synciq_certificate" "test" {
+				data "powerscale_synciq_peer_certificate" "test" {
 				}
 				`,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.powerscale_synciq_certificate.test", "certificates.#"),
+					resource.TestCheckResourceAttrSet("data.powerscale_synciq_peer_certificate.test", "certificates.#"),
 				),
 			},
 		},

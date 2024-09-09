@@ -18,30 +18,30 @@ limitations under the License.
 # PowerScale SyncIQ Certificate allows you to get a list of SyncIQ Peer Certificates or a peer certificate by its ID.
 
 # Returns a list of PowerScale SyncIQ Certificates
-data "powerscale_synciq_certificate" "all_certificates" {
+data "powerscale_synciq_peer_certificate" "all_certificates" {
 }
 
 # Returns a the PowerScale SyncIQ Certificate with given ID
-data "powerscale_synciq_certificate" "one_certificate" {
+data "powerscale_synciq_peer_certificate" "one_certificate" {
   id = "g23j9a1f83h12n5j4"
 }
 
 # Output value of above block by executing 'terraform output' command.
-# The user can use the fetched information by the variable data.powerscale_synciq_certificate.all_certificates.certificates
+# The user can use the fetched information by the variable data.powerscale_synciq_peer_certificate.all_certificates.certificates
 output "powerscale_synciq_all_certificates" {
-  value = data.powerscale_synciq_certificate.all_certificates.certificates
+  value = data.powerscale_synciq_peer_certificate.all_certificates.certificates
 }
 
-# The user can use the fetched certificate by ID by the variable data.powerscale_synciq_certificate.one_certificate.certificates[0]
+# The user can use the fetched certificate by ID by the variable data.powerscale_synciq_peer_certificate.one_certificate.certificates[0]
 output "certificateByID" {
-  value = data.powerscale_synciq_certificate.one_certificate.certificates[0]
+  value = data.powerscale_synciq_peer_certificate.one_certificate.certificates[0]
 }
 
 # Get syncIQ certificate by name
 # Step 1: We shall use the datasource to get all the certificates as shown above
 # Step 2: We index them by name
 locals {
-  certificatesByName = { for certificate in data.powerscale_synciq_certificate.all_certificates.certificates : certificate.name => certificate }
+  certificatesByName = { for certificate in data.powerscale_synciq_peer_certificate.all_certificates.certificates : certificate.name => certificate }
 }
 
 # Step 3: The user can use the fetched certificate by name by the variable local.certificatesByName["<name>"]
@@ -58,10 +58,10 @@ output "certificatesByName" {
 # Step 2: We index them by status
 output "certificatesByStatus" {
   value = {
-    "valid"    = [for certificate in data.powerscale_synciq_certificate.all_certificates.certificates : certificate if certificate.status == "valid"]
-    "invalid"  = [for certificate in data.powerscale_synciq_certificate.all_certificates.certificates : certificate if certificate.status == "invalid"]
-    "expired"  = [for certificate in data.powerscale_synciq_certificate.all_certificates.certificates : certificate if certificate.status == "expired"]
-    "expiring" = [for certificate in data.powerscale_synciq_certificate.all_certificates.certificates : certificate if certificate.status == "expiring"]
+    "valid"    = [for certificate in data.powerscale_synciq_peer_certificate.all_certificates.certificates : certificate if certificate.status == "valid"]
+    "invalid"  = [for certificate in data.powerscale_synciq_peer_certificate.all_certificates.certificates : certificate if certificate.status == "invalid"]
+    "expired"  = [for certificate in data.powerscale_synciq_peer_certificate.all_certificates.certificates : certificate if certificate.status == "expired"]
+    "expiring" = [for certificate in data.powerscale_synciq_peer_certificate.all_certificates.certificates : certificate if certificate.status == "expiring"]
   }
 }
 

@@ -38,7 +38,7 @@ var (
 	_ datasource.DataSourceWithConfigure = &SyncIQPeerCertificateDataSource{}
 )
 
-// NewPeerCertificateDataSource creates a new peer certificate data source.
+// NewSyncIQPeerCertificateDataSource creates a new peer certificate data source.
 func NewSyncIQPeerCertificateDataSource() datasource.DataSource {
 	return &SyncIQPeerCertificateDataSource{}
 }
@@ -50,7 +50,7 @@ type SyncIQPeerCertificateDataSource struct {
 
 // Metadata describes the data source arguments.
 func (d *SyncIQPeerCertificateDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_synciq_certificate"
+	resp.TypeName = req.ProviderTypeName + "_synciq_peer_certificate"
 }
 
 // Schema describes the data source arguments.
