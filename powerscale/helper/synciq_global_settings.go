@@ -63,7 +63,7 @@ func ManageSyncIQGlobalSettings(ctx context.Context, plan models.SyncIQGlobalSet
 	}
 
 	if toUpdate.SourceNetwork != nil {
-		if (toUpdate.SourceNetwork.Subnet == "" && toUpdate.SourceNetwork.Pool != "") || (toUpdate.SourceNetwork.Subnet != "" && toUpdate.SourceNetwork.Pool == "") {
+		if (toUpdate.SourceNetwork.Subnet == "" && toUpdate.SourceNetwork.Pool != "") || (toUpdate.SourceNetwork.Subnet != "" && toUpdate.SourceNetwork.Pool == "") || (toUpdate.SourceNetwork.Subnet == "" && toUpdate.SourceNetwork.Pool == "") {
 			diags.AddError(
 				"Valid value for both subnet and pool needs to be provided",
 				"Please either provide value for both subnet and pool or else keep both as empty",
