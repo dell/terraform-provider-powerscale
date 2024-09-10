@@ -240,14 +240,12 @@ func (r *SyncIQGlobalSettingsResource) Schema(ctx context.Context, req resource.
 				MarkdownDescription: "Restricts replication policies on the local cluster to running on the specified subnet and pool.",
 				Attributes: map[string]schema.Attribute{
 					"subnet": schema.StringAttribute{
-						Optional:            true,
-						Computed:            true,
+						Required:            true,
 						Description:         "The subnet to restrict replication policies to.",
 						MarkdownDescription: "The subnet to restrict replication policies to.",
 					},
 					"pool": schema.StringAttribute{
-						Optional:            true,
-						Computed:            true,
+						Required:            true,
 						Description:         "The pool to restrict replication policies to.",
 						MarkdownDescription: "The pool to restrict replication policies to.",
 					},
