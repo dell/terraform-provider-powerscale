@@ -166,18 +166,10 @@ data "powerscale_filesystem" "system" {
 	# Required parameter, path of the directory filesystem you would like to create a datasource out of 
 	directory_path = "/ifs/tfacc_file_system_test"
   }
-  
-  output "powerscale_filesystem_1" {
-	value = data.powerscale_filesystem.system
-  }
 `
 
 var FileSystemDataSourceDefaultConfig = `
 data "powerscale_filesystem" "system" {
 	# No Directory_path should use default
-  }
-  
-  output "powerscale_filesystem_1" {
-	value = data.powerscale_filesystem.system
   }
 `
