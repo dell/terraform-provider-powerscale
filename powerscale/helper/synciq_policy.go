@@ -122,6 +122,11 @@ func NewSynciqpolicyResourceModel(ctx context.Context, respR *powerscale.V14Sync
 	if source.FileMatchingPattern != nil && len(source.FileMatchingPattern.OrCriteria) == 0 {
 		source.FileMatchingPattern = nil
 	}
+
+	if source.SourceNetwork == nil {
+		source.SourceNetwork = &powerscale.V1SyncPolicySourceNetwork{}
+	}
+
 	err := CopyFieldsToNonNestedModel(ctx, source, &state)
 	if err != nil {
 		dgs.AddError(

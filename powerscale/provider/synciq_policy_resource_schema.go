@@ -191,9 +191,11 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 												},
 											},
 											"operator": schema.StringAttribute{
-												Optional:            true,
-												Description:         "How to compare the specified attribute of each file to the specified value.",
-												MarkdownDescription: "How to compare the specified attribute of each file to the specified value.",
+												Optional: true,
+												Description: "How to compare the specified attribute of each file to the specified value." +
+													"  Possible values are: `==`, `!=`, `>`, `>=`, `<`, `<=`, `!`.  Default is `==`.",
+												MarkdownDescription: "How to compare the specified attribute of each file to the specified value." +
+													"  Possible values are: `==`, `!=`, `>`, `>=`, `<`, `<=`, `!`.  Default is `==`.",
 												Validators: []validator.String{
 													stringvalidator.OneOf(
 														"==",
@@ -207,9 +209,11 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 												},
 											},
 											"type": schema.StringAttribute{
-												Optional:            true,
-												Description:         "The type of this criterion, that is, which file attribute to match on.",
-												MarkdownDescription: "The type of this criterion, that is, which file attribute to match on.",
+												Optional: true,
+												Description: "The type of this criterion, that is, which file attribute to match on." +
+													` Accepted values are "name", "path", "accessed_time", "birth_time", "changed_time", "size", "file_type", "posix_regex_name", "user_name", "user_id", "group_name", "group_id", "no_user", "no_group".`,
+												MarkdownDescription: "The type of this criterion, that is, which file attribute to match on." +
+													" Accepted values are , `name`, `path`, `accessed_time`, `birth_time`, `changed_time`, `size`, `file_type`, `posix_regex_name`, `user_name`, `user_id`, `group_name`, `group_id`, `no_user`, `no_group`.",
 												Validators: []validator.String{
 													stringvalidator.OneOf(
 														"name",
@@ -288,10 +292,12 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				},
 			},
 			"log_level": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				Description:         "Severity an event must reach before it is logged.",
-				MarkdownDescription: "Severity an event must reach before it is logged.",
+				Optional: true,
+				Computed: true,
+				Description: "Severity an event must reach before it is logged." +
+					" Accepted values are `fatal`, `error`, `notice`, `info`, `copy`, `debug`, `trace`.",
+				MarkdownDescription: "Severity an event must reach before it is logged." +
+					" Accepted values are `fatal`, `error`, `notice`, `info`, `copy`, `debug`, `trace`.",
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"fatal",

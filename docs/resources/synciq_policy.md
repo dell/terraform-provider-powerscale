@@ -121,7 +121,7 @@ resource "powerscale_synciq_policy" "policy" {
 - `ignore_recursive_quota` (Boolean) If set to true, SyncIQ will not check the recursive quota in target paths to aid in replication to target paths which contain no quota but target cluster has lots of quotas.
 - `job_delay` (Number) If --schedule is set to When-Source-Modified, the duration to wait after a modification is made before starting a job (default is 0 seconds).
 - `linked_service_policies` (List of String) A list of service replication policies that this data replication policy will be associated with.
-- `log_level` (String) Severity an event must reach before it is logged.
+- `log_level` (String) Severity an event must reach before it is logged. Accepted values are `fatal`, `error`, `notice`, `info`, `copy`, `debug`, `trace`.
 - `log_removed_files` (Boolean) If true, the system will log any files or directories that are deleted due to a sync.
 - `ocsp_address` (String) The address of the OCSP responder to which to connect.
 - `ocsp_issuer_certificate_id` (String) The ID of the certificate authority that issued the certificate whose revocation status is being checked.
@@ -180,8 +180,8 @@ Optional:
 - `attribute_exists` (Boolean) For "custom_attribute" type criteria.  The file will match as long as the attribute named by "field" exists.  Default is true.
 - `case_sensitive` (Boolean) If true, the value comparison will be case sensitive.  Default is true.
 - `field` (String) The name of the file attribute to match on (only required if this is a custom_attribute type criterion).  Default is an empty string "".
-- `operator` (String) How to compare the specified attribute of each file to the specified value.
-- `type` (String) The type of this criterion, that is, which file attribute to match on.
+- `operator` (String) How to compare the specified attribute of each file to the specified value.  Possible values are: `==`, `!=`, `>`, `>=`, `<`, `<=`, `!`.  Default is `==`.
+- `type` (String) The type of this criterion, that is, which file attribute to match on. Accepted values are , `name`, `path`, `accessed_time`, `birth_time`, `changed_time`, `size`, `file_type`, `posix_regex_name`, `user_name`, `user_id`, `group_name`, `group_id`, `no_user`, `no_group`.
 - `value` (String) The value to compare the specified attribute of each file to.
 - `whole_word` (Boolean) If true, the attribute must match the entire word.  Default is true.
 
