@@ -406,17 +406,33 @@ const (
 	// UpdateClusterSNMPSettingsErrorMsg specifies error details occurred while updating cluster SNMP settings.
 	UpdateClusterSNMPSettingsErrorMsg = "Could not update cluster SNMP settings "
 
-	// UpdateSyncIQGlobalSettingsErrorMsg specifies error details occurred while updating synciq global settings settings.
-	UpdateSyncIQGlobalSettingsErrorMsg = "Could not update SyncIQ global settings "
-
-	// ReadSyncIQGlobalSettingsErrorMsg specifies error details occurred while reading SyncIQ Global settings.
-	ReadSyncIQGlobalSettingsErrorMsg = "Could not read  synciq global settings "
 	// UpdateClusterIdentitySettingsErrorMsg specifies error details occurred while updating cluster identity settings.
 	UpdateClusterIdentitySettingsErrorMsg = "Could not update cluster identity settings "
 
 	// ReadClusterIdentitySettingsErrorMsg specifies error details occurred while reading cluster identity settings.
 	ReadClusterIdentitySettingsErrorMsg = "Could not read cluster identity settings "
 
-	// ListSynciqRulesMsg specifies error details occurred while listing snapshot schedules.
-	ListSynciqRulesMsg = "Could not list SyncIQ rules "
+	// UpdateSupportAssistStatusErrorMsg specifies error details occurred while updating support assist status.
+	UpdateSupportAssistStatusErrorMsg = "Could not update support assist status "
+
+	// ReadSupportAssistErrorMsg specifies error details occurred while reading support assist details.
+	ReadSupportAssistErrorMsg = "Could not read support assist details "
+
+	// ReadSupportAssistTermsErrorMsg specifies error details occurred while reading support assist terms details.
+	ReadSupportAssistTermsErrorMsg = "Could not read support assist term details "
+
+	// UpdateSupportAssistTermsErrorMsg specifies error details occurred while updating support assist terms status.
+	UpdateSupportAssistStatusTermsErrorMsg = "Could not update support assist terms status "
+
+	// UpdateSupportAssistTermsErrorMsg specifies error details occurred while updating support assist terms status.
+	UpdateSupportAssistSettingsErrorMsg = "Could not update support assist settings "
+
+	// CreateSupportAssistTaskErrorMsg specifies error details occurred while creating support assist task.
+	CreateSupportAssistTaskErrorMsg = "Could not create support assist task "
+
+	// GetSupportAssistTaskErrorMsg specifies error details occurred while creating support assist task.
+	GetSupportAssistTaskErrorMsg = "Could not get support assist task "
+
+	// GetClusterVersionErrorMsg specifies error details occurred while getting cluster version.
+	GetClusterVersionErrorMsg = "Could not get cluster version"
 )
