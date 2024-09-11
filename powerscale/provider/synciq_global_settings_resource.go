@@ -24,10 +24,12 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
@@ -228,24 +230,28 @@ func (r *SyncIQGlobalSettingsResource) Schema(ctx context.Context, req resource.
 				Description:         "The amount of SyncIQ bandwidth to reserve in kb/s for policies that did not specify a bandwidth reservation. This field takes precedence over bandwidth_reservation_reserve_percentage.",
 				MarkdownDescription: "The amount of SyncIQ bandwidth to reserve in kb/s for policies that did not specify a bandwidth reservation. This field takes precedence over bandwidth_reservation_reserve_percentage.",
 				Validators: []validator.Int64{
-					int64validator.AtLeast(1),
+					int64validator.AtLeast(0),
 				},
 				Optional: true,
 				Computed: true,
 			},
 			"source_network": schema.SingleNestedAttribute{
-				Optional:            true,
-				Computed:            true,
+				Optional: true,
+				Computed: true,
+				Validators: []validator.Object{objectvalidator.AlsoRequires(path.MatchRelative().AtName("subnet"),
+					path.MatchRelative().AtName("pool"))},
 				Description:         "Restricts replication policies on the local cluster to running on the specified subnet and pool.",
 				MarkdownDescription: "Restricts replication policies on the local cluster to running on the specified subnet and pool.",
 				Attributes: map[string]schema.Attribute{
 					"subnet": schema.StringAttribute{
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
 						Description:         "The subnet to restrict replication policies to.",
 						MarkdownDescription: "The subnet to restrict replication policies to.",
 					},
 					"pool": schema.StringAttribute{
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
 						Description:         "The pool to restrict replication policies to.",
 						MarkdownDescription: "The pool to restrict replication policies to.",
 					},
