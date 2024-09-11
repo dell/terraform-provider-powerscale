@@ -21,7 +21,9 @@ import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
@@ -453,15 +455,21 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				MarkdownDescription: "Restricts replication policies on the local cluster to running on the specified subnet and pool.",
 				Attributes: map[string]schema.Attribute{
 					"pool": schema.StringAttribute{
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
 						Description:         "The pool to restrict replication policies to.",
 						MarkdownDescription: "The pool to restrict replication policies to.",
 					},
 					"subnet": schema.StringAttribute{
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
 						Description:         "The subnet to restrict replication policies to.",
 						MarkdownDescription: "The subnet to restrict replication policies to.",
 					},
+				},
+				Validators: []validator.Object{
+					objectvalidator.AlsoRequires(path.MatchRelative().AtName("subnet")),
+					objectvalidator.AlsoRequires(path.MatchRelative().AtName("pool")),
 				},
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.UseStateForUnknown(),
