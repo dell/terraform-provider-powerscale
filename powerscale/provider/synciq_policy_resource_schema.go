@@ -290,6 +290,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				PlanModifiers: []planmodifier.List{
 					listplanmodifier.UseStateForUnknown(),
 				},
+				Validators: []validator.List{
+					listvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+				},
 			},
 			"log_level": schema.StringAttribute{
 				Optional: true,
@@ -429,6 +432,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Description:         "Directories that will be excluded from the sync.  Modifying this field will result in a full synchronization of all data.",
 				MarkdownDescription: "Directories that will be excluded from the sync.  Modifying this field will result in a full synchronization of all data.",
 				ElementType:         types.StringType,
+				Validators: []validator.List{
+					listvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+				},
 			},
 			"source_include_directories": schema.ListAttribute{
 				Optional:            true,
@@ -436,6 +442,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Description:         "Directories that will be included in the sync.  Modifying this field will result in a full synchronization of all data.",
 				MarkdownDescription: "Directories that will be included in the sync.  Modifying this field will result in a full synchronization of all data.",
 				ElementType:         types.StringType,
+				Validators: []validator.List{
+					listvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+				},
 			},
 			"source_network": schema.SingleNestedAttribute{
 				Optional:            true,

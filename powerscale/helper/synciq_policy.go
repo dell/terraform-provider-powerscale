@@ -143,6 +143,19 @@ func NewSynciqpolicyResourceModel(ctx context.Context, respR *powerscale.V14Sync
 		source.SourceNetwork = &powerscale.V1SyncPolicySourceNetwork{}
 	}
 
+	// set these lists from null to zero
+	if source.SourceIncludeDirectories == nil {
+		source.SourceIncludeDirectories = make([]string, 0)
+	}
+
+	if source.SourceExcludeDirectories == nil {
+		source.SourceExcludeDirectories = make([]string, 0)
+	}
+
+	if source.LinkedServicePolicies == nil {
+		source.LinkedServicePolicies = make([]string, 0)
+	}
+
 	err := CopyFieldsToNonNestedModel(ctx, source, &state)
 	if err != nil {
 		dgs.AddError(
