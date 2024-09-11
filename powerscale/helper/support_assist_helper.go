@@ -159,12 +159,12 @@ func ManageSupportAssist(ctx context.Context, client *client.Client, plan models
 	}
 
 	// Connect with support assist backend if access key and pin are provided
-	if !plan.Access_key.IsNull() && !plan.Pin.IsNull() {
+	if !plan.AccessKey.IsNull() && !plan.Pin.IsNull() {
 		taskSettings := powerscale.V16SupportassistTaskItem{
 			Source: "CONFIG",
 			TaskParams: &powerscale.V16SupportassistTaskItemTaskParams{
 				SubTask:   "provision",
-				AccessKey: plan.Access_key.ValueStringPointer(),
+				AccessKey: plan.AccessKey.ValueStringPointer(),
 				Pin:       plan.Pin.ValueStringPointer(),
 			},
 		}
@@ -352,8 +352,8 @@ func ReadSupportAssistDetails(ctx context.Context, client *client.Client, plan m
 		}
 	}
 
-	if !plan.Access_key.IsNull() && !plan.Pin.IsNull() {
-		state.Access_key = plan.Access_key
+	if !plan.AccessKey.IsNull() && !plan.Pin.IsNull() {
+		state.AccessKey = plan.AccessKey
 		state.Pin = plan.Pin
 	}
 	state.ID = types.StringValue("support_assist")
