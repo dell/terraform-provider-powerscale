@@ -419,4 +419,28 @@ const (
 
 	// ListSynciqRulesMsg specifies error details occurred while listing snapshot schedules.
 	ListSynciqRulesMsg = "Could not list SyncIQ rules "
+
+	// UpdateSupportAssistStatusErrorMsg specifies error details occurred while updating support assist status.
+	UpdateSupportAssistStatusErrorMsg = "Could not update support assist status "
+
+	// ReadSupportAssistErrorMsg specifies error details occurred while reading support assist details.
+	ReadSupportAssistErrorMsg = "Could not read support assist details "
+
+	// ReadSupportAssistTermsErrorMsg specifies error details occurred while reading support assist terms details.
+	ReadSupportAssistTermsErrorMsg = "Could not read support assist term details "
+
+	// UpdateSupportAssistStatusTermsErrorMsg specifies error details occurred while updating support assist terms status.
+	UpdateSupportAssistStatusTermsErrorMsg = "Could not update support assist terms status "
+
+	// UpdateSupportAssistSettingsErrorMsg specifies error details occurred while updating support assist terms status.
+	UpdateSupportAssistSettingsErrorMsg = "Could not update support assist settings "
+
+	// CreateSupportAssistTaskErrorMsg specifies error details occurred while creating support assist task.
+	CreateSupportAssistTaskErrorMsg = "Could not create support assist task "
+
+	// GetSupportAssistTaskErrorMsg specifies error details occurred while creating support assist task.
+	GetSupportAssistTaskErrorMsg = "Could not get support assist task "
+
+	// GetClusterVersionErrorMsg specifies error details occurred while getting cluster version.
+	GetClusterVersionErrorMsg = "Could not get cluster version"
 )
