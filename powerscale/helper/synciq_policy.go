@@ -119,6 +119,22 @@ func NewSynciqpolicyResourceModel(ctx context.Context, respR *powerscale.V14Sync
 	var dgs diag.Diagnostics
 	source := respR.Policies[0]
 
+	// rpo value of zero and null both mean no rpo alert
+	// so better convert null to zero
+	if source.RpoAlert == nil {
+		source.RpoAlert = new(int32)
+	}
+
+	// same with bandwidth reservation
+	if source.BandwidthReservation == nil {
+		source.BandwidthReservation = new(int32)
+	}
+
+	// same for skip lookup
+	if source.SkipLookup == nil {
+		source.SkipLookup = new(bool)
+	}
+
 	if source.FileMatchingPattern != nil && len(source.FileMatchingPattern.OrCriteria) == 0 {
 		source.FileMatchingPattern = nil
 	}
