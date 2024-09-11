@@ -23,7 +23,6 @@ type SyncIQGlobalSettingsModel struct {
 	PreferredRpoAlert                     types.Int64  `tfsdk:"preferred_rpo_alert"`
 	Service                               types.String `tfsdk:"service"`
 	ClusterCertificateID                  types.String `tfsdk:"cluster_certificate_id"`
-	MaxConcurrentJobs                     types.Int64  `tfsdk:"max_concurrent_jobs"`
 	OcspIssuerCertificateID               types.String `tfsdk:"ocsp_issuer_certificate_id"`
 	ReportMaxCount                        types.Int64  `tfsdk:"report_max_count"`
 	ForceInterface                        types.Bool   `tfsdk:"force_interface"`
@@ -36,7 +35,6 @@ type SyncIQGlobalSettingsModel struct {
 	BandwidthReservationReserveAbsolute   types.Int64  `tfsdk:"bandwidth_reservation_reserve_absolute"`
 	ServiceHistoryMaxCount                types.Int64  `tfsdk:"service_history_max_count"`
 	UseWorkersPerNode                     types.Bool   `tfsdk:"use_workers_per_node"`
-	TwChkptInterval                       types.Int64  `tfsdk:"tw_chkpt_interval"`
 	EncryptionRequired                    types.Bool   `tfsdk:"encryption_required"`
 	ServiceHistoryMaxAge                  types.Int64  `tfsdk:"service_history_max_age"`
 	ReportMaxAge                          types.Int64  `tfsdk:"report_max_age"`

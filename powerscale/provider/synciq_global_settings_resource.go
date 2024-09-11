@@ -23,9 +23,13 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
@@ -72,13 +76,14 @@ func (r *SyncIQGlobalSettingsResource) ConfigValidators(ctx context.Context) []r
 			path.MatchRoot("encryption_cipher_list"),
 			path.MatchRoot("encryption_required"),
 			path.MatchRoot("force_interface"),
-			path.MatchRoot("max_concurrent_jobs"),
 			path.MatchRoot("ocsp_address"),
 			path.MatchRoot("ocsp_issuer_certificate_id"),
 			path.MatchRoot("use_workers_per_node"),
 			path.MatchRoot("bandwidth_reservation_reserve_absolute"),
 			path.MatchRoot("source_network"),
-			path.MatchRoot("tw_chkpt_interval"),
+			path.MatchRoot("service_history_max_age"),
+			path.MatchRoot("service_history_max_count"),
+			path.MatchRoot("service"),
 		),
 	}
 }
@@ -109,6 +114,8 @@ func (r *SyncIQGlobalSettingsResource) Schema(ctx context.Context, req resource.
 				ElementType:         types.StringType,
 				Optional:            true,
 				Computed:            true,
+				Validators: []validator.Set{setvalidator.SizeAtLeast(1),
+					setvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1))},
 			},
 			"report_max_age": schema.Int64Attribute{
 				Description:         "ID of the Cluster Email Settings.",
@@ -183,12 +190,6 @@ func (r *SyncIQGlobalSettingsResource) Schema(ctx context.Context, req resource.
 				Optional:            true,
 				Computed:            true,
 			},
-			"max_concurrent_jobs": schema.Int64Attribute{
-				Description:         "The max concurrent jobs that SyncIQ can support. This number is based on the size of the current cluster and the current SyncIQ worker throttle rule.",
-				MarkdownDescription: "The max concurrent jobs that SyncIQ can support. This number is based on the size of the current cluster and the current SyncIQ worker throttle rule.",
-				Optional:            true,
-				Computed:            true,
-			},
 			"ocsp_address": schema.StringAttribute{
 				Description:         "The address of the OCSP responder to which to connect.",
 				MarkdownDescription: "The address of the OCSP responder to which to connect.",
@@ -228,12 +229,17 @@ func (r *SyncIQGlobalSettingsResource) Schema(ctx context.Context, req resource.
 			"bandwidth_reservation_reserve_absolute": schema.Int64Attribute{
 				Description:         "The amount of SyncIQ bandwidth to reserve in kb/s for policies that did not specify a bandwidth reservation. This field takes precedence over bandwidth_reservation_reserve_percentage.",
 				MarkdownDescription: "The amount of SyncIQ bandwidth to reserve in kb/s for policies that did not specify a bandwidth reservation. This field takes precedence over bandwidth_reservation_reserve_percentage.",
-				Optional:            true,
-				Computed:            true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+				},
+				Optional: true,
+				Computed: true,
 			},
 			"source_network": schema.SingleNestedAttribute{
-				Optional:            true,
-				Computed:            true,
+				Optional: true,
+				Computed: true,
+				Validators: []validator.Object{objectvalidator.AlsoRequires(path.MatchRelative().AtName("subnet"),
+					path.MatchRelative().AtName("pool"))},
 				Description:         "Restricts replication policies on the local cluster to running on the specified subnet and pool.",
 				MarkdownDescription: "Restricts replication policies on the local cluster to running on the specified subnet and pool.",
 				Attributes: map[string]schema.Attribute{
@@ -250,12 +256,6 @@ func (r *SyncIQGlobalSettingsResource) Schema(ctx context.Context, req resource.
 						MarkdownDescription: "The pool to restrict replication policies to.",
 					},
 				},
-			},
-			"tw_chkpt_interval": schema.Int64Attribute{
-				Optional:            true,
-				Computed:            true,
-				Description:         "The interval (in seconds) in which treewalk syncs are forced to checkpoint.",
-				MarkdownDescription: "The interval (in seconds) in which treewalk syncs are forced to checkpoint.",
 			},
 		},
 	}
