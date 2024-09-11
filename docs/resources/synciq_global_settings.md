@@ -98,7 +98,7 @@ resource "powerscale_synciq_global_settings" "example" {
 <a id="nestedatt--source_network"></a>
 ### Nested Schema for `source_network`
 
-Required:
+Optional:
 
 - `pool` (String) The pool to restrict replication policies to.
 - `subnet` (String) The subnet to restrict replication policies to.
