@@ -23,6 +23,18 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"errors"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"net/http/cookiejar"
+	"net/url"
+	"os"
+	"regexp"
+	"strings"
+	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/helper"
+	"testing"
+
 	"github.com/bytedance/mockey"
 	. "github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
@@ -30,16 +42,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
-	"io"
-	"log"
-	"net/http"
-	"net/http/cookiejar"
-	"os"
-	"regexp"
-	"strings"
-	"terraform-provider-powerscale/client"
-	"terraform-provider-powerscale/powerscale/helper"
-	"testing"
 )
 
 // testAccProtoV6ProviderFactories are used to instantiate a provider during
@@ -50,6 +52,11 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 	"powerscale": providerserver.NewProtocol6WithError(New("test")()),
 }
 
+var powerscaleUsername = ""
+var powerscalePassword = ""
+var powerscaleEndpoint = ""
+var powerScaleSSHIP = ""
+var powerscaleSSHPort = "22"
 var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
 var BasicAuthProviderErrorConfig = ""
@@ -62,18 +69,27 @@ func init() {
 		return
 	}
 
-	username := os.Getenv("POWERSCALE_USERNAME")
-	password := os.Getenv("POWERSCALE_PASSWORD")
-	endpoint := os.Getenv("POWERSCALE_ENDPOINT")
+	powerscaleUsername = os.Getenv("POWERSCALE_USERNAME")
+	powerscalePassword = os.Getenv("POWERSCALE_PASSWORD")
+	powerscaleEndpoint = os.Getenv("POWERSCALE_ENDPOINT")
 	authType := os.Getenv("POWERSCALE_AUTH_TYPE")
 	timeout := os.Getenv("POWERSCALE_TIMEOUT")
 	insecure := os.Getenv("POWERSCALE_INSECURE")
+	if pscaleSSHPort := os.Getenv("POWERSCALE_SSH_PORT"); len(pscaleSSHPort) > 0 {
+		powerscaleSSHPort = pscaleSSHPort
+	}
 	if len(timeout) == 0 {
 		timeout = "2000"
 	}
 	if len(authType) == 0 {
 		authType = "1"
 	}
+
+	u, err := url.Parse(powerscaleEndpoint)
+	if err != nil {
+		panic("Error parsing POWERSCALE_ENDPOINT: " + err.Error())
+	}
+	powerScaleSSHIP = u.Hostname()
 
 	ProviderConfig = fmt.Sprintf(`
 		provider "powerscale" {
@@ -84,7 +100,7 @@ func init() {
 			auth_type     = %s
 			timeout       = %s
 		}
-	`, username, password, endpoint, insecure, authType, timeout)
+	`, powerscaleUsername, powerscalePassword, powerscaleEndpoint, insecure, authType, timeout)
 
 	SessionAuthProviderConfig = fmt.Sprintf(`
 		provider "powerscale" {
@@ -95,7 +111,7 @@ func init() {
 			auth_type     = %d
 			timeout       = %s
 		}
-	`, username, password, endpoint, client.SessionAuthType, timeout)
+	`, powerscaleUsername, powerscalePassword, powerscaleEndpoint, client.SessionAuthType, timeout)
 
 	BasicAuthProviderErrorConfig = fmt.Sprintf(`
 		provider "powerscale" {
@@ -106,7 +122,7 @@ func init() {
 			auth_type     = %d
 			timeout       = %s
 		}
-	`, username, endpoint, client.BasicAuthType, timeout)
+	`, powerscaleUsername, powerscaleEndpoint, client.BasicAuthType, timeout)
 }
 
 func testAccPreCheck(t *testing.T) {
