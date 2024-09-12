@@ -29,6 +29,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -104,6 +105,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				MarkdownDescription: "User-assigned description of this sync policy.",
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(0, 255),
+				},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"disable_file_split": schema.BoolAttribute{
@@ -314,6 +318,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 						"trace",
 					),
 				},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"log_removed_files": schema.BoolAttribute{
 				Optional:            true,
@@ -349,7 +356,6 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 			},
 			"password": schema.StringAttribute{
 				Optional:            true,
-				Computed:            true,
 				Description:         "The password for the target cluster.  This field is not readable.",
 				MarkdownDescription: "The password for the target cluster.  This field is not readable.",
 				Validators: []validator.String{
@@ -394,6 +400,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(0, 255),
 				},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"service_policy": schema.BoolAttribute{
 				Optional:            true,
@@ -437,6 +446,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
 				},
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"source_include_directories": schema.ListAttribute{
 				Optional:            true,
@@ -446,6 +458,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				ElementType:         types.StringType,
 				Validators: []validator.List{
 					listvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+				},
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"source_network": schema.SingleNestedAttribute{
