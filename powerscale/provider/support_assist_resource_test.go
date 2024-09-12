@@ -59,7 +59,7 @@ func TestAccSupportAssistResource(t *testing.T) {
 					resource.TestCheckResourceAttr(supportAssistResourceName, "telemetry.telemetry_persist", "true"),
 					resource.TestCheckResourceAttr(supportAssistResourceName, "telemetry.telemetry_threads", "5"),
 					resource.TestCheckResourceAttr(supportAssistResourceName, "contact.primary.first_name", "terraform_first"),
-					resource.TestCheckResourceAttr(supportAssistResourceName, "contact.secondary.email", "xyz@gmail.com"),
+					resource.TestCheckResourceAttr(supportAssistResourceName, "contact.secondary.email", "test.assist@example.com"),
 					resource.TestCheckResourceAttr(supportAssistResourceName, "connections.mode", "gateway"),
 					resource.TestCheckResourceAttr(supportAssistResourceName, "connections.network_pools.0", "subnet0:pool0"),
 					resource.TestCheckResourceAttr(supportAssistResourceName, "connections.gateway_endpoints.0.host", "1.2.3.4"),
@@ -154,14 +154,14 @@ resource "powerscale_support_assist" "test" {
 	}
 	contact = {
 		primary = {
-		  	email      = "abc@gmail.com",
+		  	email      = "test.user@example.com",
 		  	first_name = "terraform_first",
 		  	language   = "No",
 		  	last_name  = "terraform_last",
 		  	phone      = "1234567890"
 		},
 		secondary = {
-		  	email 	   = "xyz@gmail.com",
+		  	email 	   = "test.assist@example.com",
 			first_name = "terraform_sec_first",
 			language   = "En",
 			last_name  = "terraform_sec_last",
@@ -200,14 +200,14 @@ resource "powerscale_support_assist" "test" {
 	}
 	contact = {
 		primary = {
-		  	email      = "abc@gmail.com",
+		  	email      = "test.user@example.com",
 		  	first_name = "terraform_first",
 		  	language   = "No",
 		  	last_name  = "terraform_last",
 		  	phone      = "1234567890"
 		},
 		secondary = {
-		  	email 	   = "xyz@gmail.com",
+		  	email 	   = "test.assist@example.com",
 			first_name = "terraform_sec_first",
 			language   = "En",
 			last_name  = "terraform_sec_last",

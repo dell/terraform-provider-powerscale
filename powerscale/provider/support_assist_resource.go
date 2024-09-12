@@ -145,7 +145,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's phone number.",
 							MarkdownDescription: "Contact's phone number.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile("([\\.\\-\\+\\/\\sxX]*([0-9]+|[\\(\\d+\\)])+)+"), "must be a valid phone number"),
+								stringvalidator.RegexMatches(regexp.MustCompile(`([\\.\\-\\+\\/\\sxX]*([0-9]+|[\\(\\d+\\)])+)+`), "must be a valid phone number"),
 								stringvalidator.LengthBetween(0, 40),
 							},
 						},
@@ -154,10 +154,6 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Computed:            true,
 							Description:         "Contact's email address.",
 							MarkdownDescription: "Contact's email address.",
-							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile("^[a-zA-Z0-9._%-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z0-9]+$"), "must be a valid email"),
-								stringvalidator.LengthBetween(0, 320),
-							},
 						},
 						"first_name": schema.StringAttribute{
 							Optional:            true,
@@ -165,7 +161,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's first name.",
 							MarkdownDescription: "Contact's first name.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile("[\\p{L}\\p{M}*\\-\\.\\' ]*"), "must be a valid first name"),
+								stringvalidator.RegexMatches(regexp.MustCompile(`[\\p{L}\\p{M}*\\-\\.\\' ]*`), "must be a valid first name"),
 								stringvalidator.LengthBetween(0, 50),
 							},
 						},
@@ -209,7 +205,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's last name.",
 							MarkdownDescription: "Contact's last name.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile("[\\p{L}\\p{M}*\\-\\.\\' ]*"), "must be a valid last name"),
+								stringvalidator.RegexMatches(regexp.MustCompile(`[\\p{L}\\p{M}*\\-\\.\\' ]*`), "must be a valid last name"),
 								stringvalidator.LengthBetween(0, 50),
 							},
 						},
@@ -225,7 +221,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's phone number.",
 							MarkdownDescription: "Contact's phone number.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile("([\\.\\-\\+\\/\\sxX]*([0-9]+|[\\(\\d+\\)])+)+"), "must be a valid phone number"),
+								stringvalidator.RegexMatches(regexp.MustCompile(`([\\.\\-\\+\\/\\sxX]*([0-9]+|[\\(\\d+\\)])+)+`), "must be a valid phone number"),
 								stringvalidator.LengthBetween(0, 40),
 							},
 						},
@@ -234,10 +230,6 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Computed:            true,
 							Description:         "Contact's email address.",
 							MarkdownDescription: "Contact's email address.",
-							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile("^[a-zA-Z0-9._%-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z0-9]+$"), "must be a valid email"),
-								stringvalidator.LengthBetween(0, 320),
-							},
 						},
 						"first_name": schema.StringAttribute{
 							Optional:            true,
@@ -245,7 +237,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's first name.",
 							MarkdownDescription: "Contact's first name.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile("[\\p{L}\\p{M}*\\-\\.\\' ]*"), "must be a valid first name"),
+								stringvalidator.RegexMatches(regexp.MustCompile(`[\\p{L}\\p{M}*\\-\\.\\' ]*`), "must be a valid first name"),
 								stringvalidator.LengthBetween(0, 50),
 							},
 						},
@@ -289,7 +281,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's last name.",
 							MarkdownDescription: "Contact's last name.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile("[\\p{L}\\p{M}*\\-\\.\\' ]*"), "must be a valid last name"),
+								stringvalidator.RegexMatches(regexp.MustCompile(`[\\p{L}\\p{M}*\\-\\.\\' ]*`), "must be a valid last name"),
 								stringvalidator.LengthBetween(0, 50),
 							},
 						},
@@ -396,10 +388,6 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 								Computed:            true,
 								Description:         "Gateway hostname or IPv4 address",
 								MarkdownDescription: "Gateway hostname or IPv4 address",
-								Validators: []validator.String{
-									stringvalidator.RegexMatches(regexp.MustCompile("(^$|^((([a-zA-Z0-9_][a-zA-Z0-9-]{0,61})?[a-zA-Z0-9])(\\.([a-zA-Z0-9_][a-zA-Z0-9-]{0,61})?[a-zA-Z0-9])*)$|^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])(\\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])){3}$)"), "must be a valid hostname or IPv4 address"),
-									stringvalidator.LengthBetween(0, 255),
-								},
 							},
 							"enabled": schema.BoolAttribute{
 								Optional:            true,
@@ -462,7 +450,7 @@ func (r *SupportAssistResource) Create(ctx context.Context, request resource.Cre
 	tflog.Info(ctx, "Done with creating support assist resource state")
 }
 
-// Read refreshes the Terraform state with the latest value
+// Read refreshes the Terraform state with the latest value.
 func (r *SupportAssistResource) Read(ctx context.Context, request resource.ReadRequest, response *resource.ReadResponse) {
 	tflog.Info(ctx, "Reading support assist resource state")
 	var state models.SupportAssistModel
@@ -480,7 +468,7 @@ func (r *SupportAssistResource) Read(ctx context.Context, request resource.ReadR
 
 }
 
-// Update updates the resource and sets the updated Terraform state
+// Update updates the resource and sets the updated Terraform state.
 func (r *SupportAssistResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
 	tflog.Info(ctx, "Updating support assist resource state")
 	var plan models.SupportAssistModel
@@ -503,7 +491,7 @@ func (r *SupportAssistResource) Update(ctx context.Context, request resource.Upd
 	tflog.Info(ctx, "Done with updating support assist resource state")
 }
 
-// Delete deletes the resource
+// Delete deletes the resource.
 func (r SupportAssistResource) Delete(ctx context.Context, request resource.DeleteRequest, response *resource.DeleteResponse) {
 	tflog.Info(ctx, "Deleting support assist resource state")
 	var state models.SupportAssistModel
@@ -519,7 +507,7 @@ func (r SupportAssistResource) Delete(ctx context.Context, request resource.Dele
 	tflog.Info(ctx, "Done with deleting support assist resource state")
 }
 
-// ImportState imports the Terraform state into the Terraform resource
+// ImportState imports the Terraform state into the Terraform resource.
 func (r SupportAssistResource) ImportState(ctx context.Context, request resource.ImportStateRequest, response *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), request, response)
 }
