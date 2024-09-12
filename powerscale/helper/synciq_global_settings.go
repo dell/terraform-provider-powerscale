@@ -111,6 +111,9 @@ func ManageSyncIQGlobalSettings(ctx context.Context, plan models.SyncIQGlobalSet
 		)
 		return diags
 	}
+	if globalSetting.Settings.BandwidthReservationReserveAbsolute == nil {
+		state.BandwidthReservationReserveAbsolute = types.Int64Value(0)
+	}
 	state.SourceNetwork = sourceNetwork
 	state.ReportEmail = emailObj
 
