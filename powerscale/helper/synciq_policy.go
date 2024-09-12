@@ -129,7 +129,7 @@ func FillNilPointerWithEmpty[T any](loc *T) *T {
 	return new(T)
 }
 
-// InitializeNilSlice initializes nill slices with empty list.
+// FillNilSlice initializes nill slices with empty list.
 func FillNilSlice[T any](in []T) []T {
 	if in != nil {
 		return in
