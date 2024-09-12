@@ -577,7 +577,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Description:         "The alias of the snapshot taken on the target cluster after the sync completes. Do not use the value `DEFAULT`.",
 				MarkdownDescription: "The alias of the snapshot taken on the target cluster after the sync completes. Do not use the value `DEFAULT`.",
 				Validators: []validator.String{
-					stringvalidator.LengthBetween(0, 255),
+					// even though openAPI spec allows empty string, actual API does not
+					// and its giving a non-user-friendly error
+					stringvalidator.LengthBetween(1, 255),
 				},
 			},
 			"target_snapshot_archive": schema.BoolAttribute{
