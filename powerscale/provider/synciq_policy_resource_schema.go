@@ -531,7 +531,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Description:         "The naming pattern for snapshot on the destination cluster when --sync-existing-snapshot is true",
 				MarkdownDescription: "The naming pattern for snapshot on the destination cluster when --sync-existing-snapshot is true",
 				Validators: []validator.String{
-					stringvalidator.LengthBetween(0, 255),
+					// even though openAPI spec allows empty string, actual API does not
+					// and its giving a non-user-friendly error
+					stringvalidator.LengthBetween(1, 255),
 				},
 			},
 			"target_certificate_id": schema.StringAttribute{
@@ -599,6 +601,11 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Computed:            true,
 				Description:         "The name pattern for snapshots taken on the target cluster after the sync completes. Do not use the value `@DEFAULT`.",
 				MarkdownDescription: "The name pattern for snapshots taken on the target cluster after the sync completes. Do not use the value `@DEFAULT`.",
+				Validators: []validator.String{
+					// even though openAPI spec allows empty string, actual API does not
+					// and its giving a non-user-friendly error
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"workers_per_node": schema.Int64Attribute{
 				Optional:            true,
