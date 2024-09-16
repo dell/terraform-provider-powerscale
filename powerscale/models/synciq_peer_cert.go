@@ -30,4 +30,11 @@ type SyncIQPeerCertificateResource struct {
 type PeerCertificateDataSourceModel struct {
 	ID           types.String `tfsdk:"id"`
 	Certificates types.List   `tfsdk:"certificates"`
+	// filter
+	PeerCertificateFilter *PeerCertificateFilterType `tfsdk:"filter"`
+}
+
+// PeerCertificateFilterType describes the filter data model.
+type PeerCertificateFilterType struct {
+	Name types.String `tfsdk:"name"`
 }

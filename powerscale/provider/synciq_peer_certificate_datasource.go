@@ -21,13 +21,18 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"slices"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	powerscale "dell/powerscale-go-client"
+
+	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -166,7 +171,24 @@ func (d *SyncIQPeerCertificateDataSource) Schema(ctx context.Context, req dataso
 				Description:         "ID of the SyncIQ Peer Certificate to be fetched. If not provided, all the certificates will be fetched.",
 				MarkdownDescription: "ID of the SyncIQ Peer Certificate to be fetched. If not provided, all the certificates will be fetched.",
 				Validators: []validator.String{
-					stringvalidator.LengthAtLeast(0),
+					stringvalidator.LengthAtLeast(1),
+				},
+			},
+		},
+
+		Blocks: map[string]schema.Block{
+			"filter": schema.SingleNestedBlock{
+				Description:         "Filters for fetching SyncIQ Peer Certificate.",
+				MarkdownDescription: "Filters for fetching SyncIQ Peer Certificate.",
+				Attributes: map[string]schema.Attribute{
+					"name": schema.StringAttribute{
+						Optional:            true,
+						Description:         "Name of the SyncIQ Peer Certificate to be fetched.",
+						MarkdownDescription: "Name of the SyncIQ Peer Certificate to be fetched.",
+					},
+				},
+				Validators: []validator.Object{
+					objectvalidator.ConflictsWith(path.MatchRoot("id")),
 				},
 			},
 		},
@@ -213,6 +235,18 @@ func (d *SyncIQPeerCertificateDataSource) Read(ctx context.Context, req datasour
 			resp.Diagnostics.AddError("Error reading syncIQ peer certificates", message)
 			return
 		}
+
+		// Apply the Name Filter if it is set
+		if data.PeerCertificateFilter != nil && data.PeerCertificateFilter.Name.ValueString() != "" {
+			nameFilter := data.PeerCertificateFilter.Name.ValueString()
+			fmt.Println("nameFilter:", nameFilter)
+			config.Certificates = slices.DeleteFunc(config.Certificates, func(i powerscale.V16CertificatesSyslogCertificate) bool { return i.Name != nameFilter })
+			if len(config.Certificates) == 0 {
+				resp.Diagnostics.AddError("Error reading syncIQ peer certificate", fmt.Sprintf("Could not find syncIQ peer certificate with name %s", nameFilter))
+				return
+			}
+		}
+
 		state, errD = d.getState(ctx, config)
 
 	} else {

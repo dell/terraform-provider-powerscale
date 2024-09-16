@@ -24,8 +24,6 @@ import (
 
 	"terraform-provider-powerscale/powerscale/helper"
 
-	"errors"
-
 	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
@@ -97,37 +95,6 @@ func TestAccSyncIQPeerCertificateResource(t *testing.T) {
 				}
 				`,
 			},
-			// import with ID
-			{
-				ResourceName: "powerscale_synciq_peer_certificate.test",
-				ImportState:  true,
-				ImportStateCheck: func(states []*terraform.InstanceState) error {
-					var err error
-					if states[0].Attributes["name"] != "tfaccTest" {
-						err = errors.Join(err, fmt.Errorf("expected name %s, got %s", "tfaccTest", states[0].Attributes["name"]))
-					}
-					if states[0].Attributes["description"] != "Tfacc Test" {
-						err = errors.Join(err, fmt.Errorf("expected description %s, got %s", "Tfacc Test", states[0].Attributes["description"]))
-					}
-					return err
-				},
-			},
-			// invalid import - invalid id
-			{
-				ResourceName:  "powerscale_synciq_peer_certificate.test",
-				ImportState:   true,
-				ImportStateId: "invalid",
-				ExpectError:   regexp.MustCompile(`.*Could not read syncIQ Peer Certificate.*`),
-			},
-			// invalid import - empty id
-			{
-				ResourceName: "powerscale_synciq_peer_certificate.test",
-				ImportState:  true,
-				ImportStateIdFunc: func(*terraform.State) (string, error) {
-					return "", nil
-				},
-				ExpectError: regexp.MustCompile(`.*Cannot import syncIQ peer certificate with empty ID.*`),
-			},
 			// import with name
 			{
 				ResourceName: "powerscale_synciq_peer_certificate.test",
@@ -138,20 +105,29 @@ func TestAccSyncIQPeerCertificateResource(t *testing.T) {
 					}
 					return nil
 				},
-				ImportStateId: "name:tfaccTest",
+				ImportStateId: "tfaccTest",
 			},
 			// invalid import - invalid name
 			{
 				ResourceName:  "powerscale_synciq_peer_certificate.test",
 				ImportState:   true,
-				ImportStateId: "name:invalid",
-				ExpectError:   regexp.MustCompile(`.*Could not find syncIQ peer certificate with name.*`),
+				ImportStateId: "invalid",
+				ExpectError:   regexp.MustCompile(`.*Could not find syncIQ peer certificate with name invalid.*`),
+			},
+			// invalid import - empty name
+			{
+				ResourceName: "powerscale_synciq_peer_certificate.test",
+				ImportState:  true,
+				ImportStateIdFunc: func(*terraform.State) (string, error) {
+					return "", nil
+				},
+				ExpectError: regexp.MustCompile(`.*Cannot import syncIQ peer certificate with empty name.*`),
 			},
 			// mock import with name error
 			{
 				ResourceName:  "powerscale_synciq_peer_certificate.test",
 				ImportState:   true,
-				ImportStateId: "name:tfaccTest",
+				ImportStateId: "tfaccTest",
 				PreConfig: func() {
 					if FunctionMocker != nil {
 						FunctionMocker.Release()
@@ -159,13 +135,6 @@ func TestAccSyncIQPeerCertificateResource(t *testing.T) {
 					FunctionMocker = mockey.Mock(helper.ListPeerCerts).Return(nil, fmt.Errorf("mock import with name error")).Build()
 				},
 				ExpectError: regexp.MustCompile(`.*mock import with name error.*`),
-			},
-			// invalid import - empty name
-			{
-				ResourceName:  "powerscale_synciq_peer_certificate.test",
-				ImportState:   true,
-				ImportStateId: "name:",
-				ExpectError:   regexp.MustCompile(`.*Cannot import syncIQ peer certificate with empty name.*`),
 			},
 			// mock delete error
 			{

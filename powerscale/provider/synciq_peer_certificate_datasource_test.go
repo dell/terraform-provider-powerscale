@@ -17,6 +17,7 @@ limitations under the License.
 package provider
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -38,7 +39,29 @@ func TestAccSyncIQPeerCertificateDatasource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-
+			// empty id not allowed
+			{
+				Config: ProviderConfig + `
+				data "powerscale_synciq_peer_certificate" "test" {
+					id = ""
+				}
+				`,
+				PlanOnly:    true,
+				ExpectError: regexp.MustCompile(`.*Attribute id string length must be at least 1, got: 0.*`),
+			},
+			// name filter conflicts with id
+			{
+				Config: ProviderConfig + `
+				data "powerscale_synciq_peer_certificate" "test" {
+					id = "doesntmatter"
+					filter {
+						name = "doesntmatter"
+					}
+				}
+				`,
+				PlanOnly:    true,
+				ExpectError: regexp.MustCompile(`.*Attribute "id" cannot be specified when "filter" is specified.*`),
+			},
 			// read invalid ID
 			{
 				Config: ProviderConfig + `
@@ -84,6 +107,65 @@ func TestAccSyncIQPeerCertificateDatasource(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.powerscale_synciq_peer_certificate.test", "certificates.#"),
 				),
 			},
+			// read by name
+			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+				},
+				Config: ProviderConfig + certRs + `
+				data "powerscale_synciq_peer_certificate" "test" {
+					filter {
+						name = "tfaccTest"
+					}
+				}
+				`,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("data.powerscale_synciq_peer_certificate.test", "certificates.0.name", "tfaccTest"),
+					resource.TestCheckResourceAttr("data.powerscale_synciq_peer_certificate.test", "certificates.0.description", "Tfacc Test"),
+				),
+			},
+			// read by name invalid
+			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+				},
+				Config: ProviderConfig + certRs + `
+				data "powerscale_synciq_peer_certificate" "test" {
+					filter {
+						name = "invalid"
+					}
+				}
+				`,
+				ExpectError: regexp.MustCompile(`.*Could not find syncIQ peer certificate with name invalid.*`),
+			},
+		},
+	})
+}
+
+func init() {
+	resource.AddTestSweepers("synciq_peer_certificate", &resource.Sweeper{
+		Name: "synciq_peer_certificate",
+		F: func(string) error {
+			name := "tfaccTest"
+			client, err := getClientForRegion("dontCare")
+			if err != nil {
+				return fmt.Errorf("Error getting client: %w", err)
+			}
+
+			config, err := helper.ListPeerCerts(context.Background(), client)
+			if err != nil {
+				return fmt.Errorf("Error listing syncIQ peer certificates: %w", err)
+			}
+			id := ""
+			for _, cert := range config.Certificates {
+				if cert.Name == name {
+					id = cert.Id
+				}
+			}
+			if id == "" {
+				return nil
+			}
+			return helper.DeletePeerCert(context.Background(), client, id)
 		},
 	})
 }
