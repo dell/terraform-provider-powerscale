@@ -146,7 +146,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							MarkdownDescription: "Contact's phone number.",
 							Validators: []validator.String{
 								stringvalidator.RegexMatches(regexp.MustCompile(`([\\.\\-\\+\\/\\sxX]*([0-9]+|[\\(\\d+\\)])+)+`), "must be a valid phone number"),
-								stringvalidator.LengthBetween(0, 40),
+								stringvalidator.LengthBetween(10, 13),
 							},
 						},
 						"email": schema.StringAttribute{
@@ -154,6 +154,10 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Computed:            true,
 							Description:         "Contact's email address.",
 							MarkdownDescription: "Contact's email address.",
+							Validators: []validator.String{
+								stringvalidator.LengthAtLeast(1),
+								stringvalidator.RegexMatches(regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`), "must be a valid email"),
+							},
 						},
 						"first_name": schema.StringAttribute{
 							Optional:            true,
@@ -196,7 +200,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 									"zh-CN",
 									"zh-TW",
 								),
-								stringvalidator.LengthBetween(0, 255),
+								stringvalidator.LengthBetween(2, 5),
 							},
 						},
 						"last_name": schema.StringAttribute{
@@ -222,7 +226,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							MarkdownDescription: "Contact's phone number.",
 							Validators: []validator.String{
 								stringvalidator.RegexMatches(regexp.MustCompile(`([\\.\\-\\+\\/\\sxX]*([0-9]+|[\\(\\d+\\)])+)+`), "must be a valid phone number"),
-								stringvalidator.LengthBetween(0, 40),
+								stringvalidator.LengthBetween(10, 13),
 							},
 						},
 						"email": schema.StringAttribute{
@@ -230,6 +234,10 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Computed:            true,
 							Description:         "Contact's email address.",
 							MarkdownDescription: "Contact's email address.",
+							Validators: []validator.String{
+								stringvalidator.LengthAtLeast(1),
+								stringvalidator.RegexMatches(regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`), "must be a valid email"),
+							},
 						},
 						"first_name": schema.StringAttribute{
 							Optional:            true,
@@ -272,7 +280,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 									"zh-CN",
 									"zh-TW",
 								),
-								stringvalidator.LengthBetween(0, 255),
+								stringvalidator.LengthBetween(2, 5),
 							},
 						},
 						"last_name": schema.StringAttribute{
