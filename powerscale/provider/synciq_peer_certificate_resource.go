@@ -21,7 +21,6 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"errors"
 	"fmt"
-	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
@@ -247,36 +246,25 @@ func (r *SyncIQPeerCertificateResource) Delete(ctx context.Context, req resource
 
 // ImportState imports the resource.
 func (r *SyncIQPeerCertificateResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	if req.ID == "" {
-		resp.Diagnostics.AddError("Error importing syncIQ peer certificate", "Cannot import syncIQ peer certificate with empty ID")
+	name := req.ID
+	if name == "" {
+		resp.Diagnostics.AddError("Cannot import syncIQ peer certificate with empty name", "SyncIQ peer certificates do not have empty names.")
 		return
 	}
-
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("path"), "/dummy")...)
-
-	// if name is provided, use it
-	if name, ok := strings.CutPrefix(req.ID, "name:"); ok {
-		if name == "" {
-			resp.Diagnostics.AddError("Error importing syncIQ peer certificate", "Cannot import syncIQ peer certificate with empty name, please use ID.")
-			return
-		}
-		config, err := helper.ListPeerCerts(ctx, r.client)
-		if err != nil {
-			message := helper.GetErrorString(err, "")
-			resp.Diagnostics.AddError("Error listing syncIQ peer certificates", message)
-			return
-		}
-		for _, cert := range config.Certificates {
-			if cert.Name == name {
-				resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), cert.Id)...)
-				resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), cert.Name)...)
-				resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("description"), cert.Description)...)
-				return
-			}
-		}
-		resp.Diagnostics.AddError("Could not find syncIQ peer certificate", fmt.Sprintf("Could not find syncIQ peer certificate with name %s", name))
+	config, err := helper.ListPeerCerts(ctx, r.client)
+	if err != nil {
+		message := helper.GetErrorString(err, "")
+		resp.Diagnostics.AddError("Error listing syncIQ peer certificates", message)
+		return
 	}
-
-	// else use the ID
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
+	for _, cert := range config.Certificates {
+		if cert.Name == name {
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), cert.Id)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), cert.Name)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("description"), cert.Description)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("path"), "/dummy")...)
+			return
+		}
+	}
+	resp.Diagnostics.AddError("Could not find syncIQ peer certificate", fmt.Sprintf("Could not find syncIQ peer certificate with name %s", name))
 }
