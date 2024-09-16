@@ -93,7 +93,7 @@ func GetClusterVersion(ctx context.Context, client *client.Client) (string, erro
 	if err != nil {
 		return "", err
 	}
-	return clusterVersion, err
+	return clusterVersion.Nodes[0].Release, err
 }
 
 // ManageSupportAssist manages the support assist settings
