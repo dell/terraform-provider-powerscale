@@ -105,6 +105,7 @@ func (s *synciqPolicyResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	state, dgs := s.GetStateByID(ctx, id)
+	state.Password = plan.Password
 	resp.Diagnostics.Append(dgs...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -142,6 +143,7 @@ func (s *synciqPolicyResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	state, dgs := s.GetStateByID(ctx, oldState.ID.ValueString())
+	state.Password = oldState.Password
 	resp.Diagnostics.Append(dgs...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -195,6 +197,7 @@ func (s *synciqPolicyResource) Update(ctx context.Context, req resource.UpdateRe
 	}
 
 	state, dgs := s.GetStateByID(ctx, OldState.ID.ValueString())
+	state.Password = plan.Password
 	resp.Diagnostics.Append(dgs...)
 	if resp.Diagnostics.HasError() {
 		return

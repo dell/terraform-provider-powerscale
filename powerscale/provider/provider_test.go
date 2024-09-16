@@ -57,6 +57,7 @@ var powerscalePassword = ""
 var powerscaleEndpoint = ""
 var powerScaleSSHIP = ""
 var powerscaleSSHPort = "22"
+var powerscaleInsecure = false
 var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
 var BasicAuthProviderErrorConfig = ""
@@ -75,6 +76,7 @@ func init() {
 	authType := os.Getenv("POWERSCALE_AUTH_TYPE")
 	timeout := os.Getenv("POWERSCALE_TIMEOUT")
 	insecure := os.Getenv("POWERSCALE_INSECURE")
+	powerscaleInsecure = strings.ToLower(insecure) == "true"
 	if pscaleSSHPort := os.Getenv("POWERSCALE_SSH_PORT"); len(pscaleSSHPort) > 0 {
 		powerscaleSSHPort = pscaleSSHPort
 	}
@@ -123,6 +125,33 @@ func init() {
 			timeout       = %s
 		}
 	`, powerscaleUsername, powerscaleEndpoint, client.BasicAuthType, timeout)
+}
+
+var sweepClient *client.Client
+
+// getClientForRegion returns a common provider client configured for the specified region
+func getClientForRegion(_ string) (*client.Client, error) {
+	if sweepClient != nil {
+		return sweepClient, nil
+	}
+	client, err := client.NewClient(
+		powerscaleEndpoint,
+		powerscaleInsecure,
+		powerscaleUsername,
+		powerscalePassword,
+		client.BasicAuthType,
+		2000,
+	)
+	if err != nil {
+		return nil, err
+	}
+	sweepClient = client
+	return sweepClient, nil
+}
+
+// this is required for initializing sweepers
+func TestMain(m *testing.M) {
+	resource.TestMain(m)
 }
 
 func testAccPreCheck(t *testing.T) {
