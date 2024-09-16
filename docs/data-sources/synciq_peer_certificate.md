@@ -57,6 +57,13 @@ data "powerscale_synciq_peer_certificate" "one_certificate" {
   id = "g23j9a1f83h12n5j4"
 }
 
+# Returns the PowerScale SyncIQ Certificate with given name
+data "powerscale_synciq_peer_certificate" "one_certificate_by_name" {
+  filter {
+    name = "tfaccTest"
+  }
+}
+
 # Output value of above block by executing 'terraform output' command.
 # The user can use the fetched information by the variable data.powerscale_synciq_peer_certificate.all_certificates.certificates
 output "powerscale_synciq_all_certificates" {
@@ -68,20 +75,9 @@ output "certificateByID" {
   value = data.powerscale_synciq_peer_certificate.one_certificate.certificates[0]
 }
 
-# Get syncIQ certificate by name
-# Step 1: We shall use the datasource to get all the certificates as shown above
-# Step 2: We index them by name
-locals {
-  certificatesByName = { for certificate in data.powerscale_synciq_peer_certificate.all_certificates.certificates : certificate.name => certificate }
-}
-
-# Step 3: The user can use the fetched certificate by name by the variable local.certificatesByName["<name>"]
-output "certificatesByName" {
-  value = {
-    "cert1" = local.certificatesByName["peer_certificate_01"]
-    "cert2" = local.certificatesByName["peer_certificate_02"]
-    "cert3" = local.certificatesByName["peer_certificate_03"]
-  }
+# The user can use the fetched certificate by name by the variable data.powerscale_synciq_peer_certificate.one_certificate_by_name.certificates[0]
+output "certificateByName" {
+  value = data.powerscale_synciq_peer_certificate.one_certificate_by_name.certificates[0]
 }
 
 # Get syncIQ certificate by status
@@ -104,11 +100,20 @@ output "certificatesByStatus" {
 
 ### Optional
 
+- `filter` (Block, Optional) Filters for fetching SyncIQ Peer Certificate. (see [below for nested schema](#nestedblock--filter))
 - `id` (String) ID of the SyncIQ Peer Certificate to be fetched. If not provided, all the certificates will be fetched.
 
 ### Read-Only
 
 - `certificates` (Attributes List) List of certificates fetched. (see [below for nested schema](#nestedatt--certificates))
+
+<a id="nestedblock--filter"></a>
+### Nested Schema for `filter`
+
+Optional:
+
+- `name` (String) Name of the SyncIQ Peer Certificate to be fetched.
+
 
 <a id="nestedatt--certificates"></a>
 ### Nested Schema for `certificates`
