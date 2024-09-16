@@ -87,9 +87,12 @@ func GetSupportAssistv17Task(ctx context.Context, client *client.Client, id stri
 	return response, err
 }
 
-// GetClusterVersion retrieves the cluster version
-func GetClusterVersion(ctx context.Context, client *client.Client) (*powerscale.V3ClusterVersion, error) {
+// GetClusterVersion retrieves the cluster version.
+func GetClusterVersion(ctx context.Context, client *client.Client) (string, error) {
 	clusterVersion, _, err := client.PscaleOpenAPIClient.ClusterApi.GetClusterv3ClusterVersion(ctx).Execute()
+	if err != nil {
+		return "", err
+	}
 	return clusterVersion, err
 }
 
@@ -186,7 +189,7 @@ func ManageSupportAssist(ctx context.Context, client *client.Client, plan models
 			response   *powerscale.V16SupportassistTaskId
 		)
 
-		if clusterVersion.Nodes[0].Release == "9.5.0.0" {
+		if clusterVersion == "9.5.0.0" {
 			taskCreate, err = CreateSupportAssistv16Task(ctx, client, taskSettings)
 		} else {
 			taskCreate, err = CreateSupportAssistv17Task(ctx, client, taskSettings)
@@ -203,7 +206,7 @@ func ManageSupportAssist(ctx context.Context, client *client.Client, plan models
 			return state, resp
 		}
 
-		if clusterVersion.Nodes[0].Release == "9.5.0.0" {
+		if clusterVersion == "9.5.0.0" {
 			response, err = GetSupportAssistv16Task(ctx, client, taskCreate.TaskId)
 		} else {
 			response, err = GetSupportAssistv17Task(ctx, client, taskCreate.TaskId)
@@ -223,7 +226,7 @@ func ManageSupportAssist(ctx context.Context, client *client.Client, plan models
 		jobState := "COMPLETED"
 		for *response.Tasks.State != jobState {
 			time.Sleep(time.Second)
-			if clusterVersion.Nodes[0].Release == "9.5.0.0" {
+			if clusterVersion == "9.5.0.0" {
 				response, err = GetSupportAssistv16Task(ctx, client, taskCreate.TaskId)
 			} else {
 				response, err = GetSupportAssistv17Task(ctx, client, taskCreate.TaskId)

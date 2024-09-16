@@ -23,6 +23,8 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
+	powerscale "dell/powerscale-go-client"
+
 	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
@@ -125,6 +127,20 @@ func TestAccSupportAssistResourceMockError(t *testing.T) {
 				Config:      ProviderConfig + supportAssistResourceConfigUpdate1,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					task := &powerscale.CreateTaskResponse{
+						TaskId: "1234",
+					}
+					createMocker = mockey.Mock(helper.GetClusterVersion).Return("9.8.0.0", nil).Build()
+					FunctionMocker = mockey.Mock(helper.CreateSupportAssistv17Task).Return(task, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + supportAssistResourceConfigUpdate2,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
 		},
 	})
 }
@@ -187,11 +203,59 @@ resource "powerscale_support_assist" "test" {
 
 var supportAssistResourceConfigUpdate1 = `
 resource "powerscale_support_assist" "test" {
+	supportassist_enabled   = true
+  	enable_download         = false
+  	automatic_case_creation = true
+  	enable_remote_support   = true
+  	accepted_terms                = false
+	telemetry = {
+		offline_collection_period = 7800,
+		telemetry_enabled         = false,
+		telemetry_persist		  = true,
+		telemetry_threads         = 5
+	}
+	contact = {
+		primary = {
+		  	email      = "test.user@example.com",
+		  	first_name = "terraform_first",
+		  	language   = "No",
+		  	last_name  = "terraform_last",
+		  	phone      = "1234567890"
+		},
+		secondary = {
+		  	email 	   = "test.assist@example.com",
+			first_name = "terraform_sec_first",
+			language   = "En",
+			last_name  = "terraform_sec_last",
+			phone      = "1234567980"
+		}
+	}
+	connections = {
+		mode = "gateway"
+		gateway_endpoints = [
+		  	{
+		  		enabled = false,
+		  		host = "1.2.3.4",
+		  		port = 9443,
+		  		priority = 1,
+		  		use_proxy = true,
+		  		validate_ssl = true
+			},
+		],
+		network_pools = ["subnet0:pool0"]
+	}
+}
+`
+
+var supportAssistResourceConfigUpdate2 = `
+resource "powerscale_support_assist" "test" {
 	supportassist_enabled   = false
   	enable_download         = false
   	automatic_case_creation = true
   	enable_remote_support   = true
   	accepted_terms                = false
+	access_key = "1ZGH76B1"
+	pin = "4567"
 	telemetry = {
 		offline_collection_period = 7800,
 		telemetry_enabled         = false,
