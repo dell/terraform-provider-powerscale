@@ -97,20 +97,24 @@ type SyncIQPolicyDataSourceResponse interface {
 // NewSyncIQPolicyDataSource creates a new SyncIQPolicyDataSource from datasource responses.
 func NewSyncIQPolicyDataSource[V SyncIQPolicyDataSourceResponse](ctx context.Context, policies []V) (*models.SyncIQPolicyDataSource, error) {
 	var err error
-	ret := models.SyncIQPolicyDataSource{
-		ID:       types.StringValue("dummy"),
-		Policies: make([]models.V14SyncPolicyExtendedModel, len(policies)),
-	}
+	dsPolicies := make([]models.V14SyncPolicyExtendedModel, len(policies))
 	for i := range policies {
 		var item models.V14SyncPolicyExtendedModel
 		ierr := CopyFields(ctx, &policies[i], &item)
 		err = errors.Join(err, ierr)
-		ret.Policies[i] = item
+		dsPolicies[i] = item
+	}
+	if err != nil {
+		return nil, err
+	}
+	ret := models.SyncIQPolicyDataSource{
+		ID:       types.StringValue("dummy"),
+		Policies: dsPolicies,
 	}
 	if len(ret.Policies) == 1 {
 		ret.ID = ret.Policies[0].ID
 	}
-	return &ret, err
+	return &ret, nil
 }
 
 // FillNilPointerWithDefault fills nill pointers with default values.

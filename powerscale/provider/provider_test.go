@@ -89,7 +89,8 @@ func init() {
 
 	u, err := url.Parse(powerscaleEndpoint)
 	if err != nil {
-		panic("Error parsing POWERSCALE_ENDPOINT: " + err.Error())
+		log.Fatal("Error parsing POWERSCALE_ENDPOINT:", err.Error())
+		return
 	}
 	powerScaleSSHIP = u.Hostname()
 
