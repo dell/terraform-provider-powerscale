@@ -23,7 +23,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// SupportAssistModel represents the model for support assist resource
+// SupportAssistModel represents the model for support assist resource.
 type SupportAssistModel struct {
 	ID                    types.String `tfsdk:"id"`
 	EnableDownload        types.Bool   `tfsdk:"enable_download"`
@@ -38,7 +38,7 @@ type SupportAssistModel struct {
 	Pin                   types.String `tfsdk:"pin"`
 }
 
-// V16SupportassistSettingsCustomised represents the customized settings for the support assist
+// V16SupportassistSettingsCustomised represents the customized settings for the support assist.
 type V16SupportassistSettingsCustomised struct {
 	AutomaticCaseCreation *bool                                         `json:"automatic_case_creation,omitempty"`
 	Connections           *V16SupportassistSettingsConnection           `json:"connections,omitempty"`
@@ -50,7 +50,7 @@ type V16SupportassistSettingsCustomised struct {
 	Telemetry             *powerscale.V16SupportassistSettingsTelemetry `json:"telemetry,omitempty"`
 }
 
-// UpdateSupportassistSettings represents the settings for the support assist
+// UpdateSupportassistSettings represents the settings for the support assist.
 type UpdateSupportassistSettings struct {
 	AutomaticCaseCreation *bool                                                  `json:"automatic_case_creation,omitempty"`
 	Connection            *powerscale.V16SupportassistSettingsConnectionExtended `json:"connections,omitempty"`
@@ -61,21 +61,21 @@ type UpdateSupportassistSettings struct {
 	Telemetry             *powerscale.V16SupportassistSettingsTelemetryExtended  `json:"telemetry,omitempty"`
 }
 
-// V16SupportassistSettingsConnection represents the settings for the support assist connection
+// V16SupportassistSettingsConnection represents the settings for the support assist connection.
 type V16SupportassistSettingsConnection struct {
 	GatewayEndpoints []powerscale.V16SupportassistSettingsConnectionGatewayEndpoint `json:"gateway_endpoints,omitempty"`
 	Mode             *string                                                        `json:"mode,omitempty"`
 	NetworkPools     []string                                                       `json:"network_pools,omitempty"`
 }
 
-// Connection represents the settings for the support assist connection
+// Connection represents the settings for the support assist connection.
 type Connection struct {
 	Mode             types.String `tfsdk:"mode"`
 	NetworkPools     types.List   `tfsdk:"network_pools"`
 	GatewayEndpoints types.List   `tfsdk:"gateway_endpoints"`
 }
 
-// GatewayEndpoints represents the settings for the support assist gateway
+// GatewayEndpoints represents the settings for the support assist gateway.
 type GatewayEndpoints struct {
 	Port        types.Int64  `tfsdk:"port"`
 	ValidateSsl types.Bool   `tfsdk:"validate_ssl"`

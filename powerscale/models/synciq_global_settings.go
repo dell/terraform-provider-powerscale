@@ -18,7 +18,7 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// SyncIQGlobalSettingsModel struct for SyncIQ global settings
+// SyncIQGlobalSettingsModel struct for SyncIQ global settings.
 type SyncIQGlobalSettingsModel struct {
 	PreferredRpoAlert                     types.Int64  `tfsdk:"preferred_rpo_alert"`
 	Service                               types.String `tfsdk:"service"`
@@ -42,7 +42,7 @@ type SyncIQGlobalSettingsModel struct {
 	ReportEmail                           types.Set    `tfsdk:"report_email"`
 }
 
-// SyncIQGlobalSettingsDataSourceModel struct for SyncIQ global settings datasource
+// SyncIQGlobalSettingsDataSourceModel struct for SyncIQ global settings datasource.
 type SyncIQGlobalSettingsDataSourceModel struct {
 	PreferredRpoAlert                     types.Int64  `tfsdk:"preferred_rpo_alert"`
 	Service                               types.String `tfsdk:"service"`

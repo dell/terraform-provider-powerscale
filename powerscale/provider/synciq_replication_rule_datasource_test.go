@@ -85,6 +85,14 @@ func TestAccSynciqRuleDatasourceID(t *testing.T) {
 			{
 				Config: ProviderConfig + `
 				data "powerscale_synciq_rule" "test" {
+					id = ""
+				}
+				`,
+				ExpectError: regexp.MustCompile(`.*string length must be at least 1*`),
+			},
+			{
+				Config: ProviderConfig + `
+				data "powerscale_synciq_rule" "test" {
 					id = "invalid"
 				}
 				`,
