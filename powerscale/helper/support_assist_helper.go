@@ -33,55 +33,55 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
-// GetSupportAssistTerms retrieves the support assist terms
+// GetSupportAssistTerms retrieves the support assist terms.
 func GetSupportAssistTerms(ctx context.Context, client *client.Client) (*powerscale.V16SupportassistTerms, error) {
 	terms, _, err := client.PscaleOpenAPIClient.SupportassistApi.GetSupportassistv16SupportassistTerms(ctx).Execute()
 	return terms, err
 }
 
-// UpdateSupportAssistTerms updates the support assist terms
+// UpdateSupportAssistTerms updates the support assist terms.
 func UpdateSupportAssistTerms(ctx context.Context, client *client.Client, V16SupportAssistTermsExtended powerscale.V16SupportassistTermsExtended) error {
 	_, err := client.PscaleOpenAPIClient.SupportassistApi.UpdateSupportassistv16SupportassistTerms(ctx).V16SupportassistTerms(V16SupportAssistTermsExtended).Execute()
 	return err
 }
 
-// GetSupportAssist retrieves the support assist settings
+// GetSupportAssist retrieves the support assist settings.
 func GetSupportAssist(ctx context.Context, client *client.Client) (*powerscale.V16SupportassistSettings, error) {
 	supportAssistSettings, _, err := client.PscaleOpenAPIClient.SupportassistApi.GetSupportassistv16SupportassistSettings(ctx).Execute()
 	return supportAssistSettings, err
 }
 
-// UpdateSupportAssistStatus updates the status of the support assist
+// UpdateSupportAssistStatus updates the status of the support assist.
 func UpdateSupportAssistStatus(ctx context.Context, client *client.Client, V16SupportAssistStatusExtended powerscale.V16SupportassistStatusExtended) error {
 	_, err := client.PscaleOpenAPIClient.SupportassistApi.UpdateSupportassistv16SupportassistStatus(ctx).V16SupportassistStatus(V16SupportAssistStatusExtended).Execute()
 	return err
 }
 
-// UpdateSupportAssistSettings updates the support assist settings
+// UpdateSupportAssistSettings updates the support assist settings.
 func UpdateSupportAssistSettings(ctx context.Context, client *client.Client, V16SupportAssistSettingsExtended powerscale.V16SupportassistSettingsExtended) error {
 	_, err := client.PscaleOpenAPIClient.SupportassistApi.UpdateSupportassistv16SupportassistSettings(ctx).V16SupportassistSettings(V16SupportAssistSettingsExtended).Execute()
 	return err
 }
 
-// CreateSupportAssistv16Task creates a support assist task
+// CreateSupportAssistv16Task creates a support assist task.
 func CreateSupportAssistv16Task(ctx context.Context, client *client.Client, V16SupportAssistTask powerscale.V16SupportassistTaskItem) (*powerscale.CreateTaskResponse, error) {
 	response, _, err := client.PscaleOpenAPIClient.SupportassistApi.CreateSupportassistv16SupportassistTaskItem(ctx).V16SupportassistTaskItem(V16SupportAssistTask).Execute()
 	return response, err
 }
 
-// GetSupportAssistv16Task retrieves a support assist task by its ID
+// GetSupportAssistv16Task retrieves a support assist task by its ID.
 func GetSupportAssistv16Task(ctx context.Context, client *client.Client, id string) (*powerscale.V16SupportassistTaskId, error) {
 	response, _, err := client.PscaleOpenAPIClient.SupportassistApi.GetSupportassistv16SupportassistTaskById(ctx, id).Execute()
 	return response, err
 }
 
-// CreateSupportAssistv17Task creates a support assist task
+// CreateSupportAssistv17Task creates a support assist task.
 func CreateSupportAssistv17Task(ctx context.Context, client *client.Client, V17SupportAssistTask powerscale.V16SupportassistTaskItem) (*powerscale.CreateTaskResponse, error) {
 	response, _, err := client.PscaleOpenAPIClient.SupportassistApi.CreateSupportassistv17SupportassistTaskItem(ctx).V17SupportassistTaskItem(V17SupportAssistTask).Execute()
 	return response, err
 }
 
-// GetSupportAssistv17Task retrieves a support assist task by its ID
+// GetSupportAssistv17Task retrieves a support assist task by its ID.
 func GetSupportAssistv17Task(ctx context.Context, client *client.Client, id string) (*powerscale.V16SupportassistTaskId, error) {
 	response, _, err := client.PscaleOpenAPIClient.SupportassistApi.GetSupportassistv17SupportassistTaskById(ctx, id).Execute()
 	return response, err
@@ -96,7 +96,7 @@ func GetClusterVersion(ctx context.Context, client *client.Client) (string, erro
 	return clusterVersion.Nodes[0].Release, err
 }
 
-// ManageSupportAssist manages the support assist settings
+// ManageSupportAssist manages the support assist settings.
 func ManageSupportAssist(ctx context.Context, client *client.Client, plan models.SupportAssistModel) (state models.SupportAssistModel, resp diag.Diagnostics) {
 	// Update support assist terms status
 	if !plan.Accepted.IsNull() {
@@ -259,7 +259,7 @@ func ManageSupportAssist(ctx context.Context, client *client.Client, plan models
 	return state, resp
 }
 
-// ReadSupportAssistDetails reads the support assist details
+// ReadSupportAssistDetails reads the support assist details.
 func ReadSupportAssistDetails(ctx context.Context, client *client.Client, plan models.SupportAssistModel) (state models.SupportAssistModel, resp diag.Diagnostics) {
 	supportAssist, err := GetSupportAssist(ctx, client)
 	if err != nil {
@@ -364,7 +364,7 @@ func ReadSupportAssistDetails(ctx context.Context, client *client.Client, plan m
 	return state, nil
 }
 
-// GetGatewayEndpointType returns the gateway type
+// GetGatewayEndpointType returns the gateway type.
 func GetGatewayEndpointType() map[string]attr.Type {
 	return map[string]attr.Type{
 		"port":         types.Int64Type,
@@ -376,7 +376,7 @@ func GetGatewayEndpointType() map[string]attr.Type {
 	}
 }
 
-// GetConnectionType returns the connection type
+// GetConnectionType returns the connection type.
 func GetConnectionType() map[string]attr.Type {
 	return map[string]attr.Type{
 		"mode":              types.StringType,

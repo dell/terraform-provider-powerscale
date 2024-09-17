@@ -34,6 +34,9 @@ func SyncIQRuleDataSourceSchema(ctx context.Context) schema.Schema {
 				Computed:            true,
 				Description:         "Unique identifier of the performance rule.",
 				MarkdownDescription: "Unique identifier of the performance rule.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"rules": schema.ListNestedAttribute{
 				Computed: true,

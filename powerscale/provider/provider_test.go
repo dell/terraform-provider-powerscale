@@ -130,7 +130,7 @@ func init() {
 
 var sweepClient *client.Client
 
-// getClientForRegion returns a common provider client configured for the specified region
+// getClientForRegion returns a common provider client configured for the specified region.
 func getClientForRegion(_ string) (*client.Client, error) {
 	if sweepClient != nil {
 		return sweepClient, nil
@@ -150,7 +150,7 @@ func getClientForRegion(_ string) (*client.Client, error) {
 	return sweepClient, nil
 }
 
-// this is required for initializing sweepers
+// this is required for initializing sweepers.
 func TestMain(m *testing.M) {
 	resource.TestMain(m)
 }

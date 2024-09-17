@@ -228,5 +228,5 @@ func (d *SyncIQGlobalSettingsDataSource) Read(ctx context.Context, req datasourc
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-	tflog.Info(ctx, "Done with Read SyncIQ Gloabl Settings data source ")
+	tflog.Info(ctx, "Done with Read SyncIQ Global Settings data source ")
 }
