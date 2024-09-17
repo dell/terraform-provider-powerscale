@@ -83,10 +83,19 @@ func TestAccSyncIQPeerCertificateResource(t *testing.T) {
 					path = "/ifs/invalid.pem"
 				}
 				`,
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					FunctionMocker = mockey.Mock(helper.CreatePeerCert).Return("", fmt.Errorf("mock errorr")).Build()
+				},
 				ExpectError: regexp.MustCompile(`.*Failed to create SyncIQ Peer Certificate.*`),
 			},
 			// create valid
 			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+				},
 				Config: ProviderConfig + getPeerCertProvisionerConfig() + `
 				resource "powerscale_synciq_peer_certificate" "test" {
 					path = terraform_data.certificate.output.cert
@@ -228,8 +237,14 @@ func TestAccSyncIQPeerCertificateResourceMinimal(t *testing.T) {
 					path = "/ifs/invalid.pem"
 				}
 				`,
+				PreConfig: func() {
+					FunctionMocker = mockey.Mock(helper.CreatePeerCert).Return("", fmt.Errorf("mock errorr")).Build()
+				},
 				ExpectError: regexp.MustCompile(`.*Failed to create SyncIQ Peer Certificate.*`),
 			},
 		},
 	})
+	if FunctionMocker != nil {
+		FunctionMocker.Release()
+	}
 }
