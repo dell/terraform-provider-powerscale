@@ -411,14 +411,6 @@ func TestInsecureClientWithInsecureParam(t *testing.T) {
 	assert.NotNil(t, openAPIClient)
 }
 
-// if there is no os setting set, then use the default value
-func setDefault(osInput string, defaultStr string) string {
-	if osInput == "" {
-		return defaultStr
-	}
-	return osInput
-}
-
 // loadEnvFile used to read env file and set params
 func loadEnvFile(path string) (map[string]string, error) {
 	envMap := make(map[string]string)
