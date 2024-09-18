@@ -32,7 +32,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golang.org/x/sync/errgroup"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -346,17 +345,12 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	}
 
 	// start goroutine to cache all roles
-	var eg errgroup.Group
 	var roles []powerscale.V1AuthRoleExtended
 	var roleErr error
 	var zoneID string
 	if state.Filter != nil && !state.Filter.Zone.IsNull() {
 		zoneID = state.Filter.Zone.ValueString()
 	}
-	eg.Go(func() error {
-		roles, roleErr = helper.GetAllRolesWithZone(ctx, d.client, zoneID)
-		return roleErr
-	})
 
 	users, err := helper.GetUsersWithFilter(ctx, d.client, state.Filter)
 	if err != nil {
@@ -364,8 +358,10 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		return
 	}
 
-	if err := eg.Wait(); err != nil {
-		resp.Diagnostics.AddError("Error getting the list of PowerScale Roles", err.Error())
+	roles, roleErr = helper.GetAllRolesWithZone(ctx, d.client, zoneID)
+	if roleErr != nil {
+		resp.Diagnostics.AddError("Error getting the list of PowerScale Users.", roleErr.Error())
+		return
 	}
 
 	// parse user response to state user model
