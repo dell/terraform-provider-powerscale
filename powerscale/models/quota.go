@@ -140,9 +140,9 @@ type QuotaThreshold struct {
 	// Time at which hard threshold was hit.
 	HardLastExceeded types.Int64 `tfsdk:"hard_last_exceeded"`
 	// Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied.
-	PercentAdvisory types.Number `tfsdk:"percent_advisory"`
+	PercentAdvisory types.Float64 `tfsdk:"percent_advisory"`
 	// Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started.
-	PercentSoft types.Number `tfsdk:"percent_soft"`
+	PercentSoft types.Float64 `tfsdk:"percent_soft"`
 	// Usage bytes at which notifications will be sent and soft grace time will be started.
 	Soft types.Int64 `tfsdk:"soft"`
 	// True if the soft threshold has been hit.

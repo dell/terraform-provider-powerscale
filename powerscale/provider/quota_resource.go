@@ -318,13 +318,13 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						MarkdownDescription: "Time at which hard threshold was hit.",
 						Computed:            true,
 					},
-					"percent_advisory": schema.NumberAttribute{
+					"percent_advisory": schema.Float64Attribute{
 						Description:         "Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied. Must be >= 0.01 <= 99.99, precision 2",
 						MarkdownDescription: "Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied. Must be >= 0.01 <= 99.99, precision 2",
 						Optional:            true,
 						Computed:            true,
 					},
-					"percent_soft": schema.NumberAttribute{
+					"percent_soft": schema.Float64Attribute{
 						Description:         "Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started. Must be >= 0.01 <= 99.99, precision 2",
 						MarkdownDescription: "Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started. Must be >= 0.01 <= 99.99, precision 2",
 						Optional:            true,

@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"math"
 	"math/big"
 	"reflect"
 	"sort"
@@ -181,7 +182,7 @@ func getStructAttrTypeFromType(ctx context.Context, structType reflect.Type) (ma
 		case reflect.String:
 			attrTypeMap[tag] = types.StringType
 		case reflect.Float32, reflect.Float64:
-			attrTypeMap[tag] = types.NumberType
+			attrTypeMap[tag] = types.Float64Type
 		case reflect.Bool:
 			attrTypeMap[tag] = types.BoolType
 		case reflect.Struct:
@@ -268,13 +269,15 @@ func getStructValue(ctx context.Context, structObj interface{}) (basetypes.Objec
 		case reflect.Float32, reflect.Float64:
 			if elemFieldVal.IsValid() {
 				// Due to accuracy issue, keep the precision as 4
-				floatVal, err := strconv.ParseFloat(fmt.Sprintf("%.4f", elemFieldVal.Float()), 64)
-				if err != nil {
-					return types.ObjectNull(nil), err
-				}
-				valueMap[tag] = types.NumberValue(big.NewFloat(floatVal))
+				// floatVal, err := strconv.ParseFloat(fmt.Sprintf("%.4f", elemFieldVal.Float()), 64)
+				// if err != nil {
+				// 	return types.ObjectNull(nil), err
+				// }
+				val := math.Round(elemFieldVal.Float()*100) / 100
+
+				valueMap[tag] = types.Float64Value(val)
 			} else {
-				valueMap[tag] = types.NumberNull()
+				valueMap[tag] = types.Float64Null()
 			}
 		case reflect.String:
 			if elemFieldVal.IsValid() {
@@ -453,6 +456,25 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 				} else {
 					destinationField.Set(reflect.ValueOf(boolVal.ValueBool()))
 				}
+
+			case basetypes.Float64Value:
+				intVal, ok := sourceValue.Field(i).Interface().(basetypes.Float64Value)
+				if !ok || intVal.IsNull() || intVal.IsUnknown() {
+					continue
+				}
+				if destinationField.Kind() == reflect.Float64 {
+					destinationField.Set(reflect.ValueOf(intVal.ValueFloat64()))
+				}
+				if destinationField.Kind() == reflect.Ptr && destinationField.Type().Elem().Kind() == reflect.Float64 {
+					destinationField.Set(reflect.ValueOf(intVal.ValueFloat64Pointer()))
+				}
+				if destinationField.Kind() == reflect.Float32 {
+					destinationField.Set(reflect.ValueOf(float32(intVal.ValueFloat64())))
+				}
+				if destinationField.Kind() == reflect.Ptr && destinationField.Type().Elem().Kind() == reflect.Float32 {
+					val := float32(intVal.ValueFloat64())
+					destinationField.Set(reflect.ValueOf(&val))
+				}
 			case basetypes.NumberValue:
 				floatVal, ok := sourceValue.Field(i).Interface().(basetypes.NumberValue)
 				if !ok || floatVal.IsNull() || floatVal.IsUnknown() {
@@ -565,6 +587,24 @@ func assignObjectToField(ctx context.Context, source basetypes.ObjectValue, dest
 				}
 				if destinationField.Kind() == reflect.Ptr && destinationField.Type().Elem().Kind() == reflect.Int32 {
 					val := int32(intVal.ValueInt64())
+					destinationField.Set(reflect.ValueOf(&val))
+				}
+			case basetypes.Float64Type{}:
+				intVal, ok := val.(basetypes.Float64Value)
+				if !ok || intVal.IsNull() || intVal.IsUnknown() {
+					continue
+				}
+				if destinationField.Kind() == reflect.Float64 {
+					destinationField.Set(reflect.ValueOf(intVal.ValueFloat64()))
+				}
+				if destinationField.Kind() == reflect.Ptr && destinationField.Type().Elem().Kind() == reflect.Float64 {
+					destinationField.Set(reflect.ValueOf(intVal.ValueFloat64Pointer()))
+				}
+				if destinationField.Kind() == reflect.Int32 {
+					destinationField.Set(reflect.ValueOf(float32(intVal.ValueFloat64())))
+				}
+				if destinationField.Kind() == reflect.Ptr && destinationField.Type().Elem().Kind() == reflect.Float32 {
+					val := float32(intVal.ValueFloat64())
 					destinationField.Set(reflect.ValueOf(&val))
 				}
 			case basetypes.BoolType{}:

@@ -55,7 +55,6 @@ func TestAccQuotaResource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_quota.quota_test", "thresholds.percent_advisory", "25.4"),
 				),
-				ExpectNonEmptyPlan: true,
 			},
 		},
 	})
