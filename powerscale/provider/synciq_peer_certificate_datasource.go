@@ -239,7 +239,6 @@ func (d *SyncIQPeerCertificateDataSource) Read(ctx context.Context, req datasour
 		// Apply the Name Filter if it is set
 		if data.PeerCertificateFilter != nil && data.PeerCertificateFilter.Name.ValueString() != "" {
 			nameFilter := data.PeerCertificateFilter.Name.ValueString()
-			fmt.Println("nameFilter:", nameFilter)
 			config.Certificates = slices.DeleteFunc(config.Certificates, func(i powerscale.V16CertificatesSyslogCertificate) bool { return i.Name != nameFilter })
 			if len(config.Certificates) == 0 {
 				resp.Diagnostics.AddError("Error reading syncIQ peer certificate", fmt.Sprintf("Could not find syncIQ peer certificate with name %s", nameFilter))

@@ -18,6 +18,7 @@ limitations under the License.
 package provider
 
 import (
+	"bufio"
 	"context"
 	"crypto/tls"
 	powerscale "dell/powerscale-go-client"
@@ -40,7 +41,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -64,7 +64,7 @@ var BasicAuthProviderErrorConfig = ""
 var FunctionMocker *mockey.Mocker
 
 func init() {
-	err := godotenv.Load("powerscale.env")
+	_, err := loadEnvFile("powerscale.env")
 	if err != nil {
 		log.Fatal("Error loading .env file: ", err)
 		return
@@ -409,4 +409,48 @@ func TestInsecureClientWithInsecureParam(t *testing.T) {
 		assert.Errorf(t, err, "NewOpenAPIClient failed")
 	}
 	assert.NotNil(t, openAPIClient)
+}
+
+// if there is no os setting set, then use the default value
+func setDefault(osInput string, defaultStr string) string {
+	if osInput == "" {
+		return defaultStr
+	}
+	return osInput
+}
+
+// loadEnvFile used to read env file and set params
+func loadEnvFile(path string) (map[string]string, error) {
+	envMap := make(map[string]string)
+
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) == 0 || line[0] == '#' {
+			continue
+		}
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+		envMap[key] = value
+		// Set the environment variable for system access
+		if err := os.Setenv(key, value); err != nil {
+			return nil, fmt.Errorf("error setting environment variable %s: %w", key, err)
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return envMap, nil
 }

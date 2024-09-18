@@ -252,7 +252,7 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user 
 		OperationServers: map[string]powerscale.ServerConfigurations{},
 	}
 	cfg.DefaultHeader = getHeaders()
-	fmt.Printf("config %+v header %+v\n", cfg, cfg.DefaultHeader)
+	//fmt.Printf("config %+v header %+v\n", cfg, cfg.DefaultHeader)
 
 	if authType == BasicAuthType {
 		httpclient.Transport = transport
