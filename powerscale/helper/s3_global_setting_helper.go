@@ -63,12 +63,12 @@ func SetGlobalSetting(ctx context.Context, client *client.Client, s3GSPlan model
 }
 
 // GetGlobalSetting reads the S3 Global Setting.
-func GetGlobalSetting(ctx context.Context, client *client.Client, s3GlobalSettingState models.S3GlobalSettingResource) error {
+func GetGlobalSetting(ctx context.Context, client *client.Client, s3GlobalSettingState *models.S3GlobalSettingResource) error {
 	globalSettings, err := GetS3GlobalSetting(ctx, client)
 	if err != nil {
 		return err
 	}
-	err = CopyFieldsToNonNestedModel(ctx, globalSettings.GetSettings(), &s3GlobalSettingState)
+	err = CopyFieldsToNonNestedModel(ctx, globalSettings.GetSettings(), s3GlobalSettingState)
 	if err != nil {
 		return err
 	}
