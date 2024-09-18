@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	dell/powerscale-go-client v0.0.0
-	github.com/bytedance/mockey v1.2.11
+	github.com/bytedance/mockey v1.2.12
 	github.com/hashicorp/terraform-plugin-framework v1.11.0
 	github.com/hashicorp/terraform-plugin-framework-validators v0.13.0
 	github.com/hashicorp/terraform-plugin-go v0.23.0
