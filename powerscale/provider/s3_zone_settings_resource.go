@@ -214,7 +214,7 @@ func (r *S3ZoneSettingsResource) Delete(ctx context.Context, req resource.Delete
 // ImportState import state for existing S3ZoneSettings.
 func (r S3ZoneSettingsResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	if req.ID == "" {
-		resp.Diagnostics.AddError("Cannot import S3 Zone Settings with empty zone name", "S3 Zone Settings do not have empty zone name.")
+		resp.Diagnostics.AddError("Cannot import S3 Zone Settings with empty zone name.", "S3 Zone Settings do not have empty zone name.")
 		return
 	}
 	resource.ImportStatePassthroughID(ctx, path.Root("zone"), req, resp)
