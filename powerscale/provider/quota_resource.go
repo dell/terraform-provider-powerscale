@@ -601,6 +601,7 @@ func (r *QuotaResource) Read(ctx context.Context, request resource.ReadRequest, 
 	if quotaStateBackup.Persona.IsNull() || quotaStateBackup.Type.ValueString() == "directory" {
 		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
 	}
+	quotaState.Thresholds = helper.UpdateThresholds(quotaStateBackup.Thresholds, quotaState.Thresholds)
 	diags = response.State.Set(ctx, quotaState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {

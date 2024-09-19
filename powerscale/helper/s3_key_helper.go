@@ -20,6 +20,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"fmt"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -37,6 +38,9 @@ func GenerateS3Key(ctx context.Context, c *client.Client, state models.S3KeyReso
 	}
 	param = param.V10S3Key(eket)
 	response, _, err := param.Execute()
+	if err != nil {
+		err = fmt.Errorf(GetErrorString(err, "s3 key generate error: "))
+	}
 	return response, err
 }
 
@@ -47,6 +51,9 @@ func GetS3Key(ctx context.Context, c *client.Client, state models.S3KeyResourceD
 		param = param.Zone(state.Zone.ValueString())
 	}
 	response, _, err := param.Execute()
+	if err != nil {
+		err = fmt.Errorf(GetErrorString(err, "s3 key get error: "))
+	}
 	return response, err
 }
 
@@ -57,5 +64,8 @@ func DeleteS3Key(ctx context.Context, c *client.Client, state models.S3KeyResour
 		param = param.Zone(state.Zone.ValueString())
 	}
 	_, err := param.Execute()
+	if err != nil {
+		err = fmt.Errorf(GetErrorString(err, "s3 key delete error: "))
+	}
 	return err
 }

@@ -141,7 +141,7 @@ func (r *S3GlobalSettingResource) Read(ctx context.Context, request resource.Rea
 		return
 	}
 
-	err := helper.GetGlobalSetting(ctx, r.client, s3GlobalSettingState)
+	err := helper.GetGlobalSetting(ctx, r.client, &s3GlobalSettingState)
 	if err != nil {
 		response.Diagnostics.AddError("Error reading s3 global setting",
 			fmt.Sprintf("Could not read s3 global setting with error: %s", err.Error()),
@@ -193,7 +193,7 @@ func (r S3GlobalSettingResource) Delete(ctx context.Context, request resource.De
 // ImportState imports the resource state.
 func (r S3GlobalSettingResource) ImportState(ctx context.Context, request resource.ImportStateRequest, response *resource.ImportStateResponse) {
 	var s3GlobalSettingState models.S3GlobalSettingResource
-	err := helper.GetGlobalSetting(ctx, r.client, s3GlobalSettingState)
+	err := helper.GetGlobalSetting(ctx, r.client, &s3GlobalSettingState)
 	if err != nil {
 		response.Diagnostics.AddError("Error importing s3 global setting",
 			fmt.Sprintf("Could not import s3 global setting with error: %s", err.Error()),

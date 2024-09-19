@@ -21,6 +21,8 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -175,4 +177,35 @@ func IsQuotaParamInvalid(plan models.QuotaResource) error {
 		return fmt.Errorf("unsupported type: %s", quotaType)
 	}
 	return nil
+}
+
+// UpdateThresholds compares given prior and updated states
+// Due to unknown reason, plugin framework would unmarshal decimal as weird float
+// e.g. advisory_percentage = 10.4 in tf state and advisory_percentage as NumberAttribute in schema
+// would be unmarshalled as something different from types.NumberValue(big.NewFloat())
+// This could cause the problem of false non-empty plan alert
+// Currently use this function to return the prior thresholds if both are semantically equal
+func UpdateThresholds(prior, updated types.Object) types.Object {
+	// no comparison need in this case
+	if prior.IsNull() || updated.IsNull() {
+		return updated
+	}
+	priorAttrs := prior.Attributes()
+	for key, priorVal := range priorAttrs {
+		updatedVal, exists := updated.Attributes()[key]
+		if !exists || priorVal.IsNull() || updatedVal.IsNull() {
+			return updated
+		}
+		if numVal1, ok := priorVal.(basetypes.NumberValue); ok {
+
+			if numVal2, ok := updatedVal.(basetypes.NumberValue); ok {
+				if numVal1.ValueBigFloat().String() != numVal2.ValueBigFloat().String() {
+					return updated
+				}
+			}
+		} else if !priorVal.Equal(updatedVal) {
+			return updated
+		}
+	}
+	return prior
 }
