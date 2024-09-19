@@ -84,3 +84,26 @@ type GatewayEndpoints struct {
 	Host        types.String `tfsdk:"host"`
 	Enabled     types.Bool   `tfsdk:"enabled"`
 }
+
+// Contact represents the primary/secondary contact.
+type Contact struct {
+	Primary   types.Object `tfsdk:"primary"`
+	Secondary types.Object `tfsdk:"secondary"`
+}
+
+// ContactDetails represents the contact details.
+type ContactDetails struct {
+	Phone     types.String `tfsdk:"phone"`
+	Email     types.String `tfsdk:"email"`
+	FirstName types.String `tfsdk:"first_name"`
+	Language  types.String `tfsdk:"language"`
+	LastName  types.String `tfsdk:"last_name"`
+}
+
+// Telemetry represents the telemetry settings.
+type Telemetry struct {
+	Threads types.Int64 `tfsdk:"telemetry_threads"`
+	Period  types.Int64 `tfsdk:"offline_collection_period"`
+	Enabled types.Bool  `tfsdk:"telemetry_enabled"`
+	Persist types.Bool  `tfsdk:"telemetry_persist"`
+}
