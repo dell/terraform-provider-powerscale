@@ -20,6 +20,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
@@ -94,6 +95,7 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 			Description:         "The username to create the S3 key.",
 			Validators: []validator.String{
 				stringvalidator.LengthAtLeast(1),
+				stringvalidator.RegexMatches(regexp.MustCompile(`^(?:\S.*\S|\S)$`), "must contain atleast one character and no leading or trailing spaces"),
 			},
 			PlanModifiers: []planmodifier.String{
 				stringplanmodifier.RequiresReplaceIfConfigured(),
@@ -105,6 +107,7 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 			Description:         "The zone of the user.",
 			Validators: []validator.String{
 				stringvalidator.LengthAtLeast(1),
+				stringvalidator.RegexMatches(regexp.MustCompile(`^(?:\S.*\S|\S)$`), "must contain atleast one character and no leading or trailing spaces"),
 			},
 			PlanModifiers: []planmodifier.String{
 				stringplanmodifier.RequiresReplaceIfConfigured(),
