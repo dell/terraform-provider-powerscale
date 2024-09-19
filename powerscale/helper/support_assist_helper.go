@@ -114,23 +114,6 @@ func ManageSupportAssist(ctx context.Context, client *client.Client, plan models
 		}
 	}
 
-	// Update support assist status
-	if !plan.SupportassistEnabled.IsNull() {
-		status := powerscale.V16SupportassistStatusExtended{
-			Enabled: plan.SupportassistEnabled.ValueBoolPointer(),
-		}
-
-		err := UpdateSupportAssistStatus(ctx, client, status)
-		if err != nil {
-			errStr := constants.UpdateSupportAssistStatusErrorMsg + "with error: "
-			message := GetErrorString(err, errStr)
-			resp.AddError(
-				"Error updating support assist status",
-				message,
-			)
-		}
-	}
-
 	// Update support assist settings
 	supportAssistSettings := models.UpdateSupportassistSettings{}
 	err := ReadFromState(ctx, &plan, &supportAssistSettings)
@@ -159,6 +142,23 @@ func ManageSupportAssist(ctx context.Context, client *client.Client, plan models
 			"Error updating support assist settings",
 			message,
 		)
+	}
+
+	// Update support assist status
+	if !plan.SupportassistEnabled.IsNull() {
+		status := powerscale.V16SupportassistStatusExtended{
+			Enabled: plan.SupportassistEnabled.ValueBoolPointer(),
+		}
+
+		err := UpdateSupportAssistStatus(ctx, client, status)
+		if err != nil {
+			errStr := constants.UpdateSupportAssistStatusErrorMsg + "with error: "
+			message := GetErrorString(err, errStr)
+			resp.AddError(
+				"Error updating support assist status",
+				message,
+			)
+		}
 	}
 
 	// Connect with support assist backend if access key and pin are provided
@@ -327,7 +327,7 @@ func ReadSupportAssistDetails(ctx context.Context, client *client.Client, plan m
 		if diag.HasError() {
 			return state, diag
 		}
-		// settings.Mode = types.StringValue(*copyStruct.Connections.Mode)
+
 		if len(copyStruct.Connections.NetworkPools) == 0 {
 			settings.NetworkPools, _ = types.ListValue(types.StringType, []attr.Value{})
 		}

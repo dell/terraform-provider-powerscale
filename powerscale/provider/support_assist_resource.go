@@ -25,6 +25,7 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -35,6 +36,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -96,6 +98,109 @@ func (r *SupportAssistResource) ConfigValidators(ctx context.Context) []resource
 	}
 }
 
+// ValidateConfig checks the configuration of the SupportAssist resource.
+func (r *SupportAssistResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	config := models.SupportAssistModel{}
+	if err := req.Config.Get(ctx, &config); err != nil {
+		resp.Diagnostics.AddError(
+			"Error reading configuration",
+			fmt.Sprintf("unable to read configuration: %s", err),
+		)
+		return
+	}
+
+	// Check if contact details are provided
+	if !config.Contact.IsNull() {
+		contact := models.Contact{}
+		if err := config.Contact.As(ctx, &contact, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true}); err != nil {
+			resp.Diagnostics.AddError(
+				"Error reading contact configuration",
+				fmt.Sprintf("unable to read contact configuration: %s", err),
+			)
+			return
+		}
+
+		if contact.Primary.IsNull() && contact.Secondary.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("contact"),
+				"Please provide at least one of the following: primary, secondary",
+				"",
+			)
+		}
+
+		r.validateContact(ctx, contact.Primary, resp)
+		r.validateContact(ctx, contact.Secondary, resp)
+	}
+
+	// Check if telemetry details are provided
+	if !config.Telemetry.IsNull() {
+		telemetry := models.Telemetry{}
+		if err := config.Telemetry.As(ctx, &telemetry, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true}); err != nil {
+			resp.Diagnostics.AddError(
+				"Error reading telemetry configuration",
+				fmt.Sprintf("unable to read telemetry configuration: %s", err),
+			)
+			return
+		}
+
+		if telemetry.Enabled.IsNull() && telemetry.Period.IsNull() && telemetry.Persist.IsNull() && telemetry.Threads.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("telemetry"),
+				"Please provide at least one of the following: telemetry_threads, offline_collection_period, telemetry_enabled, telemetry_persist",
+				"",
+			)
+		}
+	}
+
+	// Check if connection details are provided
+	if !config.Connection.IsNull() {
+		connection := models.Connection{}
+		if err := config.Connection.As(ctx, &connection, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true}); err != nil {
+			resp.Diagnostics.AddError(
+				"Error reading connection configuration",
+				fmt.Sprintf("unable to read connection configuration: %s", err),
+			)
+			return
+		}
+
+		if connection.Mode.IsNull() && connection.NetworkPools.IsNull() && connection.GatewayEndpoints.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("connections"),
+				"Please provide at least one of the following: mode, network_pools, gateway_endpoints",
+				"",
+			)
+		}
+
+		if !connection.Mode.IsNull() && connection.Mode.ValueString() == "gateway" && !connection.GatewayEndpoints.IsNull() {
+			if len(connection.GatewayEndpoints.Elements()) == 0 {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("connections"),
+					"Please define the gateway endpoints",
+					"",
+				)
+			}
+		}
+	}
+}
+
+// validateContact checks the contact details.
+func (r *SupportAssistResource) validateContact(ctx context.Context, contact basetypes.ObjectValue, resp *resource.ValidateConfigResponse) {
+	var details models.ContactDetails
+
+	resp.Diagnostics.Append(contact.As(ctx, &details, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})...)
+
+	if !contact.IsNull() {
+		if details.Email.IsNull() && details.FirstName.IsNull() && details.LastName.IsNull() &&
+			details.Language.IsNull() && details.Phone.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("contact"),
+				"Please provide at least one of the following: email, first_name, last_name, language, phone",
+				"",
+			)
+		}
+	}
+}
+
 // Schema defines the schema for the resource.
 func (r *SupportAssistResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
@@ -145,8 +250,8 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's phone number.",
 							MarkdownDescription: "Contact's phone number.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile(`([\\.\\-\\+\\/\\sxX]*([0-9]+|[\\(\\d+\\)])+)+`), "must be a valid phone number"),
-								stringvalidator.LengthBetween(10, 13),
+								stringvalidator.RegexMatches(regexp.MustCompile(`^\+?[1-9]\d{0,2}[-\s.]?\(?\d{1,4}\)?[-\s.]?\d{1,4}[-\s.]?\d{1,9}$`), "must be a valid phone number"),
+								stringvalidator.LengthAtLeast(1),
 							},
 						},
 						"email": schema.StringAttribute{
@@ -165,8 +270,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's first name.",
 							MarkdownDescription: "Contact's first name.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile(`[\\p{L}\\p{M}*\\-\\.\\' ]*`), "must be a valid first name"),
-								stringvalidator.LengthBetween(0, 50),
+								stringvalidator.LengthAtLeast(1),
 							},
 						},
 						"language": schema.StringAttribute{
@@ -209,8 +313,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's last name.",
 							MarkdownDescription: "Contact's last name.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile(`[\\p{L}\\p{M}*\\-\\.\\' ]*`), "must be a valid last name"),
-								stringvalidator.LengthBetween(0, 50),
+								stringvalidator.LengthAtLeast(1),
 							},
 						},
 					},
@@ -225,8 +328,8 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's phone number.",
 							MarkdownDescription: "Contact's phone number.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile(`([\\.\\-\\+\\/\\sxX]*([0-9]+|[\\(\\d+\\)])+)+`), "must be a valid phone number"),
-								stringvalidator.LengthBetween(10, 13),
+								stringvalidator.RegexMatches(regexp.MustCompile(`^\+?[1-9]\d{0,2}[-\s.]?\(?\d{1,4}\)?[-\s.]?\d{1,4}[-\s.]?\d{1,9}$`), "must be a valid phone number"),
+								stringvalidator.LengthAtLeast(1),
 							},
 						},
 						"email": schema.StringAttribute{
@@ -245,8 +348,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's first name.",
 							MarkdownDescription: "Contact's first name.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile(`[\\p{L}\\p{M}*\\-\\.\\' ]*`), "must be a valid first name"),
-								stringvalidator.LengthBetween(0, 50),
+								stringvalidator.LengthAtLeast(1),
 							},
 						},
 						"language": schema.StringAttribute{
@@ -289,8 +391,7 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 							Description:         "Contact's last name.",
 							MarkdownDescription: "Contact's last name.",
 							Validators: []validator.String{
-								stringvalidator.RegexMatches(regexp.MustCompile(`[\\p{L}\\p{M}*\\-\\.\\' ]*`), "must be a valid last name"),
-								stringvalidator.LengthBetween(0, 50),
+								stringvalidator.LengthAtLeast(1),
 							},
 						},
 					},
@@ -359,12 +460,18 @@ func SupportAssistResourceSchema() map[string]schema.Attribute {
 					Description:         "Network pools for gateway use",
 					MarkdownDescription: "Network pools for gateway use",
 					ElementType:         types.StringType,
+					Validators: []validator.List{
+						listvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+					},
 				},
 				"gateway_endpoints": schema.ListNestedAttribute{
 					Optional:            true,
 					Computed:            true,
 					Description:         "Gateway details",
 					MarkdownDescription: "Gateway details",
+					Validators: []validator.List{
+						listvalidator.SizeAtMost(2),
+					},
 					NestedObject: schema.NestedAttributeObject{
 						Attributes: map[string]schema.Attribute{
 							"port": schema.Int64Attribute{
