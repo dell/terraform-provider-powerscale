@@ -46,6 +46,7 @@ func TestAccSupportAssistResource(t *testing.T) {
 					resource.TestCheckResourceAttr(supportAssistResourceName, "automatic_case_creation", "true"),
 					resource.TestCheckResourceAttr(supportAssistResourceName, "enable_remote_support", "true"),
 					resource.TestCheckResourceAttr(supportAssistResourceName, "accepted_terms", "true"),
+					resource.TestCheckResourceAttr(supportAssistResourceName, "connections.mode", "direct"),
 				),
 			},
 			{
@@ -145,6 +146,72 @@ func TestAccSupportAssistResourceMockError(t *testing.T) {
 	})
 }
 
+func TestAccSupportAssistResourceValidation(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck: func() {
+			testAccPreCheck(t)
+		},
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfig + withoutContact,
+				ExpectError: regexp.MustCompile(`.*Please provide at least one of the following: primary, secondary.*`),
+			},
+			{
+				Config:      ProviderConfig + withoutPrimary,
+				ExpectError: regexp.MustCompile(`.*Please provide at least one of the following: email, first_name, last_name, language, phone.*`),
+			},
+			{
+				Config:      ProviderConfig + withoutTelemetry,
+				ExpectError: regexp.MustCompile(`.*Please provide at least one of the following: telemetry_threads, offline_collection_period, telemetry_enabled, telemetry_persist.*`),
+			},
+			{
+				Config:      ProviderConfig + withoutConnections,
+				ExpectError: regexp.MustCompile(`.*Please provide at least one of the following: mode, network_pools, gateway_endpoints.*`),
+			},
+			{
+				Config:      ProviderConfig + withoutGateway,
+				ExpectError: regexp.MustCompile(`.*Please define the gateway endpoints.*`),
+			},
+		},
+	})
+}
+
+var withoutContact = `
+resource "powerscale_support_assist" "test" {
+	contact = {}
+}
+`
+
+var withoutPrimary = `
+resource "powerscale_support_assist" "test" {
+	contact = {
+		primary = {}
+	}
+}
+`
+
+var withoutTelemetry = `
+resource "powerscale_support_assist" "test" {
+	telemetry = {}
+}
+`
+
+var withoutConnections = `
+resource "powerscale_support_assist" "test" {
+	connections = {}
+}
+`
+
+var withoutGateway = `
+resource "powerscale_support_assist" "test" {
+	connections = {
+		mode = "gateway"
+		gateway_endpoints = []
+	}
+}
+`
+
 var supportAssistResourceConfig = `
 resource "powerscale_support_assist" "test" {
 	supportassist_enabled   = true
@@ -152,6 +219,9 @@ resource "powerscale_support_assist" "test" {
   	automatic_case_creation = true
   	enable_remote_support   = true
   	accepted_terms          = true
+	connections = {
+		mode = "direct"
+	}
 }
 `
 
