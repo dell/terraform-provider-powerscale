@@ -55,7 +55,6 @@ func TestAccQuotaResource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_quota.quota_test", "thresholds.percent_advisory", "25.4"),
 				),
-				ExpectNonEmptyPlan: true,
 			},
 		},
 	})
@@ -253,7 +252,7 @@ resource "powerscale_quota" "quota_test" {
 		type = "user"
 	}
 	thresholds = {
-		percent_advisory = 10
+		percent_advisory = 10.4
         percent_soft = 20
 		soft_grace = 120
 	    hard = 4000
@@ -277,7 +276,7 @@ resource "powerscale_quota" "quota_test" {
 		type = "user"
 	}
 	thresholds = {
-		percent_advisory = 10
+		percent_advisory = 10.4
         percent_soft = 20
 		soft_grace = 120
 	    hard = 4000
@@ -301,7 +300,7 @@ resource "powerscale_quota" "quota_test" {
 		type = "user"
 	}
 	thresholds = {
-		percent_advisory = 10
+		percent_advisory = 10.4
         percent_soft = 20
 		soft_grace = 120
 	    hard = 4000
@@ -320,7 +319,7 @@ resource "powerscale_quota" "quota_test" {
 	include_snapshots = false
 	zone = "System"
 	thresholds = {
-		percent_advisory = 10
+		percent_advisory = 10.4
         percent_soft = 20
 		soft_grace = 120
 	    hard = 4000
@@ -344,7 +343,7 @@ resource "powerscale_quota" "quota_test" {
 		type = "user"
 	}
 	thresholds = {
-		percent_advisory = 10
+		percent_advisory = 10.4
         percent_soft = 20
 		soft_grace = 120
 	    hard = 4000
@@ -367,7 +366,7 @@ resource "powerscale_quota" "quota_test" {
 		type = "user"
 	}
 	thresholds = {
-		percent_advisory = 10
+		percent_advisory = 10.4
         percent_soft = 20
 		soft_grace = 120
 	    hard = 4000
@@ -448,7 +447,7 @@ resource "powerscale_quota" "quota_test" {
 		type = "user"
 	}
 	thresholds = {
-		percent_advisory = 10
+		percent_advisory = 10.4
         percent_soft = 20
 		soft_grace = 120
 	    hard = 4000
@@ -467,7 +466,7 @@ resource "powerscale_quota" "quota_test" {
 	include_snapshots = false
 	zone = "System"
 	thresholds = {
-		percent_advisory = 10
+		percent_advisory = 10.4
         percent_soft = 20
 		soft_grace = 120
 	    hard = 4000
@@ -491,7 +490,7 @@ resource "powerscale_quota" "quota_test" {
 		type = "user"
 	}
 	thresholds = {
-		percent_advisory = 10
+		percent_advisory = 10.4
         percent_soft = 20
 		soft_grace = 120
 	    hard = 4000
@@ -516,7 +515,7 @@ resource "powerscale_quota" "quota_test" {
 		type = "user"
 	}
 	thresholds = {
-		percent_advisory = 10
+		percent_advisory = 10.4
         percent_soft = 20
 		soft_grace = 120
 	    hard = 4000
