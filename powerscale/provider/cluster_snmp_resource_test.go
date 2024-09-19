@@ -206,6 +206,10 @@ func TestAccClusterSnmpResourceUpdateMockErr(t *testing.T) {
 				Config:      ProviderConfig + clusterSnmpResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
+			{
+				Config:      ProviderConfig + clusterSnmpResourceConfigError,
+				ExpectError: regexp.MustCompile(`.*Please provide at least one of the following*.`),
+			},
 		},
 	})
 }
@@ -302,6 +306,11 @@ resource "powerscale_cluster_snmp" "test" {
 	enabled = true
 	snmp_v1_v2c_access = true
 	read_only_community = "read_only_community"
+}
+`
+var clusterSnmpResourceConfigError = `
+resource "powerscale_cluster_snmp" "test" {
+	enabled = true
 }
 `
 var clusterSnmpResourceEmptyConfig = `
