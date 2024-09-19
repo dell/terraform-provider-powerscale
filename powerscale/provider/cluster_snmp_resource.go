@@ -346,6 +346,7 @@ func (r *ClusterSnmpResource) UpdateClusterSNMP(ctx context.Context, plan models
 	return diags
 }
 
+// ValidateConfig validate config of the Cluster SNMP resource.
 func (r *ClusterSnmpResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
 	// Retrieve values from plan
 	var cfg models.ClusterSNMPModel
