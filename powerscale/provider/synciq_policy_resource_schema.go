@@ -37,6 +37,10 @@ import (
 // Schema implements resource.Resource.
 func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		MarkdownDescription: "This resource is used to manage the SyncIQ Replication Policy entity of PowerScale Array. " +
+			"We can Create, Read, Update and Delete the SyncIQ Replication Policy using this resource. We can also import existing SyncIQ Replication Policy from PowerScale array.",
+		Description: "This resource is used to manage the SyncIQ Replication Policy entity of PowerScale Array. " +
+			"We can Create, Read, Update and Delete the SyncIQ Replication Policy using this resource. We can also import existing SyncIQ Replication Policy from PowerScale array.",
 		Attributes: map[string]schema.Attribute{
 			"accelerated_failback": schema.BoolAttribute{
 				Optional:            true,
@@ -287,19 +291,6 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Description:         "If `schedule` is set to `when-source-modified`, the duration to wait after a modification is made before starting a job (default is 0 seconds).",
 				MarkdownDescription: "If `schedule` is set to `when-source-modified`, the duration to wait after a modification is made before starting a job (default is 0 seconds).",
 			},
-			"linked_service_policies": schema.ListAttribute{
-				Optional:            true,
-				Computed:            true,
-				Description:         "A list of service replication policies that this data replication policy will be associated with.",
-				MarkdownDescription: "A list of service replication policies that this data replication policy will be associated with.",
-				ElementType:         types.StringType,
-				PlanModifiers: []planmodifier.List{
-					listplanmodifier.UseStateForUnknown(),
-				},
-				Validators: []validator.List{
-					listvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
-				},
-			},
 			"log_level": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -403,12 +394,6 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-			},
-			"service_policy": schema.BoolAttribute{
-				Optional:            true,
-				Computed:            true,
-				Description:         "If true, this is a service replication policy.",
-				MarkdownDescription: "If true, this is a service replication policy.",
 			},
 			"skip_lookup": schema.BoolAttribute{
 				Optional:            true,
