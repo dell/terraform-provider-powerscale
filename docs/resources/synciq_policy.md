@@ -19,12 +19,12 @@ linkTitle: "powerscale_synciq_policy"
 page_title: "powerscale_synciq_policy Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  
+  This resource is used to manage the SyncIQ Replication Policy entity of PowerScale Array. We can Create, Read, Update and Delete the SyncIQ Replication Policy using this resource. We can also import existing SyncIQ Replication Policy from PowerScale array.
 ---
 
 # powerscale_synciq_policy (Resource)
 
-
+This resource is used to manage the SyncIQ Replication Policy entity of PowerScale Array. We can Create, Read, Update and Delete the SyncIQ Replication Policy using this resource. We can also import existing SyncIQ Replication Policy from PowerScale array.
 
 
 ## Example Usage
@@ -196,7 +196,6 @@ resource "powerscale_synciq_policy" "policy_when_source_modified" {
 - `force_interface` (Boolean) NOTE: This field should not be changed without the help of PowerScale support.  Determines whether data is sent only through the subnet and pool specified in the "source_network" field. This option can be useful if there are multiple interfaces for the given source subnet.  If you enable this option, the net.inet.ip.choose_ifa_by_ipsrc sysctl should be set.
 - `ignore_recursive_quota` (Boolean) If set to true, SyncIQ will not check the recursive quota in target paths to aid in replication to target paths which contain no quota but target cluster has lots of quotas.
 - `job_delay` (Number) If `schedule` is set to `when-source-modified`, the duration to wait after a modification is made before starting a job (default is 0 seconds).
-- `linked_service_policies` (List of String) A list of service replication policies that this data replication policy will be associated with.
 - `log_level` (String) Severity an event must reach before it is logged. Accepted values are `fatal`, `error`, `notice`, `info`, `copy`, `debug`, `trace`.
 - `log_removed_files` (Boolean) If true, the system will log any files or directories that are deleted due to a sync.
 - `ocsp_address` (String) The address of the OCSP responder to which to connect. Set to empty string to disable OCSP.
@@ -208,7 +207,6 @@ resource "powerscale_synciq_policy" "policy_when_source_modified" {
 - `restrict_target_network` (Boolean) If you specify true, and you specify a SmartConnect zone in the "target_host" field, replication policies will connect only to nodes in the specified SmartConnect zone.  If you specify false, replication policies are not restricted to specific nodes on the target cluster.
 - `rpo_alert` (Number) If `schedule` is set to a time/date, an alert is created if the specified RPO for this policy is exceeded. The default value is 0, which will not generate RPO alerts.
 - `schedule` (String) The schedule on which new jobs will be run for this policy.
-- `service_policy` (Boolean) If true, this is a service replication policy.
 - `skip_lookup` (Boolean) Skip DNS lookup of target IPs.
 - `skip_when_source_unmodified` (Boolean) If true and `schedule` is set to a time/date, the policy will not run if no changes have been made to the contents of the source directory since the last job successfully completed.
 - `snapshot_sync_existing` (Boolean) If true, snapshot-triggered syncs will include snapshots taken before policy creation time (requires --schedule when-snapshot-taken).

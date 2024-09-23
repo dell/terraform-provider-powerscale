@@ -19,12 +19,12 @@ linkTitle: "powerscale_synciq_rule"
 page_title: "powerscale_synciq_rule Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  
+  This datasource is used to query the existing SyncIQ Replication Rules from PowerScale array.
 ---
 
 # powerscale_synciq_rule (Data Source)
 
-
+This datasource is used to query the existing SyncIQ Replication Rules from PowerScale array.
 
 ## Example Usage
 
