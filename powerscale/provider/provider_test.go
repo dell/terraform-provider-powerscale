@@ -66,7 +66,7 @@ var FunctionMocker *mockey.Mocker
 func init() {
 	_, err := loadEnvFile("powerscale.env")
 	if err != nil {
-		log.Fatal("Error loading .env file: ", err)
+		log.Fatal("Error loading .env file")
 		return
 	}
 
@@ -89,7 +89,7 @@ func init() {
 
 	u, err := url.Parse(powerscaleEndpoint)
 	if err != nil {
-		log.Fatal("Error parsing POWERSCALE_ENDPOINT:", err.Error())
+		log.Fatal("Error parsing POWERSCALE_ENDPOINT value")
 		return
 	}
 	powerScaleSSHIP = u.Hostname()
