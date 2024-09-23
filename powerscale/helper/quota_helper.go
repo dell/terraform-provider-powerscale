@@ -21,8 +21,8 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -179,33 +179,27 @@ func IsQuotaParamInvalid(plan models.QuotaResource) error {
 	return nil
 }
 
-// UpdateThresholds compares given prior and updated states
-// Due to unknown reason, plugin framework would unmarshal decimal as weird float
-// e.g. advisory_percentage = 10.4 in tf state and advisory_percentage as NumberAttribute in schema
-// would be unmarshalled as something different from types.NumberValue(big.NewFloat())
-// This could cause the problem of false non-empty plan alert
-// Currently use this function to return the prior thresholds if both are semantically equal
-func UpdateThresholds(prior, updated types.Object) types.Object {
+// RemovePercentThreshold reset percent_advisory and percent_soft data from response data
+// Since PowerScale rest api directly use actual number for percentage calculation and accuracy loss might occur
+// threshold data in response might be different from request body
+// Thus, computed data should not include percent threshold when accurate threshold is given
+func RemovePercentThreshold(ctx context.Context, prior, updated types.Object) (types.Object, diag.Diagnostics) {
 	// no comparison need in this case
 	if prior.IsNull() || updated.IsNull() {
-		return updated
+		return updated, diag.Diagnostics{}
 	}
-	priorAttrs := prior.Attributes()
-	for key, priorVal := range priorAttrs {
-		updatedVal, exists := updated.Attributes()[key]
-		if !exists || priorVal.IsNull() || updatedVal.IsNull() {
-			return updated
+	thresholdValue := updated.Attributes()
+	priorThresholdValue := prior.Attributes()
+	if adv, ok := thresholdValue["percent_advisory"]; !adv.IsNull() && ok {
+		if _, ok := priorThresholdValue["percent_advisory"]; ok {
+			thresholdValue["percent_advisory"] = priorThresholdValue["percent_advisory"]
 		}
-		if numVal1, ok := priorVal.(basetypes.NumberValue); ok {
+	}
 
-			if numVal2, ok := updatedVal.(basetypes.NumberValue); ok {
-				if numVal1.ValueBigFloat().String() != numVal2.ValueBigFloat().String() {
-					return updated
-				}
-			}
-		} else if !priorVal.Equal(updatedVal) {
-			return updated
+	if soft, ok := thresholdValue["percent_soft"]; !soft.IsNull() && ok {
+		if _, ok := priorThresholdValue["percent_soft"]; ok {
+			thresholdValue["percent_soft"] = priorThresholdValue["percent_soft"]
 		}
 	}
-	return prior
+	return types.ObjectValue(updated.AttributeTypes(ctx), thresholdValue)
 }
