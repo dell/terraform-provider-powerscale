@@ -50,7 +50,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 | **Terraform Provider** | **PowerScale Version** | **OS**                    | **Terraform**               | **Golang** |
 |------------------------|:-----------------------|:--------------------------|-----------------------------|------------|
-| v1.4.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.7.x <br> 1.8.x         | 1.22       |
+| v1.5.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.8.x <br> 1.9.x         | 1.22       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
 * Cluster
@@ -86,6 +86,10 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * User
 * User Group
 * User Mapping Rules
+* SyncIQ Policy
+* SyncIQ Global Settings
+* SyncIQ Rule
+* SyncIQ Peer Certificate
 
 ## List of Resources in Terraform Provider for Dell PowerScale
 * Access Zone
@@ -119,6 +123,17 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * User
 * User Group
 * User Mapping Rules
+* Cluster Identity
+* Cluster SNMP
+* Cluster Owner
+* Cluster Time
+* Support Assist
+* S3 Key Management
+* S3 Zone Settings
+* S3 Global Settings
+* SyncIQ Policy
+* SyncIQ Global Settings
+* SyncIQ Peer Certificate
 
 ## Installation and execution of Terraform Provider for Dell PowerScale
 
@@ -131,7 +146,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerscale = { 
-      version = "1.4.0"
+      version = "1.5.0"
       source = "registry.terraform.io/dell/powerscale"
     }
   }
