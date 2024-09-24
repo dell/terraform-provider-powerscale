@@ -53,43 +53,43 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 | v1.5.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.8.x <br> 1.9.x         | 1.22       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
-* Cluster
-* Access Zone
-* ACL Settings
-* Active Directory
-* Cluster Email Settings
-* File Pool Policy
-* File System
-* Groupnet
-* LDAP Provider
-* Namespace ACL
-* Network Pool
-* Network Rule
-* Network Settings
-* NFS Export
-* NFS Export Settings
-* NFS Global Settings
-* NFS Zone Settings
-* NTP Server
-* NTP Settings
-* Quota
-* Role
-* Role Privilege
-* S3 Bucket
-* Smart Pool Settings
-* SMB Server Settings
-* SMB Share
-* SMB Share Settings
-* Snapshot
-* Snapshot Schedule
-* Subnet
-* User
-* User Group
-* User Mapping Rules
-* SyncIQ Policy
-* SyncIQ Global Settings
-* SyncIQ Rule
-* SyncIQ Peer Certificate
+* [Cluster](docs/data-sources/cluster.md)
+* [Access Zone](docs/data-sources/accesszone.md)
+* [ACL Settings](docs/data-sources/aclsettings.md)
+* [Active Directory Service Provider](docs/data-sources/adsprovider.md)
+* [Cluster Email Settings](docs/data-sources/cluster_email.md)
+* [File Pool Policy](docs/data-sources/filepool_policy.md)
+* [File System](docs/data-sources/filesystem.md)
+* [Groupnet](docs/data-sources/groupnet.md)
+* [LDAP Provider](docs/data-sources/ldap_provider.md)
+* [Namespace ACL](docs/data-sources/namespace_acl.md)
+* [Network Pool](docs/data-sources/networkpool.md)
+* [Network Rule](docs/data-sources/network_rule.md)
+* [Network Settings](docs/data-sources/network_settings.md)
+* [NFS Export](docs/data-sources/nfs_export.md)
+* [NFS Export Settings](docs/data-sources/nfs_export_settings.md)
+* [NFS Global Settings](docs/data-sources/nfs_global_settings.md)
+* [NFS Zone Settings](docs/data-sources/nfs_zone_settings.md)
+* [NTP Server](docs/data-sources/ntpserver.md)
+* [NTP Settings](docs/data-sources/ntpsettings.md)
+* [Quota](docs/data-sources/quota.md)
+* [Role](docs/data-sources/role.md)
+* [Role Privilege](docs/data-sources/roleprivilege.md)
+* [S3 Bucket](docs/data-sources/s3_bucket.md)
+* [Smart Pool Settings](docs/data-sources/smartpool_settings.md)
+* [SMB Server Settings](docs/data-sources/smb_server_settings.md)
+* [SMB Share](docs/data-sources/smb_share.md)
+* [SMB Share Settings](docs/data-sources/smb_share_settings.md)
+* [Snapshot](docs/data-sources/snapshot.md)
+* [Snapshot Schedule](docs/data-sources/snapshot_schedule.md)
+* [Subnet](docs/data-sources/subnet.md)
+* [User](docs/data-sources/user.md)
+* [User Group](docs/data-sources/user_group.md)
+* [User Mapping Rules](docs/data-sources/user_mapping_rules.md)
+* [SyncIQ Policy](docs/data-sources/synciq_policy.md)
+* [SyncIQ Global Settings](docs/data-sources/synciq_global_settings.md)
+* [SyncIQ Rule](docs/data-sources/synciq_rule.md)
+* [SyncIQ Peer Certificate](docs/data-sources/synciq_peer_certificate.md)
 
 ## List of Resources in Terraform Provider for Dell PowerScale
 * Access Zone
