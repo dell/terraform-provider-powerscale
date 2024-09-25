@@ -132,8 +132,8 @@ Optional:
 
 - `advisory` (Number) Usage bytes at which notifications will be sent but writes will not be denied.
 - `hard` (Number) Usage bytes at which further writes will be denied.
-- `percent_advisory` (Number) Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied. Must be >= 0.01 <= 99.99, precision 2
-- `percent_soft` (Number) Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started. Must be >= 0.01 <= 99.99, precision 2
+- `percent_advisory` (Number) Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied.
+- `percent_soft` (Number) Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started.
 - `soft` (Number) Usage bytes at which notifications will be sent and soft grace time will be started.
 - `soft_grace` (Number) Time in seconds after which the soft threshold has been hit before writes will be denied.
 
