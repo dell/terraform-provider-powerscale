@@ -190,6 +190,8 @@ resource "powerscale_adsprovider" "ads_test" {
 - `system` (Boolean) If set to true, indicates that this provider instance was created by OneFS and cannot be removed.
 - `zone_name` (String) Specifies the name of the access zone in which this provider was created.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

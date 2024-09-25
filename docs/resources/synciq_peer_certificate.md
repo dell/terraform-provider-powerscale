@@ -105,6 +105,8 @@ resource "powerscale_synciq_peer_certificate" "certificate" {
 
 - `id` (String) ID of the SyncIQ Peer certificate.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

@@ -136,6 +136,8 @@ Optional:
 - `name` (String) Owner name
 - `type` (String) Owner type
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

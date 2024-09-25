@@ -100,6 +100,8 @@ resource "powerscale_aclsettings" "example_acl_settings" {
 - `synthetic_denies` (String) Synthetic 'deny' ACEs. Options: none, remove
 - `utimes` (String) Access check (utimes). Options: only_owner, owner_and_write
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

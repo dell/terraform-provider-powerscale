@@ -65,8 +65,8 @@ func (r *GroupnetResource) Schema(ctx context.Context, req resource.SchemaReques
 
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
-				Description:         "The name of the groupnet. (Update Supported)",
-				MarkdownDescription: "The name of the groupnet. (Update Supported)",
+				Description:         "The name of the groupnet.",
+				MarkdownDescription: "The name of the groupnet.",
 				Required:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(1, 32),
@@ -81,42 +81,42 @@ func (r *GroupnetResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed:            true,
 			},
 			"description": schema.StringAttribute{
-				Description:         "A description of the groupnet. (Update Supported)",
-				MarkdownDescription: "A description of the groupnet. (Update Supported)",
+				Description:         "A description of the groupnet.",
+				MarkdownDescription: "A description of the groupnet.",
 				Optional:            true,
 				Validators:          []validator.String{stringvalidator.LengthBetween(1, 128)},
 			},
 			"allow_wildcard_subdomains": schema.BoolAttribute{
-				Description:         "If enabled, SmartConnect treats subdomains of known dns zones as the known dns zone. This is required for S3 Virtual Host domains. Defaults to True. (Update Supported)",
-				MarkdownDescription: "If enabled, SmartConnect treats subdomains of known dns zones as the known dns zone. This is required for S3 Virtual Host domains. Defaults to True. (Update Supported)",
+				Description:         "If enabled, SmartConnect treats subdomains of known dns zones as the known dns zone. This is required for S3 Virtual Host domains. Defaults to True.",
+				MarkdownDescription: "If enabled, SmartConnect treats subdomains of known dns zones as the known dns zone. This is required for S3 Virtual Host domains. Defaults to True.",
 				Optional:            true,
 				Computed:            true,
 				Default:             booldefault.StaticBool(true),
 			},
 			"dns_cache_enabled": schema.BoolAttribute{
-				Description:         "DNS caching is enabled or disabled. Defaults to True. (Update Supported)",
-				MarkdownDescription: "DNS caching is enabled or disabled. Defaults to True. (Update Supported)",
+				Description:         "DNS caching is enabled or disabled. Defaults to True.",
+				MarkdownDescription: "DNS caching is enabled or disabled. Defaults to True.",
 				Optional:            true,
 				Computed:            true,
 				Default:             booldefault.StaticBool(true),
 			},
 			"server_side_dns_search": schema.BoolAttribute{
-				Description:         "Enable or disable appending nodes DNS search list to client DNS inquiries directed at SmartConnect service IP. Defaults to True. (Update Supported)",
-				MarkdownDescription: "Enable or disable appending nodes DNS search list to client DNS inquiries directed at SmartConnect service IP. Defaults to True. (Update Supported)",
+				Description:         "Enable or disable appending nodes DNS search list to client DNS inquiries directed at SmartConnect service IP. Defaults to True.",
+				MarkdownDescription: "Enable or disable appending nodes DNS search list to client DNS inquiries directed at SmartConnect service IP. Defaults to True.",
 				Optional:            true,
 				Computed:            true,
 				Default:             booldefault.StaticBool(true),
 			},
 			"dns_resolver_rotate": schema.BoolAttribute{
-				Description:         "Enable or disable DNS resolver rotate. Defaults to False. (Update Supported)",
-				MarkdownDescription: "Enable or disable DNS resolver rotate. Defaults to False. (Update Supported)",
+				Description:         "Enable or disable DNS resolver rotate. Defaults to False.",
+				MarkdownDescription: "Enable or disable DNS resolver rotate. Defaults to False.",
 				Optional:            true,
 				Computed:            true,
 				Default:             booldefault.StaticBool(false),
 			},
 			"dns_search": schema.ListAttribute{
-				Description:         "List of DNS search suffixes. (Update Supported)",
-				MarkdownDescription: "List of DNS search suffixes. (Update Supported)",
+				Description:         "List of DNS search suffixes.",
+				MarkdownDescription: "List of DNS search suffixes.",
 				ElementType:         types.StringType,
 				Optional:            true,
 				Validators: []validator.List{
@@ -126,8 +126,8 @@ func (r *GroupnetResource) Schema(ctx context.Context, req resource.SchemaReques
 				},
 			},
 			"dns_servers": schema.ListAttribute{
-				Description:         "List of Domain Name Server IP addresses. (Update Supported)",
-				MarkdownDescription: "List of Domain Name Server IP addresses. (Update Supported)",
+				Description:         "List of Domain Name Server IP addresses.",
+				MarkdownDescription: "List of Domain Name Server IP addresses.",
 				ElementType:         types.StringType,
 				Optional:            true,
 				Validators: []validator.List{

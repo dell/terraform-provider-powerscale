@@ -75,6 +75,8 @@ resource "powerscale_s3_zone_settings" "s3_zone_setting" {
 - `object_acl_policy` (String) The default policy for object access control lists (ACLs), which can be either “replace” or “deny”
 - `root_path` (String) The root path for the S3 bucket.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

@@ -92,28 +92,28 @@ resource "powerscale_user" "testUser" {
 
 ### Required
 
-- `name` (String) Specifies a user name.
+- `name` (String) Specifies a user name. Cannot be updated.
 
 ### Optional
 
-- `domain` (String) Specifies the domain that the object is part of.
-- `email` (String) Specifies an email address. (Update Supported)
-- `enabled` (Boolean) If true, the authenticated user is enabled. (Update Supported)
-- `expiry` (Number) Specifies the Unix Epoch time at which the authenticated user will expire. (Update Supported)
-- `gecos` (String) Specifies the GECOS value, which is usually the full name. (Update Supported)
-- `home_directory` (String) Specifies a home directory for the user. (Update Supported)
-- `password` (String, Sensitive) Sets or Changes the password for the user. (Update Supported)
-- `password_expires` (Boolean) If true, the password is allowed to expire. (Update Supported)
-- `primary_group` (String) Specifies the name of the primary group. (Update Supported)
-- `prompt_password_change` (Boolean) If true, Prompts the user to change their password at the next login. (Update Supported)
-- `query_force` (Boolean) If true, skip validation checks when creating user. Need to be true, when changing user UID.
-- `query_provider` (String) Specifies the provider type.
-- `query_zone` (String) Specifies the zone that the object belongs to.
-- `roles` (List of String) List of roles, the user is assigned. (Update Supported)
-- `shell` (String) Specifies a path to the shell for the user. (Update Supported)
-- `sid` (String) Specifies a security identifier.
-- `uid` (Number) Specifies a numeric user identifier. (Update Supported)
-- `unlock` (Boolean) If true, the user account should be unlocked. (Update Supported)
+- `domain` (String) Specifies the domain that the object is part of. Cannot be updated.
+- `email` (String) Specifies an email address.
+- `enabled` (Boolean) If true, the authenticated user is enabled.
+- `expiry` (Number) Specifies the Unix Epoch time at which the authenticated user will expire.
+- `gecos` (String) Specifies the GECOS value, which is usually the full name.
+- `home_directory` (String) Specifies a home directory for the user.
+- `password` (String, Sensitive) Sets or Changes the password for the user.
+- `password_expires` (Boolean) If true, the password is allowed to expire.
+- `primary_group` (String) Specifies the name of the primary group.
+- `prompt_password_change` (Boolean) If true, Prompts the user to change their password at the next login.
+- `query_force` (Boolean) If true, skip validation checks when creating user. Need to be true, when changing user UID. Cannot be updated. Cannot be updated.
+- `query_provider` (String) Specifies the provider type. Cannot be updated. Cannot be updated.
+- `query_zone` (String) Specifies the zone that the object belongs to. Cannot be updated. Cannot be updated.
+- `roles` (List of String) List of roles, the user is assigned.
+- `shell` (String) Specifies a path to the shell for the user.
+- `sid` (String) Specifies a security identifier. Cannot be updated.
+- `uid` (Number) Specifies a numeric user identifier.
+- `unlock` (Boolean) If true, the user account should be unlocked.
 
 ### Read-Only
 
@@ -155,6 +155,8 @@ Read-Only:
 - `id` (String)
 - `name` (String)
 - `type` (String)
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 

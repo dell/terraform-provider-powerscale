@@ -103,6 +103,8 @@ Optional:
 - `pool` (String) The pool to restrict replication policies to.
 - `subnet` (String) The subnet to restrict replication policies to.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

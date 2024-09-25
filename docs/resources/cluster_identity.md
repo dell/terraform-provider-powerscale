@@ -100,6 +100,8 @@ Optional:
 - `motd` (String) The message of the day.
 - `motd_header` (String) The header to the message of the day.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

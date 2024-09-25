@@ -94,6 +94,8 @@ resource "powerscale_cluster_snmp" "example_snmp_settings" {
 
 - `id` (String) ID of the Cluster SNMP.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

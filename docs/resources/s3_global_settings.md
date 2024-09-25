@@ -70,6 +70,8 @@ resource "powerscale_s3_global_settings" "s3_global_setting" {
 - `https_port` (Number) Specifies the HTTPS port.
 - `service` (Boolean) Specifies if the service is enabled.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

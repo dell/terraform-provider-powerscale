@@ -78,14 +78,16 @@ resource "powerscale_network_settings" "example_network_settings" {
 
 ### Optional
 
-- `sc_rebalance_delay` (Number) Delay in seconds for IP rebalance. (Update Supported)
-- `source_based_routing_enabled` (Boolean) Enable or disable Source Based Routing. (Update Supported)
-- `tcp_ports` (List of Number) List of client TCP ports. (Update Supported)
+- `sc_rebalance_delay` (Number) Delay in seconds for IP rebalance.
+- `source_based_routing_enabled` (Boolean) Enable or disable Source Based Routing.
+- `tcp_ports` (List of Number) List of client TCP ports.
 
 ### Read-Only
 
 - `default_groupnet` (String) Default client-side DNS settings for non-multitenancy aware programs.
 - `id` (String) Network Settings ID.
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 

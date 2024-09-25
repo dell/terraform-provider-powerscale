@@ -180,6 +180,8 @@ Optional:
 - `telemetry_persist` (Boolean) Change if files are kept after upload
 - `telemetry_threads` (Number) Change the number of threads for telemetry gathers
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

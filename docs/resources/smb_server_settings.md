@@ -119,6 +119,8 @@ resource "powerscale_smb_server_settings" "example" {
 
 - `id` (String) ID of SMB Server Settings.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

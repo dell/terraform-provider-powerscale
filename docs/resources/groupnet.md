@@ -88,22 +88,24 @@ resource "powerscale_groupnet" "example_groupnet" {
 
 ### Required
 
-- `name` (String) The name of the groupnet. (Update Supported)
+- `name` (String) The name of the groupnet.
 
 ### Optional
 
-- `allow_wildcard_subdomains` (Boolean) If enabled, SmartConnect treats subdomains of known dns zones as the known dns zone. This is required for S3 Virtual Host domains. Defaults to True. (Update Supported)
-- `description` (String) A description of the groupnet. (Update Supported)
-- `dns_cache_enabled` (Boolean) DNS caching is enabled or disabled. Defaults to True. (Update Supported)
-- `dns_resolver_rotate` (Boolean) Enable or disable DNS resolver rotate. Defaults to False. (Update Supported)
-- `dns_search` (List of String) List of DNS search suffixes. (Update Supported)
-- `dns_servers` (List of String) List of Domain Name Server IP addresses. (Update Supported)
-- `server_side_dns_search` (Boolean) Enable or disable appending nodes DNS search list to client DNS inquiries directed at SmartConnect service IP. Defaults to True. (Update Supported)
+- `allow_wildcard_subdomains` (Boolean) If enabled, SmartConnect treats subdomains of known dns zones as the known dns zone. This is required for S3 Virtual Host domains. Defaults to True.
+- `description` (String) A description of the groupnet.
+- `dns_cache_enabled` (Boolean) DNS caching is enabled or disabled. Defaults to True.
+- `dns_resolver_rotate` (Boolean) Enable or disable DNS resolver rotate. Defaults to False.
+- `dns_search` (List of String) List of DNS search suffixes.
+- `dns_servers` (List of String) List of Domain Name Server IP addresses.
+- `server_side_dns_search` (Boolean) Enable or disable appending nodes DNS search list to client DNS inquiries directed at SmartConnect service IP. Defaults to True.
 
 ### Read-Only
 
 - `id` (String) Unique Interface ID.
 - `subnets` (List of String) Name of the subnets in the groupnet.
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 

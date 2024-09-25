@@ -85,3 +85,5 @@ output "key" {
 - `secret_key` (String) The secret key of the key. Computed.
 - `secret_key_timestamp` (Number) The timestamp of the secret key. Computed.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
