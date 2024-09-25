@@ -82,8 +82,8 @@ func (r *LdapProviderResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			// Create params
 			"groupnet": schema.StringAttribute{
-				Description:         "Groupnet identifier. ",
-				MarkdownDescription: "Groupnet identifier. ",
+				Description:         "Groupnet identifier. Cannot be updated.",
+				MarkdownDescription: "Groupnet identifier. Cannot be updated.",
 				Optional:            true,
 				Computed:            true,
 			},

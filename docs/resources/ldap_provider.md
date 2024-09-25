@@ -263,7 +263,7 @@ resource "powerscale_ldap_provider" "example_ldap_provider" {
 - `group_filter` (String) Specifies the LDAP filter for group objects.
 - `group_members_attribute` (String) Specifies the LDAP Group Members attribute.
 - `group_search_scope` (String) Specifies the depth from the base DN to perform LDAP searches. Acceptable values: "default", "base", "onelevel", "subtree", "children".
-- `groupnet` (String) Groupnet identifier.
+- `groupnet` (String) Groupnet identifier. Cannot be updated.
 - `home_directory_template` (String) Specifies the path to the home directory template.
 - `homedir_attribute` (String) Specifies the LDAP Homedir attribute.
 - `ignore_tls_errors` (Boolean) If true, continues over secure connections even if identity checks fail.
