@@ -95,10 +95,11 @@ Import is supported using the following syntax:
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# S3 Zone Settings can be imported by the name of the S3 Zone
 # The command is
-# terraform import powerscale_s3_zone_settings.s3_zone_settings_example <zone>
+# terraform import powerscale_s3_zone_settings.s3_zone_settings_example <S3 zone name>
 terraform import powerscale_s3_zone_settings.s3_zone_settings_example "System"
 
-# after running this command, populate the name field and other required parameters in the config file to start managing this resource.
+# after running this command, populate the zone field and other required parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```

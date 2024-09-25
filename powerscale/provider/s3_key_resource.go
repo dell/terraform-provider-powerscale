@@ -37,10 +37,9 @@ import (
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
 	_ resource.Resource = &S3KeyResource{}
-	// _ resource.ResourceWithImportState = &S3KeyResource{} (can't support import due to secret key not present during read-refresh response).
 )
 
-// NewS3KeyResource returns the S3 Bucket resource object.
+// NewS3KeyResource returns the S3 Key resource object.
 func NewS3KeyResource() resource.Resource {
 	return &S3KeyResource{}
 }
@@ -75,9 +74,13 @@ func (r *S3KeyResource) Metadata(ctx context.Context, req resource.MetadataReque
 func (r *S3KeyResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "This resource is used to manage the S3 Key of PowerScale Array. PowerScale S3 keys are used to sign the requests you send to the S3 protocol. We can Create, Update and Delete the S3 Bucket using this resource.",
-		Description:         "This resource is used to manage the S3 Key of PowerScale Array. PowerScale S3 keys are used to sign the requests you send to the S3 protocol. We can Create, Update and Delete the S3 Bucket using this resource.",
-		Attributes:          S3KeyResourceSchema(),
+		MarkdownDescription: "This resource is used to manage the S3 Key Entity of PowerScale Array." +
+			" PowerScale S3 keys are used to sign the requests you send to the S3 protocol." +
+			" We can Create, Update and Delete the S3 Key using this resource.",
+		Description: "This resource is used to manage the S3 Key Entity of PowerScale Array." +
+			" PowerScale S3 keys are used to sign the requests you send to the S3 protocol." +
+			" We can Create, Update and Delete the S3 Key using this resource.",
+		Attributes: S3KeyResourceSchema(),
 	}
 }
 
@@ -90,9 +93,11 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 			Description:         "Unique identifier of the S3 key.",
 		},
 		"user": schema.StringAttribute{
-			Required:            true,
-			MarkdownDescription: "The username to create the S3 key.",
-			Description:         "The username to create the S3 key.",
+			Required: true,
+			MarkdownDescription: "The username to create the S3 key." +
+				" This resource will be recreated if the value of this field is changed.",
+			Description: "The username to create the S3 key." +
+				" This resource will be recreated if the value of this field is changed.",
 			Validators: []validator.String{
 				stringvalidator.LengthAtLeast(1),
 				stringvalidator.RegexMatches(regexp.MustCompile(`^(?:\S.*\S|\S)$`), "must contain atleast one character and no leading or trailing spaces"),
@@ -102,9 +107,11 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 			},
 		},
 		"zone": schema.StringAttribute{
-			Required:            true,
-			MarkdownDescription: "The zone of the user.",
-			Description:         "The zone of the user.",
+			Required: true,
+			MarkdownDescription: "The zone of the user." +
+				" This resource will be recreated if the value of this field is changed.",
+			Description: "The zone of the user." +
+				" This resource will be recreated if the value of this field is changed.",
 			Validators: []validator.String{
 				stringvalidator.LengthAtLeast(1),
 				stringvalidator.RegexMatches(regexp.MustCompile(`^(?:\S.*\S|\S)$`), "must contain atleast one character and no leading or trailing spaces"),
