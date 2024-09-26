@@ -77,9 +77,9 @@ func (r *ClusterSnmpResource) Schema(ctx context.Context, req resource.SchemaReq
 			},
 			"enabled": schema.BoolAttribute{
 				Description: "True if the Cluster SNMP is enabled." +
-					" If true, `snmp_v1v2_access` is required, otherwise `snmp_v3_access` is required.",
+					" If true, either 'snmp_v1v2_access' or 'snmp_v3_access' is required.",
 				MarkdownDescription: "True if the Cluster SNMP is enabled." +
-					" If true, `snmp_v1v2_access` is required, otherwise `snmp_v3_access` is required.",
+					" If true, either `snmp_v1v2_access` or `snmp_v3_access` is required.",
 				Required: true,
 			},
 			"read_only_community": schema.StringAttribute{

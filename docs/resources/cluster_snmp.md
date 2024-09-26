@@ -74,7 +74,7 @@ resource "powerscale_cluster_snmp" "example_snmp_settings" {
 
 ### Required
 
-- `enabled` (Boolean) True if the Cluster SNMP is enabled. If true, `snmp_v1v2_access` is required, otherwise `snmp_v3_access` is required.
+- `enabled` (Boolean) True if the Cluster SNMP is enabled. If true, either `snmp_v1v2_access` or `snmp_v3_access` is required.
 
 ### Optional
 
@@ -121,6 +121,5 @@ Import is supported using the following syntax:
 # Example:
 terraform import powerscale_cluster_snmp.example_snmp_settings "cluster_snmp"
 # after running this command, populate the enabled field and other required parameters in the config file to start managing this resource.
-# If enabled is true, then snmp_v1v2_access otherwise snmp_v3_access must be populated.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```
