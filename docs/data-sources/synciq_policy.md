@@ -19,12 +19,12 @@ linkTitle: "powerscale_synciq_policy"
 page_title: "powerscale_synciq_policy Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This datasource is used to query the existing SyncIQ Policies from PowerScale array.
+  This datasource is used to query the existing SyncIQ Policies from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block.
 ---
 
 # powerscale_synciq_policy (Data Source)
 
-This datasource is used to query the existing SyncIQ Policies from PowerScale array.
+This datasource is used to query the existing SyncIQ Policies from PowerScale array. The information fetched from this datasource can be used for getting the details or for further processing in resource block.
 
 ## Example Usage
 
