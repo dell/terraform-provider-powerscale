@@ -67,18 +67,18 @@ func (r *UserResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 
 		Attributes: map[string]schema.Attribute{
 			"query_force": schema.BoolAttribute{
-				Description:         "If true, skip validation checks when creating user. Need to be true, when changing user UID. Cannot be updated. Cannot be updated.",
-				MarkdownDescription: "If true, skip validation checks when creating user. Need to be true, when changing user UID. Cannot be updated. Cannot be updated.",
+				Description:         "If true, skip validation checks when creating user. Need to be true, when changing user UID.",
+				MarkdownDescription: "If true, skip validation checks when creating user. Need to be true, when changing user UID.",
 				Optional:            true,
 			},
 			"query_zone": schema.StringAttribute{
-				Description:         "Specifies the zone that the object belongs to. Cannot be updated. Cannot be updated.",
-				MarkdownDescription: "Specifies the zone that the object belongs to. Cannot be updated. Cannot be updated.",
+				Description:         "Specifies the zone that the object belongs to. Cannot be updated.",
+				MarkdownDescription: "Specifies the zone that the object belongs to. Cannot be updated.",
 				Optional:            true,
 			},
 			"query_provider": schema.StringAttribute{
-				Description:         "Specifies the provider type. Cannot be updated. Cannot be updated.",
-				MarkdownDescription: "Specifies the provider type. Cannot be updated. Cannot be updated.",
+				Description:         "Specifies the provider type. Cannot be updated.",
+				MarkdownDescription: "Specifies the provider type. Cannot be updated.",
 				Optional:            true,
 			},
 			"provider_name": schema.StringAttribute{

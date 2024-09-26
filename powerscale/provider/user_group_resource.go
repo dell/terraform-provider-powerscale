@@ -64,8 +64,8 @@ func (r *UserGroupResource) Schema(ctx context.Context, req resource.SchemaReque
 		Description:         "This resource is used to manage the User Group entity of PowerScale Array. We can Create, Update and Delete the User Group using this resource. We can also import an existing User Group from PowerScale array. PowerScale User Group allows you to do operations on a set of users, groups and well-knowns.",
 		Attributes: map[string]schema.Attribute{
 			"query_force": schema.BoolAttribute{
-				Description:         "If true, skip validation checks when creating user group. Need to be true, when changing group GID. Cannot be updated.",
-				MarkdownDescription: "If true, skip validation checks when creating user group. Need to be true, when changing group GID. Cannot be updated.",
+				Description:         "If true, skip validation checks when creating user group. Need to be true, when changing group GID.",
+				MarkdownDescription: "If true, skip validation checks when creating user group. Need to be true, when changing group GID.",
 				Optional:            true,
 			},
 			"query_zone": schema.StringAttribute{

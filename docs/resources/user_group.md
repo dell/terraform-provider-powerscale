@@ -91,7 +91,7 @@ resource "powerscale_user_group" "testUserGroup" {
 - `domain` (String) Specifies the domain that the object is part of. Cannot be updated.
 - `gid` (Number) Specifies a numeric user group identifier.
 - `groups` (List of String) Specifies list members of group within the group.
-- `query_force` (Boolean) If true, skip validation checks when creating user group. Need to be true, when changing group GID. Cannot be updated.
+- `query_force` (Boolean) If true, skip validation checks when creating user group. Need to be true, when changing group GID.
 - `query_provider` (String) Specifies the provider type. Cannot be updated.
 - `query_zone` (String) Specifies the zone that the object belongs to. Cannot be updated.
 - `roles` (List of String) List of roles, the user is assigned.

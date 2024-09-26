@@ -106,9 +106,9 @@ resource "powerscale_user" "testUser" {
 - `password_expires` (Boolean) If true, the password is allowed to expire.
 - `primary_group` (String) Specifies the name of the primary group.
 - `prompt_password_change` (Boolean) If true, Prompts the user to change their password at the next login.
-- `query_force` (Boolean) If true, skip validation checks when creating user. Need to be true, when changing user UID. Cannot be updated. Cannot be updated.
-- `query_provider` (String) Specifies the provider type. Cannot be updated. Cannot be updated.
-- `query_zone` (String) Specifies the zone that the object belongs to. Cannot be updated. Cannot be updated.
+- `query_force` (Boolean) If true, skip validation checks when creating user. Need to be true, when changing user UID.
+- `query_provider` (String) Specifies the provider type. Cannot be updated.
+- `query_zone` (String) Specifies the zone that the object belongs to. Cannot be updated.
 - `roles` (List of String) List of roles, the user is assigned.
 - `shell` (String) Specifies a path to the shell for the user.
 - `sid` (String) Specifies a security identifier. Cannot be updated.
