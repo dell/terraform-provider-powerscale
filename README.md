@@ -40,6 +40,7 @@ The logged-in user configured in the Terraform provider must possess adequate pe
 * [List of DataSources in Terraform Provider for Dell PowerScale](#list-of-datasources-in-terraform-provider-for-dell-powerscale)
 * [List of Resources in Terraform Provider for Dell PowerScale](#list-of-resources-in-terraform-provider-for-dell-powerscale)
 * [Releasing, Maintenance and Deprecation](#releasing-maintenance-and-deprecation)
+* [New to Terraform?](#new-to-terraform)
 
 ## Support
 For any Terraform Provider for Dell PowerScale issues, questions or feedback, please follow our [support process](https://github.com/dell/dell-terraform-providers/blob/main/docs/SUPPORT.md)
@@ -190,3 +191,15 @@ Terraform Provider for Dell Technologies PowerScale follows [Semantic Versioning
 New versions will be release regularly if significant changes (bug fix or new feature) are made in the provider.
 
 Released code versions are located on tags in the form of "vx.y.z" where x.y.z corresponds to the version number.
+
+## New to Terraform?
+**Here are some helpful links to get you started if you are new to terraform before using our provider:**
+
+- Intro to Terraform: https://developer.hashicorp.com/terraform/intro 
+- Providers: https://developer.hashicorp.com/terraform/language/providers 
+- Resources: https://developer.hashicorp.com/terraform/language/resources
+- Datasources: https://developer.hashicorp.com/terraform/language/data-sources
+- Import: https://developer.hashicorp.com/terraform/language/import
+- Variables: https://developer.hashicorp.com/terraform/language/values/variables
+- Modules: https://developer.hashicorp.com/terraform/language/modules
+- State: https://developer.hashicorp.com/terraform/language/state
