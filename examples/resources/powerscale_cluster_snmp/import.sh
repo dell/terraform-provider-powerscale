@@ -17,5 +17,5 @@
 # terraform import powerscale_cluster_snmp.example_snmp_settings <anyString>
 # Example:
 terraform import powerscale_cluster_snmp.example_snmp_settings "cluster_snmp"
-# after running this command, populate the name field and other required parameters in the config file to start managing this resource.
+# after running this command, populate the enabled field and other required parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.

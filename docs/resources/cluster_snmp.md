@@ -19,12 +19,12 @@ linkTitle: "powerscale_cluster_snmp"
 page_title: "powerscale_cluster_snmp Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This resource is used to manage the Cluster SNMP settings of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.
+  This resource is used to manage the Cluster SNMP settings of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import the existing Cluster SNMP settings from PowerScale array.
 ---
 
 # powerscale_cluster_snmp (Resource)
 
-This resource is used to manage the Cluster SNMP settings of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.
+This resource is used to manage the Cluster SNMP settings of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import the existing Cluster SNMP settings from PowerScale array.
 
 
 ## Example Usage
@@ -74,14 +74,14 @@ resource "powerscale_cluster_snmp" "example_snmp_settings" {
 
 ### Required
 
-- `enabled` (Boolean) True if the Cluster SNMP is enabled.
+- `enabled` (Boolean) True if the Cluster SNMP is enabled. If true, either `snmp_v1v2_access` or `snmp_v3_access` is required.
 
 ### Optional
 
 - `read_only_community` (String) The read-only community string for the Cluster SNMP.
-- `snmp_v1_v2c_access` (Boolean) The SNMPv1/v2c access for the Cluster SNMP.
-- `snmp_v3_access` (Boolean) The SNMPv3 access for the Cluster SNMP.
-- `snmp_v3_auth_protocol` (String) The SNMPv3 authentication protocol for the Cluster SNMP.
+- `snmp_v1_v2c_access` (Boolean) The SNMPv1/v2c access for the Cluster SNMP. Also requires `read_only_community`.
+- `snmp_v3_access` (Boolean) The SNMPv3 access for the Cluster SNMP. Also requires snmp_v3_password.
+- `snmp_v3_auth_protocol` (String) The SNMPv3 authentication protocol for the Cluster SNMP. Accepted values are `MD5`and `SHA`.
 - `snmp_v3_password` (String) The SNMPv3 authentication password for the Cluster SNMP.
 - `snmp_v3_priv_password` (String) The SNMPv3 privacy protocol password for the Cluster SNMP.
 - `snmp_v3_priv_protocol` (String) The SNMPv3 privacy protocol for the Cluster SNMP.
@@ -93,6 +93,8 @@ resource "powerscale_cluster_snmp" "example_snmp_settings" {
 ### Read-Only
 
 - `id` (String) ID of the Cluster SNMP.
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 
@@ -118,6 +120,6 @@ Import is supported using the following syntax:
 # terraform import powerscale_cluster_snmp.example_snmp_settings <anyString>
 # Example:
 terraform import powerscale_cluster_snmp.example_snmp_settings "cluster_snmp"
-# after running this command, populate the name field and other required parameters in the config file to start managing this resource.
+# after running this command, populate the enabled field and other required parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```

@@ -15,7 +15,7 @@
 
 # A Peer Certificate can be imported by its name
 
-# The command to import by ID is
+# The command to import is
 # terraform import powerscale_synciq_peer_certificate.certificate <certificate name>
 # Example:
 terraform import powerscale_synciq_peer_certificate.certificate2 "peer_certificate_01"

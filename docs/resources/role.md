@@ -135,6 +135,8 @@ Read-Only:
 
 - `name` (String) Specifies the name of the privilege.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

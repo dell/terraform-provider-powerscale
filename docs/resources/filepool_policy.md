@@ -344,15 +344,15 @@ resource "powerscale_filepool_policy" "example_default_policy" {
 
 ### Required
 
-- `name` (String) A unique name for this policy. If the policy is default policy, its name should be "Default policy". (Update Supported)
+- `name` (String) A unique name for this policy. If the policy is default policy, its name should be "Default policy".
 
 ### Optional
 
-- `actions` (Attributes List) A list of actions to be taken for matching files. (Update Supported) (see [below for nested schema](#nestedatt--actions))
-- `apply_order` (Number) The order in which this policy should be applied (relative to other policies). (Update Supported)
-- `description` (String) A description for this File Pool Policy. (Update Supported)
-- `file_matching_pattern` (Attributes) Specifies the file matching rules for determining which files will be managed by this policy. (Update Supported) (see [below for nested schema](#nestedatt--file_matching_pattern))
-- `is_default_policy` (Boolean) Specifies if the policy is default policy. Default policy applies to all files not selected by higher-priority policies.
+- `actions` (Attributes List) A list of actions to be taken for matching files. (see [below for nested schema](#nestedatt--actions))
+- `apply_order` (Number) The order in which this policy should be applied (relative to other policies).
+- `description` (String) A description for this File Pool Policy.
+- `file_matching_pattern` (Attributes) Specifies the file matching rules for determining which files will be managed by this policy. (see [below for nested schema](#nestedatt--file_matching_pattern))
+- `is_default_policy` (Boolean) Specifies if the policy is default policy. Default policy applies to all files not selected by higher-priority policies. Cannot be updated.
 
 ### Read-Only
 
@@ -457,6 +457,8 @@ Optional:
 - `units` (String) Size unit value. One of 'B','KB','MB','GB','TB','PB','EB' (valid only with 'type' = 'size').
 - `use_relative_time` (Boolean) Whether time units refer to a calendar date and time (e.g., Jun 3, 2009) or a relative duration (e.g., 2 weeks) (valid only with 'type' in {accessed_time, birth_time, changed_time or metadata_changed_time}.
 - `value` (String) The value to be compared against a file attribute.
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 

@@ -75,12 +75,12 @@ resource "powerscale_snapshot" "snap" {
 
 ### Required
 
-- `path` (String) The /ifs path snapshotted.
+- `path` (String) The /ifs path snapshotted. Cannot be updated.
 
 ### Optional
 
-- `name` (String) The user or system supplied snapshot name. This will be null for snapshots pending delete. Only alphanumeric characters, underscores ( _ ), and hyphens (-) are allowed. (Update Supported)
-- `set_expires` (String) The amount of time from creation before the snapshot will expire and be eligible for automatic deletion. Resets each time this value is updated (Update Supported)
+- `name` (String) The user or system supplied snapshot name. This will be null for snapshots pending delete. Only alphanumeric characters, underscores ( _ ), and hyphens (-) are allowed.
+- `set_expires` (String) The amount of time from creation before the snapshot will expire and be eligible for automatic deletion. Resets each time this value is updated
 
 ### Read-Only
 
@@ -97,6 +97,8 @@ resource "powerscale_snapshot" "snap" {
 - `state` (String) Snapshot state.
 - `target_id` (Number) The ID of the snapshot pointed to if this is an alias. 18446744073709551615 (max uint64) is returned for an alias to the live filesystem.
 - `target_name` (String) The name of the snapshot pointed to if this is an alias.
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 

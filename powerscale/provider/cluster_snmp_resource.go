@@ -63,8 +63,12 @@ func (r *ClusterSnmpResource) Schema(ctx context.Context, req resource.SchemaReq
 	// Schema describes the resource arguments.
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "This resource is used to manage the Cluster SNMP settings of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.",
-		Description:         "This resource is used to manage the Cluster SNMP settings of PowerScale Array. We can Create, Update and Delete the Cluster SNMP using this resource. We can also import an existing Cluster SNMP from PowerScale array.",
+		MarkdownDescription: "This resource is used to manage the Cluster SNMP settings of PowerScale Array." +
+			" We can Create, Update and Delete the Cluster SNMP using this resource." +
+			" We can also import the existing Cluster SNMP settings from PowerScale array.",
+		Description: "This resource is used to manage the Cluster SNMP settings of PowerScale Array." +
+			" We can Create, Update and Delete the Cluster SNMP using this resource." +
+			" We can also import the existing Cluster SNMP settings from PowerScale array.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "ID of the Cluster SNMP.",
@@ -72,9 +76,11 @@ func (r *ClusterSnmpResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:            true,
 			},
 			"enabled": schema.BoolAttribute{
-				Description:         "True if the Cluster SNMP is enabled.",
-				MarkdownDescription: "True if the Cluster SNMP is enabled.",
-				Required:            true,
+				Description: "True if the Cluster SNMP is enabled." +
+					" If true, either 'snmp_v1v2_access' or 'snmp_v3_access' is required.",
+				MarkdownDescription: "True if the Cluster SNMP is enabled." +
+					" If true, either `snmp_v1v2_access` or `snmp_v3_access` is required.",
+				Required: true,
 			},
 			"read_only_community": schema.StringAttribute{
 				Description:         "The read-only community string for the Cluster SNMP.",
@@ -83,18 +89,22 @@ func (r *ClusterSnmpResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 			},
 			"snmp_v1_v2c_access": schema.BoolAttribute{
-				Description:         "The SNMPv1/v2c access for the Cluster SNMP.",
-				MarkdownDescription: "The SNMPv1/v2c access for the Cluster SNMP.",
-				Computed:            true,
-				Optional:            true,
-				Validators:          []validator.Bool{boolvalidator.AlsoRequires(path.MatchRoot("read_only_community"))},
+				Description: "The SNMPv1/v2c access for the Cluster SNMP." +
+					" Also requires `read_only_community`.",
+				MarkdownDescription: "The SNMPv1/v2c access for the Cluster SNMP." +
+					" Also requires `read_only_community`.",
+				Computed:   true,
+				Optional:   true,
+				Validators: []validator.Bool{boolvalidator.AlsoRequires(path.MatchRoot("read_only_community"))},
 			},
 			"snmp_v3_access": schema.BoolAttribute{
-				Description:         "The SNMPv3 access for the Cluster SNMP.",
-				MarkdownDescription: "The SNMPv3 access for the Cluster SNMP.",
-				Computed:            true,
-				Optional:            true,
-				Validators:          []validator.Bool{boolvalidator.AlsoRequires(path.MatchRoot("snmp_v3_password"))},
+				Description: "The SNMPv3 access for the Cluster SNMP." +
+					" Also requires snmp_v3_password.",
+				MarkdownDescription: "The SNMPv3 access for the Cluster SNMP." +
+					" Also requires snmp_v3_password.",
+				Computed:   true,
+				Optional:   true,
+				Validators: []validator.Bool{boolvalidator.AlsoRequires(path.MatchRoot("snmp_v3_password"))},
 			},
 			"snmp_v3_password": schema.StringAttribute{
 				Description:         "The SNMPv3 authentication password for the Cluster SNMP.",
@@ -106,10 +116,12 @@ func (r *ClusterSnmpResource) Schema(ctx context.Context, req resource.SchemaReq
 				},
 			},
 			"snmp_v3_auth_protocol": schema.StringAttribute{
-				Description:         "The SNMPv3 authentication protocol for the Cluster SNMP.",
-				MarkdownDescription: "The SNMPv3 authentication protocol for the Cluster SNMP.",
-				Computed:            true,
-				Optional:            true,
+				Description: "The SNMPv3 authentication protocol for the Cluster SNMP." +
+					" Accepted values are `MD5`and `SHA`.",
+				MarkdownDescription: "The SNMPv3 authentication protocol for the Cluster SNMP." +
+					" Accepted values are `MD5`and `SHA`.",
+				Computed: true,
+				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"MD5",

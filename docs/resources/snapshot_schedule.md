@@ -123,6 +123,8 @@ resource "powerscale_snapshot_schedule" "snap_schedule" {
 
 - `id` (String) The system ID given to the schedule.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

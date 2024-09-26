@@ -169,6 +169,8 @@ Read-Only:
 - `shadow_refs` (Number) Number of shadow references (cloned, deduplicated or packed filesystem blocks) used by governed data.
 - `shadow_refs_ready` (Boolean) True if shadow_refs resource accounting is accurate on the quota. If false, this quota is waiting on completion of a QuotaScan job.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

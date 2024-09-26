@@ -19,12 +19,12 @@ linkTitle: "powerscale_s3_zone_settings"
 page_title: "powerscale_s3_zone_settings Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Resource for managing S3ZoneSettings on PowerScale.
+  This resource is used to manage the S3 Zone Settings entity of the PowerScale Array. PowerScale S3 Zone Setting map to access zone configuration which provide default location for creating s3 buckets. We can Create, Update and Delete the S3 Zone Setting using this resource. We can also import an existing S3 Zone Settings from PowerScale array.
 ---
 
 # powerscale_s3_zone_settings (Resource)
 
-Resource for managing S3ZoneSettings on PowerScale.
+This resource is used to manage the S3 Zone Settings entity of the PowerScale Array. PowerScale S3 Zone Setting map to access zone configuration which provide default location for creating s3 buckets. We can Create, Update and Delete the S3 Zone Setting using this resource. We can also import an existing S3 Zone Settings from PowerScale array.
 
 
 ## Example Usage
@@ -66,14 +66,16 @@ resource "powerscale_s3_zone_settings" "s3_zone_setting" {
 
 ### Required
 
-- `zone` (String) The name of the access zone you want to update settings for s3 service
+- `zone` (String) The name of the access zone you want to update settings for s3 service. If this field is updated, Terraform will delete and then recreate this resource.
 
 ### Optional
 
 - `base_domain` (String) Base Domain for S3 zone
 - `bucket_directory_create_mode` (Number) The permission mode for creating bucket directories.
-- `object_acl_policy` (String) The default policy for object access control lists (ACLs), which can be either “replace” or “deny”
+- `object_acl_policy` (String) The default policy for object access control lists (ACLs), which can be either `replace` or `deny`.
 - `root_path` (String) The root path for the S3 bucket.
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 
@@ -95,10 +97,11 @@ Import is supported using the following syntax:
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# S3 Zone Settings can be imported by the name of the S3 Zone
 # The command is
-# terraform import powerscale_s3_zone_settings.s3_zone_settings_example <zone>
+# terraform import powerscale_s3_zone_settings.s3_zone_settings_example <S3 zone name>
 terraform import powerscale_s3_zone_settings.s3_zone_settings_example "System"
 
-# after running this command, populate the name field and other required parameters in the config file to start managing this resource.
+# after running this command, populate the zone field and other required parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```

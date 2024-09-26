@@ -17,9 +17,6 @@ limitations under the License.
 
 
 # Available actions: Create, Update, Delete and Import.
-# If resource arguments are omitted, `terraform apply` will load User Mapping Rules from PowerScale, and save to terraform state file.
-# If any resource arguments are specified, `terraform apply` will try to load User Mapping Rules (if not loaded) and update the settings.
-# `terraform destroy` will delete the resource from terraform state file rather than deleting User Mapping Rules from PowerScale.
 # For more information, Please check the terraform state file.
 
 resource "powerscale_synciq_peer_certificate" "cert_10_10_10_10" {
@@ -103,8 +100,8 @@ resource "powerscale_synciq_policy" "policy" {
   target_snapshot_pattern               = "SIQ-%%{SrcCluster}-%%{PolicyName}-%Y-%m-%d_%H-%M-%S"
 }
 
-# After the execution of above resource block, Sync IQ Policies would have been cached in terraform state file, or
-# Sync IQ Policies would have been updated on PowerScale.
+# After the execution of above resource block, a Sync IQ Policy would have been cached in terraform state file
+# and a Sync IQ Policies would have been created/updated on PowerScale.
 # For more information, Please check the terraform state file.
 
 # sheduling a policy when source is modified
@@ -121,7 +118,7 @@ resource "powerscale_synciq_policy" "policy_when_source_modified" {
   schedule  = "when-source-modified"
   job_delay = 20 * 60 * 60
 
-  # ocsp
+  # OCSP settings
   ocsp_address = "10.20.10.9"
   # Installed ca certificates can be listed using "isi certificate authority list"
   # which gives a list of all certificates with their short IDs.

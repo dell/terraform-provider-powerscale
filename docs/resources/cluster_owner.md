@@ -92,6 +92,8 @@ resource "powerscale_cluster_owner" "test" {
 
 - `id` (String) ID of the Cluster Owner Settings.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

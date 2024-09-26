@@ -122,6 +122,8 @@ Optional:
 - `name` (String) Target pool name if target specified as storagepool, otherwise empty string.
 - `type` (String) Type of target pool. Acceptable values: storagepool, anywhere
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

@@ -47,7 +47,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# Available actions: Create and  Update updates the syncIQ  global settings. Delete will delete the state file. Import action is also available
+# Available actions: Create and  Update updates the syncIQ  global settings. Delete will delete the state file. Import action is also available.
 # After `terraform apply` of this example file will update the settings according to the attributes set in the config
 
 # PowerScale SynIQ global settings allows you to manage the global settings on the Powerscale array
@@ -103,6 +103,8 @@ Optional:
 - `pool` (String) The pool to restrict replication policies to.
 - `subnet` (String) The subnet to restrict replication policies to.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:
@@ -127,6 +129,6 @@ Import is supported using the following syntax:
 # terraform import powerscale_synciq_global_settings.settings <anystring>
 # Example:
 terraform import powerscale_synciq_global_settings.settings global_setting
-# after running this command, populate the  other required parameters in the config file to start managing this resource.
+# after running this command, populate one or more parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```

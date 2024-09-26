@@ -21,12 +21,13 @@ limitations under the License.
 
 The Terraform Provider for Dell Technologies (Dell) PowerScale allows Data Center and IT administrators to use Hashicorp Terraform to automate and orchestrate the provisioning and management of Dell PowerScale storage systems.
 
-The Terraform Provider can be used to manage access zone, active directory, cluster, user, user group, file system, smb share, nfs export, snapshot, snapshot schedule, quota, groupnet, subnet, network pool, network settings, smart pool settings, ldap providers, network rule, file pool policy, ntp server, ntp settings, cluster email settings, acl settings, nfs export settings, role, user mapping rules, role privilege, s3 bucket, nfs global settings, nfs zone settings, smb share settings, smb server settings, namespace acl.
+The Terraform Provider can be used to manage access zone, active directory, cluster, user, user group, file system, smb share, nfs export, snapshot, snapshot schedule, quota, groupnet, subnet, network pool, network settings, smart pool settings, ldap providers, network rule, file pool policy, ntp server, ntp settings, cluster email settings, acl settings, nfs export settings, role, user mapping rules, role privilege, s3 bucket, nfs global settings, nfs zone settings, smb share settings, smb server settings, namespace acl, cluster identity, cluster snmp, cluster owner, cluster time, support assist, s3 keys, s3 zone settings, s3 global settings, synciq policies, synciq rules, synciq global settings, synciq peer certificates.
 
 The logged-in user configured in the Terraform provider must possess adequate permissions against the target Dell PowerScale System.
 
 ## Table of Contents
 
+* [PowerScale Provider Documentation](docs/)
 * [Code of Conduct](https://github.com/dell/dell-terraform-providers/blob/main/docs/CODE_OF_CONDUCT.md)
 * [Maintainer Guide](https://github.com/dell/dell-terraform-providers/blob/main/docs/MAINTAINER_GUIDE.md)
 * [Committer Guide](https://github.com/dell/dell-terraform-providers/blob/main/docs/COMMITTER_GUIDE.md)
@@ -51,75 +52,90 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 | **Terraform Provider** | **PowerScale Version** | **OS**                    | **Terraform**               | **Golang** |
 |------------------------|:-----------------------|:--------------------------|-----------------------------|------------|
-| v1.4.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.7.x <br> 1.8.x         | 1.22       |
+| v1.5.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.8.x <br> 1.9.x         | 1.22       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
-* Cluster
-* Access Zone
-* ACL Settings
-* Active Directory
-* Cluster Email Settings
-* File Pool Policy
-* File System
-* Groupnet
-* LDAP Provider
-* Namespace ACL
-* Network Pool
-* Network Rule
-* Network Settings
-* NFS Export
-* NFS Export Settings
-* NFS Global Settings
-* NFS Zone Settings
-* NTP Server
-* NTP Settings
-* Quota
-* Role
-* Role Privilege
-* S3 Bucket
-* Smart Pool Settings
-* SMB Server Settings
-* SMB Share
-* SMB Share Settings
-* Snapshot
-* Snapshot Schedule
-* Subnet
-* User
-* User Group
-* User Mapping Rules
+* [Cluster](docs/data-sources/cluster.md)
+* [Access Zone](docs/data-sources/accesszone.md)
+* [ACL Settings](docs/data-sources/aclsettings.md)
+* [Active Directory Service Provider](docs/data-sources/adsprovider.md)
+* [Cluster Email Settings](docs/data-sources/cluster_email.md)
+* [File Pool Policy](docs/data-sources/filepool_policy.md)
+* [File System](docs/data-sources/filesystem.md)
+* [Groupnet](docs/data-sources/groupnet.md)
+* [LDAP Provider](docs/data-sources/ldap_provider.md)
+* [Namespace ACL](docs/data-sources/namespace_acl.md)
+* [Network Pool](docs/data-sources/networkpool.md)
+* [Network Rule](docs/data-sources/network_rule.md)
+* [Network Settings](docs/data-sources/network_settings.md)
+* [NFS Export](docs/data-sources/nfs_export.md)
+* [NFS Export Settings](docs/data-sources/nfs_export_settings.md)
+* [NFS Global Settings](docs/data-sources/nfs_global_settings.md)
+* [NFS Zone Settings](docs/data-sources/nfs_zone_settings.md)
+* [NTP Server](docs/data-sources/ntpserver.md)
+* [NTP Settings](docs/data-sources/ntpsettings.md)
+* [Quota](docs/data-sources/quota.md)
+* [Role](docs/data-sources/role.md)
+* [Role Privilege](docs/data-sources/roleprivilege.md)
+* [S3 Bucket](docs/data-sources/s3_bucket.md)
+* [Smart Pool Settings](docs/data-sources/smartpool_settings.md)
+* [SMB Server Settings](docs/data-sources/smb_server_settings.md)
+* [SMB Share](docs/data-sources/smb_share.md)
+* [SMB Share Settings](docs/data-sources/smb_share_settings.md)
+* [Snapshot](docs/data-sources/snapshot.md)
+* [Snapshot Schedule](docs/data-sources/snapshot_schedule.md)
+* [Subnet](docs/data-sources/subnet.md)
+* [User](docs/data-sources/user.md)
+* [User Group](docs/data-sources/user_group.md)
+* [User Mapping Rules](docs/data-sources/user_mapping_rules.md)
+* [SyncIQ Policy](docs/data-sources/synciq_policy.md)
+* [SyncIQ Global Settings](docs/data-sources/synciq_global_settings.md)
+* [SyncIQ Rule](docs/data-sources/synciq_rule.md)
+* [SyncIQ Peer Certificate](docs/data-sources/synciq_peer_certificate.md)
 
 ## List of Resources in Terraform Provider for Dell PowerScale
-* Access Zone
-* ACL Settings
-* Active Directory
-* Cluster Email Settings
-* File Pool Policy
-* File System
-* Groupnet
-* LDAP Provider
-* Namespace ACL
-* Network Pool
-* Network Rule
-* Network Settings
-* NFS Export
-* NFS Export Settings
-* NFS Global Settings
-* NFS Zone Settings
-* NTP Server
-* NTP Settings
-* Quota
-* Role
-* S3 Bucket
-* Smart Pool Settings
-* SMB Server Settings
-* SMB Share
-* SMB Share Settings
-* Snapshot
-* Snapshot Schedule
-* Subnet
-* User
-* User Group
-* User Mapping Rules
+* [Access Zone](docs/resources/accesszone.md)
+* [ACL Settings](docs/resources/aclsettings.md)
+* [Active Directory Service Provider](docs/resources/adsprovider.md)
+* [Cluster Email Settings](docs/resources/cluster_email.md)
+* [File Pool Policy](docs/resources/filepool_policy.md)
+* [File System](docs/resources/filesystem.md)
+* [Groupnet](docs/resources/groupnet.md)
+* [LDAP Provider](docs/resources/ldap_provider.md)
+* [Namespace ACL](docs/resources/namespace_acl.md)
+* [Network Pool](docs/resources/networkpool.md)
+* [Network Rule](docs/resources/network_rule.md)
+* [Network Settings](docs/resources/network_settings.md)
+* [NFS Export](docs/resources/nfs_export.md)
+* [NFS Export Settings](docs/resources/nfs_export_settings.md)
+* [NFS Global Settings](docs/resources/nfs_global_settings.md)
+* [NFS Zone Settings](docs/resources/nfs_zone_settings.md)
+* [NTP Server](docs/resources/ntpserver.md)
+* [NTP Settings](docs/resources/ntpsettings.md)
+* [Quota](docs/resources/quota.md)
+* [Role](docs/resources/role.md)
+* [S3 Bucket](docs/resources/s3_bucket.md)
+* [Smart Pool Settings](docs/resources/smartpool_settings.md)
+* [SMB Server Settings](docs/resources/smb_server_settings.md)
+* [SMB Share](docs/resources/smb_share.md)
+* [SMB Share Settings](docs/resources/smb_share_settings.md)
+* [Snapshot](docs/resources/snapshot.md)
+* [Snapshot Schedule](docs/resources/snapshot_schedule.md)
+* [Subnet](docs/resources/subnet.md)
+* [User](docs/resources/user.md)
+* [User Group](docs/resources/user_group.md)
+* [User Mapping Rules](docs/resources/user_mapping_rules.md)
+* [Cluster Identity](docs/resources/cluster_identity.md)
+* [Cluster SNMP](docs/resources/cluster_snmp.md)
+* [Cluster Owner](docs/resources/cluster_owner.md)
+* [Cluster Time](docs/resources/cluster_time.md)
+* [Support Assist](docs/resources/support_assist.md)
+* [S3 Key](docs/resources/s3_key.md)
+* [S3 Zone Settings](docs/resources/s3_zone_settings.md)
+* [S3 Global Settings](docs/resources/s3_global_settings.md)
+* [SyncIQ Policy](docs/resources/synciq_policy.md)
+* [SyncIQ Global Settings](docs/resources/synciq_global_settings.md)
+* [SyncIQ Peer Certificate](docs/resources/synciq_peer_certificate.md)
 
 ## Installation and execution of Terraform Provider for Dell PowerScale
 
@@ -132,7 +148,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerscale = { 
-      version = "1.4.0"
+      version = "1.5.0"
       source = "registry.terraform.io/dell/powerscale"
     }
   }

@@ -159,6 +159,8 @@ Optional:
 - `prefixlen` (Number) Prefix length in the format: nn.
 - `subnet` (String) Network address in the format: xxx.xxx.xxx.xxx
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

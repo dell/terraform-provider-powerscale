@@ -22,7 +22,7 @@ data "powerscale_synciq_policy" "all_policies" {
 }
 
 # Returns a the PowerScale SyncIQ Policy with given ID
-data "powerscale_synciq_policy" "all_policies" {
+data "powerscale_synciq_policy" "one_policy" {
   id = "g23j9a1f83h12n5j4"
 }
 
@@ -32,9 +32,9 @@ output "powerscale_synciq_all_policies" {
   value = data.powerscale_synciq_policy.all_policies.policies
 }
 
-# The user can use the fetched policy by ID by the variable data.powerscale_synciq_policy.one.policies[0]
+# The user can use the fetched policy by ID by the variable data.powerscale_synciq_policy.one_policy.policies[0]
 output "policyByID" {
-  value = data.powerscale_synciq_policy.one.policies[0]
+  value = data.powerscale_synciq_policy.one_policy.one_policy[0]
 }
 
 # Get syncIQ policy by name

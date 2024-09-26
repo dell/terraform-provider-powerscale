@@ -19,12 +19,12 @@ linkTitle: "powerscale_cluster_identity"
 page_title: "powerscale_cluster_identity Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This resource is used to manage the Cluster Identity settings of PowerScale Array. We can Create, Update and Delete the Cluster Identity using this resource. We can also import an existing Cluster Identity from PowerScale array.
+  This resource is used to manage the Cluster Identity settings of PowerScale Array. We can Create, Update and Delete the Cluster Identity using this resource. We can also import the existing Cluster Identity settings from PowerScale array.
 ---
 
 # powerscale_cluster_identity (Resource)
 
-This resource is used to manage the Cluster Identity settings of PowerScale Array. We can Create, Update and Delete the Cluster Identity using this resource. We can also import an existing Cluster Identity from PowerScale array.
+This resource is used to manage the Cluster Identity settings of PowerScale Array. We can Create, Update and Delete the Cluster Identity using this resource. We can also import the existing Cluster Identity settings from PowerScale array.
 
 
 ## Example Usage
@@ -100,6 +100,8 @@ Optional:
 - `motd` (String) The message of the day.
 - `motd_header` (String) The header to the message of the day.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:
@@ -124,6 +126,6 @@ Import is supported using the following syntax:
 # terraform import powerscale_cluster_identity.example_identity_settings <anyString>
 # Example:
 terraform import powerscale_cluster_identity.example_identity_settings "cluster_identity"
-# after running this command, populate the name field and other required parameters in the config file to start managing this resource.
+# after running this command, populate fields as per your requirement in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```
