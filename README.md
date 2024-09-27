@@ -27,7 +27,6 @@ The logged-in user configured in the Terraform provider must possess adequate pe
 
 ## Table of Contents
 
-* [PowerScale Provider Documentation](docs/)
 * [Code of Conduct](https://github.com/dell/dell-terraform-providers/blob/main/docs/CODE_OF_CONDUCT.md)
 * [Maintainer Guide](https://github.com/dell/dell-terraform-providers/blob/main/docs/MAINTAINER_GUIDE.md)
 * [Committer Guide](https://github.com/dell/dell-terraform-providers/blob/main/docs/COMMITTER_GUIDE.md)
@@ -40,6 +39,7 @@ The logged-in user configured in the Terraform provider must possess adequate pe
 * [List of DataSources in Terraform Provider for Dell PowerScale](#list-of-datasources-in-terraform-provider-for-dell-powerscale)
 * [List of Resources in Terraform Provider for Dell PowerScale](#list-of-resources-in-terraform-provider-for-dell-powerscale)
 * [Releasing, Maintenance and Deprecation](#releasing-maintenance-and-deprecation)
+* [Documentation](#documentation)
 * [New to Terraform?](#new-to-terraform)
 
 ## Support
@@ -191,6 +191,10 @@ Terraform Provider for Dell Technologies PowerScale follows [Semantic Versioning
 New versions will be release regularly if significant changes (bug fix or new feature) are made in the provider.
 
 Released code versions are located on tags in the form of "vx.y.z" where x.y.z corresponds to the version number.
+
+## Documentation
+
+For more detailed information, please refer to [Dell Terraform Providers Documentation](https://dell.github.io/terraform-docs/).
 
 ## New to Terraform?
 **Here are some helpful links to get you started if you are new to terraform before using our provider:**
