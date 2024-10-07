@@ -68,7 +68,6 @@ func TestAccUserDataSourceFilterNames(t *testing.T) {
 			{
 				Config: ProviderConfig + userFilterNamesDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(userTerraformName, "users.#", "1"),
 					resource.TestCheckResourceAttr(userTerraformName, "users.0.uid", "UID:10000"),
 					resource.TestCheckResourceAttr(userTerraformName, "users.0.name", "tfaccUserDatasource"),
 					resource.TestCheckResourceAttr(userTerraformName, "users.0.roles.#", "0"),

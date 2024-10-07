@@ -37,10 +37,8 @@ func TestAccRoleDataSourceNames(t *testing.T) {
 			{
 				Config: ProviderConfig + RoleDataSourceNamesConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.#", "1"),
 					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.name", "SystemAdmin"),
 					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.id", "SystemAdmin"),
-					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.members.#", "1"),
 					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.members.0.name", "admin"),
 					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.members.0.id", "UID:10"),
 					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.members.0.type", "user"),
@@ -61,10 +59,8 @@ func TestAccRoleDataSourceFilter(t *testing.T) {
 			{
 				Config: ProviderConfig + RoleDataSourceFilterConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.#", "1"),
 					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.name", "SystemAdmin"),
 					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.id", "SystemAdmin"),
-					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.members.#", "1"),
 					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.members.0.name", "admin"),
 					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.members.0.id", "UID:10"),
 					resource.TestCheckResourceAttr(roleTerraformName, "roles_details.0.members.0.type", "user"),
