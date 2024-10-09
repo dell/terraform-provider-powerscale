@@ -36,12 +36,12 @@ func TestAccSnapshotRestoreResource(t *testing.T) {
 					resource.TestCheckResourceAttr("powerscale_snapshot_restore.snap_restore", "snaprevert_params.snapshot_name", "snap_restore_snap"),
 				),
 			},
-			// {
-			// 	Config: ProviderConfig + snapRevertResourceConfigUpdate,
-			// 	Check: resource.ComposeTestCheckFunc(
-			// 		resource.TestCheckResourceAttrPair("powerscale_snapshot_restore.snap_restore", "snaprevert_params.snapshot_id", "powerscale_snapshot.snap1", "id"),
-			// 	),
-			// },
+			{
+				Config: ProviderConfig + snapRevertResourceConfigUpdate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrPair("powerscale_snapshot_restore.snap_restore", "snaprevert_params.snapshot_id", "powerscale_snapshot.snap1", "id"),
+				),
+			},
 		},
 	})
 }
@@ -91,10 +91,10 @@ resource "powerscale_snapshot_restore" "snap_restore" {
 }
 `
 
-// var snapRevertResourceConfigUpdate = fileSystemPre + snapshotPre + snapshotPre1 + `
-// resource "powerscale_snapshot_restore" "snap_restore" {
-// 	snaprevert_params = {
-//     	snapshot_id = powerscale_snapshot.snap1.id
-//   	}
-// }
-// `
+var snapRevertResourceConfigUpdate = fileSystemPre + snapshotPre + snapshotPre1 + `
+resource "powerscale_snapshot_restore" "snap_restore" {
+	snaprevert_params = {
+    	snapshot_id = powerscale_snapshot.snap1.id
+  	}
+}
+`

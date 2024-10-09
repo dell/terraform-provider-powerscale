@@ -130,6 +130,9 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 			return state, resp
 		}
 		_, diag = CheckJobStatus(ctx, client, strID, response)
+		if diag.HasError() {
+			return state, diag
+		}
 
 		// Populate the payload for creating snaprevert job
 		payload = powerscale.V10JobJob{
