@@ -68,6 +68,7 @@ type SnapshotDetailModel struct {
 	TargetName types.String `tfsdk:"target_name"`
 }
 
+// WritableSnapshot defines the writable snapshot.
 type WritableSnapshot struct {
 	// The system ID given to the snapshot. This is useful for tracking the status of delete pending snapshots.
 	ID types.Int32 `tfsdk:"id"`
