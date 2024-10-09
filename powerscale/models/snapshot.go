@@ -67,3 +67,32 @@ type SnapshotDetailModel struct {
 	// The name of the snapshot pointed to if this is an alias.
 	TargetName types.String `tfsdk:"target_name"`
 }
+
+type WritableSnapshot struct {
+	// The system ID given to the snapshot. This is useful for tracking the status of delete pending snapshots.
+	ID types.Int32 `tfsdk:"id"`
+
+	// The destination path of the snapshot.
+	DstPath types.String `tfsdk:"dst_path"`
+
+	// The source snapshot.
+	SrcSnap types.String `tfsdk:"src_snap"`
+
+	// The Unix Epoch time the snapshot was created.
+	Created types.Int64 `tfsdk:"created"`
+
+	// The size of the log data.
+	LogSize types.Int64 `tfsdk:"log_size"`
+
+	// The amount of physical storage in bytes used to store this snapshot.
+	PhysSize types.Int64 `tfsdk:"phys_size"`
+
+	// The source snapshot ID.
+	SrcID types.Int64 `tfsdk:"src_id"`
+
+	// The source path.
+	SrcPath types.String `tfsdk:"src_path"`
+
+	// Snapshot state.
+	State types.String `tfsdk:"state"`
+}

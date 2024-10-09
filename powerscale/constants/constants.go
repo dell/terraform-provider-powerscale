@@ -443,4 +443,13 @@ const (
 
 	// GetClusterVersionErrorMsg specifies error details occurred while getting cluster version.
 	GetClusterVersionErrorMsg = "Could not get cluster version"
+
+	// ReadWritableSnapshotErrorMsg specifies error details occurred while reading writable snapshot settings.
+	ReadWritableSnapshotErrorMsg = "Could not read writable snapshot settings"
+
+	// UpdateWritableSnapshotErrorMsg specifies error details occurred while updating writable snapshot settings.
+	UpdateWritableSnapshotErrorMsg = "Could not update writable snapshot settings"
+
+	// DeleteWritableSnapshotErrorMsg specifies error details occurred while deleting writable snapshot.
+	DeleteWritableSnapshotErrorMsg = "Could not delete writable snapshot"
 )
