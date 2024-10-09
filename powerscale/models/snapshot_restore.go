@@ -21,11 +21,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+// SnapshotRestoreModel represents snapshot restore resource model.
 type SnapshotRestoreModel struct {
 	ID               types.String `tfsdk:"id"`
 	SnapRevertParams types.Object `tfsdk:"snaprevert_params"`
 }
 
+// SnapRevertParamsModel represents snapshot revert parameters model.
 type SnapRevertParamsModel struct {
 	AllowDup types.Bool   `tfsdk:"allow_dup"`
 	SnapID   types.Int32  `tfsdk:"snapshot_id"`
