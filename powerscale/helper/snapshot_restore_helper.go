@@ -213,6 +213,9 @@ func DeleteSnaprevertDomain(ctx context.Context, client *client.Client, state mo
 	}
 
 	jobResponse, diag = CheckJobStatus(ctx, client, strID, jobResponse)
+	if diag.HasError() {
+		return diag
+	}
 	if jobResponse.State == "failed" {
 		resp.AddError(
 			"Error while deleting snaprevert domain",
