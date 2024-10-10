@@ -29,7 +29,6 @@ type SnapshotRestoreModel struct {
 
 // SnapRevertParamsModel represents snapshot revert parameters model.
 type SnapRevertParamsModel struct {
-	AllowDup types.Bool   `tfsdk:"allow_dup"`
-	SnapID   types.Int32  `tfsdk:"snapshot_id"`
-	SnapName types.String `tfsdk:"snapshot_name"`
+	AllowDup types.Bool  `tfsdk:"allow_dup"`
+	SnapID   types.Int32 `tfsdk:"snapshot_id"`
 }

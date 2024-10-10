@@ -24,11 +24,8 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -95,17 +92,9 @@ func SnapshotRestoreResourceSchema() map[string]schema.Attribute {
 					MarkdownDescription: "Whether or not to queue the job if one of the same type is already running or queued.",
 				},
 				"snapshot_id": schema.Int32Attribute{
-					Optional:            true,
+					Required:            true,
 					Description:         "Snapshot ID.",
 					MarkdownDescription: "Snapshot ID.",
-				},
-				"snapshot_name": schema.StringAttribute{
-					Optional:            true,
-					Description:         "Snapshot name.",
-					MarkdownDescription: "Snapshot name.",
-					Validators: []validator.String{
-						stringvalidator.ExactlyOneOf(path.MatchRelative().AtParent().AtName("snapshot_id")),
-					},
 				},
 			},
 		},
@@ -175,6 +164,15 @@ func (r *SnapshotRestoreResource) Delete(ctx context.Context, request resource.D
 
 	// Read Terraform prior state data into the model
 	response.Diagnostics.Append(request.State.Get(ctx, &state)...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	// Delete snaprevert domain
+	if !state.SnapRevertParams.IsNull() {
+		diags := helper.DeleteSnaprevertDomain(ctx, r.client, state)
+		response.Diagnostics.Append(diags...)
+	}
 
 	if response.Diagnostics.HasError() {
 		return

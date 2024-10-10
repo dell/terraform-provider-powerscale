@@ -17,6 +17,9 @@ limitations under the License.
 
 resource "powerscale_snapshot_restore" "test" {
   snaprevert_params = {
-    snapshot_name = "terraform_snap"
+    allow_dup   = true
+    snapshot_id = "snapshot_id"
   }
 }
+
+# terraform destroy will delete the snaprevert domain if restore is done using snapshot revert.

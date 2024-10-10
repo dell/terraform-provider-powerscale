@@ -45,9 +45,6 @@ func GetSnapshotRestoreJob(ctx context.Context, client *client.Client, jobID str
 	if err != nil {
 		return nil, err
 	}
-	tflog.Info(ctx, "job response", map[string]interface{}{
-		"fields": response,
-	})
 	return &response.Jobs[0], err
 }
 
@@ -58,54 +55,22 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 	// Check if snaprevert params are provided
 	if !plan.SnapRevertParams.IsNull() {
 		var snapRevert models.SnapRevertParamsModel
-		var path string
 
 		diag := plan.SnapRevertParams.As(ctx, &snapRevert, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
 		if diag.HasError() {
 			return state, diag
 		}
 
-		// Get Snapshot ID if name is provided
-		if !snapRevert.SnapName.IsNull() {
-			response, err := GetAllSnapshots(ctx, client)
-			if err != nil {
-				errStr := constants.ReadSnapshotErrorMessage + "with error: "
-				message := GetErrorString(err, errStr)
-				resp.AddError(
-					"Error getting the list of snapshots",
-					message,
-				)
-				return state, resp
-			}
-
-			for _, resp := range response {
-				if resp.Name == snapRevert.SnapName.ValueString() {
-					snapRevert.SnapID = types.Int32Value(resp.Id)
-					path = resp.Path
-					break
-				}
-			}
-
-			if path == "" {
-				resp.AddError(
-					fmt.Sprintf("Error getting the snapshot with name %v", snapRevert.SnapName.String()),
-					fmt.Sprintf("Error getting the snapshot with name %v", snapRevert.SnapName.String()),
-				)
-				return state, resp
-			}
-		} else {
-			// Get Snapshot details if ID is provided
-			response, err := GetSpecificSnapshot(ctx, client, snapRevert.SnapID.String())
-			if err != nil {
-				errStr := constants.ReadSnapshotErrorMessage + "with error: "
-				message := GetErrorString(err, errStr)
-				resp.AddError(
-					fmt.Sprintf("Error getting the snapshot with id %v", snapRevert.SnapID.String()),
-					message,
-				)
-				return state, resp
-			}
-			path = response.Path
+		// Get Snapshot details if ID is provided
+		response, err := GetSpecificSnapshot(ctx, client, snapRevert.SnapID.String())
+		if err != nil {
+			errStr := constants.ReadSnapshotErrorMessage + "with error: "
+			message := GetErrorString(err, errStr)
+			resp.AddError(
+				fmt.Sprintf("Error getting the snapshot with id %v", snapRevert.SnapID.String()),
+				message,
+			)
+			return state, resp
 		}
 
 		// Populate the payload for creating snaprevert domain
@@ -114,12 +79,12 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 			AllowDup: snapRevert.AllowDup.ValueBoolPointer(),
 			DomainmarkParams: &powerscale.V1JobJobDomainmarkParams{
 				Type: "SnapRevert",
-				Root: path,
+				Root: response.Path,
 			},
 		}
 		createResponse, _ := CreateSnapshotRestoreJob(ctx, client, payload)
 		strID := strconv.Itoa(int(createResponse.Id))
-		response, err := GetSnapshotRestoreJob(ctx, client, strID)
+		jobResponse, err := GetSnapshotRestoreJob(ctx, client, strID)
 		if err != nil {
 			errStr := constants.ReadSnapshotRestoreJobErrorMsg + "with error: "
 			message := GetErrorString(err, errStr)
@@ -129,7 +94,7 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 			)
 			return state, resp
 		}
-		_, diag = CheckJobStatus(ctx, client, strID, response)
+		_, diag = CheckJobStatus(ctx, client, strID, jobResponse)
 		if diag.HasError() {
 			return state, diag
 		}
@@ -156,7 +121,7 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 
 		strID = strconv.Itoa(int(createResponse.Id))
 		tflog.Info(ctx, fmt.Sprintf("SnapRestore job id: %v", createResponse.Id))
-		response, err = GetSnapshotRestoreJob(ctx, client, strID)
+		jobResponse, err = GetSnapshotRestoreJob(ctx, client, strID)
 		if err != nil {
 			errStr := constants.ReadSnapshotRestoreJobErrorMsg + "with error: "
 			message := GetErrorString(err, errStr)
@@ -167,10 +132,10 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 			return state, resp
 		}
 
-		response, diag = CheckJobStatus(ctx, client, strID, response)
+		jobResponse, diag = CheckJobStatus(ctx, client, strID, jobResponse)
 		resp.Append(diag...)
 
-		if response.State == "failed" {
+		if jobResponse.State == "failed" {
 			resp.AddError(
 				"Error getting job report",
 				"Please check if snaprevert domain is created",
@@ -199,4 +164,61 @@ func CheckJobStatus(ctx context.Context, client *client.Client, jobID string, re
 		}
 	}
 	return response, nil
+}
+
+// DeleteSnaprevertDomain deletes the snaprevert domain
+func DeleteSnaprevertDomain(ctx context.Context, client *client.Client, state models.SnapshotRestoreModel) (resp diag.Diagnostics) {
+	var snapRevert models.SnapRevertParamsModel
+
+	diag := state.SnapRevertParams.As(ctx, &snapRevert, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
+	if diag.HasError() {
+		return diag
+	}
+
+	// Get Snapshot details if ID is provided
+	response, err := GetSpecificSnapshot(ctx, client, snapRevert.SnapID.String())
+	if err != nil {
+		errStr := constants.ReadSnapshotErrorMessage + "with error: "
+		message := GetErrorString(err, errStr)
+		resp.AddError(
+			fmt.Sprintf("Error getting the snapshot with id %v", snapRevert.SnapID.String()),
+			message,
+		)
+		return resp
+	}
+
+	flag := true
+	// Populate the payload for creating snaprevert domain
+	payload := powerscale.V10JobJob{
+		Type:     "DomainMark",
+		AllowDup: snapRevert.AllowDup.ValueBoolPointer(),
+		DomainmarkParams: &powerscale.V1JobJobDomainmarkParams{
+			Delete: &flag,
+			Type:   "SnapRevert",
+			Root:   response.Path,
+		},
+	}
+	createResponse, _ := CreateSnapshotRestoreJob(ctx, client, payload)
+	strID := strconv.Itoa(int(createResponse.Id))
+	tflog.Info(ctx, fmt.Sprintf("Delete snaprevert domain job id: %v", createResponse.Id))
+	jobResponse, err := GetSnapshotRestoreJob(ctx, client, strID)
+	if err != nil {
+		errStr := constants.ReadSnapshotRestoreJobErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		resp.AddError(
+			"Error getting job",
+			message,
+		)
+		return resp
+	}
+
+	jobResponse, diag = CheckJobStatus(ctx, client, strID, jobResponse)
+	if jobResponse.State == "failed" {
+		resp.AddError(
+			"Error while deleting snaprevert domain",
+			"Error while deleting snaprevert domain",
+		)
+		return resp
+	}
+	return nil
 }

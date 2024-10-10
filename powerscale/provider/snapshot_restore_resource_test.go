@@ -33,7 +33,7 @@ func TestAccSnapshotRestoreResource(t *testing.T) {
 			{
 				Config: ProviderConfig + snapRevertResourceConfig,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_snapshot_restore.snap_restore", "snaprevert_params.snapshot_name", "snap_restore_snap"),
+					resource.TestCheckResourceAttrPair("powerscale_snapshot_restore.snap_restore", "snaprevert_params.snapshot_id", "powerscale_snapshot.snap", "id"),
 				),
 			},
 			{
@@ -52,29 +52,6 @@ resource "powerscale_synciq_global_settings" "test" {
 }
 `
 
-var fileSystemPre = `
-resource "powerscale_filesystem" "file_system_test" {
-	# Default set to '/ifs'
-	# directory_path         = "/ifs"
-  
-	# Required
-	name = "tfaccDirTf"
-  
-	recursive = true
-	overwrite = false
-	group = {
-	  id   = "GID:0"
-	  name = "wheel"
-	  type = "group"
-	}
-	owner = {
-	   id   = "UID:0",
-	  name = "root",
-	  type = "user"
-	}
-  }
-`
-
 var snapshotPre = `
 resource "powerscale_snapshot" "snap" {
 	path = powerscale_filesystem.file_system_test.full_path
@@ -89,15 +66,15 @@ resource "powerscale_snapshot" "snap1" {
   }
 `
 
-var snapRevertResourceConfig = syncIQPre + fileSystemPre + snapshotPre + `
+var snapRevertResourceConfig = syncIQPre + FileSystemResourceConfig + snapshotPre + `
 resource "powerscale_snapshot_restore" "snap_restore" {
 	snaprevert_params = {
-    	snapshot_name = powerscale_snapshot.snap.name
+    	snapshot_id = powerscale_snapshot.snap.id
   	}
 }
 `
 
-var snapRevertResourceConfigUpdate = fileSystemPre + snapshotPre + snapshotPre1 + `
+var snapRevertResourceConfigUpdate = FileSystemResourceConfig + snapshotPre + snapshotPre1 + `
 resource "powerscale_snapshot_restore" "snap_restore" {
 	snaprevert_params = {
     	snapshot_id = powerscale_snapshot.snap1.id
