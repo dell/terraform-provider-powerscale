@@ -46,6 +46,12 @@ func TestAccSnapshotRestoreResource(t *testing.T) {
 	})
 }
 
+var syncIQPre = `
+resource "powerscale_synciq_global_settings" "test" {
+   service              = "on"
+}
+`
+
 var fileSystemPre = `
 resource "powerscale_filesystem" "file_system_test" {
 	# Default set to '/ifs'
@@ -83,7 +89,7 @@ resource "powerscale_snapshot" "snap1" {
   }
 `
 
-var snapRevertResourceConfig = fileSystemPre + snapshotPre + `
+var snapRevertResourceConfig = syncIQPre + fileSystemPre + snapshotPre + `
 resource "powerscale_snapshot_restore" "snap_restore" {
 	snaprevert_params = {
     	snapshot_name = powerscale_snapshot.snap.name
