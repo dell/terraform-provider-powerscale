@@ -202,6 +202,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewClusterTimeResource,
 		NewSyncIQPeerCertificateResource,
 		NewSupportAssistResource,
+		NewSnapshotRestoreResource,
 	}
 }
 
