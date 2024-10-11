@@ -21,17 +21,19 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -91,44 +93,26 @@ func (r *WritableSnapshotResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.RequiresReplaceIfConfigured(),
 				},
 			},
-			"src_snap": schema.StringAttribute{
-				Description:         "The source snapshot for the writable snapshot.",
-				MarkdownDescription: "The source snapshot for the writable snapshot.",
+			"snap_id": schema.StringAttribute{
+				Description:         "The ID of the source snapshot for the writable snapshot.",
+				MarkdownDescription: "The ID of the source snapshot for the writable snapshot.",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplaceIfConfigured(),
 				},
-			},
-			"created": schema.Int64Attribute{
-				Description:         "The creation timestamp of the writable snapshot.",
-				MarkdownDescription: "The creation timestamp of the writable snapshot.",
-				Computed:            true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
+				Validators: []validator.String{
+					stringvalidator.RegexMatches(
+						regexp.MustCompile(`^(\s*|\d+)$`),
+						"must contain only numbers",
+					),
 				},
 			},
-			"log_size": schema.Int64Attribute{
-				Description:         "The log size of the writable snapshot.",
-				MarkdownDescription: "The log size of the writable snapshot.",
+			"snap_name": schema.StringAttribute{
+				Description:         "The name of the source snapshot for the writable snapshot.",
+				MarkdownDescription: "The name of the source snapshot for the writable snapshot.",
 				Computed:            true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
-			},
-			"phys_size": schema.Int64Attribute{
-				Description:         "The physical size of the writable snapshot.",
-				MarkdownDescription: "The physical size of the writable snapshot.",
-				Computed:            true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
-			},
-			"src_id": schema.Int64Attribute{
-				Description:         "The source ID of the writable snapshot.",
-				MarkdownDescription: "The source ID of the writable snapshot.",
-				Computed:            true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"src_path": schema.StringAttribute{
@@ -195,22 +179,15 @@ func (r *WritableSnapshotResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	// Update writable snapshot settings
-	var toUpdate powerscale.V14SnapshotWritableItem
-	err := helper.ReadFromState(ctx, &plan, &toUpdate)
-	if err != nil {
-		errStr := constants.UpdateWritableSnapshotErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating writable snapshot",
-			fmt.Sprintf("Could not read writable snapshot param with error: %s", message),
-		)
-		return
+	toUpdate := powerscale.V14SnapshotWritableItem{
+		DstPath: plan.DstPath.ValueString(),
+		SrcSnap: plan.SrcSnap.ValueString(),
 	}
 
 	// update writable snapshot settings
 	writableSnapshotResponse, err := helper.UpdateWritableSnapshot(ctx, r.client, toUpdate)
 	if err != nil {
-		errStr := constants.UpdateWritableSnapshotErrorMsg + "with error: "
+		errStr := constants.UpdateWritableSnapshotErrorMsg + " with error: "
 		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
 			"Error updating writable snapshot",

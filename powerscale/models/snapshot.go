@@ -76,20 +76,11 @@ type WritableSnapshot struct {
 	// The destination path of the snapshot.
 	DstPath types.String `tfsdk:"dst_path"`
 
-	// The source snapshot.
-	SrcSnap types.String `tfsdk:"src_snap"`
-
-	// The Unix Epoch time the snapshot was created.
-	Created types.Int64 `tfsdk:"created"`
-
-	// The size of the log data.
-	LogSize types.Int64 `tfsdk:"log_size"`
-
-	// The amount of physical storage in bytes used to store this snapshot.
-	PhysSize types.Int64 `tfsdk:"phys_size"`
-
 	// The source snapshot ID.
-	SrcID types.Int64 `tfsdk:"src_id"`
+	SrcSnap types.String `tfsdk:"snap_id"`
+
+	// The source snapshot name.
+	SnapName types.String `tfsdk:"snap_name"`
 
 	// The source path.
 	SrcPath types.String `tfsdk:"src_path"`

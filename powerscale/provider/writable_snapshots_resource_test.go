@@ -69,7 +69,7 @@ func TestAccwritableSnapshotResourceImport(t *testing.T) {
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					resource.TestCheckResourceAttrSet(writableSnapshotResourceName, "dst_path")
 					resource.TestCheckResourceAttrSet(writableSnapshotResourceName, "src_path")
-					resource.TestCheckResourceAttrSet(writableSnapshotResourceName, "src_snap")
+					resource.TestCheckResourceAttrSet(writableSnapshotResourceName, "snap_id")
 					return nil
 				},
 			},
@@ -153,7 +153,6 @@ func TestAccwritableSnapshotResource_Update(t *testing.T) {
 				Config: ProviderConfig + writableSnapshotResourceConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(writableSnapshotResourceName, "dst_path", "/ifs/abcd"),
-					resource.TestCheckResourceAttr(writableSnapshotResourceName, "src_snap", "Snapshot: 2024Sep26, 2:28 PM"),
 				),
 			},
 			// Read testing
@@ -192,14 +191,12 @@ func TestAccwritableSnapshotResource_Update(t *testing.T) {
 				Config: ProviderConfig + writableSnapshotResourceConfigUpdate,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(writableSnapshotResourceName, "dst_path", "/ifs/abcd1"),
-					resource.TestCheckResourceAttr(writableSnapshotResourceName, "src_snap", "Snapshot: 2024Sep26, 2:28 PM"),
 				),
 			},
 			{
 				Config: ProviderConfig + writableSnapshotResourceConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(writableSnapshotResourceName, "dst_path", "/ifs/abcd"),
-					resource.TestCheckResourceAttr(writableSnapshotResourceName, "src_snap", "Snapshot: 2024Sep26, 2:28 PM"),
 				),
 			},
 		},
@@ -250,16 +247,21 @@ func TestAccwritableSnapshotResourceCreateMockErr(t *testing.T) {
 	})
 }
 
-var writableSnapshotResourceConfig = `
+var snapshotPrereqConfig = `
+resource "powerscale_snapshot" "snap" {
+	path = powerscale_filesystem.file_system_test.full_path
+  }
+`
+var writableSnapshotResourceConfig = FileSystemResourceConfig + snapshotPrereqConfig + `
 resource "powerscale_writable_snapshot" "test" {
-	src_snap = "Snapshot: 2024Sep26, 2:28 PM"
+	snap_id = powerscale_snapshot.snap.id
 	dst_path = "/ifs/abcd"
 }
 `
 
-var writableSnapshotResourceConfigUpdate = `
+var writableSnapshotResourceConfigUpdate = FileSystemResourceConfig + snapshotPrereqConfig + `
 resource "powerscale_writable_snapshot" "test" {
-	src_snap = "Snapshot: 2024Sep26, 2:28 PM"
+	snap_id = powerscale_snapshot.snap.id
 	dst_path = "/ifs/abcd1"
 }
 `

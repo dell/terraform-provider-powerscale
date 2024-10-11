@@ -20,6 +20,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"strconv"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 
@@ -47,12 +48,10 @@ func DeleteWritableSnapshot(ctx context.Context, client *client.Client, path str
 // UpdateWritableSnapshotState updates the state parameters based on the fetched computed values from the API.
 func UpdateWritableSnapshotState(state *models.WritableSnapshot, fetchedState *powerscale.Createv14SnapshotWritableItemResponse) {
 	state.DstPath = types.StringValue(fetchedState.DstPath)
-	state.SrcSnap = types.StringValue(fetchedState.SrcSnap)
+	// since the create operation is performed using snap_id so converting the fetched int32 value to string for state and plan match
+	state.SrcSnap = types.StringValue(strconv.Itoa(int(fetchedState.SrcId)))
 	state.ID = types.Int32Value(fetchedState.Id)
-	state.Created = types.Int64Value(int64(fetchedState.Created))
-	state.LogSize = types.Int64Value(int64(fetchedState.LogSize))
-	state.PhysSize = types.Int64Value(int64(fetchedState.PhysSize))
-	state.SrcID = types.Int64Value(int64(fetchedState.SrcId))
 	state.SrcPath = types.StringValue(fetchedState.SrcPath)
 	state.State = types.StringValue(fetchedState.State)
+	state.SnapName = types.StringValue(fetchedState.SrcSnap)
 }

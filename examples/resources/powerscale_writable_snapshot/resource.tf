@@ -26,8 +26,8 @@ resource "powerscale_writable_snapshot" "writablesnap" {
   # dst_path is the path of the writable snapshot.
   dst_path = "/ifs/abcd"
 
-  # src_snap is the source snapshot of the writable snapshot.
-  src_snap = "Snapshot: 2024Sep26, 2:28 PM"
+  # snap_id is the source snapshot of the writable snapshot.
+  snap_id = "5709"
 }
 
 # After the execution of above resource block, Writable Snapshot Settings would have been cached in terraform state file, and
