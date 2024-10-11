@@ -452,4 +452,13 @@ const (
 
 	// DeleteWritableSnapshotErrorMsg specifies error details occurred while deleting writable snapshot.
 	DeleteWritableSnapshotErrorMsg = "Could not delete writable snapshot"
+
+	// CreateSnapshotRestoreJobErrorMsg specifies error details occurred while creating snapshot restore job.
+	CreateSnapshotRestoreJobErrorMsg = "Could not create snapshot restore job "
+
+	// ReadSnapshotRestoreJobErrorMsg specifies error details occurred while reading snapshot restore job.
+	ReadSnapshotRestoreJobErrorMsg = "Could not read snapshot restore job "
+
+	// ReadSnapshotRestoreJobReportErrorMsg specifies error details occurred while reading snapshot restore job reports.
+	ReadSnapshotRestoreJobReportErrorMsg = "Could not read snapshot restore job reports "
 )
