@@ -67,3 +67,24 @@ type SnapshotDetailModel struct {
 	// The name of the snapshot pointed to if this is an alias.
 	TargetName types.String `tfsdk:"target_name"`
 }
+
+// WritableSnapshot defines the writable snapshot.
+type WritableSnapshot struct {
+	// The system ID given to the snapshot. This is useful for tracking the status of delete pending snapshots.
+	ID types.Int32 `tfsdk:"id"`
+
+	// The destination path of the snapshot.
+	DstPath types.String `tfsdk:"dst_path"`
+
+	// The source snapshot ID.
+	SrcSnap types.String `tfsdk:"snap_id"`
+
+	// The source snapshot name.
+	SnapName types.String `tfsdk:"snap_name"`
+
+	// The source path.
+	SrcPath types.String `tfsdk:"src_path"`
+
+	// Snapshot state.
+	State types.String `tfsdk:"state"`
+}
