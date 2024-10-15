@@ -44,8 +44,8 @@ func TestAccLdapProviderResource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(ldapResourceName, "name", "tfacc_ldap"),
 					resource.TestCheckResourceAttr(ldapResourceName, "zone_name", "System"),
-					resource.TestCheckResourceAttr(ldapResourceName, "base_dn", "dc=tthe,dc=testLdap,dc=com"),
-					resource.TestCheckResourceAttr(ldapResourceName, "server_uris.0", "ldap://10.225.108.54"),
+					resource.TestCheckResourceAttr(ldapResourceName, "base_dn", "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"),
+					resource.TestCheckResourceAttr(ldapResourceName, "server_uris.0", "ldap://10.225.108.11"),
 				),
 			},
 			// ImportState testing
@@ -54,7 +54,7 @@ func TestAccLdapProviderResource(t *testing.T) {
 				ImportState:  true,
 				ImportStateCheck: func(states []*terraform.InstanceState) error {
 					assert.Equal(t, "tfacc_ldap", states[0].Attributes["name"])
-					assert.Equal(t, "dc=tthe,dc=testLdap,dc=com", states[0].Attributes["base_dn"])
+					assert.Equal(t, "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com", states[0].Attributes["base_dn"])
 					return nil
 				},
 			},
@@ -595,24 +595,24 @@ func TestAccLdapProviderReleaseMockResource(t *testing.T) {
 var ldapProviderResourceConfig = `
 resource "powerscale_ldap_provider" "ldap_test" {
 	name = "tfacc_ldap"
-	server_uris = ["ldap://10.225.108.54"]
-	base_dn = "dc=tthe,dc=testLdap,dc=com"
+	server_uris = ["ldap://10.225.108.11"]
+	base_dn = "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"
 }
 `
 
 var ldapProviderResourceRenameConfig = `
 resource "powerscale_ldap_provider" "ldap_test" {
 	name = "tfacc_ldap_update"
-	server_uris = ["ldap://10.225.108.54"]
-	base_dn = "dc=tthe,dc=testLdap,dc=com"
+	server_uris = ["ldap://10.225.108.11"]
+	base_dn = "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"
 }
 `
 
 var ldapProviderResourceDisableConfig = `
 resource "powerscale_ldap_provider" "ldap_test" {
 	name = "tfacc_ldap"
-	server_uris = ["ldap://10.225.108.54"]
-	base_dn = "dc=tthe,dc=testLdap,dc=com"
+	server_uris = ["ldap://10.225.108.11"]
+	base_dn = "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"
 	enabled = false
 }
 `
@@ -621,12 +621,12 @@ var ldapProviderInvalidResourceConfig = `
 resource "powerscale_ldap_provider" "ldap_test" {
 	name = "tfacc_ldap"
 	server_uris = ["ldap://10.225.108.xx"]
-	base_dn = "dc=tthe,dc=testLdap,dc=com"
+	base_dn = "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"
 }
 `
 
-var mockName, mockBaseDN, mockTLSRevocationCheckLevel = "tfacc_ldap", "dc=tthe,dc=testLdap,dc=com", "none"
-var mockServerUris = []string{"ldap://10.225.108.54"}
+var mockName, mockBaseDN, mockTLSRevocationCheckLevel = "tfacc_ldap", "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com", "none"
+var mockServerUris = []string{"ldap://10.225.108.11"}
 var mockV16LdapProviders = powerscale.V16ProvidersLdap{
 	Ldap: []powerscale.V16ProvidersLdapLdapItem{
 		{
