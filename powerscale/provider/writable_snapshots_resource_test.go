@@ -250,6 +250,7 @@ func TestAccwritableSnapshotResourceCreateMockErr(t *testing.T) {
 var snapshotPrereqConfig = `
 resource "powerscale_snapshot" "snap" {
 	path = powerscale_filesystem.file_system_test.full_path
+	name = "snap_restore_snap"
   }
 `
 var writableSnapshotResourceConfig = FileSystemResourceConfig + snapshotPrereqConfig + `
