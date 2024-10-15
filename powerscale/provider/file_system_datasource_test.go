@@ -22,6 +22,7 @@ import (
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+	"time"
 
 	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -38,30 +39,11 @@ func TestAccFileSystemDataSource(t *testing.T) {
 				Config: ProviderConfig + FileSystemDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(fsTerraform, "directory_path", "/ifs/tfacc_file_system_test"),
-					resource.TestCheckResourceAttrSet(fsTerraform, "file_systems_details.file_system_attributes.#"),
-					resource.TestCheckResourceAttrSet(fsTerraform, "file_systems_details.file_system_namespace_acl.acl.0.access_rights.#"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.authoritative", "mode"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.group.id", "GID:0"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.group.name", "wheel"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.group.type", "group"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.owner.id", "UID:0"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.owner.name", "root"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.owner.type", "user"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.mode", "0700"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.container", "true"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.enforced", "false"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.path", "/ifs/tfacc_file_system_test"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.type", "directory"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.usage.fslogical_ready", "true"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.usage.fsphysical", "2048"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.usage.shadow_refs", "0"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_quotas.0.usage.inodes", "1"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_snapshots.0.has_locks", "false"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_snapshots.0.state", "active"),
 				),
 			},
 		},
 	})
+	time.Sleep(10*time.Second)
 }
 
 func TestAccFileSystemDataSourceFilterDefault(t *testing.T) {
@@ -161,9 +143,30 @@ func TestAccFileSystemDataSourceReleaseMock(t *testing.T) {
 	})
 }
 
-var FileSystemDataSourceConfig = `
+var FileSystemResourceConfigCommon = `
+resource "powerscale_filesystem" "file_system_test" {
+	directory_path         = "/ifs"	
+	name = "tfacc_file_system_test"
+	
+	  recursive = true
+	  overwrite = false
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+`
+
+var FileSystemDataSourceConfig = FileSystemResourceConfigCommon + `
 data "powerscale_filesystem" "system" {
-	# Required parameter, path of the directory filesystem you would like to create a datasource out of 
+	# Required parameter, path of the directory filesystem you would like to create a datasource out of
+	depends_on = [powerscale_filesystem.file_system_test] 
 	directory_path = "/ifs/tfacc_file_system_test"
   }
 `

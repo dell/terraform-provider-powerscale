@@ -253,8 +253,29 @@ func TestAccSmbShareResourceErrorReadState(t *testing.T) {
 
 var shareName = "tfacc_test_smb_share"
 
-var SmbShareResourceConfig = fmt.Sprintf(`
+var FileSystemResourceConfigCommon6 = fmt.Sprintf(`
+resource "powerscale_filesystem" "file_system_test" {
+	depends_on = [powerscale_filesystem.file_system_test] 
+	directory_path         = "/ifs"	
+	name = "%s"	
+	  recursive = true
+	  overwrite = false
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+`, shareName)
+
+var SmbShareResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_smb_share" "share_test" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	auto_create_directory = true
 	name = "%s"
 	path = "/ifs/%s"
@@ -274,8 +295,9 @@ resource "powerscale_smb_share" "share_test" {
 }
 `, shareName, shareName)
 
-var SmbShareInvalidResourceConfig = fmt.Sprintf(`
+var SmbShareInvalidResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_smb_share" "share_test" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	auto_create_directory = true
 	name = "%s"
 	path = "/ifs/%s"
@@ -295,8 +317,9 @@ resource "powerscale_smb_share" "share_test" {
 }
 `, shareName, shareName)
 
-var SmbShareUpdatedResourceConfig = fmt.Sprintf(`
+var SmbShareUpdatedResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_smb_share" "share_test" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	auto_create_directory = true
 	name = "%s"
 	path = "/ifs/%s"
@@ -317,8 +340,9 @@ resource "powerscale_smb_share" "share_test" {
 }
 `, shareName, shareName)
 
-var SmbShareUpdatedResourceConfig2 = fmt.Sprintf(`
+var SmbShareUpdatedResourceConfig2 = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_smb_share" "share_test" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	auto_create_directory = true
 	name = "%s"
 	path = "/ifs/%s"
@@ -339,8 +363,9 @@ resource "powerscale_smb_share" "share_test" {
 }
 `, shareName, shareName)
 
-var SmbShareNameUpdatedResourceConfig = fmt.Sprintf(`
+var SmbShareNameUpdatedResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_smb_share" "share_test" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	auto_create_directory = true
 	name = "%s_update"
 	path = "/ifs/%s_update_path"
@@ -361,8 +386,9 @@ resource "powerscale_smb_share" "share_test" {
 }
 `, shareName, shareName)
 
-var SmbShareUpdatedZoneResourceConfig = fmt.Sprintf(`
+var SmbShareUpdatedZoneResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_smb_share" "share_test" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	auto_create_directory = true
 	name = "%s"
 	path = "/ifs/%s"

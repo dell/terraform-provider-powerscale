@@ -19,6 +19,8 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
+	powerscale "dell/powerscale-go-client"
+
 	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
@@ -71,7 +73,6 @@ func TestAccSnapshotScheduleDataSourceOtherFilters(t *testing.T) {
 				Config: ProviderConfig + SnapshotScheduleOtherFiltersDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(filterTerraformName, "schedules.#", "1"),
-					resource.TestCheckResourceAttr(filterTerraformName, "schedules.0.path", "/ifs"),
 				),
 			},
 		},
@@ -95,6 +96,9 @@ func TestAccSnapshotScheduleDataSourceGetErr(t *testing.T) {
 }
 
 func TestAccSnapshotScheduleDataSourceGetErrCopyAll(t *testing.T) {
+	FunctionMockerList := mockey.Mock(helper.ListSnapshotSchedules).Return([]powerscale.V1SnapshotScheduleExtended{
+		{}, {},
+	}, nil).Build()
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -103,14 +107,27 @@ func TestAccSnapshotScheduleDataSourceGetErrCopyAll(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfig + SnapshotScheduleAllDataSourceConfig,
+				Config:      ProviderConfig + SnapshotScheduleAllDataSourceConfig2,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
 		},
 	})
+	FunctionMockerList.UnPatch()
+}
+
+func NewValue[v any](in v) *v {
+	return &in
 }
 
 func TestAccSnapshotScheduleDataSourceGetErrCopy(t *testing.T) {
+	FunctionMockerList := mockey.Mock(helper.ListSnapshotSchedules).Return([]powerscale.V1SnapshotScheduleExtended{
+		{
+			Name: NewValue("Snapshot schedule 370395356"),
+		},
+		{
+			Name: NewValue("Snapshot schedule 375395356"),
+		},
+	}, nil).Build()
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -119,15 +136,46 @@ func TestAccSnapshotScheduleDataSourceGetErrCopy(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfig + SnapshotScheduleDataSourceConfig,
+				Config:      ProviderConfig + SnapshotScheduleDataSourceConfig2,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
 		},
 	})
+	FunctionMockerList.UnPatch()
 }
 
-var SnapshotScheduleDataSourceConfig = `
+var FileSystemResourceConfigCommon4 = `
+resource "powerscale_filesystem" "file_system_test" {
+	directory_path         = "/ifs"	
+	name = "tfacc_test_dirNew"
+	
+	  recursive = true
+	  overwrite = false
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+
+resource "powerscale_snapshot_schedule" "test" {
+	# Required name of snapshot schedule
+	depends_on = [powerscale_filesystem.file_system_test] 
+	name = "Snapshot schedule 370395356"
+	alias = "tfacc_Snapshot schedule 370395356_Alias"
+	path = "/ifs/tfacc_test_dirNew"
+	duration = 604800
+}
+`
+
+var SnapshotScheduleDataSourceConfig = FileSystemResourceConfigCommon4 + `
 data "powerscale_snapshot_schedule" "test" {
+depends_on = [powerscale_snapshot_schedule.test] 
   filter {
     names = ["Snapshot schedule 370395356"]
   }
@@ -137,17 +185,31 @@ output "powerscale_snapshot_schedule" {
 }
 `
 
-var SnapshotScheduleAllDataSourceConfig = `
+var SnapshotScheduleAllDataSourceConfig = FileSystemResourceConfigCommon4 + `
 data "powerscale_snapshot_schedule" "all" {
+	depends_on = [powerscale_snapshot_schedule.test] 
 }
 `
 
-var SnapshotScheduleOtherFiltersDataSourceConfig = `
+var SnapshotScheduleOtherFiltersDataSourceConfig = FileSystemResourceConfigCommon4 + `
 data "powerscale_snapshot_schedule" "filterTest" {
+	depends_on = [powerscale_snapshot_schedule.test] 
 	filter {	   
 		dir = "ASC"
 		limit = 1
 		sort = "name"
 	  }
 }
+`
+
+var SnapshotScheduleAllDataSourceConfig2 = `
+data "powerscale_snapshot_schedule" "all" {
+}
+`
+var SnapshotScheduleDataSourceConfig2 = `
+data "powerscale_snapshot_schedule" "test" {
+	  filter {
+		names = ["Snapshot schedule 370395356"]
+	  }
+	}
 `

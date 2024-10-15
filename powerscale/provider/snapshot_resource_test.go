@@ -59,7 +59,7 @@ func TestAccSnapshotResourceA(t *testing.T) {
 			{
 				Config:      ProviderConfig + SnapshotResourceConfigUpdateErrorPathModify,
 				ExpectError: regexp.MustCompile(".*Path variable is not able to be updated after creation*."),
-			},
+			},			
 			// Delete testing automatically occurs in TestCase
 		},
 	})
@@ -160,15 +160,16 @@ func TestAccSnapshotResourceReadAndUpdateError(t *testing.T) {
 	})
 }
 
-var SnapshotResourceConfig = `
+var SnapshotResourceConfig = FileSystemResourceConfigCommon + `
 resource "powerscale_snapshot" "test" {
-  # Required path to the filesystem to which the snapshot will be taken of
+  depends_on = [powerscale_filesystem.file_system_test]
   path = "/ifs/tfacc_file_system_test"
 }
 `
 
-var SnapshotResourceConfigUpdate = `
+var SnapshotResourceConfigUpdate = FileSystemResourceConfigCommon + `
 resource "powerscale_snapshot" "test" {
+  depends_on = [powerscale_filesystem.file_system_test]
   path = "/ifs/tfacc_file_system_test"
   name = "tfacc_snapshot_1"
   set_expires = "1 Day"

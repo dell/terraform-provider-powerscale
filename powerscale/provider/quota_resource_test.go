@@ -240,8 +240,9 @@ func TestAccQuotaResourceUpdateLinkError(t *testing.T) {
 	})
 }
 
-var QuotaResourceConfig = `
+var QuotaResourceConfig = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "user"
 	include_snapshots = false
@@ -264,8 +265,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceConfigNewZone = `
+var QuotaResourceConfigNewZone = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "user"
 	include_snapshots = false
@@ -288,8 +290,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceConfigDoesIncludeSnapshots = `
+var QuotaResourceConfigDoesIncludeSnapshots = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "user"
 	include_snapshots = true
@@ -312,8 +315,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceConfigNewType = `
+var QuotaResourceConfigNewType = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "directory"
 	include_snapshots = false
@@ -331,8 +335,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceConfigNewPath = `
+var QuotaResourceConfigNewPath = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test2"
 	type = "user"
 	include_snapshots = false
@@ -354,8 +359,9 @@ resource "powerscale_quota" "quota_test" {
 	thresholds_on = "applogicalsize"
 }
 `
-var QuotaResourceConfigNewPersona = `
+var QuotaResourceConfigNewPersona = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "user"
 	include_snapshots = false
@@ -378,8 +384,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceCreateWithLink = `
+var QuotaResourceCreateWithLink = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "directory"
 	include_snapshots = false
@@ -387,8 +394,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceConfigUpdated = `
+var QuotaResourceConfigUpdated = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "user"
 	include_snapshots = false
@@ -411,8 +419,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceConfigUpdated2 = `
+var QuotaResourceConfigUpdated2 = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "user"
 	include_snapshots = false
@@ -435,8 +444,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceCreateDirectoryTypeWithPersona = `
+var QuotaResourceCreateDirectoryTypeWithPersona = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "directory"
 	include_snapshots = false
@@ -459,8 +469,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceCreateUserTypeWithoutPersona = `
+var QuotaResourceCreateUserTypeWithoutPersona = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "user"
 	include_snapshots = false
@@ -478,8 +489,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceLink = `
+var QuotaResourceLink = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "user"
 	include_snapshots = false
@@ -503,8 +515,9 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceUnLink = `
+var QuotaResourceUnLink = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "user"
 	include_snapshots = false

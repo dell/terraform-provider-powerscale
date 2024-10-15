@@ -141,7 +141,18 @@ func TestQueryZoneNameByID(t *testing.T) {
 }
 
 var AzDataSourceConfig = `
+resource "powerscale_accesszone" "zone" {
+	# Required fields
+	name = "tfaccAccessZone"
+	groupnet = "groupnet0"
+	path = "/ifs"
+  
+	# Optional to apply Auth Providers
+	custom_auth_providers = ["System"]
+  }
+
 data "powerscale_accesszone" "test" {
+	depends_on = [powerscale_accesszone.zone]
   filter {
     names = ["tfaccAccessZone"]
   }

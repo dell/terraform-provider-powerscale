@@ -214,8 +214,26 @@ func TestAccSnapshotScheduleResourceMappingError(t *testing.T) {
 }
 
 var SnapshotScheduleResourceConfig = `
+resource "powerscale_filesystem" "file_system_test" {
+	directory_path         = "/ifs"
+	name = "tfacc_test"	
+	  recursive = true
+	  overwrite = false
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+
 resource "powerscale_snapshot_schedule" "test" {
   # Required name of snapshot schedule
+  depends_on = [powerscale_filesystem.file_system_test]
   name = "tfacc_snap_schedule_test"
   alias = "test_alias"
   retention_time = "3 Hour(s)"
@@ -223,8 +241,26 @@ resource "powerscale_snapshot_schedule" "test" {
 `
 
 var SnapshotScheduleUpdateResourceConfig = `
+resource "powerscale_filesystem" "file_system_test" {
+	directory_path         = "/ifs"	
+	name = "tfacc_test"	
+	  recursive = true
+	  overwrite = false
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+
 resource "powerscale_snapshot_schedule" "test" {
 	# Required name of snapshot schedule
+	depends_on = [powerscale_filesystem.file_system_test]
 	name = "tfacc_snap_schedule_update"
 	alias = "test_alias_updated"
 	path = "/ifs/tfacc_test"

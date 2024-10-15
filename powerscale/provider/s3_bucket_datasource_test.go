@@ -143,8 +143,9 @@ func TestAccS3BucketDatasourceErrorCopyFields(t *testing.T) {
 	FunctionMocker.UnPatch()
 }
 
-var S3BucketAllDatasourceConfig = fmt.Sprintf(`
+var S3BucketAllDatasourceConfig = FileSystemResourceConfigCommon3 + fmt.Sprintf(`
 resource "powerscale_s3_bucket" "bucket_resource_test" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	name = "%s"
 	path = "/ifs/%s"
 	create_path = true
@@ -160,8 +161,9 @@ resource "powerscale_s3_bucket" "bucket_resource_test" {
 data "powerscale_s3_bucket" "bucket_datasource_test_all" {}
 `, bucketName, bucketName)
 
-var S3BucketDatasourceConfig = fmt.Sprintf(`
+var S3BucketDatasourceConfig = FileSystemResourceConfigCommon3 + fmt.Sprintf(`
 resource "powerscale_s3_bucket" "bucket_resource_test" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	name = "%s"
 	path = "/ifs/%s"
 	create_path = true
@@ -172,6 +174,8 @@ resource "powerscale_s3_bucket" "bucket_resource_test" {
 		}
 		permission = "FULL_CONTROL"
 	}]
+	zone  = "System"
+	owner = "root"
 }
 
 data "powerscale_s3_bucket" "bucket_datasource_test" {

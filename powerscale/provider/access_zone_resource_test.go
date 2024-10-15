@@ -32,7 +32,7 @@ import (
 var mocker *mockey.Mocker
 var createMocker *mockey.Mocker
 
-func TestAccAccessZoneA(t *testing.T) {
+func TestAccAccessZoneResourceCreate(t *testing.T) {
 	var accessZoneResourceName = "powerscale_accesszone.zone"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -87,6 +87,15 @@ func TestAccAccessZoneA(t *testing.T) {
 					resource.TestCheckResourceAttr(accessZoneResourceName, "groupnet", "groupnet0"),
 					resource.TestCheckResourceAttr(accessZoneResourceName, "path", "/ifs/home"),
 					resource.TestCheckResourceAttr(accessZoneResourceName, "auth_providers.0", "lsa-file-provider:System"),
+				),
+			},
+			{
+				Config: ProviderConfig + AccessZoneResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(accessZoneResourceName, "name", "tfaccTestAccessZone3"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "id", "tfaccTestAccessZone3"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "groupnet", "groupnet0"),
+					resource.TestCheckResourceAttr(accessZoneResourceName, "path", "/ifs"),
 				),
 			},
 			// Update to error state
@@ -270,8 +279,29 @@ func TestAccAccessZoneResourceGetImportSpecificErr(t *testing.T) {
 	})
 }
 
-var AccessZoneResourceConfig = `
+var FileSystemResourceConfigCommon5 = `
+resource "powerscale_filesystem" "file_system_test" {
+	directory_path         = "/ifs"	
+	name = "home"
+	
+	  recursive = true
+	  overwrite = false
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+	`
+
+var AccessZoneResourceConfig = FileSystemResourceConfigCommon5 + `
 resource "powerscale_accesszone" "zone" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	# Required fields
 	name = "tfaccTestAccessZone3"
 	groupnet = "groupnet0"
@@ -282,8 +312,9 @@ resource "powerscale_accesszone" "zone" {
   }
 `
 
-var AccessZoneUpdateResourceConfig = `
+var AccessZoneUpdateResourceConfig = FileSystemResourceConfigCommon5 + `
 resource "powerscale_accesszone" "zone" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	# Required fields
 	name = "tfaccTestAccessZone4"
 	groupnet = "groupnet0"
@@ -294,8 +325,9 @@ resource "powerscale_accesszone" "zone" {
   }
 `
 
-var AccessZoneResourceConfigAddProvider = `
-resource "powerscale_accesszone" "zone" {
+var AccessZoneResourceConfigAddProvider =  FileSystemResourceConfigCommon5 + `
+resource "powerscale_accesszone" "zone" { 
+	depends_on = [powerscale_filesystem.file_system_test] 
 	# Required fields
 	name = "tfaccTestAccessZone5"
 	groupnet = "groupnet0"
@@ -306,8 +338,9 @@ resource "powerscale_accesszone" "zone" {
   }
 `
 
-var AccessZoneResourceConfigReorderProvider = `
+var AccessZoneResourceConfigReorderProvider = FileSystemResourceConfigCommon5 + `
 resource "powerscale_accesszone" "zone" {
+	depends_on = [powerscale_filesystem.file_system_test] 
 	# Required fields
 	name = "tfaccTestAccessZone5-1"
 	groupnet = "groupnet0"
@@ -318,8 +351,9 @@ resource "powerscale_accesszone" "zone" {
   }
 `
 
-var AccessZoneErrorResourceConfig = `
+var AccessZoneErrorResourceConfig = FileSystemResourceConfigCommon5 + `
 resource "powerscale_accesszone" "zone" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	# Required fields
 	name = "tfaccAccessZoneError"
 	groupnet = "groupnet0"

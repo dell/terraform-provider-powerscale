@@ -95,8 +95,9 @@ func TestAccNamespaceAclDataSourceParamErr(t *testing.T) {
 	})
 }
 
-var NamespaceACLDataSourceConfig = `
+var NamespaceACLDataSourceConfig = FileSystemResourceConfigCommon5 + `
 resource "powerscale_namespace_acl" "namespace_acl_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	namespace = "ifs/home"
 	nsaccess = true
 	owner = { id = "UID:0"}

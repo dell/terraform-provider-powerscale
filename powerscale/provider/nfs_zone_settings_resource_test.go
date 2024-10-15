@@ -93,7 +93,7 @@ func TestAccNfsZoneSettingsResourceUpdate(t *testing.T) {
 	})
 }
 
-func TestAccNfsZoneSettingsCreateMockErr(t *testing.T) {
+func TestAccNfsZoneSettingsResourceCreateMockErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -139,7 +139,7 @@ func TestAccNfsZoneSettingsCreateMockErr(t *testing.T) {
 	})
 }
 
-func TestAccNfsZoneSettingsReadMockErr(t *testing.T) {
+func TestAccNfsZoneSettingsResourceReadMockErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -168,7 +168,7 @@ func TestAccNfsZoneSettingsReadMockErr(t *testing.T) {
 	})
 }
 
-func TestAccNfsZoneSettingsUpdateMockErr(t *testing.T) {
+func TestAccNfsZoneSettingsResourceUpdateMockErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -220,7 +220,7 @@ func TestAccNfsZoneSettingsUpdateMockErr(t *testing.T) {
 	})
 }
 
-func TestAccNfsZoneSettingsImportMockErr(t *testing.T) {
+func TestAccNfsZoneSettingsResourceImportMockErr(t *testing.T) {
 	resourceName := "powerscale_nfs_zone_settings.example"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -256,21 +256,36 @@ func TestAccNfsZoneSettingsImportMockErr(t *testing.T) {
 	})
 }
 
-var nfsZoneSettingsResourceConfigBasic = `
+var AzResourceCommon = `
+resource "powerscale_accesszone" "zone" {
+	# Required fields
+	name = "tfaccAccessZone"
+	groupnet = "groupnet0"
+	path = "/ifs"
+  
+	# Optional to apply Auth Providers
+	custom_auth_providers = ["System"]
+  }
+`
+
+var nfsZoneSettingsResourceConfigBasic = AzResourceCommon + `
 resource "powerscale_nfs_zone_settings" "example" {
+	depends_on = [powerscale_accesszone.zone]
 	zone = "tfaccAccessZone"
 }
 `
 
-var nfsZoneSettingsResourceConfigNewDomain = `
+var nfsZoneSettingsResourceConfigNewDomain = AzResourceCommon +`
 resource "powerscale_nfs_zone_settings" "example" {
+	depends_on = [powerscale_accesszone.zone]
 	zone = "tfaccAccessZone"
 	nfsv4_domain = "localdomain_New"
 }
 `
 
-var nfsZoneSettingsResourceConfigUpdatedDomain = `
+var nfsZoneSettingsResourceConfigUpdatedDomain = AzResourceCommon + `
 resource "powerscale_nfs_zone_settings" "example" {
+	depends_on = [powerscale_accesszone.zone]
 	zone = "tfaccAccessZone"
 	nfsv4_no_names = false
 	nfsv4_replace_domain = true

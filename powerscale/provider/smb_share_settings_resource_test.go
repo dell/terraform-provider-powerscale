@@ -279,8 +279,11 @@ access_based_enumeration           = false
 		zone                               = "System"
 }
 `
-var SmbShareSettingsUpdatedResourceConfig = `
+
+
+var SmbShareSettingsUpdatedResourceConfig = AzResourceCommon + `
 resource "powerscale_smb_share_settings" "share_settings_test" {
+	depends_on = [powerscale_accesszone.zone]
 	access_based_enumeration           = true
 		access_based_enumeration_root_only = true
 		allow_delete_readonly              = false

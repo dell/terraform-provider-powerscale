@@ -127,8 +127,9 @@ data "powerscale_nfs_export" "export_datasource_test" {
 }
 `
 
-var NfsExportDatasourceGetWithQueryParam = `
+var NfsExportDatasourceGetWithQueryParam = FileSystemResourceConfigCommon2 +`
 resource "powerscale_nfs_export" "test_export" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	paths = ["/ifs/tfacc_nfs_export"]
 }
 
@@ -146,8 +147,9 @@ data "powerscale_nfs_export" "export_datasource_test" {
 }
 `
 
-var NfsExportDatasourceGetAllConfig = `
+var NfsExportDatasourceGetAllConfig = FileSystemResourceConfigCommon2 +`
 resource "powerscale_nfs_export" "test_export" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	paths = ["/ifs/tfacc_nfs_export"]
 }
 
