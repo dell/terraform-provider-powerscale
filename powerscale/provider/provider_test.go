@@ -411,7 +411,7 @@ func TestInsecureClientWithInsecureParam(t *testing.T) {
 	assert.NotNil(t, openAPIClient)
 }
 
-// loadEnvFile used to read env file and set params
+// loadEnvFile used to read env file and set params.
 func loadEnvFile(path string) (map[string]string, error) {
 	envMap := make(map[string]string)
 

@@ -147,7 +147,7 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 	return state, nil
 }
 
-// CheckJobStatus checks the job status
+// CheckJobStatus checks the job status.
 func CheckJobStatus(ctx context.Context, client *client.Client, jobID string, response *powerscale.V10JobJobExtended) (res *powerscale.V10JobJobExtended, resp diag.Diagnostics) {
 	var err error
 	for !(response.State == "succeeded" || response.State == "failed") {
@@ -166,7 +166,7 @@ func CheckJobStatus(ctx context.Context, client *client.Client, jobID string, re
 	return response, nil
 }
 
-// DeleteSnaprevertDomain deletes the snaprevert domain
+// DeleteSnaprevertDomain deletes the snaprevert domain.
 func DeleteSnaprevertDomain(ctx context.Context, client *client.Client, state models.SnapshotRestoreModel) (resp diag.Diagnostics) {
 	var snapRevert models.SnapRevertParamsModel
 
