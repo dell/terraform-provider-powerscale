@@ -28,10 +28,15 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+
 )
 
 // CopyFields copy the source of a struct to destination of struct with terraform types.
@@ -336,4 +341,284 @@ func extractText(n *html.Node, message *string) {
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		extractText(c, message)
 	}
+}
+
+
+// GetDataSourceByValue is a helper function that gathers data based on all data gathered by the datasource.
+//
+// Parameters:
+// - fields: The fields to filter the data.
+// - allData: The data to be filtered.
+//
+// Returns:
+// - []interface{}: The filtered data.
+// - error: An error if any occurred.
+func GetDataSourceByValue(ctx context.Context, fields interface{}, allData interface{}) ([]interface{}, error) {
+
+	if isPointer(fields) || isPointer(allData) {
+		return nil, fmt.Errorf("Pointers are not supported")
+	}
+
+	filteredArray := reflect.ValueOf(allData)
+	fieldsArray := reflect.ValueOf(fields)
+	var err error
+
+	for j := 0; j < fieldsArray.NumField(); j++ {
+
+		field := fieldsArray.Type().Field(j).Name
+		fieldValue := fieldsArray.FieldByName(field)
+
+		if fieldValue.Kind() == reflect.Slice || fieldValue.Kind() == reflect.Array {
+			if fieldValue.IsNil() {
+				continue
+			}
+		} else {
+			if fieldValue.IsZero() {
+				continue
+			}
+		}
+
+		filteredArray, err = FilterByField(ctx, filteredArray, fieldValue, field)
+
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	allFilteredData := make([]interface{}, filteredArray.Len())
+	for i := 0; i < filteredArray.Len(); i++ {
+		allFilteredData[i] = filteredArray.Index(i).Interface()
+
+	}
+
+	return allFilteredData, nil
+
+}
+
+// FilterByField filters the array of data sources based on the provided field.
+//
+// Parameters:
+// - dataSources: The array of data sources to filter.
+// - fieldValue: The value to filter the data sources by.
+// - field: The name of the field to filter by.
+//
+// Returns:
+// - reflect.Value: The filtered array of data sources.
+// - error: An error if any occurred.
+func FilterByField(ctx context.Context, dataSources reflect.Value, fieldValue reflect.Value, field string) (reflect.Value, error) {
+	filteredData := reflect.MakeSlice(dataSources.Type(), 0, dataSources.Len())
+
+
+	for i := 0; i < dataSources.Len(); i++ {
+
+		dataSource := dataSources.Index(i).Interface()
+
+		dataSourceValue := reflect.ValueOf(dataSource)
+		fieldValueInDataSource := dataSourceValue.FieldByName(field)
+		tflog.Debug(ctx, "kind-tf : " + fieldValueInDataSource.Kind().String() + " field name: " + field)	
+
+		if fieldValue.Kind() == reflect.Slice || fieldValue.Kind() == reflect.Array {
+			for n := 0; n < fieldValue.Len(); n++ {
+
+				interFieldValue, err := CheckAndConvertValue(fieldValue.Index(n))
+				if err != nil {
+					return reflect.Zero(nil), err
+				}
+				tflog.Debug(ctx, "fieldValueInDatasource: "+ fieldValueInDataSource.Elem().Interface().(string))
+				if fieldValueInDataSource.Elem().Interface() == interFieldValue.Interface() || fieldValueInDataSource.Interface() == interFieldValue.Interface() {
+					filteredData = reflect.Append(filteredData, reflect.ValueOf(dataSource))
+				}
+			}
+		} else {
+			interFieldValue, err := CheckAndConvertValue(fieldValue)
+			if err != nil {
+				return reflect.Zero(nil), err
+			}
+			if fieldValueInDataSource.Elem().Interface() == interFieldValue.Interface() ||fieldValueInDataSource.Interface() == interFieldValue.Interface() {
+				filteredData = reflect.Append(filteredData, reflect.ValueOf(dataSource))
+			}
+		}
+	}
+
+	return filteredData, nil
+}
+
+
+// CheckAndConvertValue converts a reflect.Value to an attr.Type.
+//
+// It takes in a reflect.Value and checks its type. If the type is a
+// types.StringType, it converts the input to a string, trims the quotes,
+// and returns the resulting string. If the type is a types.Int64Type, it
+// converts the input to an int, and returns the resulting int. If the
+// type is a types.BoolType, it converts the input to a bool, and returns
+// the resulting bool. If the type is none of the above, it returns an
+// error.
+//
+// Returns:
+// - reflect.Value: The converted value.
+// - error: An error if the input type is not recognized.
+func CheckAndConvertValue(input reflect.Value) (reflect.Value, error) {
+	var valueRef reflect.Value
+	switch ConvertType(input.Type()) {
+	case types.StringType:
+		value := fmt.Sprintf("%v", input)
+		value = strings.Trim(value, "\"")
+		valueRef = reflect.ValueOf(value)
+
+		return valueRef, nil
+	case types.Int64Type:
+		value, err := strconv.Atoi(fmt.Sprintf("%v", input))
+		if err != nil {
+			return valueRef, nil
+		}
+		valueRef = reflect.ValueOf(value)
+
+		return valueRef, nil
+	case types.BoolType:
+		value, err := strconv.ParseBool(fmt.Sprintf("%v", input))
+		if err != nil {
+			return valueRef, nil
+		}
+		valueRef = reflect.ValueOf(value)
+
+		return valueRef, nil
+	}
+
+	return valueRef, fmt.Errorf("Value cannot be converted: %v", input)
+}
+
+// GenerateSchemaAttributes generates schema attributes based on a map of attribute names and respective types.
+//
+// The function takes a map of attributes, where each attribute is a map of attribute types and a boolean flag
+// indicating whether the attribute is a set. The function iterates over the attributes and for each attribute,
+// it generates a schema attribute using the SchemaAttributeGeneration function. The generated schema attributes
+// are stored in a map, where the attribute name is the key.
+//
+// The function returns the generated schema attributes as a map, where the attribute name is the key and the
+// corresponding schema attribute is the value.
+func GenerateSchemaAttributes(attributes map[string]map[attr.Type]bool) map[string]schema.Attribute {
+	schemaAttributes := make(map[string]schema.Attribute)
+	for field, attrMap := range attributes {
+		for attrType, isSet := range attrMap {
+			schemaAttributes[field] = SchemaAttributeGeneration(field, attrType, isSet)
+		}
+	}
+	tflog.Info(context.Background(), fmt.Sprintf("Generated Schema Attributes: %v", schemaAttributes))
+	return schemaAttributes
+}
+
+
+// SchemaAttributeGeneration generates a schema attribute based on the type.
+//
+// It takes in a field name, attribute type, and a boolean flag indicating
+// whether the attribute is a set. If the attribute is a set, it returns a
+// schema.SetAttribute with the specified element type and validators. If the
+// attribute is not a set, it returns a schema.Attribute of the specified type
+// with the field name and description.
+//
+// Returns a schema.Attribute.
+func SchemaAttributeGeneration(field string, attrType attr.Type, isSet bool) schema.Attribute {
+
+	if isSet {
+		return schema.SetAttribute{
+			Description:         "List of " + field,
+			MarkdownDescription: "List of " + field,
+			ElementType:         attrType,
+			Optional:            true,
+			Validators: []validator.Set{
+				setvalidator.SizeAtLeast(1),
+			},
+		}
+	}
+	switch attrType {
+	case types.StringType:
+		return schema.StringAttribute{
+			Description:         "Value for" + field,
+			MarkdownDescription: "Value for " + field,
+			Optional:            true,
+		}
+	case types.Int64Type:
+		return schema.Int64Attribute{
+			Description:         "Value for " + field,
+			MarkdownDescription: "Value for " + field,
+			Optional:            true,
+		}
+	case types.BoolType:
+		return schema.BoolAttribute{
+			Description:         "Value for " + field,
+			MarkdownDescription: "Value for " + field,
+			Optional:            true,
+		}
+	}
+	return nil
+}
+
+// TypeToMap converts any param into the specified type using its TFSDK tag.
+//
+// The function takes an interface{} parameter `t` and returns a map[string]map[attr.Type]bool.
+// The map contains the field names as keys and a nested map as values.
+// The nested map contains the converted type of the field as the key and a boolean value.
+// The boolean value is true if the field is a slice or array, and false otherwise.
+//
+// Parameters:
+// - t: The interface{} parameter to be converted.
+//
+// Returns:
+// - map[string]map[attr.Type]bool: The converted map.
+func TypeToMap(t interface{}) map[string]map[attr.Type]bool {
+	r := reflect.TypeOf(t)
+	m := make(map[string]map[attr.Type]bool)
+
+	for i := 0; i < r.NumField(); i++ {
+		field := r.Field(i)
+		convType := ConvertType(field.Type)
+		mTwo := make(map[attr.Type]bool)
+		if convType == nil {
+			continue
+		} else if field.Type.Kind() == reflect.Slice || field.Type.Kind() == reflect.Array {
+			mTwo[convType] = true
+		} else {
+			mTwo[convType] = false
+		}
+		m[field.Tag.Get("tfsdk")] = mTwo
+	}
+
+	return m
+}
+
+// ConvertType converts a reflect.Type to an attr.Type.
+//
+// It takes in a reflect.Type and checks its kind. If the type is a
+// slice or array, it recursively calls itself with the element type.
+// It then checks the name of the type and returns the corresponding
+// attr.Type. If the type is none of the above, it returns nil.
+//
+// Parameters:
+// - intialType: The reflect.Type to be converted.
+//
+// Returns:
+// - attr.Type: The converted attr.Type.
+func ConvertType(intialType reflect.Type) attr.Type {
+	if intialType.Kind() == reflect.Slice || intialType.Kind() == reflect.Array {
+		return ConvertType(intialType.Elem())
+	}
+	switch intialType.Name() {
+	case "StringValue":
+		return types.StringType
+	case "Int64Value":
+		return types.Int64Type
+	case "BoolValue":
+		return types.BoolType
+	}
+
+	return nil
+}
+
+// isPointer checks if the given value is a pointer.
+//
+// value: The value to check.
+// Returns: A boolean indicating whether the value is a pointer.
+func isPointer(value interface{}) bool {
+	return reflect.ValueOf(value).Kind() == reflect.Ptr
 }

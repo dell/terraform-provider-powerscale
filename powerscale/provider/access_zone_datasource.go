@@ -19,6 +19,7 @@ package provider
 
 import (
 	"context"
+	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
@@ -184,12 +185,7 @@ func (d *AccessZoneDataSource) Schema(ctx context.Context, req datasource.Schema
 		},
 		Blocks: map[string]schema.Block{
 			"filter": schema.SingleNestedBlock{
-				Attributes: map[string]schema.Attribute{
-					"names": schema.SetAttribute{
-						Optional:    true,
-						ElementType: types.StringType,
-					},
-				},
+				Attributes: helper.GenerateSchemaAttributes(helper.TypeToMap(models.AccessZoneFilterType{})),
 			},
 		},
 	}
@@ -237,6 +233,21 @@ func (d *AccessZoneDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		)
 		return
 	}
+
+	if plan.AccessZoneFilter != nil {
+		filterRes, err := helper.GetDataSourceByValue(ctx, *plan.AccessZoneFilter, result.Zones)
+		if err != nil {
+		 	resp.Diagnostics.AddError(
+		 		fmt.Sprintf("Error getting the access zones details %v", plan.AccessZoneFilter), err.Error(),
+		 	)
+		}
+		result.Zones = []powerscale.V3ZoneExtended{}
+		for _, v := range filterRes {
+			accessZoneCast := v.(powerscale.V3ZoneExtended)
+			result.Zones = append(result.Zones, accessZoneCast)
+		}
+	} 
+
 	fulldetail := []models.AccessZoneDetailModel{}
 	for _, vze := range result.Zones {
 		val := vze
@@ -252,25 +263,9 @@ func (d *AccessZoneDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		}
 		fulldetail = append(fulldetail, detail)
 	}
-	var validAccessZones []string
-	if plan.AccessZoneFilter != nil && len(plan.AccessZoneFilter.Names) > 0 {
-		for _, name := range plan.AccessZoneFilter.Names {
-			for _, det := range fulldetail {
-				if name.ValueString() == det.Name.ValueString() {
-					state.AccessZones = append(state.AccessZones, det)
-					validAccessZones = append(validAccessZones, det.ID.ValueString())
-				}
-			}
-		}
-		if len(state.AccessZones) != len(plan.AccessZoneFilter.Names) {
-			resp.Diagnostics.AddError(
-				"Error one or more of the filtered access zone names is not a valid powerscale access zone",
-				fmt.Sprintf("Valid access zones [%v] filtered list [%v]", validAccessZones, plan.AccessZoneFilter.Names),
-			)
-		}
-	} else {
-		state.AccessZones = append(state.AccessZones, fulldetail...)
-	}
+	
+	state.AccessZones = append(state.AccessZones, fulldetail...)
+
 	// save into the Terraform state.
 	state.ID = types.StringValue("access_zone_datasource")
 

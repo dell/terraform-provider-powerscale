@@ -80,7 +80,21 @@ type V1AuthAccessAccessItemFileGroup struct {
 
 // AccessZoneFilterType describes the filter data model.
 type AccessZoneFilterType struct {
-	Names []types.String `tfsdk:"names"`
+	Name []types.String `tfsdk:"name"`
+	AlternateSystemProvider []types.String `tfsdk:"alternate_system_provider"`
+	CacheEntryExpiry []types.Int64 `tfsdk:"cache_entry_expiry"`
+	Groupnet []types.String `tfsdk:"groupnet"`
+	HomeDirectoryUmask []types.Int64 `tfsdk:"home_directory_umask"`
+	ID []types.String `tfsdk:"id"`
+	MapUntrusted []types.String `tfsdk:"map_untrusted"`
+	NegativeCacheEntryExpiry []types.Int64 `tfsdk:"negative_cache_entry_expiry"`
+	NetbiosName []types.String `tfsdk:"netbios_name"`
+	Path []types.String `tfsdk:"path"`
+	SkeletonDirectory []types.String `tfsdk:"skeleton_directory"`
+	SystemProvider []types.String `tfsdk:"system_provider"`
+	ZoneID []types.Int64 `tfsdk:"zone_id"`
+	CreatePath types.Bool `tfsdk:"create_path"`
+	System types.Bool `tfsdk:"system"`
 }
 
 // AccessZoneResourceModel describes the resource data model.
