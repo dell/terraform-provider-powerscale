@@ -88,7 +88,21 @@ output "powerscale_accesszone" {
 
 Optional:
 
-- `names` (Set of String)
+- `alternate_system_provider` (Set of String) List of alternate_system_provider
+- `cache_entry_expiry` (Set of Number) List of cache_entry_expiry
+- `create_path` (Boolean) Value for create_path
+- `groupnet` (Set of String) List of groupnet
+- `home_directory_umask` (Set of Number) List of home_directory_umask
+- `id` (Set of String) List of id
+- `map_untrusted` (Set of String) List of map_untrusted
+- `name` (Set of String) List of name
+- `negative_cache_entry_expiry` (Set of Number) List of negative_cache_entry_expiry
+- `netbios_name` (Set of String) List of netbios_name
+- `path` (Set of String) List of path
+- `skeleton_directory` (Set of String) List of skeleton_directory
+- `system` (Boolean) Value for system
+- `system_provider` (Set of String) List of system_provider
+- `zone_id` (Set of Number) List of zone_id
 
 
 <a id="nestedatt--access_zones_details"></a>

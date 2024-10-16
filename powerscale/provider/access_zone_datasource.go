@@ -237,16 +237,16 @@ func (d *AccessZoneDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	if plan.AccessZoneFilter != nil {
 		filterRes, err := helper.GetDataSourceByValue(ctx, *plan.AccessZoneFilter, result.Zones)
 		if err != nil {
-		 	resp.Diagnostics.AddError(
-		 		fmt.Sprintf("Error getting the access zones details %v", plan.AccessZoneFilter), err.Error(),
-		 	)
+			resp.Diagnostics.AddError(
+				fmt.Sprintf("Error getting the access zones details %v", plan.AccessZoneFilter), err.Error(),
+			)
 		}
 		result.Zones = []powerscale.V3ZoneExtended{}
 		for _, v := range filterRes {
 			accessZoneCast := v.(powerscale.V3ZoneExtended)
 			result.Zones = append(result.Zones, accessZoneCast)
 		}
-	} 
+	}
 
 	fulldetail := []models.AccessZoneDetailModel{}
 	for _, vze := range result.Zones {
@@ -263,7 +263,7 @@ func (d *AccessZoneDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		}
 		fulldetail = append(fulldetail, detail)
 	}
-	
+
 	state.AccessZones = append(state.AccessZones, fulldetail...)
 
 	// save into the Terraform state.

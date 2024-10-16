@@ -27,16 +27,15 @@ import (
 	"math/big"
 	"net/http"
 	"reflect"
-	"strings"
 	"strconv"
+	"strings"
 
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // CopyFields copy the source of a struct to destination of struct with terraform types.
@@ -343,7 +342,6 @@ func extractText(n *html.Node, message *string) {
 	}
 }
 
-
 // GetDataSourceByValue is a helper function that gathers data based on all data gathered by the datasource.
 //
 // Parameters:
@@ -409,14 +407,13 @@ func GetDataSourceByValue(ctx context.Context, fields interface{}, allData inter
 func FilterByField(ctx context.Context, dataSources reflect.Value, fieldValue reflect.Value, field string) (reflect.Value, error) {
 	filteredData := reflect.MakeSlice(dataSources.Type(), 0, dataSources.Len())
 
-
 	for i := 0; i < dataSources.Len(); i++ {
 
 		dataSource := dataSources.Index(i).Interface()
 
 		dataSourceValue := reflect.ValueOf(dataSource)
 		fieldValueInDataSource := dataSourceValue.FieldByName(field)
-		tflog.Debug(ctx, "kind-tf : " + fieldValueInDataSource.Kind().String() + " field name: " + field)	
+		tflog.Debug(ctx, "kind-tf : "+fieldValueInDataSource.Kind().String()+" field name: "+field)
 
 		if fieldValue.Kind() == reflect.Slice || fieldValue.Kind() == reflect.Array {
 			for n := 0; n < fieldValue.Len(); n++ {
@@ -425,7 +422,7 @@ func FilterByField(ctx context.Context, dataSources reflect.Value, fieldValue re
 				if err != nil {
 					return reflect.Zero(nil), err
 				}
-				tflog.Debug(ctx, "fieldValueInDatasource: "+ fieldValueInDataSource.Elem().Interface().(string))
+				tflog.Debug(ctx, "fieldValueInDatasource: "+fieldValueInDataSource.Elem().Interface().(string))
 				if fieldValueInDataSource.Elem().Interface() == interFieldValue.Interface() || fieldValueInDataSource.Interface() == interFieldValue.Interface() {
 					filteredData = reflect.Append(filteredData, reflect.ValueOf(dataSource))
 				}
@@ -435,7 +432,7 @@ func FilterByField(ctx context.Context, dataSources reflect.Value, fieldValue re
 			if err != nil {
 				return reflect.Zero(nil), err
 			}
-			if fieldValueInDataSource.Elem().Interface() == interFieldValue.Interface() ||fieldValueInDataSource.Interface() == interFieldValue.Interface() {
+			if fieldValueInDataSource.Elem().Interface() == interFieldValue.Interface() || fieldValueInDataSource.Interface() == interFieldValue.Interface() {
 				filteredData = reflect.Append(filteredData, reflect.ValueOf(dataSource))
 			}
 		}
@@ -443,7 +440,6 @@ func FilterByField(ctx context.Context, dataSources reflect.Value, fieldValue re
 
 	return filteredData, nil
 }
-
 
 // CheckAndConvertValue converts a reflect.Value to an attr.Type.
 //
@@ -507,7 +503,6 @@ func GenerateSchemaAttributes(attributes map[string]map[attr.Type]bool) map[stri
 	tflog.Info(context.Background(), fmt.Sprintf("Generated Schema Attributes: %v", schemaAttributes))
 	return schemaAttributes
 }
-
 
 // SchemaAttributeGeneration generates a schema attribute based on the type.
 //
