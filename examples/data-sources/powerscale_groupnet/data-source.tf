@@ -21,7 +21,7 @@ limitations under the License.
 data "powerscale_groupnet" "example_groupnet" {
   filter {
     # Optional list of names to filter upon
-    names = ["groupnet_name"]
+    name = ["groupnet0"]
   }
 }
 

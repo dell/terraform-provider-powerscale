@@ -19,9 +19,10 @@ package provider
 
 import (
 	"context"
+	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"strings"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
@@ -128,12 +129,7 @@ func (d *GroupnetDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 		},
 		Blocks: map[string]schema.Block{
 			"filter": schema.SingleNestedBlock{
-				Attributes: map[string]schema.Attribute{
-					"names": schema.SetAttribute{
-						Optional:    true,
-						ElementType: types.StringType,
-					},
-				},
+				Attributes: helper.GenerateSchemaAttributes(helper.TypeToMap(models.GroupnetFilterType{})),
 			},
 		},
 	}
@@ -165,9 +161,10 @@ func (d *GroupnetDataSource) Read(ctx context.Context, req datasource.ReadReques
 	tflog.Info(ctx, "Reading Groupnet data source ")
 
 	var state models.GroupnetDataSourceModel
+	var plan models.GroupnetDataSourceModel
 
 	// Read Terraform configuration data into the model
-	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &plan)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -180,36 +177,42 @@ func (d *GroupnetDataSource) Read(ctx context.Context, req datasource.ReadReques
 	}
 
 	// parse groupnet response to state groupnet model
-	if err := helper.UpdateGroupnetDataSourceState(ctx, &state, groupnets); err != nil {
+	if err := helper.UpdateGroupnetDataSourceState(ctx, &plan, groupnets.Groupnets); err != nil {
 		resp.Diagnostics.AddError("Error reading groupnets datasource plan",
 			fmt.Sprintf("Could not list groupnets with error: %s", err.Error()))
 		return
 	}
 
-	// filter groupnets by names
-	if state.Filter != nil && len(state.Filter.Names) > 0 {
-		var validGroupnets []string
-		var filteredGroupnets []models.GroupnetModel
-
-		for _, groupnet := range state.Groupnets {
-			for _, name := range state.Filter.Names {
-				if groupnet.Name.Equal(name) {
-					filteredGroupnets = append(filteredGroupnets, groupnet)
-					validGroupnets = append(validGroupnets, groupnet.Name.ValueString())
-					break
-				}
-			}
-		}
-
-		state.Groupnets = filteredGroupnets
-
-		if len(state.Groupnets) != len(state.Filter.Names) {
+	// filter groupnets
+	if plan.Filter != nil {
+		filterRes, err := helper.GetDataSourceByValue(ctx, *plan.Filter, groupnets.Groupnets)
+		if err != nil {
 			resp.Diagnostics.AddError(
-				"Error one or more of the filtered groupnet names is not a valid powerscale groupnet.",
-				fmt.Sprintf("Valid groupnets: [%v], filtered list: [%v]", strings.Join(validGroupnets, " , "), state.Filter.Names),
+				fmt.Sprintf("Could not list groupnets with error:  %v", plan.Filter), err.Error(),
 			)
 		}
+
+		groupnets.Groupnets = []powerscale.V10NetworkGroupnetExtended{}
+		for _, v := range filterRes {
+			groupnetCast := v.(powerscale.V10NetworkGroupnetExtended)
+			groupnets.Groupnets = append(groupnets.Groupnets, groupnetCast)
+		}
 	}
+
+	fulldetail := []models.GroupnetModel{}
+	for _, vze := range groupnets.Groupnets {
+		val := vze
+		detail, err := helper.GroupnetDetailMapper(ctx, &val)
+		if err != nil {
+			errStr := constants.ReadGroupnetErrorMsg + "with error: "
+			message := helper.GetErrorString(err, errStr)
+			resp.Diagnostics.AddError("Error reading Groupnet", message)
+			return
+		}
+
+		fulldetail = append(fulldetail, detail)
+	}
+	state.Groupnets = fulldetail
 
 	state.ID = types.StringValue("groupnet_datasource")
 

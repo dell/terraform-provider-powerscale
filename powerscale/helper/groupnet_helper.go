@@ -30,6 +30,32 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+// GroupnetDetailMapper Does the mapping from the response to the model
+func GroupnetDetailMapper(ctx context.Context, az *powerscale.V10NetworkGroupnetExtended) (models.GroupnetModel, error) {
+	model := models.GroupnetModel{}
+	err := CopyFields(ctx, az, &model)
+
+	model.Name = types.StringValue(*az.Name)
+	//assign all the rest of the fields to model.attributes for each of the types.type(*az.attribute)
+	model.AllowWildcardSubdomains = types.BoolValue(*az.AllowWildcardSubdomains)
+	model.DNSCacheEnabled = types.BoolValue(*az.DnsCacheEnabled)
+	model.ServerSideDNSSearch = types.BoolValue(*az.ServerSideDnsSearch)
+	// model.Name = types.StringValue(*az.Name)
+
+	model.DNSResolverRotate = types.BoolValue(false)
+	// if az.DnsOptions[0] == "rotate" {
+	// 	model.DNSResolverRotate = types.BoolValue(true)
+	// }
+	// dnsSearch := az.DnsSearch[0]
+	// model.DNSSearch =
+	// model.DNSServers = az.DnsServers
+
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
+
 // UpdateGroupnetDataSourceState updates datasource state.
 func UpdateGroupnetDataSourceState(ctx context.Context, groupnetState *models.GroupnetDataSourceModel, groupnetResponse []powerscale.V10NetworkGroupnetExtended) (err error) {
 	for _, groupnet := range groupnetResponse {
@@ -104,31 +130,40 @@ func UpdateGroupnetImportState(ctx context.Context, groupnetModel *models.Groupn
 }
 
 // GetAllGroupnets returns all groupnets.
-func GetAllGroupnets(ctx context.Context, client *client.Client) (groupnets []powerscale.V10NetworkGroupnetExtended, err error) {
-
-	groupnetParams := client.PscaleOpenAPIClient.NetworkApi.ListNetworkv10NetworkGroupnets(ctx)
-	result, _, err := groupnetParams.Execute()
+func GetAllGroupnets(ctx context.Context, client *client.Client) (*powerscale.V10NetworkGroupnets, error) {
+	groupnets, _, err := client.PscaleOpenAPIClient.NetworkApi.ListNetworkv10NetworkGroupnets(ctx).Execute()
 	if err != nil {
-		errStr := constants.ReadGroupnetErrorMsg + "with error: "
-		message := GetErrorString(err, errStr)
-		return nil, fmt.Errorf("error getting groupnets: %s", message)
+		return nil, fmt.Errorf("error getting groupnets: %s", err.Error())
 	}
 
-	for {
-		groupnets = append(groupnets, result.Groupnets...)
-		if result.Resume == nil || *result.Resume == "" {
-			break
-		}
-
-		groupnetParams = client.PscaleOpenAPIClient.NetworkApi.ListNetworkv10NetworkGroupnets(ctx).Resume(*result.Resume)
-		if result, _, err = groupnetParams.Execute(); err != nil {
-			errStr := constants.ReadGroupnetErrorMsg + "with error: "
-			message := GetErrorString(err, errStr)
-			return nil, fmt.Errorf("error getting groupnets with resume: %s", message)
-		}
-	}
-	return
+	return groupnets, nil
 }
+
+// func GetAllGroupnets(ctx context.Context, client *client.Client) (groupnets []powerscale.V10NetworkGroupnetExtended, err error) {
+
+// groupnetParams := client.PscaleOpenAPIClient.NetworkApi.ListNetworkv10NetworkGroupnets(ctx)
+// result, _, err := groupnetParams.Execute()
+// if err != nil {
+// 	errStr := constants.ReadGroupnetErrorMsg + "with error: "
+// 	message := GetErrorString(err, errStr)
+// 	return nil, fmt.Errorf("error getting groupnets: %s", message)
+// }
+
+// for {
+// 	groupnets = append(groupnets, result.Groupnets...)
+// 	if result.Resume == nil || *result.Resume == "" {
+// 		break
+// 	}
+
+// 	groupnetParams = client.PscaleOpenAPIClient.NetworkApi.ListNetworkv10NetworkGroupnets(ctx).Resume(*result.Resume)
+// 	if result, _, err = groupnetParams.Execute(); err != nil {
+// 		errStr := constants.ReadGroupnetErrorMsg + "with error: "
+// 		message := GetErrorString(err, errStr)
+// 		return nil, fmt.Errorf("error getting groupnets with resume: %s", message)
+// 	}
+// }
+// 	return
+// }
 
 // GetGroupnet Returns the Groupnet by groupnet name.
 func GetGroupnet(ctx context.Context, client *client.Client, groupnetName string) (*powerscale.V10NetworkGroupnetExtended, error) {
