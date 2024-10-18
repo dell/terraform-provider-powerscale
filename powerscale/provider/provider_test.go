@@ -18,28 +18,30 @@ limitations under the License.
 package provider
 
 import (
+	"bufio"
 	"context"
 	"crypto/tls"
 	powerscale "dell/powerscale-go-client"
 	"errors"
 	"fmt"
-	"github.com/bytedance/mockey"
-	. "github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/joho/godotenv"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"github.com/bytedance/mockey"
+	. "github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/stretchr/testify/assert"
 )
 
 // testAccProtoV6ProviderFactories are used to instantiate a provider during
@@ -50,30 +52,47 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 	"powerscale": providerserver.NewProtocol6WithError(New("test")()),
 }
 
+var powerscaleUsername = ""
+var powerscalePassword = ""
+var powerscaleEndpoint = ""
+var powerScaleSSHIP = ""
+var powerscaleSSHPort = "22"
+var powerscaleInsecure = false
 var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
 var BasicAuthProviderErrorConfig = ""
 var FunctionMocker *mockey.Mocker
 
 func init() {
-	err := godotenv.Load("powerscale.env")
+	_, err := loadEnvFile("powerscale.env")
 	if err != nil {
-		log.Fatal("Error loading .env file: ", err)
+		log.Fatal("Error loading .env file")
 		return
 	}
 
-	username := os.Getenv("POWERSCALE_USERNAME")
-	password := os.Getenv("POWERSCALE_PASSWORD")
-	endpoint := os.Getenv("POWERSCALE_ENDPOINT")
+	powerscaleUsername = os.Getenv("POWERSCALE_USERNAME")
+	powerscalePassword = os.Getenv("POWERSCALE_PASSWORD")
+	powerscaleEndpoint = os.Getenv("POWERSCALE_ENDPOINT")
 	authType := os.Getenv("POWERSCALE_AUTH_TYPE")
 	timeout := os.Getenv("POWERSCALE_TIMEOUT")
 	insecure := os.Getenv("POWERSCALE_INSECURE")
+	powerscaleInsecure = strings.ToLower(insecure) == "true"
+	if pscaleSSHPort := os.Getenv("POWERSCALE_SSH_PORT"); len(pscaleSSHPort) > 0 {
+		powerscaleSSHPort = pscaleSSHPort
+	}
 	if len(timeout) == 0 {
 		timeout = "2000"
 	}
 	if len(authType) == 0 {
 		authType = "1"
 	}
+
+	u, err := url.Parse(powerscaleEndpoint)
+	if err != nil {
+		log.Fatal("Error parsing POWERSCALE_ENDPOINT value")
+		return
+	}
+	powerScaleSSHIP = u.Hostname()
 
 	ProviderConfig = fmt.Sprintf(`
 		provider "powerscale" {
@@ -84,7 +103,7 @@ func init() {
 			auth_type     = %s
 			timeout       = %s
 		}
-	`, username, password, endpoint, insecure, authType, timeout)
+	`, powerscaleUsername, powerscalePassword, powerscaleEndpoint, insecure, authType, timeout)
 
 	SessionAuthProviderConfig = fmt.Sprintf(`
 		provider "powerscale" {
@@ -95,7 +114,7 @@ func init() {
 			auth_type     = %d
 			timeout       = %s
 		}
-	`, username, password, endpoint, client.SessionAuthType, timeout)
+	`, powerscaleUsername, powerscalePassword, powerscaleEndpoint, client.SessionAuthType, timeout)
 
 	BasicAuthProviderErrorConfig = fmt.Sprintf(`
 		provider "powerscale" {
@@ -106,7 +125,34 @@ func init() {
 			auth_type     = %d
 			timeout       = %s
 		}
-	`, username, endpoint, client.BasicAuthType, timeout)
+	`, powerscaleUsername, powerscaleEndpoint, client.BasicAuthType, timeout)
+}
+
+var sweepClient *client.Client
+
+// getClientForRegion returns a common provider client configured for the specified region.
+func getClientForRegion(_ string) (*client.Client, error) {
+	if sweepClient != nil {
+		return sweepClient, nil
+	}
+	client, err := client.NewClient(
+		powerscaleEndpoint,
+		powerscaleInsecure,
+		powerscaleUsername,
+		powerscalePassword,
+		client.BasicAuthType,
+		2000,
+	)
+	if err != nil {
+		return nil, err
+	}
+	sweepClient = client
+	return sweepClient, nil
+}
+
+// this is required for initializing sweepers.
+func TestMain(m *testing.M) {
+	resource.TestMain(m)
 }
 
 func testAccPreCheck(t *testing.T) {
@@ -363,4 +409,40 @@ func TestInsecureClientWithInsecureParam(t *testing.T) {
 		assert.Errorf(t, err, "NewOpenAPIClient failed")
 	}
 	assert.NotNil(t, openAPIClient)
+}
+
+// loadEnvFile used to read env file and set params
+func loadEnvFile(path string) (map[string]string, error) {
+	envMap := make(map[string]string)
+
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) == 0 || line[0] == '#' {
+			continue
+		}
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+		envMap[key] = value
+		// Set the environment variable for system access
+		if err := os.Setenv(key, value); err != nil {
+			return nil, fmt.Errorf("error setting environment variable %s: %w", key, err)
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return envMap, nil
 }

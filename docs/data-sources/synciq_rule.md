@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ linkTitle: "powerscale_synciq_rule"
 page_title: "powerscale_synciq_rule Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  
+  This datasource is used to query the existing SyncIQ Replication Rules from PowerScale array.
 ---
 
 # powerscale_synciq_rule (Data Source)
 
-
+This datasource is used to query the existing SyncIQ Replication Rules from PowerScale array.
 
 ## Example Usage
 

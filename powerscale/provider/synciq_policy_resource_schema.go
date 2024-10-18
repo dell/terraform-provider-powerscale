@@ -21,12 +21,15 @@ import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -34,6 +37,10 @@ import (
 // Schema implements resource.Resource.
 func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		MarkdownDescription: "This resource is used to manage the SyncIQ Replication Policy entity of PowerScale Array. " +
+			"We can Create, Read, Update and Delete the SyncIQ Replication Policy using this resource. We can also import existing SyncIQ Replication Policy from PowerScale array.",
+		Description: "This resource is used to manage the SyncIQ Replication Policy entity of PowerScale Array. " +
+			"We can Create, Read, Update and Delete the SyncIQ Replication Policy using this resource. We can also import existing SyncIQ Replication Policy from PowerScale array.",
 		Attributes: map[string]schema.Attribute{
 			"accelerated_failback": schema.BoolAttribute{
 				Optional:            true,
@@ -103,6 +110,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(0, 255),
 				},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"disable_file_split": schema.BoolAttribute{
 				Optional:            true,
@@ -143,8 +153,8 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 			"encryption_cipher_list": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "The cipher list being used with encryption. For SyncIQ targets, this list serves as a list of supported ciphers. For SyncIQ sources, the list of ciphers will be attempted to be used in order.",
-				MarkdownDescription: "The cipher list being used with encryption. For SyncIQ targets, this list serves as a list of supported ciphers. For SyncIQ sources, the list of ciphers will be attempted to be used in order.",
+				Description:         "The cipher list (comma separated) being used with encryption. For SyncIQ targets, this list serves as a list of supported ciphers. For SyncIQ sources, the list of ciphers will be attempted to be used in order.",
+				MarkdownDescription: "The cipher list (comma separated) being used with encryption. For SyncIQ targets, this list serves as a list of supported ciphers. For SyncIQ sources, the list of ciphers will be attempted to be used in order.",
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(0, 255),
 				},
@@ -191,9 +201,11 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 												},
 											},
 											"operator": schema.StringAttribute{
-												Optional:            true,
-												Description:         "How to compare the specified attribute of each file to the specified value.",
-												MarkdownDescription: "How to compare the specified attribute of each file to the specified value.",
+												Optional: true,
+												Description: "How to compare the specified attribute of each file to the specified value." +
+													"  Possible values are: `==`, `!=`, `>`, `>=`, `<`, `<=`, `!`.  Default is `==`.",
+												MarkdownDescription: "How to compare the specified attribute of each file to the specified value." +
+													"  Possible values are: `==`, `!=`, `>`, `>=`, `<`, `<=`, `!`.  Default is `==`.",
 												Validators: []validator.String{
 													stringvalidator.OneOf(
 														"==",
@@ -207,9 +219,11 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 												},
 											},
 											"type": schema.StringAttribute{
-												Optional:            true,
-												Description:         "The type of this criterion, that is, which file attribute to match on.",
-												MarkdownDescription: "The type of this criterion, that is, which file attribute to match on.",
+												Optional: true,
+												Description: "The type of this criterion, that is, which file attribute to match on." +
+													` Accepted values are "name", "path", "accessed_time", "birth_time", "changed_time", "size", "file_type", "posix_regex_name", "user_name", "user_id", "group_name", "group_id", "no_user", "no_group".`,
+												MarkdownDescription: "The type of this criterion, that is, which file attribute to match on." +
+													" Accepted values are , `name`, `path`, `accessed_time`, `birth_time`, `changed_time`, `size`, `file_type`, `posix_regex_name`, `user_name`, `user_id`, `group_name`, `group_id`, `no_user`, `no_group`.",
 												Validators: []validator.String{
 													stringvalidator.OneOf(
 														"name",
@@ -274,24 +288,16 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 			"job_delay": schema.Int64Attribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "If --schedule is set to When-Source-Modified, the duration to wait after a modification is made before starting a job (default is 0 seconds).",
-				MarkdownDescription: "If --schedule is set to When-Source-Modified, the duration to wait after a modification is made before starting a job (default is 0 seconds).",
-			},
-			"linked_service_policies": schema.ListAttribute{
-				Optional:            true,
-				Computed:            true,
-				Description:         "A list of service replication policies that this data replication policy will be associated with.",
-				MarkdownDescription: "A list of service replication policies that this data replication policy will be associated with.",
-				ElementType:         types.StringType,
-				PlanModifiers: []planmodifier.List{
-					listplanmodifier.UseStateForUnknown(),
-				},
+				Description:         "If `schedule` is set to `when-source-modified`, the duration to wait after a modification is made before starting a job (default is 0 seconds).",
+				MarkdownDescription: "If `schedule` is set to `when-source-modified`, the duration to wait after a modification is made before starting a job (default is 0 seconds).",
 			},
 			"log_level": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				Description:         "Severity an event must reach before it is logged.",
-				MarkdownDescription: "Severity an event must reach before it is logged.",
+				Optional: true,
+				Computed: true,
+				Description: "Severity an event must reach before it is logged." +
+					" Accepted values are `fatal`, `error`, `notice`, `info`, `copy`, `debug`, `trace`.",
+				MarkdownDescription: "Severity an event must reach before it is logged." +
+					" Accepted values are `fatal`, `error`, `notice`, `info`, `copy`, `debug`, `trace`.",
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"fatal",
@@ -302,6 +308,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 						"debug",
 						"trace",
 					),
+				},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"log_removed_files": schema.BoolAttribute{
@@ -321,8 +330,8 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 			"ocsp_address": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "The address of the OCSP responder to which to connect.",
-				MarkdownDescription: "The address of the OCSP responder to which to connect.",
+				Description:         "The address of the OCSP responder to which to connect. Set to empty string to disable OCSP.",
+				MarkdownDescription: "The address of the OCSP responder to which to connect. Set to empty string to disable OCSP.",
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(0, 255),
 				},
@@ -330,17 +339,16 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 			"ocsp_issuer_certificate_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "The ID of the certificate authority that issued the certificate whose revocation status is being checked.",
-				MarkdownDescription: "The ID of the certificate authority that issued the certificate whose revocation status is being checked.",
+				Description:         "The ID of the certificate authority that issued the certificate whose revocation status is being checked. Set to empty string to disable certificate verification.",
+				MarkdownDescription: "The ID of the certificate authority that issued the certificate whose revocation status is being checked. Set to empty string to disable certificate verification.",
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(0, 255),
 				},
 			},
 			"password": schema.StringAttribute{
 				Optional:            true,
-				Computed:            true,
-				Description:         "The password for the target cluster.  This field is not readable.",
-				MarkdownDescription: "The password for the target cluster.  This field is not readable.",
+				Description:         "The password for the target cluster. This field is not readable.",
+				MarkdownDescription: "The password for the target cluster. This field is not readable.",
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(1, 255),
 				},
@@ -372,8 +380,8 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 			"rpo_alert": schema.Int64Attribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "If --schedule is set to a time/date, an alert is created if the specified RPO for this policy is exceeded. The default value is 0, which will not generate RPO alerts.",
-				MarkdownDescription: "If --schedule is set to a time/date, an alert is created if the specified RPO for this policy is exceeded. The default value is 0, which will not generate RPO alerts.",
+				Description:         "If `schedule` is set to a time/date, an alert is created if the specified RPO for this policy is exceeded. The default value is 0, which will not generate RPO alerts.",
+				MarkdownDescription: "If `schedule` is set to a time/date, an alert is created if the specified RPO for this policy is exceeded. The default value is 0, which will not generate RPO alerts.",
 			},
 			"schedule": schema.StringAttribute{
 				Optional:            true,
@@ -383,12 +391,9 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(0, 255),
 				},
-			},
-			"service_policy": schema.BoolAttribute{
-				Optional:            true,
-				Computed:            true,
-				Description:         "If true, this is a service replication policy.",
-				MarkdownDescription: "If true, this is a service replication policy.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"skip_lookup": schema.BoolAttribute{
 				Optional:            true,
@@ -399,8 +404,8 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 			"skip_when_source_unmodified": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "If true and --schedule is set to a time/date, the policy will not run if no changes have been made to the contents of the source directory since the last job successfully completed.",
-				MarkdownDescription: "If true and --schedule is set to a time/date, the policy will not run if no changes have been made to the contents of the source directory since the last job successfully completed.",
+				Description:         "If true and `schedule` is set to a time/date, the policy will not run if no changes have been made to the contents of the source directory since the last job successfully completed.",
+				MarkdownDescription: "If true and `schedule` is set to a time/date, the policy will not run if no changes have been made to the contents of the source directory since the last job successfully completed.",
 			},
 			"snapshot_sync_existing": schema.BoolAttribute{
 				Optional:            true,
@@ -423,6 +428,12 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Description:         "Directories that will be excluded from the sync.  Modifying this field will result in a full synchronization of all data.",
 				MarkdownDescription: "Directories that will be excluded from the sync.  Modifying this field will result in a full synchronization of all data.",
 				ElementType:         types.StringType,
+				Validators: []validator.List{
+					listvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+				},
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"source_include_directories": schema.ListAttribute{
 				Optional:            true,
@@ -430,6 +441,12 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Description:         "Directories that will be included in the sync.  Modifying this field will result in a full synchronization of all data.",
 				MarkdownDescription: "Directories that will be included in the sync.  Modifying this field will result in a full synchronization of all data.",
 				ElementType:         types.StringType,
+				Validators: []validator.List{
+					listvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+				},
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"source_network": schema.SingleNestedAttribute{
 				Optional:            true,
@@ -438,15 +455,21 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				MarkdownDescription: "Restricts replication policies on the local cluster to running on the specified subnet and pool.",
 				Attributes: map[string]schema.Attribute{
 					"pool": schema.StringAttribute{
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
 						Description:         "The pool to restrict replication policies to.",
 						MarkdownDescription: "The pool to restrict replication policies to.",
 					},
 					"subnet": schema.StringAttribute{
-						Required:            true,
+						Optional:            true,
+						Computed:            true,
 						Description:         "The subnet to restrict replication policies to.",
 						MarkdownDescription: "The subnet to restrict replication policies to.",
 					},
+				},
+				Validators: []validator.Object{
+					objectvalidator.AlsoRequires(path.MatchRelative().AtName("subnet")),
+					objectvalidator.AlsoRequires(path.MatchRelative().AtName("pool")),
 				},
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.UseStateForUnknown(),
@@ -493,14 +516,16 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 				Description:         "The naming pattern for snapshot on the destination cluster when --sync-existing-snapshot is true",
 				MarkdownDescription: "The naming pattern for snapshot on the destination cluster when --sync-existing-snapshot is true",
 				Validators: []validator.String{
-					stringvalidator.LengthBetween(0, 255),
+					// even though openAPI spec allows empty string, actual API does not
+					// and its giving a non-user-friendly error
+					stringvalidator.LengthBetween(1, 255),
 				},
 			},
 			"target_certificate_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "The ID of the target cluster certificate being used for encryption.",
-				MarkdownDescription: "The ID of the target cluster certificate being used for encryption.",
+				Description:         "The ID of the target cluster certificate being used for encryption. Set to empty string to disable target certificate verification.",
+				MarkdownDescription: "The ID of the target cluster certificate being used for encryption. Set to empty string to disable target certificate verification.",
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(0, 255),
 				},
@@ -536,10 +561,12 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 			"target_snapshot_alias": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "The alias of the snapshot taken on the target cluster after the sync completes. A value of @DEFAULT will reset this field to the default creation value.",
-				MarkdownDescription: "The alias of the snapshot taken on the target cluster after the sync completes. A value of @DEFAULT will reset this field to the default creation value.",
+				Description:         "The alias of the snapshot taken on the target cluster after the sync completes. Do not use the value `DEFAULT`.",
+				MarkdownDescription: "The alias of the snapshot taken on the target cluster after the sync completes. Do not use the value `DEFAULT`.",
 				Validators: []validator.String{
-					stringvalidator.LengthBetween(0, 255),
+					// even though openAPI spec allows empty string, actual API does not
+					// and its giving a non-user-friendly error
+					stringvalidator.LengthBetween(1, 255),
 				},
 			},
 			"target_snapshot_archive": schema.BoolAttribute{
@@ -557,8 +584,13 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 			"target_snapshot_pattern": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "The name pattern for snapshots taken on the target cluster after the sync completes.  A value of @DEFAULT will reset this field to the default creation value.",
-				MarkdownDescription: "The name pattern for snapshots taken on the target cluster after the sync completes.  A value of @DEFAULT will reset this field to the default creation value.",
+				Description:         "The name pattern for snapshots taken on the target cluster after the sync completes. Do not use the value `@DEFAULT`.",
+				MarkdownDescription: "The name pattern for snapshots taken on the target cluster after the sync completes. Do not use the value `@DEFAULT`.",
+				Validators: []validator.String{
+					// even though openAPI spec allows empty string, actual API does not
+					// and its giving a non-user-friendly error
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"workers_per_node": schema.Int64Attribute{
 				Optional:            true,

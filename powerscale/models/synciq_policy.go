@@ -150,7 +150,6 @@ type SynciqpolicyResourceModel struct {
 	ForceInterface                    types.Bool   `tfsdk:"force_interface"`
 	IgnoreRecursiveQuota              types.Bool   `tfsdk:"ignore_recursive_quota"`
 	JobDelay                          types.Int64  `tfsdk:"job_delay"`
-	LinkedServicePolicies             types.List   `tfsdk:"linked_service_policies"`
 	LogLevel                          types.String `tfsdk:"log_level"`
 	LogRemovedFiles                   types.Bool   `tfsdk:"log_removed_files"`
 	Name                              types.String `tfsdk:"name"`
@@ -163,7 +162,6 @@ type SynciqpolicyResourceModel struct {
 	RestrictTargetNetwork             types.Bool   `tfsdk:"restrict_target_network"`
 	RpoAlert                          types.Int64  `tfsdk:"rpo_alert"`
 	Schedule                          types.String `tfsdk:"schedule"`
-	ServicePolicy                     types.Bool   `tfsdk:"service_policy"`
 	SkipLookup                        types.Bool   `tfsdk:"skip_lookup"`
 	SkipWhenSourceUnmodified          types.Bool   `tfsdk:"skip_when_source_unmodified"`
 	SnapshotSyncExisting              types.Bool   `tfsdk:"snapshot_sync_existing"`

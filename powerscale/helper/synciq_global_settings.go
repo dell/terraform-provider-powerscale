@@ -30,19 +30,19 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 )
 
-// UpdateSyncIQGlobalSettings updates the SyncIQ global settings
+// UpdateSyncIQGlobalSettings updates the SyncIQ global settings.
 func UpdateSyncIQGlobalSettings(ctx context.Context, client *client.Client, edit powerscale.V16SyncSettingsExtended) error {
 	_, err := client.PscaleOpenAPIClient.SyncApi.UpdateSyncv16SyncSettings(ctx).V16SyncSettings(edit).Execute()
 	return err
 }
 
-// GetSyncIQGlobalSettings fetches the SyncIQ global settings
+// GetSyncIQGlobalSettings fetches the SyncIQ global settings.
 func GetSyncIQGlobalSettings(ctx context.Context, client *client.Client) (*powerscale.V16SyncSettings, error) {
 	resp, _, err := client.PscaleOpenAPIClient.SyncApi.GetSyncv16SyncSettings(ctx).Execute()
 	return resp, err
 }
 
-// ManageSyncIQGlobalSettings does all the update functionality for SyncIQ Global settings
+// ManageSyncIQGlobalSettings does all the update functionality for SyncIQ Global settings.
 func ManageSyncIQGlobalSettings(ctx context.Context, plan models.SyncIQGlobalSettingsModel, state *models.SyncIQGlobalSettingsModel, client *client.Client) diag.Diagnostics {
 	var diags diag.Diagnostics
 	var toUpdate powerscale.V16SyncSettingsExtended
@@ -111,13 +111,16 @@ func ManageSyncIQGlobalSettings(ctx context.Context, plan models.SyncIQGlobalSet
 		)
 		return diags
 	}
+	if globalSetting.Settings.BandwidthReservationReserveAbsolute == nil {
+		state.BandwidthReservationReserveAbsolute = types.Int64Value(0)
+	}
 	state.SourceNetwork = sourceNetwork
 	state.ReportEmail = emailObj
 
 	return diags
 }
 
-// ManageReadSyncIQGlobalSettings does the read functionality for SyncIQ global settings
+// ManageReadSyncIQGlobalSettings does the read functionality for SyncIQ global settings.
 func ManageReadSyncIQGlobalSettings(ctx context.Context, state *models.SyncIQGlobalSettingsModel, client *client.Client) diag.Diagnostics {
 	var diags diag.Diagnostics
 	globalSettings, err := GetSyncIQGlobalSettings(ctx, client)
@@ -153,7 +156,7 @@ func ManageReadSyncIQGlobalSettings(ctx context.Context, state *models.SyncIQGlo
 	return diags
 }
 
-// ManageReadDataSourceSyncIQGlobalSettings does the read functionality for SyncIQ global settings datasource
+// ManageReadDataSourceSyncIQGlobalSettings does the read functionality for SyncIQ global settings datasource.
 func ManageReadDataSourceSyncIQGlobalSettings(ctx context.Context, state *models.SyncIQGlobalSettingsDataSourceModel, client *client.Client) diag.Diagnostics {
 	var diags diag.Diagnostics
 	globalSettings, err := GetSyncIQGlobalSettings(ctx, client)

@@ -89,20 +89,24 @@ type SyncIQRuleDataSourceResponse interface {
 // NewSyncIQRuleDataSource creates a new SyncIQRuleDataSource from datasource responses.
 func NewSyncIQRuleDataSource[V SyncIQRuleDataSourceResponse](ctx context.Context, Rules []V) (*models.SyncIQRuleDataSource, error) {
 	var err error
-	ret := models.SyncIQRuleDataSource{
-		ID:    types.StringValue("dummy"),
-		Rules: make([]models.SyncIQRuleModel, len(Rules)),
-	}
+	dsRules := make([]models.SyncIQRuleModel, len(Rules))
 	for i := range Rules {
 		var item models.SyncIQRuleModel
 		ierr := CopyFields(ctx, &Rules[i], &item)
 		err = errors.Join(err, ierr)
-		ret.Rules[i] = item
+		dsRules[i] = item
+	}
+	if err != nil {
+		return nil, err
+	}
+	ret := models.SyncIQRuleDataSource{
+		ID:    types.StringValue("dummy"),
+		Rules: dsRules,
 	}
 	if len(ret.Rules) == 1 {
 		ret.ID = ret.Rules[0].ID
 	}
-	return &ret, err
+	return &ret, nil
 }
 
 // NewSyncIQRuleResource creates a new SyncIQRuleResource from resource responses.

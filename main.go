@@ -37,6 +37,9 @@ import (
 // can be customized.
 //go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@v0.15.0
 
+// Run the copyright generation tool
+//go:generate go run tools/copyright.go
+
 var (
 	// these will be set by the goreleaser configuration
 	// to appropriate values for the compiled binary.

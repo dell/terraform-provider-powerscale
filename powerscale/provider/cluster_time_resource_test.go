@@ -22,6 +22,7 @@ import (
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+	"time"
 
 	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -51,21 +52,36 @@ resource "powerscale_cluster_time" "test" {
 }
 `
 
-var clusterTimeResourceConfig = `
-resource "powerscale_cluster_time" "test" {
-	date = "01/12/2024"
-  	time = "00:32"
-}
-`
-
 var clusterTimeResourceConfigUpdate = `
 resource "powerscale_cluster_time" "test" {
 	date = "12/12/2024"
   	time = "10:32"
 }
 `
+var dateValue, timeValue string
 
 func TestAccClusterTimeResource(t *testing.T) {
+
+	// Define the desired location (Asia/Kolkata)
+	loc, err := time.LoadLocation("Asia/Kolkata")
+	if err != nil {
+		panic(err)
+	}
+
+	// Get the current time in UTC
+	now := time.Now().In(loc).Add(-5*time.Hour - 30*time.Minute)
+
+	// Format the date and time
+	dateValue = now.Format("01/02/2006")
+	timeValue = now.Format("15:04") // Use "15:04" for HH:mm format
+
+	clusterTimeResourceConfig := `
+	resource "powerscale_cluster_time" "test" {
+		date = "` + dateValue + `"
+		time = "` + timeValue + `"
+	}
+	`
+
 	clusterOwnerResourceName := "powerscale_cluster_time.test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -96,7 +112,7 @@ func TestAccClusterTimeResource(t *testing.T) {
 				Config:      ProviderConfig + clusterTimeResourceConfig,
 				ExpectError: nil,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(clusterOwnerResourceName, "date", "01/12/2024"),
+					resource.TestCheckResourceAttr(clusterOwnerResourceName, "date", dateValue),
 				),
 			},
 			// Case 6 - Read Refresh
@@ -104,7 +120,7 @@ func TestAccClusterTimeResource(t *testing.T) {
 				Config:      ProviderConfig + clusterTimeResourceConfig,
 				ExpectError: nil,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(clusterOwnerResourceName, "date", "01/12/2024"),
+					resource.TestCheckResourceAttr(clusterOwnerResourceName, "date", dateValue),
 				),
 			},
 			// Case 7 - Update
@@ -120,6 +136,25 @@ func TestAccClusterTimeResource(t *testing.T) {
 }
 
 func TestAccClusterTimeResourceMock(t *testing.T) {
+
+	// Define the desired location (Asia/Kolkata)
+	loc, err := time.LoadLocation("Asia/Kolkata")
+	if err != nil {
+		panic(err)
+	}
+
+	// Get the current time in GMT
+	now := time.Now().In(loc).Add(-5*time.Hour - 30*time.Minute)
+
+	// Format the date and time
+	dateValue = now.Format("01/02/2006")
+	timeValue = now.Format("15:04") // Use "15:04" for HH:mm format
+	clusterTimeResourceConfig := `
+	resource "powerscale_cluster_time" "test" {
+		date = "` + dateValue + `"
+		time = "` + timeValue + `"
+	}
+	`
 	clusterOwnerResourceName := "powerscale_cluster_time.test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -130,7 +165,7 @@ func TestAccClusterTimeResourceMock(t *testing.T) {
 				Config:      ProviderConfig + clusterTimeResourceConfig,
 				ExpectError: nil,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(clusterOwnerResourceName, "date", "01/12/2024"),
+					resource.TestCheckResourceAttr(clusterOwnerResourceName, "date", dateValue),
 				),
 			},
 			// Read testing

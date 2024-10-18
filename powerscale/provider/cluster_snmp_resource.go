@@ -75,7 +75,6 @@ func (r *ClusterSnmpResource) Schema(ctx context.Context, req resource.SchemaReq
 				Description:         "True if the Cluster SNMP is enabled.",
 				MarkdownDescription: "True if the Cluster SNMP is enabled.",
 				Required:            true,
-				Validators:          []validator.Bool{boolvalidator.AtLeastOneOf(path.MatchRoot("snmp_v1_v2c_access"), path.MatchRoot("snmp_v3_access"))},
 			},
 			"read_only_community": schema.StringAttribute{
 				Description:         "The read-only community string for the Cluster SNMP.",
@@ -345,4 +344,30 @@ func (r *ClusterSnmpResource) UpdateClusterSNMP(ctx context.Context, plan models
 	state.SnmpV3Password = types.StringValue(plan.SnmpV3Password.ValueString())
 	state.SnmpV3PrivPassword = types.StringValue(plan.SnmpV3PrivPassword.ValueString())
 	return diags
+}
+
+// ValidateConfig validate config of the Cluster SNMP resource.
+func (r *ClusterSnmpResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	// Retrieve values from plan
+	var cfg models.ClusterSNMPModel
+
+	diags := req.Config.Get(ctx, &cfg)
+
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if !cfg.Service.IsUnknown() && cfg.Service.ValueBool() {
+
+		if (cfg.SnmpV1V2cAccess.IsNull() && cfg.SnmpV3Access.IsNull()) || (cfg.SnmpV1V2cAccess.IsUnknown() && cfg.SnmpV3Access.IsUnknown()) {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("snmp_v1_v2c_access"),
+				"Please provide at least one of the following: snmp_v1_v2c_access, snmp_v3_access",
+				"",
+			)
+
+		}
+	}
+
 }

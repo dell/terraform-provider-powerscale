@@ -319,16 +319,14 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Computed:            true,
 					},
 					"percent_advisory": schema.NumberAttribute{
-						Description:         "Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied. Must be >= 0.01 <= 99.99, precision 2",
-						MarkdownDescription: "Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied. Must be >= 0.01 <= 99.99, precision 2",
+						Description:         "Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied.",
+						MarkdownDescription: "Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied.",
 						Optional:            true,
-						Computed:            true,
 					},
 					"percent_soft": schema.NumberAttribute{
-						Description:         "Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started. Must be >= 0.01 <= 99.99, precision 2",
-						MarkdownDescription: "Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started. Must be >= 0.01 <= 99.99, precision 2",
+						Description:         "Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started.",
+						MarkdownDescription: "Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started.",
 						Optional:            true,
-						Computed:            true,
 					},
 					"soft": schema.Int64Attribute{
 						Description:         "Usage bytes at which notifications will be sent and soft grace time will be started.",
@@ -444,6 +442,9 @@ func (r *QuotaResource) Create(ctx context.Context, request resource.CreateReque
 	if quotaPlanBackup.Persona.IsNull() || createdQuota.Type == "directory" {
 		quotaPlan.Persona = types.ObjectNull(quotaPlan.Persona.AttributeTypes(ctx))
 	}
+	quotaPlan.Thresholds, diags = helper.RemovePercentThreshold(ctx, quotaPlanBackup.Thresholds, quotaPlan.Thresholds)
+	response.Diagnostics.Append(diags...)
+
 	diags = response.State.Set(ctx, quotaPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -541,6 +542,9 @@ func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateReque
 	if quotaPlan.Persona.IsNull() || quotaPlan.Type.ValueString() == "directory" {
 		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
 	}
+	quotaState.Thresholds, diags = helper.RemovePercentThreshold(ctx, quotaPlan.Thresholds, quotaState.Thresholds)
+	response.Diagnostics.Append(diags...)
+
 	diags = response.State.Set(ctx, quotaState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -601,6 +605,9 @@ func (r *QuotaResource) Read(ctx context.Context, request resource.ReadRequest, 
 	if quotaStateBackup.Persona.IsNull() || quotaStateBackup.Type.ValueString() == "directory" {
 		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
 	}
+	quotaState.Thresholds, diags = helper.RemovePercentThreshold(ctx, quotaStateBackup.Thresholds, quotaState.Thresholds)
+	response.Diagnostics.Append(diags...)
+
 	diags = response.State.Set(ctx, quotaState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {

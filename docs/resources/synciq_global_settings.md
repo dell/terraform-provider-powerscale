@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -80,7 +80,6 @@ resource "powerscale_synciq_global_settings" "example" {
 - `encryption_cipher_list` (String) The cipher list being used with encryption. For SyncIQ targets, this list serves as a list of supported ciphers. For SyncIQ sources, the list of ciphers will be attempted to be used in order.
 - `encryption_required` (Boolean) If true, requires all SyncIQ policies to utilize encrypted communications.
 - `force_interface` (Boolean) NOTE: This field should not be changed without the help of PowerScale support.  Default for the "force_interface" property that will be applied to each new sync policy unless otherwise specified at the time of policy creation.  Determines whether data is sent only through the subnet and pool specified in the "source_network" field. This option can be useful if there are multiple interfaces for the given source subnet.
-- `max_concurrent_jobs` (Number) The max concurrent jobs that SyncIQ can support. This number is based on the size of the current cluster and the current SyncIQ worker throttle rule.
 - `ocsp_address` (String) The address of the OCSP responder to which to connect.
 - `ocsp_issuer_certificate_id` (String) The ID of the certificate authority that issued the certificate whose revocation status is being checked.
 - `preferred_rpo_alert` (Number) If specified, display as default RPO Alert value for new policy creation via WebUI.
@@ -94,7 +93,6 @@ resource "powerscale_synciq_global_settings" "example" {
 - `service_history_max_age` (Number) Maximum age of service information to maintain, in seconds.
 - `service_history_max_count` (Number) Maximum number of historical service information records to maintain.
 - `source_network` (Attributes) Restricts replication policies on the local cluster to running on the specified subnet and pool. (see [below for nested schema](#nestedatt--source_network))
-- `tw_chkpt_interval` (Number) The interval (in seconds) in which treewalk syncs are forced to checkpoint.
 - `use_workers_per_node` (Boolean) If enabled, SyncIQ will use the deprecated workers_per_node field with worker pools functionality and limit workers accordingly.
 
 <a id="nestedatt--source_network"></a>

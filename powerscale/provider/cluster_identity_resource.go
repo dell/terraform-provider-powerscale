@@ -19,12 +19,15 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"terraform-provider-powerscale/client"
@@ -71,12 +74,19 @@ func (r *ClusterIdentityResource) Schema(ctx context.Context, req resource.Schem
 				MarkdownDescription: "A unique name for this cluster.",
 				Optional:            true,
 				Computed:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthBetween(1, 40),
+				},
 			},
 			"description": schema.StringAttribute{
 				Description:         "A description of the cluster.",
 				MarkdownDescription: "A description of the cluster.",
 				Optional:            true,
 				Computed:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthBetween(1, 255),
+					stringvalidator.RegexMatches(regexp.MustCompile(`^(?:\S.*\S|\S)$`), "must contain atleast one character and no leading or trailing spaces"),
+				},
 			},
 			"logon": schema.SingleNestedAttribute{
 				Description:         "The information displayed when a user logs in to the cluster.",
@@ -95,6 +105,10 @@ func (r *ClusterIdentityResource) Schema(ctx context.Context, req resource.Schem
 						MarkdownDescription: "The header to the message of the day.",
 						Optional:            true,
 						Computed:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthBetween(1, 255),
+							stringvalidator.RegexMatches(regexp.MustCompile(`^(?:\S.*\S|\S)$`), "must contain atleast one character and no leading or trailing spaces"),
+						},
 					},
 				},
 			},

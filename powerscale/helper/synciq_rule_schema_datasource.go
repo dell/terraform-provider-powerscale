@@ -28,12 +28,17 @@ import (
 // SyncIQRuleDataSourceSchema defines the schema for the data source.
 func SyncIQRuleDataSourceSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
+		MarkdownDescription: "This datasource is used to query the existing SyncIQ Replication Rules from PowerScale array.",
+		Description:         "This datasource is used to query the existing SyncIQ Replication Rules from PowerScale array.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "Unique identifier of the performance rule.",
 				MarkdownDescription: "Unique identifier of the performance rule.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"rules": schema.ListNestedAttribute{
 				Computed: true,

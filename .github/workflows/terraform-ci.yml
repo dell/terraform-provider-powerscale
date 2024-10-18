@@ -50,6 +50,8 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
+      - name: Replace "master" with "main" in ATTRIBUTION.md
+        run: sed -i 's/\/master/\/main/g' about/ATTRIBUTION.md
       - name: Run the forbidden words scan
         uses: dell/common-github-actions/code-sanitizer@main
         with:
@@ -83,6 +85,8 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - run: make clean extract-client
       - run: go generate
       - name: git diff

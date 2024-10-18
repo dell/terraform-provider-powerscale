@@ -201,6 +201,8 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewClusterIdentityResource,
 		NewClusterTimeResource,
 		NewSyncIQRuleResource,
+		NewSyncIQPeerCertificateResource,
+		NewSupportAssistResource,
 	}
 }
 
@@ -243,6 +245,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewSyncIQPolicyDataSource,
 		NewSyncIQRuleDataSource,
 		NewSyncIQGlobalSettingsDataSource,
+		NewSyncIQPeerCertificateDataSource,
 	}
 }
 
