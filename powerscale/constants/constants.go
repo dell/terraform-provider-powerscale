@@ -461,4 +461,7 @@ const (
 
 	// ReadSnapshotRestoreJobReportErrorMsg specifies error details occurred while reading snapshot restore job reports.
 	ReadSnapshotRestoreJobReportErrorMsg = "Could not read snapshot restore job reports "
+
+	// ListWritableSnapshotMsg specifies error details occurred while listing writable snapshot.
+	ListWritableSnapshotMsg = "Could not list Writable Snapshot "
 )

@@ -20,6 +20,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"errors"
 	"strconv"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
@@ -45,6 +46,24 @@ func DeleteWritableSnapshot(ctx context.Context, client *client.Client, path str
 	return err
 }
 
+// GetAllWritableSnapshots returns the full list of writable snapshots.
+func GetAllWritableSnapshots(ctx context.Context, client *client.Client) (*powerscale.V14SnapshotWritable, error) {
+	resp, _, err := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv14SnapshotWritable(ctx).Execute()
+	if err != nil {
+		return resp, err
+	}
+	// Pagination
+	for resp.Resume != nil {
+		respAdd, _, errAdd := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv14SnapshotWritable(ctx).Resume(*resp.Resume).Execute()
+		if errAdd != nil {
+			return resp, errAdd
+		}
+		resp.Resume = respAdd.Resume
+		resp.Writable = append(resp.Writable, respAdd.Writable...)
+	}
+	return resp, err
+}
+
 // UpdateWritableSnapshotState updates the state parameters based on the fetched computed values from the API.
 func UpdateWritableSnapshotState(state *models.WritableSnapshot, fetchedState *powerscale.Createv14SnapshotWritableItemResponse) {
 	state.DstPath = types.StringValue(fetchedState.DstPath)
@@ -54,4 +73,27 @@ func UpdateWritableSnapshotState(state *models.WritableSnapshot, fetchedState *p
 	state.SrcPath = types.StringValue(fetchedState.SrcPath)
 	state.State = types.StringValue(fetchedState.State)
 	state.SnapName = types.StringValue(fetchedState.SrcSnap)
+}
+
+// NewWritableSnapshotDataSource creates the writable snapshot data source.
+func NewWritableSnapshotDataSource(ctx context.Context, writableSnapshot []powerscale.Createv14SnapshotWritableItemResponse) (*models.WritablesnapshotModel, error) {
+	var err error
+	dsWritable := make([]models.WritableSnapshotDataSource, len(writableSnapshot))
+	for i := range writableSnapshot {
+		var item models.WritableSnapshotDataSource
+		ierr := CopyFields(ctx, &writableSnapshot[i], &item)
+		err = errors.Join(err, ierr)
+		dsWritable[i] = item
+	}
+	if err != nil {
+		return nil, err
+	}
+	ret := models.WritablesnapshotModel{
+		ID:       types.StringValue("dummy"),
+		Writable: dsWritable,
+	}
+	if len(ret.Writable) == 1 {
+		ret.ID = types.StringValue(ret.Writable[0].DstPath.ValueString())
+	}
+	return &ret, nil
 }
