@@ -56,7 +56,6 @@ func (d *WritableSnapshotDataSource) Schema(ctx context.Context, req datasource.
 	resp.Schema = WritablesnapshotDatasourceSchema(ctx)
 }
 
-
 // Configure configures the data source.
 func (d *WritableSnapshotDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
@@ -78,7 +77,6 @@ func (d *WritableSnapshotDataSource) Configure(ctx context.Context, req datasour
 	d.client = pscaleClient
 }
 
-
 // WritablesnapshotDatasourceSchema describes the data source arguments.
 func WritablesnapshotDatasourceSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
@@ -89,7 +87,7 @@ func WritablesnapshotDatasourceSchema(ctx context.Context) schema.Schema {
 				Description:         "Path of the writable snapshot.",
 				MarkdownDescription: "Path of the writable snapshot.",
 				Validators: []validator.String{
-					stringvalidator.RegexMatches(regexp.MustCompile("^/ifs$|^/ifs/"),"must start with /ifs or /ifs/"),
+					stringvalidator.RegexMatches(regexp.MustCompile("^/ifs$|^/ifs/"), "must start with /ifs or /ifs/"),
 					stringvalidator.LengthBetween(4, 4096),
 				},
 			},
@@ -155,7 +153,6 @@ func WritablesnapshotDatasourceSchema(ctx context.Context) schema.Schema {
 	}
 }
 
-
 // Read reads data from the data source.
 func (d *WritableSnapshotDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Read Terraform configuration data into the model
@@ -194,4 +191,3 @@ func (d *WritableSnapshotDataSource) Read(ctx context.Context, req datasource.Re
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
-

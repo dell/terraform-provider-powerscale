@@ -42,19 +42,19 @@ type WritableSnapshot struct {
 
 // WritableSnapshotDataSource defines the writable snapshot data source.
 type WritableSnapshotDataSource struct {
-		ID         types.Int64 `tfsdk:"id"`
-		PhysSize   types.Int64 `tfsdk:"phys_size"`
-		Created    types.Int64 `tfsdk:"created"`
-		State      types.String `tfsdk:"state"`
-		SrcID      types.Int64 `tfsdk:"src_id"`
-		SrcPath    types.String `tfsdk:"src_path"`
-		SrcSnap    types.String `tfsdk:"src_snap"`
-		DstPath    types.String `tfsdk:"dst_path"`
-		LogSize    types.Int64 `tfsdk:"log_size"`
+	ID       types.Int64  `tfsdk:"id"`
+	PhysSize types.Int64  `tfsdk:"phys_size"`
+	Created  types.Int64  `tfsdk:"created"`
+	State    types.String `tfsdk:"state"`
+	SrcID    types.Int64  `tfsdk:"src_id"`
+	SrcPath  types.String `tfsdk:"src_path"`
+	SrcSnap  types.String `tfsdk:"src_snap"`
+	DstPath  types.String `tfsdk:"dst_path"`
+	LogSize  types.Int64  `tfsdk:"log_size"`
 }
 
 // WritablesnapshotModel defines the writable snapshot model for data source.
 type WritablesnapshotModel struct {
-	ID       types.String `tfsdk:"id"`
-	Writable []WritableSnapshotDataSource   `tfsdk:"writable"`
+	ID       types.String                 `tfsdk:"id"`
+	Writable []WritableSnapshotDataSource `tfsdk:"writable"`
 }

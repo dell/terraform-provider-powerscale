@@ -98,20 +98,19 @@ func TestAccWritableSnapshotDatasourceID(t *testing.T) {
 					FunctionMocker = mockey.Mock(helper.GetWritableSnapshot).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
-			},	
+			},
 			{
 				Config: ProviderConfig + writableSnapshotDatasourceConfig,
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.NewWritableSnapshotDataSource).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
-			},	
+			},
 		},
 	})
 }
 
-var writableSnapshotDatasourceConfig = 
-`
+var writableSnapshotDatasourceConfig = `
 data "powerscale_writable_snapshot" "preq" {
 }
 data "powerscale_writable_snapshot" "test" {
