@@ -29,7 +29,7 @@ func GetNtpServers(ctx context.Context, client *client.Client) (*powerscale.V3Nt
 	ntpServerParams := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv3NtpServers(ctx)
 	ntpServers, _, err := ntpServerParams.Execute()
 
-	for *ntpServers.Resume != "" {
+	for ntpServers.Resume != nil {
 		respAdd, _, errAdd := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv3NtpServers(context.Background()).Resume(*ntpServers.Resume).Execute()
 		if errAdd != nil {
 			return ntpServers, errAdd
