@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# This Terraform DataSource is used to query the details of existing Role from PowerScale array.
+# This Terraform DataSource is used to query the details of existing Replication Report from PowerScale array.
 
 # Returns the entire list of PowerScale replication report.
 data "powerscale_replication_report" "all" {
@@ -38,7 +38,7 @@ data "powerscale_replication_report" "filtering" {
 }
 
 # Output value of above block by executing 'terraform output' command
-# You can use the the fetched information by the variable data.powerscale_role.all
+# You can use the the fetched information by the variable data.powerscale_replication_report.filtering
 output "powerscale_replication_report_filter" {
   value = data.powerscale_replication_report.filtering
 }
