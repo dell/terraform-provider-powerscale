@@ -44,6 +44,16 @@ func ListNetworkRules(ctx context.Context, client *client.Client, filter *models
 	if err != nil {
 		return nil, err
 	}
+
+	for *ruleList.Resume != "" {
+		respAdd, _, errAdd := client.PscaleOpenAPIClient.NetworkApi.GetNetworkv3NetworkRules(context.Background()).Resume(*ruleList.Resume).Execute()
+		if errAdd != nil {
+			return nil, errAdd
+		}
+		ruleList.Resume = respAdd.Resume
+		ruleList.Rules = append(ruleList.Rules, respAdd.Rules...)
+	}
+
 	rules := ruleList.GetRules()
 
 	// filter rules by filter.Names
