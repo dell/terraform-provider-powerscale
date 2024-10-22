@@ -39,7 +39,7 @@ func GetRoles(ctx context.Context, client *client.Client, state models.RoleDataS
 
 	roles, _, err := roleParams.Execute()
 
-	for *roles.Resume != "" {
+	for roles.Resume != nil {
 		respAdd, _, errAdd := client.PscaleOpenAPIClient.AuthApi.ListAuthv14AuthRoles(context.Background()).Resume(*roles.Resume).Execute()
 		if errAdd != nil {
 			return roles, errAdd

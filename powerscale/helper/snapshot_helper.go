@@ -31,7 +31,7 @@ import (
 // GetAllSnapshots returns the full list of snapshots.
 func GetAllSnapshots(ctx context.Context, client *client.Client) ([]powerscale.V1SnapshotSnapshotExtended, error) {
 	result, _, err := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv1SnapshotSnapshots(ctx).Execute()
-	for *result.Resume != "" {
+	for result.Resume != nil {
 		respAdd, _, errAdd := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv1SnapshotSnapshots(context.Background()).Resume(*result.Resume).Execute()
 		if errAdd != nil {
 			return result.Snapshots, errAdd

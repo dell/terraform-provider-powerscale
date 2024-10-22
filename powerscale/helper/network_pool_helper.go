@@ -43,7 +43,7 @@ func GetNetworkPools(ctx context.Context, client *client.Client, state models.Ne
 
 	networkPools, _, err := networkPoolParams.Execute()
 
-	for *networkPools.Resume != "" {
+	for networkPools.Resume != nil {
 		respAdd, _, errAdd := client.PscaleOpenAPIClient.NetworkApi.GetNetworkv12NetworkPools(context.Background()).Resume(*networkPools.Resume).Execute()
 		if errAdd != nil {
 			return networkPools, errAdd
