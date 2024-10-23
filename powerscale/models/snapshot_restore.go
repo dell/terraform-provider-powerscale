@@ -25,10 +25,42 @@ import (
 type SnapshotRestoreModel struct {
 	ID               types.String `tfsdk:"id"`
 	SnapRevertParams types.Object `tfsdk:"snaprevert_params"`
+	CopyParams       types.Object `tfsdk:"copy_params"`
+	CloneParams      types.Object `tfsdk:"clone_params"`
 }
 
 // SnapRevertParamsModel represents snapshot revert parameters model.
 type SnapRevertParamsModel struct {
 	AllowDup types.Bool  `tfsdk:"allow_dup"`
 	SnapID   types.Int32 `tfsdk:"snapshot_id"`
+}
+
+// CopyParamsModel represents the copy parameters model.
+type CopyParamsModel struct {
+	Directory types.Object `tfsdk:"directory"`
+	File      types.Object `tfsdk:"file"`
+}
+
+// DirectoryModel represents the directory model.
+type DirectoryModel struct {
+	Source      types.String `tfsdk:"source"`
+	Destination types.String `tfsdk:"destination"`
+	Overwrite   types.Bool   `tfsdk:"overwrite"`
+	Merge       types.Bool   `tfsdk:"merge"`
+	Continue    types.Bool   `tfsdk:"continue"`
+}
+
+// FileModel represents the file model.
+type FileModel struct {
+	Source      types.String `tfsdk:"source"`
+	Destination types.String `tfsdk:"destination"`
+	Overwrite   types.Bool   `tfsdk:"overwrite"`
+}
+
+// CloneParamsModel represents the clone parameters model.
+type CloneParamsModel struct {
+	Source      types.String `tfsdk:"source"`
+	Destination types.String `tfsdk:"destination"`
+	Overwrite   types.Bool   `tfsdk:"overwrite"`
+	SnapID      types.Int32  `tfsdk:"snapshot_id"`
 }
