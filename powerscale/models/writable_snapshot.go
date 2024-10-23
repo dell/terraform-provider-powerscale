@@ -53,8 +53,18 @@ type WritableSnapshotDataSource struct {
 	LogSize  types.Int64  `tfsdk:"log_size"`
 }
 
+type WritableSnapshotFilter struct {
+	Path   types.String `tfsdk:"path"`
+	Sort   types.String `tfsdk:"sort"`
+	Resume types.String `tfsdk:"resume"`
+	State  types.String `tfsdk:"state"`
+	Limit  types.Int64  `tfsdk:"limit"`
+	Dir    types.String `tfsdk:"dir"`
+}
+
 // WritablesnapshotModel defines the writable snapshot model for data source.
 type WritablesnapshotModel struct {
-	ID       types.String                 `tfsdk:"id"`
-	Writable []WritableSnapshotDataSource `tfsdk:"writable"`
+	ID                     types.String                 `tfsdk:"id"`
+	Writable               []WritableSnapshotDataSource `tfsdk:"writable"`
+	WritableSnapshotFilter *WritableSnapshotFilter      `tfsdk:"filter"`
 }

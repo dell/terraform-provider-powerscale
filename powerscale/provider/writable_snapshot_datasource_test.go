@@ -114,6 +114,8 @@ var writableSnapshotDatasourceConfig = `
 data "powerscale_writable_snapshot" "preq" {
 }
 data "powerscale_writable_snapshot" "test" {
-	id = data.powerscale_writable_snapshot.preq.writable[0].dst_path
+	filter {
+		path = data.powerscale_writable_snapshot.preq.writable[0].dst_path
+	}
 }
 `

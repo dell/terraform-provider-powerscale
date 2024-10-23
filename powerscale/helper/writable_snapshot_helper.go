@@ -47,20 +47,27 @@ func DeleteWritableSnapshot(ctx context.Context, client *client.Client, path str
 }
 
 // GetAllWritableSnapshots returns the full list of writable snapshots.
-func GetAllWritableSnapshots(ctx context.Context, client *client.Client) (*powerscale.V14SnapshotWritable, error) {
-	resp, _, err := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv14SnapshotWritable(ctx).Execute()
-	if err != nil {
-		return resp, err
-	}
-	// Pagination
-	for resp.Resume != nil {
-		respAdd, _, errAdd := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv14SnapshotWritable(ctx).Resume(*resp.Resume).Execute()
-		if errAdd != nil {
-			return resp, errAdd
+func GetAllWritableSnapshots(ctx context.Context, client *client.Client, state *models.WritablesnapshotModel) (*powerscale.V14SnapshotWritable, error) {
+	writablesnapshots := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv14SnapshotWritable(ctx)
+
+	if state.WritableSnapshotFilter != nil {
+		if !state.WritableSnapshotFilter.Sort.IsNull() {
+			writablesnapshots = writablesnapshots.Sort(state.WritableSnapshotFilter.Sort.ValueString())
 		}
-		resp.Resume = respAdd.Resume
-		resp.Writable = append(resp.Writable, respAdd.Writable...)
+		if !state.WritableSnapshotFilter.State.IsNull() {
+			writablesnapshots = writablesnapshots.State(state.WritableSnapshotFilter.State.ValueString())
+		}
+		if !state.WritableSnapshotFilter.Limit.IsNull() {
+			writablesnapshots = writablesnapshots.Limit(int32(state.WritableSnapshotFilter.Limit.ValueInt64()))
+		}
+		if !state.WritableSnapshotFilter.Dir.IsNull() {
+			writablesnapshots = writablesnapshots.Dir(state.WritableSnapshotFilter.Dir.ValueString())
+		}
+		if !state.WritableSnapshotFilter.Resume.IsNull() {
+			writablesnapshots = writablesnapshots.Resume(state.WritableSnapshotFilter.Resume.ValueString())
+		}
 	}
+	resp, _, err := writablesnapshots.Execute()
 	return resp, err
 }
 
@@ -89,11 +96,8 @@ func NewWritableSnapshotDataSource(ctx context.Context, writableSnapshot []power
 		return nil, err
 	}
 	ret := models.WritablesnapshotModel{
-		ID:       types.StringValue("dummy"),
+		ID:       types.StringValue("Writable_snapshot Datasource"),
 		Writable: dsWritable,
-	}
-	if len(ret.Writable) == 1 {
-		ret.ID = types.StringValue(ret.Writable[0].DstPath.ValueString())
 	}
 	return &ret, nil
 }

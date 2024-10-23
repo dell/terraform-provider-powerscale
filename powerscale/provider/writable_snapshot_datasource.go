@@ -150,6 +150,46 @@ func WritablesnapshotDatasourceSchema(ctx context.Context) schema.Schema {
 				},
 			},
 		},
+		Blocks: map[string]schema.Block{
+			"filter": schema.SingleNestedBlock{
+				Attributes: map[string]schema.Attribute{
+					"path": schema.StringAttribute{
+						Optional:            true,
+						Description:         "Only list writable snapshots matching this path.",
+						MarkdownDescription: "Only list writable snapshots matching this path.",
+						Validators: []validator.String{
+							stringvalidator.RegexMatches(regexp.MustCompile("^/ifs$|^/ifs/"), "must start with /ifs or /ifs/"),
+							stringvalidator.LengthBetween(4, 4096),
+						},
+					},
+					"sort": schema.StringAttribute{
+						Optional:            true,
+						Description:         "The field that will be used for sorting.  Choices are path, src name, src path, created, size and state. Default is created.",
+						MarkdownDescription: "The field that will be used for sorting.  Choices are path, src name, src path, created, size and state. Default is created.",
+					},
+					"state": schema.StringAttribute{
+						Optional:            true,
+						Description:         "Only list writable snapshots matching this state.",
+						MarkdownDescription: "Only list writable snapshots matching this state.",
+					},
+					"limit": schema.Int64Attribute{
+						Optional:            true,
+						Description:         "Return no more than this many results at once (see resume).",
+						MarkdownDescription: "Return no more than this many results at once (see resume).",
+					},
+					"dir": schema.StringAttribute{
+						Optional:            true,
+						Description:         "The direction of the sort.",
+						MarkdownDescription: "The direction of the sort.",
+					},
+					"resume": schema.StringAttribute{
+						Optional:            true,
+						Description:         "Continue returning results from previous call using this token (token should come from the previous call, resume cannot be used with other options).",
+						MarkdownDescription: "Continue returning results from previous call using this token (token should come from the previous call, resume cannot be used with other options).",
+					},
+				},
+			},
+		},
 	}
 }
 
@@ -164,8 +204,9 @@ func (d *WritableSnapshotDataSource) Read(ctx context.Context, req datasource.Re
 
 	var state *models.WritablesnapshotModel
 	var errD error
-	if id := data.ID.ValueString(); id == "" {
-		config, err := helper.GetAllWritableSnapshots(ctx, d.client)
+	if data.WritableSnapshotFilter != nil && data.WritableSnapshotFilter.Path.ValueString() != "" {
+		path := data.WritableSnapshotFilter.Path.ValueString()
+		config, err := helper.GetWritableSnapshot(ctx, d.client, path)
 		if err != nil {
 			errStr := constants.ListWritableSnapshotMsg + "with error: "
 			message := helper.GetErrorString(err, errStr)
@@ -174,7 +215,7 @@ func (d *WritableSnapshotDataSource) Read(ctx context.Context, req datasource.Re
 		}
 		state, errD = helper.NewWritableSnapshotDataSource(ctx, config.Writable)
 	} else {
-		config, err := helper.GetWritableSnapshot(ctx, d.client, id)
+		config, err := helper.GetAllWritableSnapshots(ctx, d.client, &data)
 		if err != nil {
 			errStr := constants.ListWritableSnapshotMsg + "with error: "
 			message := helper.GetErrorString(err, errStr)
