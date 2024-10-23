@@ -109,6 +109,24 @@ func NewSyncIQRuleDataSource[V SyncIQRuleDataSourceResponse](ctx context.Context
 	return &ret, nil
 }
 
+var syncIQRuleResourceScheduleType = map[string]attr.Type{
+	"begin": types.StringType,
+	"end":   types.StringType,
+	"days_of_week": types.SetType{
+		ElemType: types.StringType,
+	},
+}
+
+var syncIQRuleResourceType = map[string]attr.Type{
+	"description": types.StringType,
+	"enabled":     types.BoolType,
+	"id":          types.StringType,
+	"limit":       types.Int32Type,
+	"schedule": types.ObjectType{
+		AttrTypes: syncIQRuleResourceScheduleType,
+	},
+}
+
 // NewSyncIQRulesResourceSchedule creates a new SyncIQRulesResource from resource response.
 func NewSyncIQRulesResource(ctx context.Context, source *powerscale.V3SyncRules) (models.SyncIQRulesResource, diag.Diagnostics) {
 	var dgs diag.Diagnostics
@@ -118,25 +136,7 @@ func NewSyncIQRulesResource(ctx context.Context, source *powerscale.V3SyncRules)
 		dgs.Append(diags...)
 		bw = append(bw, state)
 	}
-	bwList, bwListDgs := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: map[string]attr.Type{
-		"description": types.StringType,
-		// Enabled indicates if the rule is enabled.
-		"enabled": types.BoolType,
-		// ID is the unique identifier of the rule.
-		"id": types.StringType,
-		// Limit is the limit of the rule.
-		"limit": types.Int32Type,
-		// Schedule is the schedule of the rule.
-		"schedule": types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"begin": types.StringType,
-				"end":   types.StringType,
-				"days_of_week": types.SetType{
-					ElemType: types.StringType,
-				},
-			},
-		},
-	}}, bw)
+	bwList, bwListDgs := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: syncIQRuleResourceType}, bw)
 	dgs.Append(bwListDgs...)
 	return models.SyncIQRulesResource{
 		BandWidthRules: bwList,
@@ -158,39 +158,69 @@ func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExte
 		Begin: source.Schedule.Begin,
 	}
 
-	daysOfWeek := make([]string, 0)
-	if source.Schedule.Monday != nil && *source.Schedule.Monday {
-		daysOfWeek = append(daysOfWeek, "monday")
-	}
-	if source.Schedule.Tuesday != nil && *source.Schedule.Tuesday {
-		daysOfWeek = append(daysOfWeek, "tuesday")
-	}
-	if source.Schedule.Wednesday != nil && *source.Schedule.Wednesday {
-		daysOfWeek = append(daysOfWeek, "wednesday")
-	}
-	if source.Schedule.Thursday != nil && *source.Schedule.Thursday {
-		daysOfWeek = append(daysOfWeek, "thursday")
-	}
-	if source.Schedule.Friday != nil && *source.Schedule.Friday {
-		daysOfWeek = append(daysOfWeek, "friday")
-	}
-	if source.Schedule.Saturday != nil && *source.Schedule.Saturday {
-		daysOfWeek = append(daysOfWeek, "saturday")
-	}
-	if source.Schedule.Sunday != nil && *source.Schedule.Sunday {
-		daysOfWeek = append(daysOfWeek, "sunday")
-	}
-	schedule.DaysOfWeek = daysOfWeek
+	schedule.DaysOfWeek = unmarshalJsonSyncIQRulescehdule(source.Schedule)
 
-	scheduleObj, dgsObj := types.ObjectValueFrom(ctx, map[string]attr.Type{
-		"begin": types.StringType,
-		"end":   types.StringType,
-		"days_of_week": types.SetType{
-			ElemType: types.StringType,
-		},
-	}, schedule)
+	scheduleObj, dgsObj := types.ObjectValueFrom(ctx, syncIQRuleResourceScheduleType, schedule)
 	ret.Schedule = scheduleObj
 	return ret, dgsObj
+}
+
+// unmarshalJsonSyncIQRulescehdule converts V1SyncRuleSchedule to list of days of week
+func unmarshalJsonSyncIQRulescehdule(schedule *powerscale.V1SyncRuleSchedule) []string {
+	daysOfWeek := make([]string, 0)
+	if schedule.Monday != nil && *schedule.Monday {
+		daysOfWeek = append(daysOfWeek, "monday")
+	}
+	if schedule.Tuesday != nil && *schedule.Tuesday {
+		daysOfWeek = append(daysOfWeek, "tuesday")
+	}
+	if schedule.Wednesday != nil && *schedule.Wednesday {
+		daysOfWeek = append(daysOfWeek, "wednesday")
+	}
+	if schedule.Thursday != nil && *schedule.Thursday {
+		daysOfWeek = append(daysOfWeek, "thursday")
+	}
+	if schedule.Friday != nil && *schedule.Friday {
+		daysOfWeek = append(daysOfWeek, "friday")
+	}
+	if schedule.Saturday != nil && *schedule.Saturday {
+		daysOfWeek = append(daysOfWeek, "saturday")
+	}
+	if schedule.Sunday != nil && *schedule.Sunday {
+		daysOfWeek = append(daysOfWeek, "sunday")
+	}
+	return daysOfWeek
+}
+
+// marshalJsonSyncIQRulescehdule parses list of days of week and writes to V1SyncRuleSchedule
+func marshalJsonSyncIQRulescehdule(daysOfWeek []string, schedule *powerscale.V1SyncRuleSchedule) {
+	// set all values to false to start with
+	schedule.Monday = New(false)
+	schedule.Tuesday = New(false)
+	schedule.Wednesday = New(false)
+	schedule.Thursday = New(false)
+	schedule.Friday = New(false)
+	schedule.Saturday = New(false)
+	schedule.Sunday = New(false)
+	// set specified values to false
+	for _, day := range daysOfWeek {
+		switch day {
+		case "monday":
+			schedule.Monday = New(true)
+		case "tuesday":
+			schedule.Tuesday = New(true)
+		case "wednesday":
+			schedule.Wednesday = New(true)
+		case "thursday":
+			schedule.Thursday = New(true)
+		case "friday":
+			schedule.Friday = New(true)
+		case "saturday":
+			schedule.Saturday = New(true)
+		case "sunday":
+			schedule.Sunday = New(true)
+		}
+	}
 }
 
 // GetRequestsFromSynciqRulesResource
@@ -225,32 +255,6 @@ func GetRequestFromSynciqRuleResource(ctx context.Context, plan models.SyncIQRul
 	if schedule.DaysOfWeek == nil {
 		return ret
 	}
-	// set all values to false to start with
-	ret.Schedule.Monday = New(false)
-	ret.Schedule.Tuesday = New(false)
-	ret.Schedule.Wednesday = New(false)
-	ret.Schedule.Thursday = New(false)
-	ret.Schedule.Friday = New(false)
-	ret.Schedule.Saturday = New(false)
-	ret.Schedule.Sunday = New(false)
-	// set specified values to false
-	for _, day := range schedule.DaysOfWeek {
-		switch day {
-		case "monday":
-			ret.Schedule.Monday = New(true)
-		case "tuesday":
-			ret.Schedule.Tuesday = New(true)
-		case "wednesday":
-			ret.Schedule.Wednesday = New(true)
-		case "thursday":
-			ret.Schedule.Thursday = New(true)
-		case "friday":
-			ret.Schedule.Friday = New(true)
-		case "saturday":
-			ret.Schedule.Saturday = New(true)
-		case "sunday":
-			ret.Schedule.Sunday = New(true)
-		}
-	}
+	marshalJsonSyncIQRulescehdule(schedule.DaysOfWeek, ret.Schedule)
 	return ret
 }

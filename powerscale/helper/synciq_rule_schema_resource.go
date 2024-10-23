@@ -36,8 +36,8 @@ import (
 // SyncIQRuleResourceSchema defines the schema for the syncIQ Replication Rule resource.
 func SyncIQRulesResourceSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
-		Description:         "This resource is used to manage the SyncIQ Rule entity on PowerScale array.",
-		MarkdownDescription: "This resource is used to manage the SyncIQ Rule entity on PowerScale array.",
+		Description:         "This resource is used to manage all the SyncIQ replication Performance Rule entities on PowerScale array.",
+		MarkdownDescription: "This resource is used to manage all the SyncIQ replication Performance Rule entities on PowerScale array.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "Resource ID.",

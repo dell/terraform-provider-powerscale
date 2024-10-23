@@ -19,12 +19,12 @@ linkTitle: "powerscale_synciq_rules"
 page_title: "powerscale_synciq_rules Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This resource is used to manage the SyncIQ Rule entity on PowerScale array.
+  This resource is used to manage all the SyncIQ replication Performance Rule entities on PowerScale array.
 ---
 
 # powerscale_synciq_rules (Resource)
 
-This resource is used to manage the SyncIQ Rule entity on PowerScale array.
+This resource is used to manage all the SyncIQ replication Performance Rule entities on PowerScale array.
 
 
 ## Example Usage
@@ -112,6 +112,8 @@ Optional:
 - `begin` (String) Start time (inclusive) for this schedule, during its specified days. Format is `hh:mm` (24h format hour, and minute).  A null value indicates the beginning of the day (`00:00`).
 - `days_of_week` (Set of String) Set of days of the week during which this rule is in effect. Accepted values are `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`. At least one day must be set.
 - `end` (String) End time (inclusive) for this schedule, during its specified days. Format is `hh:mm` (three-letter weekday name abbreviation, 24h format hour, and minute).  A null value indicates the end of the day (`23:59`).
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 
