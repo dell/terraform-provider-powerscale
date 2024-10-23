@@ -100,9 +100,8 @@ func (d *SyncIQRuleResource) get(ctx context.Context) (*models.SyncIQRulesResour
 	var dgs diag.Diagnostics
 	config, err := helper.GetAllSyncIQRules(ctx, d.client)
 	if err != nil {
-		errStr := constants.ListSynciqRulesMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		dgs.AddError("Error reading syncIQ rules", message)
+		message := helper.GetErrorString(err, constants.APIErrorMessage)
+		dgs.AddError("Error reading all syncIQ rules", message)
 		return nil, dgs
 	}
 	state, diags := helper.NewSyncIQRulesResource(ctx, config)
@@ -176,9 +175,8 @@ func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTf
 			id := d.getID(i, ruleType)
 			err := helper.DeleteSyncIQRule(ctx, d.client, id)
 			if err != nil {
-				errStr := constants.ListSynciqRulesMsg + "with error: "
-				message := helper.GetErrorString(err, errStr)
-				dgs.AddError("Error deleting syncIQ rule "+id, message)
+				message := helper.GetErrorString(err, constants.APIErrorMessage)
+				dgs.AddError("Error deleting syncIQ rule with ID "+id, message)
 				return dgs
 			}
 		}
@@ -188,9 +186,8 @@ func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTf
 		for i := toBeAdded - 1; i >= 0; i-- {
 			_, err := helper.CreateSyncIQRule(ctx, d.client, plan[i])
 			if err != nil {
-				errStr := constants.ListSynciqRulesMsg + "with error: "
-				message := helper.GetErrorString(err, errStr)
-				dgs.AddError("Error creating syncIQ rule for index "+string(i), message)
+				message := helper.GetErrorString(err, constants.APIErrorMessage)
+				dgs.AddError(fmt.Sprintf("Error creating syncIQ rule for index %d", i), message)
 				return dgs
 			}
 		}
@@ -202,7 +199,7 @@ func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTf
 	}
 
 	// now the number of rules are equal
-	// update remaining rules to make state consistent with plan
+	// update remaining rules to make state is consistent with plan
 	for i, planItem := range plan {
 		stateItem := state[i]
 		if d.areRulesEqual(planItem, stateItem) {
@@ -211,9 +208,8 @@ func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTf
 		id := d.getID(i, ruleType)
 		err := helper.UpdateSyncIQRule(ctx, d.client, id, planItem)
 		if err != nil {
-			errStr := constants.ListSynciqRulesMsg + "with error: "
-			message := helper.GetErrorString(err, errStr)
-			dgs.AddError("Error updating syncIQ rule "+id, message)
+			message := helper.GetErrorString(err, constants.APIErrorMessage)
+			dgs.AddError("Error updating syncIQ rule with ID "+id, message)
 			return dgs
 		}
 	}
