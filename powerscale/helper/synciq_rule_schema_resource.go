@@ -33,7 +33,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// SyncIQRuleResourceSchema defines the schema for the syncIQ Replication Rule resource.
+// SyncIQRulesResourceSchema defines the schema for the syncIQ Replication Rule resource.
 func SyncIQRulesResourceSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
 		Description:         "This resource is used to manage all the SyncIQ replication Performance Rule entities on PowerScale array.",

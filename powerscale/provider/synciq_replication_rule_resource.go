@@ -228,7 +228,7 @@ func (d *SyncIQRuleResource) getID(i int, ruleType string) string {
 
 // checks if two synciq rules are equal by comparing their JSON representations
 func (d *SyncIQRuleResource) areRulesEqual(plan, existing powerscale.V3SyncRule) bool {
-	planJson, _ := json.Marshal(plan)
-	stateJson, _ := json.Marshal(existing)
-	return string(planJson) == string(stateJson)
+	planJSON, _ := json.Marshal(plan)
+	stateJSON, _ := json.Marshal(existing)
+	return string(planJSON) == string(stateJSON)
 }

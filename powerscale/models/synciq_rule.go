@@ -21,6 +21,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+// DataSource models
+
 // SyncIQRuleDataSource defines the data source implementation.
 type SyncIQRuleDataSource struct {
 	// ID is the unique identifier of the data source.
@@ -67,21 +69,21 @@ type Schedule struct {
 	Thursday types.Bool `tfsdk:"thursday"`
 }
 
+// Resource models
+
 // SyncIQRulesResource defines the model of a SyncIQ rules resource.
 type SyncIQRulesResource struct {
 	ID             types.String `tfsdk:"id"`
 	BandWidthRules types.List   `tfsdk:"bandwidth_rules"`
 }
 
-// SyncIQRulesResource defines the model of a SyncIQ rules resource.
+// SyncIQRulesResourceRequest defines a model of with a list of rules for each stack
 type SyncIQRulesResourceRequest struct {
 	BandWidthRules []SyncIQRuleResource
 }
 
 // SyncIQRuleResource defines the model of a SyncIQ rule.
 type SyncIQRuleResource struct {
-	// Type is the type of the rule.
-	// Type types.String `tfsdk:"type"`
 	// Description is the description of the rule.
 	Description types.String `tfsdk:"description"`
 	// Enabled indicates if the rule is enabled.

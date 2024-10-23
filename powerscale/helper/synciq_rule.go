@@ -127,7 +127,7 @@ var syncIQRuleResourceType = map[string]attr.Type{
 	},
 }
 
-// NewSyncIQRulesResourceSchedule creates a new SyncIQRulesResource from resource response.
+// NewSyncIQRulesResource creates a new SyncIQRulesResource from resource response.
 func NewSyncIQRulesResource(ctx context.Context, source *powerscale.V3SyncRules) (models.SyncIQRulesResource, diag.Diagnostics) {
 	var dgs diag.Diagnostics
 	bw := make([]models.SyncIQRuleResource, 0)
@@ -158,15 +158,15 @@ func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExte
 		Begin: source.Schedule.Begin,
 	}
 
-	schedule.DaysOfWeek = unmarshalJsonSyncIQRulescehdule(source.Schedule)
+	schedule.DaysOfWeek = unmarshalJSONSyncIQRuleschedule(source.Schedule)
 
 	scheduleObj, dgsObj := types.ObjectValueFrom(ctx, syncIQRuleResourceScheduleType, schedule)
 	ret.Schedule = scheduleObj
 	return ret, dgsObj
 }
 
-// unmarshalJsonSyncIQRulescehdule converts V1SyncRuleSchedule to list of days of week
-func unmarshalJsonSyncIQRulescehdule(schedule *powerscale.V1SyncRuleSchedule) []string {
+// unmarshalJSONSyncIQRuleschedule converts V1SyncRuleSchedule to list of days of week
+func unmarshalJSONSyncIQRuleschedule(schedule *powerscale.V1SyncRuleSchedule) []string {
 	daysOfWeek := make([]string, 0)
 	if schedule.Monday != nil && *schedule.Monday {
 		daysOfWeek = append(daysOfWeek, "monday")
@@ -192,8 +192,8 @@ func unmarshalJsonSyncIQRulescehdule(schedule *powerscale.V1SyncRuleSchedule) []
 	return daysOfWeek
 }
 
-// marshalJsonSyncIQRulescehdule parses list of days of week and writes to V1SyncRuleSchedule
-func marshalJsonSyncIQRulescehdule(daysOfWeek []string, schedule *powerscale.V1SyncRuleSchedule) {
+// marshalJSONSyncIQRuleschedule parses list of days of week and writes to V1SyncRuleSchedule
+func marshalJSONSyncIQRuleschedule(daysOfWeek []string, schedule *powerscale.V1SyncRuleSchedule) {
 	// set all values to false to start with
 	schedule.Monday = New(false)
 	schedule.Tuesday = New(false)
@@ -223,7 +223,7 @@ func marshalJsonSyncIQRulescehdule(daysOfWeek []string, schedule *powerscale.V1S
 	}
 }
 
-// GetRequestsFromSynciqRulesResource
+// GetRequestsFromSynciqRulesResource converts SyncIQRulesResource to SyncIQRulesResourceRequest
 func GetRequestsFromSynciqRulesResource(ctx context.Context, source models.SyncIQRulesResource) models.SyncIQRulesResourceRequest {
 	ret := models.SyncIQRulesResourceRequest{
 		BandWidthRules: make([]models.SyncIQRuleResource, 0),
@@ -255,6 +255,6 @@ func GetRequestFromSynciqRuleResource(ctx context.Context, plan models.SyncIQRul
 	if schedule.DaysOfWeek == nil {
 		return ret
 	}
-	marshalJsonSyncIQRulescehdule(schedule.DaysOfWeek, ret.Schedule)
+	marshalJSONSyncIQRuleschedule(schedule.DaysOfWeek, ret.Schedule)
 	return ret
 }
