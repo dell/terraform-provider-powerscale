@@ -48,6 +48,39 @@ func GetSnapshotRestoreJob(ctx context.Context, client *client.Client, jobID str
 	return &response.Jobs[0], err
 }
 
+// CopyDirectory copies a directory from the source to the destination.
+func CopyDirectory(ctx context.Context, client *client.Client, directoryParams models.DirectoryModel) (*powerscale.CopyErrors, error) {
+	copyParam := client.PscaleOpenAPIClient.NamespaceApi.CopyDirectory(ctx, directoryParams.Destination.ValueString())
+	copyParam = copyParam.Merge(directoryParams.Merge.ValueBool())
+	copyParam = copyParam.Overwrite(directoryParams.Overwrite.ValueBool())
+	copyParam = copyParam.Continue_(directoryParams.Continue.ValueBool())
+	copyParam = copyParam.XIsiIfsCopySource(directoryParams.Source.ValueString())
+	tflog.Info(ctx, fmt.Sprintf("copying directory from source %v to destination %v", directoryParams.Source.ValueString(), directoryParams.Destination.ValueString()))
+	response, _, err := copyParam.Execute()
+	return response, err
+}
+
+// CopyFile copies a file from the source to the destination.
+func CopyFile(ctx context.Context, client *client.Client, fileParams models.FileModel) (*powerscale.CopyErrors, error) {
+	copyParam := client.PscaleOpenAPIClient.NamespaceApi.CopyFile(ctx, fileParams.Destination.ValueString())
+	copyParam = copyParam.Overwrite(fileParams.Overwrite.ValueBool())
+	copyParam = copyParam.XIsiIfsCopySource(fileParams.Source.ValueString())
+	tflog.Info(ctx, fmt.Sprintf("copying file from source %v to destination %v", fileParams.Source.ValueString(), fileParams.Destination.ValueString()))
+	response, _, err := copyParam.Execute()
+	return response, err
+}
+
+// CloneFile clones a file from the source to the destination.
+func CloneFile(ctx context.Context, client *client.Client, snapshot_name string, cloneParams models.CloneParamsModel) (*powerscale.CopyErrors, error) {
+	clonePayload := client.PscaleOpenAPIClient.NamespaceApi.CopyFile(ctx, cloneParams.Destination.ValueString())
+	clonePayload = clonePayload.Overwrite(cloneParams.Overwrite.ValueBool())
+	clonePayload = clonePayload.Clone(true)
+	clonePayload = clonePayload.XIsiIfsCopySource(cloneParams.Source.ValueString())
+	clonePayload = clonePayload.Snapshot(snapshot_name)
+	response, _, err := clonePayload.Execute()
+	return response, err
+}
+
 // ManageSnapshotRestore manages the snapshot restore.
 func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan models.SnapshotRestoreModel) (state models.SnapshotRestoreModel, resp diag.Diagnostics) {
 	state = plan
@@ -82,7 +115,16 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 				Root: response.Path,
 			},
 		}
-		createResponse, _ := CreateSnapshotRestoreJob(ctx, client, payload)
+		createResponse, err := CreateSnapshotRestoreJob(ctx, client, payload)
+		if err != nil {
+			errStr := constants.CreateSnapshotRestoreJobErrorMsg + "with error: "
+			message := GetErrorString(err, errStr)
+			resp.AddError(
+				"Error creating job for snaprevert domain",
+				message,
+			)
+			return state, resp
+		}
 		strID := strconv.Itoa(int(createResponse.Id))
 		jobResponse, err := GetSnapshotRestoreJob(ctx, client, strID)
 		if err != nil {
@@ -94,11 +136,11 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 			)
 			return state, resp
 		}
-		_, diag = CheckJobStatus(ctx, client, strID, jobResponse)
+		jobResponse, diag = CheckJobStatus(ctx, client, strID, jobResponse)
 		if diag.HasError() {
 			return state, diag
 		}
-
+		tflog.Info(ctx, fmt.Sprintf("SnapRevert domain job status: %v", jobResponse.State))
 		// Populate the payload for creating snaprevert job
 		payload = powerscale.V10JobJob{
 			Type:     "SnapRevert",
@@ -113,7 +155,7 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 			errStr := constants.CreateSnapshotRestoreJobErrorMsg + "with error: "
 			message := GetErrorString(err, errStr)
 			resp.AddError(
-				"Error creating job",
+				"Error creating job for snaprevert",
 				message,
 			)
 			return state, resp
@@ -142,12 +184,82 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 			)
 			return state, resp
 		}
+	} else if !plan.CopyParams.IsNull() {
+		var copyParams models.CopyParamsModel
+		diag := plan.CopyParams.As(ctx, &copyParams, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
+		if diag.HasError() {
+			return state, diag
+		}
+
+		if !copyParams.Directory.IsNull() {
+			var directoryParams models.DirectoryModel
+			diag = copyParams.Directory.As(ctx, &directoryParams, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
+			if diag.HasError() {
+				return state, diag
+			}
+
+			_, err := CopyDirectory(ctx, client, directoryParams)
+			if err != nil {
+				errStr := constants.CopyDirectoryErrorMessage + "with error: "
+				message := GetErrorString(err, errStr)
+				resp.AddError(
+					fmt.Sprintf("Error copying the directory with path %v", directoryParams.Source.ValueString()),
+					message,
+				)
+				return state, resp
+			}
+		} else {
+			var fileParams models.FileModel
+			diag = copyParams.File.As(ctx, &fileParams, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
+			if diag.HasError() {
+				return state, diag
+			}
+			_, err := CopyFile(ctx, client, fileParams)
+			if err != nil {
+				errStr := constants.CopyFileErrorMessage + "with error: "
+				message := GetErrorString(err, errStr)
+				resp.AddError(
+					fmt.Sprintf("Error copying the file with path %v", fileParams.Source.ValueString()),
+					message,
+				)
+				return state, resp
+			}
+		}
+	} else {
+		var cloneParams models.CloneParamsModel
+		diag := plan.CloneParams.As(ctx, &cloneParams, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
+		if diag.HasError() {
+			return state, diag
+		}
+
+		// Get Snapshot details if ID is provided
+		response, err := GetSpecificSnapshot(ctx, client, cloneParams.SnapID.String())
+		if err != nil {
+			errStr := constants.ReadSnapshotErrorMessage + "with error: "
+			message := GetErrorString(err, errStr)
+			resp.AddError(
+				fmt.Sprintf("Error getting the snapshot with id %v", cloneParams.SnapID.String()),
+				message,
+			)
+			return state, resp
+		}
+
+		_, err = CloneFile(ctx, client, response.Name, cloneParams)
+		if err != nil {
+			errStr := constants.CloneFileErrorMessage + "with error: "
+			message := GetErrorString(err, errStr)
+			resp.AddError(
+				fmt.Sprintf("Error cloning the file with path %v", cloneParams.Source.ValueString()),
+				message,
+			)
+			return state, resp
+		}
 	}
 	state.ID = types.StringValue("snapshot_restore")
 	return state, nil
 }
 
-// CheckJobStatus checks the job status
+// CheckJobStatus checks the job status.
 func CheckJobStatus(ctx context.Context, client *client.Client, jobID string, response *powerscale.V10JobJobExtended) (res *powerscale.V10JobJobExtended, resp diag.Diagnostics) {
 	var err error
 	for !(response.State == "succeeded" || response.State == "failed") {
@@ -166,7 +278,7 @@ func CheckJobStatus(ctx context.Context, client *client.Client, jobID string, re
 	return response, nil
 }
 
-// DeleteSnaprevertDomain deletes the snaprevert domain
+// DeleteSnaprevertDomain deletes the snaprevert domain.
 func DeleteSnaprevertDomain(ctx context.Context, client *client.Client, state models.SnapshotRestoreModel) (resp diag.Diagnostics) {
 	var snapRevert models.SnapRevertParamsModel
 
@@ -198,7 +310,16 @@ func DeleteSnaprevertDomain(ctx context.Context, client *client.Client, state mo
 			Root:   response.Path,
 		},
 	}
-	createResponse, _ := CreateSnapshotRestoreJob(ctx, client, payload)
+	createResponse, err := CreateSnapshotRestoreJob(ctx, client, payload)
+	if err != nil {
+		errStr := constants.CreateSnapshotRestoreJobErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		resp.AddError(
+			"Error creating job for deleting snaprevert domain",
+			message,
+		)
+		return resp
+	}
 	strID := strconv.Itoa(int(createResponse.Id))
 	tflog.Info(ctx, fmt.Sprintf("Delete snaprevert domain job id: %v", createResponse.Id))
 	jobResponse, err := GetSnapshotRestoreJob(ctx, client, strID)
