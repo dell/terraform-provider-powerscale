@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # The command is
-# terraform import powerscale_s3_global_settings.s3_global_settings_example <id>
+# terraform import powerscale_s3_global_settings.s3_global_settings_example <any string>
 terraform import powerscale_s3_global_settings.s3_global_settings_example ""
 
 # after running this command, populate the name field and other required parameters in the config file to start managing this resource.

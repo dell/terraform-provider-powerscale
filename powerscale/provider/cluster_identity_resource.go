@@ -60,9 +60,9 @@ func (r *ClusterIdentityResource) Metadata(ctx context.Context, req resource.Met
 func (r *ClusterIdentityResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "This resource is used to manage the Cluster Identity settings of PowerScale Array. " +
-			"We can Create, Update and Delete the Cluster Identity using this resource. We can also import an existing Cluster Identity from PowerScale array.",
+			"We can Create, Update and Delete the Cluster Identity using this resource. We can also import the existing Cluster Identity settings from PowerScale array.",
 		Description: "This resource is used to manage the Cluster Identity settings of PowerScale Array. " +
-			"We can Create, Update and Delete the Cluster Identity using this resource. We can also import an existing Cluster Identity from PowerScale array.",
+			"We can Create, Update and Delete the Cluster Identity using this resource. We can also import the existing Cluster Identity settings from PowerScale array.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "The id for this cluster.",

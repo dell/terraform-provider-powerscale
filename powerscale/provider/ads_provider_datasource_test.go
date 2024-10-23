@@ -28,6 +28,7 @@ import (
 )
 
 func TestAccAdsProviderDataSourceNames(t *testing.T) {
+	TestAccClusterTimeResourceMock(t)
 	var adsTerraformName = "data.powerscale_adsprovider.test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },

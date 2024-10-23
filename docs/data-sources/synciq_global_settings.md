@@ -46,7 +46,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# This Terraform DataSource is used to query the details of the SyncIQ Globalbsettings from PowerScale array.
+# This Terraform DataSource is used to query the details of the SyncIQ Global Settings from PowerScale array.
 
 # Returns the PowerScale SyncIQ Global settings on PowerScale array
 data "powerscale_synciq_global_settings" "all" {

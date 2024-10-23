@@ -109,6 +109,8 @@ Read-Only:
 
 - `smtp_auth_passwd_set` (Boolean) Indicates if an SMTP authentication password is set.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

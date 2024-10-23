@@ -50,9 +50,11 @@ func (d *SyncIQPolicyDataSource) Metadata(ctx context.Context, req datasource.Me
 // Schema describes the data source arguments.
 func (d *SyncIQPolicyDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "This datasource is used to query the existing SyncIQ Policies from PowerScale array.",
-		Description:         "This datasource is used to query the existing SyncIQ Policies from PowerScale array.",
-		Attributes:          helper.SyncIQPolicyDataSourceSchema(),
+		MarkdownDescription: "This datasource is used to query the existing SyncIQ Policies from PowerScale array." +
+			" The information fetched from this datasource can be used for getting the details or for further processing in resource block.",
+		Description: "This datasource is used to query the existing SyncIQ Policies from PowerScale array." +
+			" The information fetched from this datasource can be used for getting the details or for further processing in resource block.",
+		Attributes: helper.SyncIQPolicyDataSourceSchema(),
 	}
 }
 

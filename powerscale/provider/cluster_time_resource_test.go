@@ -144,7 +144,7 @@ func TestAccClusterTimeResourceMock(t *testing.T) {
 	}
 
 	// Get the current time in GMT
-	now := time.Now().In(loc).Add(-5*time.Hour - 30*time.Minute)
+	now := time.Now().In(loc).Add(-5*time.Hour - 27*time.Minute)
 
 	// Format the date and time
 	dateValue = now.Format("01/02/2006")

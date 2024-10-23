@@ -180,6 +180,8 @@ Optional:
 - `telemetry_persist` (Boolean) Change if files are kept after upload
 - `telemetry_threads` (Number) Change the number of threads for telemetry gathers
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:
@@ -204,6 +206,6 @@ Import is supported using the following syntax:
 # terraform import powerscale_support_assist.example_support_assist <anyString>
 # Example:
 terraform import powerscale_support_assist.example_support_assist "support_assist"
-# After running this command, populate the fields in the config file to start managing this resource.
+# After running this command, populate one or more fields in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.
 ```

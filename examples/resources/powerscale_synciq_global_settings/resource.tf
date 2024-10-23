@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# Available actions: Create and  Update updates the syncIQ  global settings. Delete will delete the state file. Import action is also available
+# Available actions: Create and  Update updates the syncIQ  global settings. Delete will delete the state file. Import action is also available.
 # After `terraform apply` of this example file will update the settings according to the attributes set in the config
 
 # PowerScale SynIQ global settings allows you to manage the global settings on the Powerscale array

@@ -80,6 +80,8 @@ resource "powerscale_cluster_time" "test" {
 - `id` (String) ID of the Cluster Time Settings.
 - `time_millis` (Number) Time in Miliseconds of the Cluster
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

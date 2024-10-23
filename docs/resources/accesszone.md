@@ -83,13 +83,13 @@ resource "powerscale_accesszone" "zone" {
 
 ### Required
 
-- `groupnet` (String) Groupnet identifier
-- `name` (String) Specifies the access zone name. (Update Supported)
-- `path` (String) Specifies the access zone base directory path. (Update Supported)
+- `groupnet` (String) Groupnet identifier. Cannot be updated.
+- `name` (String) Specifies the access zone name.
+- `path` (String) Specifies the access zone base directory path.
 
 ### Optional
 
-- `custom_auth_providers` (List of String) An optional parameter which adds new auth_providers to the access zone. A provider name should be of the form '[provider-type:]provider-name', the provider-type defaults to 'lsa-local-provider'. (Update Supported)
+- `custom_auth_providers` (List of String) An optional parameter which adds new auth_providers to the access zone. A provider name should be of the form '[provider-type:]provider-name', the provider-type defaults to 'lsa-local-provider'.
 
 ### Read-Only
 
@@ -117,6 +117,8 @@ Read-Only:
 - `id` (String) Specifies the serialized form of a persona, which can be 'UID:0', 'USER:name', 'GID:0', 'GROUP:wheel', or 'SID:S-1-1'.
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 

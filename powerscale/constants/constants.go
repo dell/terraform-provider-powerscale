@@ -445,4 +445,22 @@ const (
 
 	// GetClusterVersionErrorMsg specifies error details occurred while getting cluster version.
 	GetClusterVersionErrorMsg = "Could not get cluster version"
+
+	// ReadWritableSnapshotErrorMsg specifies error details occurred while reading writable snapshot settings.
+	ReadWritableSnapshotErrorMsg = "Could not read writable snapshot settings"
+
+	// UpdateWritableSnapshotErrorMsg specifies error details occurred while updating writable snapshot settings.
+	UpdateWritableSnapshotErrorMsg = "Could not update writable snapshot settings"
+
+	// DeleteWritableSnapshotErrorMsg specifies error details occurred while deleting writable snapshot.
+	DeleteWritableSnapshotErrorMsg = "Could not delete writable snapshot"
+
+	// CreateSnapshotRestoreJobErrorMsg specifies error details occurred while creating snapshot restore job.
+	CreateSnapshotRestoreJobErrorMsg = "Could not create snapshot restore job "
+
+	// ReadSnapshotRestoreJobErrorMsg specifies error details occurred while reading snapshot restore job.
+	ReadSnapshotRestoreJobErrorMsg = "Could not read snapshot restore job "
+
+	// ReadSnapshotRestoreJobReportErrorMsg specifies error details occurred while reading snapshot restore job reports.
+	ReadSnapshotRestoreJobReportErrorMsg = "Could not read snapshot restore job reports "
 )

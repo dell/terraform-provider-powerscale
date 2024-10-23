@@ -17,5 +17,5 @@
 # terraform import powerscale_synciq_global_settings.settings <anystring>
 # Example:
 terraform import powerscale_synciq_global_settings.settings global_setting
-# after running this command, populate the  other required parameters in the config file to start managing this resource.
+# after running this command, populate one or more parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.

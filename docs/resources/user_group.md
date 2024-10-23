@@ -84,20 +84,20 @@ resource "powerscale_user_group" "testUserGroup" {
 
 ### Required
 
-- `name` (String) Specifies a user group name.
+- `name` (String) Specifies a user group name. Cannot be updated.
 
 ### Optional
 
-- `domain` (String) Specifies the domain that the object is part of.
-- `gid` (Number) Specifies a numeric user group identifier. (Update Supported)
-- `groups` (List of String) Specifies list members of group within the group. (Update Supported)
+- `domain` (String) Specifies the domain that the object is part of. Cannot be updated.
+- `gid` (Number) Specifies a numeric user group identifier.
+- `groups` (List of String) Specifies list members of group within the group.
 - `query_force` (Boolean) If true, skip validation checks when creating user group. Need to be true, when changing group GID.
-- `query_provider` (String) Specifies the provider type.
-- `query_zone` (String) Specifies the zone that the object belongs to.
-- `roles` (List of String) List of roles, the user is assigned. (Update Supported)
-- `sid` (String) Specifies a security identifier.
-- `users` (List of String) Specifies list members of user within the group. (Update Supported)
-- `well_knowns` (List of String) Specifies list members of well_known within the group. (Update Supported)
+- `query_provider` (String) Specifies the provider type. Cannot be updated.
+- `query_zone` (String) Specifies the zone that the object belongs to. Cannot be updated.
+- `roles` (List of String) List of roles, the user is assigned.
+- `sid` (String) Specifies a security identifier. Cannot be updated.
+- `users` (List of String) Specifies list members of user within the group.
+- `well_knowns` (List of String) Specifies list members of well_known within the group.
 
 ### Read-Only
 
@@ -108,6 +108,8 @@ resource "powerscale_user_group" "testUserGroup" {
 - `provider_name` (String) Specifies the authentication provider that the object belongs to.
 - `sam_account_name` (String) Specifies a user group name.
 - `type` (String) Specifies the object type.
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 

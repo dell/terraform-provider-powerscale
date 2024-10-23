@@ -233,92 +233,94 @@ resource "powerscale_ldap_provider" "example_ldap_provider" {
 
 ### Required
 
-- `base_dn` (String) Specifies the root of the tree in which to search identities. (Update Supported)
-- `name` (String) Specifies the name of the LDAP provider. (Update Supported)
-- `server_uris` (List of String) Specifies the server URIs. (Update Supported)
+- `base_dn` (String) Specifies the root of the tree in which to search identities.
+- `name` (String) Specifies the name of the LDAP provider.
+- `server_uris` (List of String) Specifies the server URIs.
 
 ### Optional
 
-- `alternate_security_identities_attribute` (String) Specifies the attribute name used when searching for alternate security identities. (Update Supported)
-- `authentication` (Boolean) If true, enables authentication and identity management through the authentication provider. (Update Supported)
-- `balance_servers` (Boolean) If true, connects the provider to a random server. (Update Supported)
-- `bind_dn` (String) Specifies the distinguished name for binding to the LDAP server. (Update Supported)
-- `bind_mechanism` (String) Specifies which bind mechanism to use when connecting to an LDAP server. The only supported option is the 'simple' value. (Update Supported)
-- `bind_timeout` (Number) Specifies the timeout in seconds when binding to an LDAP server. (Update Supported)
-- `certificate_authority_file` (String) Specifies the path to the root certificates file. (Update Supported)
-- `check_online_interval` (Number) Specifies the time in seconds between provider online checks. (Update Supported)
-- `cn_attribute` (String) Specifies the canonical name. (Update Supported)
-- `create_home_directory` (Boolean) Automatically create the home directory on the first login. (Update Supported)
-- `crypt_password_attribute` (String) Specifies the hashed password value. (Update Supported)
-- `email_attribute` (String) Specifies the LDAP Email attribute. (Update Supported)
-- `enabled` (Boolean) If true, enables the LDAP provider. (Update Supported)
-- `enumerate_groups` (Boolean) If true, allows the provider to enumerate groups. (Update Supported)
-- `enumerate_users` (Boolean) If true, allows the provider to enumerate users. (Update Supported)
-- `findable_groups` (List of String) Specifies the list of groups that can be resolved. (Update Supported)
-- `findable_users` (List of String) Specifies the list of users that can be resolved. (Update Supported)
-- `gecos_attribute` (String) Specifies the LDAP GECOS attribute. (Update Supported)
-- `gid_attribute` (String) Specifies the LDAP GID attribute. (Update Supported)
-- `group_base_dn` (String) Specifies the distinguished name of the entry where LDAP searches for groups are started. (Update Supported)
-- `group_domain` (String) Specifies the domain for this provider through which groups are qualified. (Update Supported)
-- `group_filter` (String) Specifies the LDAP filter for group objects. (Update Supported)
-- `group_members_attribute` (String) Specifies the LDAP Group Members attribute. (Update Supported)
-- `group_search_scope` (String) Specifies the depth from the base DN to perform LDAP searches. Acceptable values: "default", "base", "onelevel", "subtree", "children". (Update Supported)
-- `groupnet` (String) Groupnet identifier.
-- `home_directory_template` (String) Specifies the path to the home directory template. (Update Supported)
-- `homedir_attribute` (String) Specifies the LDAP Homedir attribute. (Update Supported)
-- `ignore_tls_errors` (Boolean) If true, continues over secure connections even if identity checks fail. (Update Supported)
-- `ignore_unresolvable_server_urls` (Boolean) Ignore unresolvable server URIs when creating and updating. (Update Supported)
-- `listable_groups` (List of String) Specifies the groups that can be viewed in the provider. (Update Supported)
-- `listable_users` (List of String) Specifies the users that can be viewed in the provider. (Update Supported)
-- `login_shell` (String) Specifies the login shell path. (Update Supported)
-- `member_lookup_method` (String) Sets the method by which group member lookups are performed. Use caution when changing this option directly. Acceptable values: "default", "rfc2307bis". (Update Supported)
-- `member_of_attribute` (String) Specifies the LDAP Query Member Of attribute, which performs reverse membership queries. (Update Supported)
-- `name_attribute` (String) Specifies the LDAP UID attribute, which is used as the login name. (Update Supported)
-- `netgroup_base_dn` (String) Specifies the distinguished name of the entry where LDAP searches for netgroups are started. (Update Supported)
-- `netgroup_filter` (String) Specifies the LDAP filter for netgroup objects. (Update Supported)
-- `netgroup_members_attribute` (String) Specifies the LDAP Netgroup Members attribute. (Update Supported)
-- `netgroup_search_scope` (String) Specifies the depth from the base DN to perform LDAP searches. Acceptable values: "default", "base", "onelevel", "subtree", "children". (Update Supported)
-- `netgroup_triple_attribute` (String) Specifies the LDAP Netgroup Triple attribute. (Update Supported)
-- `normalize_groups` (Boolean) Normalizes group names to lowercase before look up. (Update Supported)
-- `normalize_users` (Boolean) Normalizes user names to lowercase before look up. (Update Supported)
-- `nt_password_attribute` (String) Specifies the LDAP NT Password attribute. (Update Supported)
-- `ntlm_support` (String) Specifies which NTLM versions to support for users with NTLM-compatible credentials. Acceptable values: "all", "v2only", "none". (Update Supported)
-- `ocsp_server_uris` (List of String) Specifies the OCSP server URIs. Only available for PowerScale 9.5 and above. (Update Supported)
-- `provider_domain` (String) Specifies the provider domain. (Update Supported)
-- `require_secure_connection` (Boolean) Determines whether to continue over a non-TLS connection. (Update Supported)
-- `restrict_findable` (Boolean) If true, checks the provider for filtered lists of findable and unfindable users and groups. (Update Supported)
-- `restrict_listable` (Boolean) If true, checks the provider for filtered lists of listable and unlistable users and groups. (Update Supported)
-- `search_scope` (String) Specifies the default depth from the base DN to perform LDAP searches. Acceptable values: "base", "onelevel", "subtree", "children". (Update Supported)
-- `search_timeout` (Number) Specifies the search timeout period in seconds. (Update Supported)
-- `shadow_expire_attribute` (String) Sets the attribute name that indicates the absolute date to expire the account. (Update Supported)
-- `shadow_flag_attribute` (String) Sets the attribute name that indicates the section of the shadow map that is used to store the flag value. (Update Supported)
-- `shadow_inactive_attribute` (String) Sets the attribute name that indicates the number of days of inactivity that is allowed for the user. (Update Supported)
-- `shadow_last_change_attribute` (String) Sets the attribute name that indicates the last change of the shadow information. (Update Supported)
-- `shadow_max_attribute` (String) Sets the attribute name that indicates the maximum number of days a password can be valid. (Update Supported)
-- `shadow_min_attribute` (String) Sets the attribute name that indicates the minimum number of days between shadow changes. (Update Supported)
-- `shadow_user_filter` (String) Sets LDAP filter for shadow user objects. (Update Supported)
-- `shadow_warning_attribute` (String) Sets the attribute name that indicates the number of days before the password expires to warn the user. (Update Supported)
-- `shell_attribute` (String) Specifies the LDAP Shell attribute. (Update Supported)
-- `ssh_public_key_attribute` (String) Sets the attribute name that indicates the SSH Public Key for the user. (Update Supported)
-- `status` (String) Specifies the status of the provider. (Update Supported)
-- `system` (Boolean) If true, indicates that this provider instance was created by OneFS and cannot be removed. (Update Supported)
-- `tls_protocol_min` (String) Specifies the minimum TLS protocol version. (Update Supported)
-- `tls_revocation_check_level` (String) This setting controls the behavior of the certificate revocation checking algorithm when the LDAP provider is presented with a digital certificate by an LDAP server. Acceptable values: "none", "allowNoData", "allowNoSrc", "strict". Only available for PowerScale 9.5 and above. (Update Supported)
-- `uid_attribute` (String) Specifies the LDAP UID Number attribute. (Update Supported)
-- `unfindable_groups` (List of String) Specifies the groups that cannot be resolved by the provider. (Update Supported)
-- `unfindable_users` (List of String) Specifies users that cannot be resolved by the provider. (Update Supported)
-- `unique_group_members_attribute` (String) Sets the LDAP Unique Group Members attribute. (Update Supported)
-- `unlistable_groups` (List of String) Specifies a group that cannot be listed by the provider. (Update Supported)
-- `unlistable_users` (List of String) Specifies a user that cannot be listed by the provider. (Update Supported)
-- `user_base_dn` (String) Specifies the distinguished name of the entry at which to start LDAP searches for users. (Update Supported)
-- `user_domain` (String) Specifies the domain for this provider through which users are qualified. (Update Supported)
-- `user_filter` (String) Specifies the LDAP filter for user objects. (Update Supported)
-- `user_search_scope` (String) Specifies the depth from the base DN to perform LDAP searches. Acceptable values: "default", "base", "onelevel", "subtree", "children". (Update Supported)
+- `alternate_security_identities_attribute` (String) Specifies the attribute name used when searching for alternate security identities.
+- `authentication` (Boolean) If true, enables authentication and identity management through the authentication provider.
+- `balance_servers` (Boolean) If true, connects the provider to a random server.
+- `bind_dn` (String) Specifies the distinguished name for binding to the LDAP server.
+- `bind_mechanism` (String) Specifies which bind mechanism to use when connecting to an LDAP server. The only supported option is the 'simple' value.
+- `bind_timeout` (Number) Specifies the timeout in seconds when binding to an LDAP server.
+- `certificate_authority_file` (String) Specifies the path to the root certificates file.
+- `check_online_interval` (Number) Specifies the time in seconds between provider online checks.
+- `cn_attribute` (String) Specifies the canonical name.
+- `create_home_directory` (Boolean) Automatically create the home directory on the first login.
+- `crypt_password_attribute` (String) Specifies the hashed password value.
+- `email_attribute` (String) Specifies the LDAP Email attribute.
+- `enabled` (Boolean) If true, enables the LDAP provider.
+- `enumerate_groups` (Boolean) If true, allows the provider to enumerate groups.
+- `enumerate_users` (Boolean) If true, allows the provider to enumerate users.
+- `findable_groups` (List of String) Specifies the list of groups that can be resolved.
+- `findable_users` (List of String) Specifies the list of users that can be resolved.
+- `gecos_attribute` (String) Specifies the LDAP GECOS attribute.
+- `gid_attribute` (String) Specifies the LDAP GID attribute.
+- `group_base_dn` (String) Specifies the distinguished name of the entry where LDAP searches for groups are started.
+- `group_domain` (String) Specifies the domain for this provider through which groups are qualified.
+- `group_filter` (String) Specifies the LDAP filter for group objects.
+- `group_members_attribute` (String) Specifies the LDAP Group Members attribute.
+- `group_search_scope` (String) Specifies the depth from the base DN to perform LDAP searches. Acceptable values: "default", "base", "onelevel", "subtree", "children".
+- `groupnet` (String) Groupnet identifier. Cannot be updated.
+- `home_directory_template` (String) Specifies the path to the home directory template.
+- `homedir_attribute` (String) Specifies the LDAP Homedir attribute.
+- `ignore_tls_errors` (Boolean) If true, continues over secure connections even if identity checks fail.
+- `ignore_unresolvable_server_urls` (Boolean) Ignore unresolvable server URIs when creating and updating.
+- `listable_groups` (List of String) Specifies the groups that can be viewed in the provider.
+- `listable_users` (List of String) Specifies the users that can be viewed in the provider.
+- `login_shell` (String) Specifies the login shell path.
+- `member_lookup_method` (String) Sets the method by which group member lookups are performed. Use caution when changing this option directly. Acceptable values: "default", "rfc2307bis".
+- `member_of_attribute` (String) Specifies the LDAP Query Member Of attribute, which performs reverse membership queries.
+- `name_attribute` (String) Specifies the LDAP UID attribute, which is used as the login name.
+- `netgroup_base_dn` (String) Specifies the distinguished name of the entry where LDAP searches for netgroups are started.
+- `netgroup_filter` (String) Specifies the LDAP filter for netgroup objects.
+- `netgroup_members_attribute` (String) Specifies the LDAP Netgroup Members attribute.
+- `netgroup_search_scope` (String) Specifies the depth from the base DN to perform LDAP searches. Acceptable values: "default", "base", "onelevel", "subtree", "children".
+- `netgroup_triple_attribute` (String) Specifies the LDAP Netgroup Triple attribute.
+- `normalize_groups` (Boolean) Normalizes group names to lowercase before look up.
+- `normalize_users` (Boolean) Normalizes user names to lowercase before look up.
+- `nt_password_attribute` (String) Specifies the LDAP NT Password attribute.
+- `ntlm_support` (String) Specifies which NTLM versions to support for users with NTLM-compatible credentials. Acceptable values: "all", "v2only", "none".
+- `ocsp_server_uris` (List of String) Specifies the OCSP server URIs. Only available for PowerScale 9.5 and above.
+- `provider_domain` (String) Specifies the provider domain.
+- `require_secure_connection` (Boolean) Determines whether to continue over a non-TLS connection.
+- `restrict_findable` (Boolean) If true, checks the provider for filtered lists of findable and unfindable users and groups.
+- `restrict_listable` (Boolean) If true, checks the provider for filtered lists of listable and unlistable users and groups.
+- `search_scope` (String) Specifies the default depth from the base DN to perform LDAP searches. Acceptable values: "base", "onelevel", "subtree", "children".
+- `search_timeout` (Number) Specifies the search timeout period in seconds.
+- `shadow_expire_attribute` (String) Sets the attribute name that indicates the absolute date to expire the account.
+- `shadow_flag_attribute` (String) Sets the attribute name that indicates the section of the shadow map that is used to store the flag value.
+- `shadow_inactive_attribute` (String) Sets the attribute name that indicates the number of days of inactivity that is allowed for the user.
+- `shadow_last_change_attribute` (String) Sets the attribute name that indicates the last change of the shadow information.
+- `shadow_max_attribute` (String) Sets the attribute name that indicates the maximum number of days a password can be valid.
+- `shadow_min_attribute` (String) Sets the attribute name that indicates the minimum number of days between shadow changes.
+- `shadow_user_filter` (String) Sets LDAP filter for shadow user objects.
+- `shadow_warning_attribute` (String) Sets the attribute name that indicates the number of days before the password expires to warn the user.
+- `shell_attribute` (String) Specifies the LDAP Shell attribute.
+- `ssh_public_key_attribute` (String) Sets the attribute name that indicates the SSH Public Key for the user.
+- `status` (String) Specifies the status of the provider.
+- `system` (Boolean) If true, indicates that this provider instance was created by OneFS and cannot be removed.
+- `tls_protocol_min` (String) Specifies the minimum TLS protocol version.
+- `tls_revocation_check_level` (String) This setting controls the behavior of the certificate revocation checking algorithm when the LDAP provider is presented with a digital certificate by an LDAP server. Acceptable values: "none", "allowNoData", "allowNoSrc", "strict". Only available for PowerScale 9.5 and above.
+- `uid_attribute` (String) Specifies the LDAP UID Number attribute.
+- `unfindable_groups` (List of String) Specifies the groups that cannot be resolved by the provider.
+- `unfindable_users` (List of String) Specifies users that cannot be resolved by the provider.
+- `unique_group_members_attribute` (String) Sets the LDAP Unique Group Members attribute.
+- `unlistable_groups` (List of String) Specifies a group that cannot be listed by the provider.
+- `unlistable_users` (List of String) Specifies a user that cannot be listed by the provider.
+- `user_base_dn` (String) Specifies the distinguished name of the entry at which to start LDAP searches for users.
+- `user_domain` (String) Specifies the domain for this provider through which users are qualified.
+- `user_filter` (String) Specifies the LDAP filter for user objects.
+- `user_search_scope` (String) Specifies the depth from the base DN to perform LDAP searches. Acceptable values: "default", "base", "onelevel", "subtree", "children".
 
 ### Read-Only
 
 - `id` (String) Specifies the ID of the LDAP provider.
 - `zone_name` (String) Specifies the name of the access zone in which this provider was created.
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 

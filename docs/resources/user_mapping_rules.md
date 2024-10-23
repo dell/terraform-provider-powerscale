@@ -205,10 +205,10 @@ resource "powerscale_user_mapping_rules" "testUserMappingRules" {
 
 ### Optional
 
-- `parameters` (Attributes) Specifies the parameters for user mapping rules. (Update Supported) (see [below for nested schema](#nestedatt--parameters))
-- `rules` (Attributes List) Specifies the list of user mapping rules. (Update Supported) (see [below for nested schema](#nestedatt--rules))
-- `test_mapping_users` (Attributes List) List of user identity for mapping test. (Update Supported) (see [below for nested schema](#nestedatt--test_mapping_users))
-- `zone` (String) The zone to which the user mapping applies. (Update Supported)
+- `parameters` (Attributes) Specifies the parameters for user mapping rules. (see [below for nested schema](#nestedatt--parameters))
+- `rules` (Attributes List) Specifies the list of user mapping rules. (see [below for nested schema](#nestedatt--rules))
+- `test_mapping_users` (Attributes List) List of user identity for mapping test. (see [below for nested schema](#nestedatt--test_mapping_users))
+- `zone` (String) The zone to which the user mapping applies.
 
 ### Read-Only
 
@@ -220,18 +220,18 @@ resource "powerscale_user_mapping_rules" "testUserMappingRules" {
 
 Optional:
 
-- `default_unix_user` (Attributes) Specifies the default UNIX user information that can be applied if the final credentials do not have valid UID and GID information. (Update Supported) (see [below for nested schema](#nestedatt--parameters--default_unix_user))
+- `default_unix_user` (Attributes) Specifies the default UNIX user information that can be applied if the final credentials do not have valid UID and GID information. (see [below for nested schema](#nestedatt--parameters--default_unix_user))
 
 <a id="nestedatt--parameters--default_unix_user"></a>
 ### Nested Schema for `parameters.default_unix_user`
 
 Required:
 
-- `user` (String) Specifies the name of the user that is being mapped. (Update Supported)
+- `user` (String) Specifies the name of the user that is being mapped.
 
 Optional:
 
-- `domain` (String) Specifies the domain of the user that is being mapped. (Update Supported)
+- `domain` (String) Specifies the domain of the user that is being mapped.
 
 
 
@@ -240,24 +240,24 @@ Optional:
 
 Required:
 
-- `operator` (String) Specifies the operator to make rules on specified users or groups. (Update Supported)
-- `target_user` (Attributes) Specifies the target user information that the rule can be applied to. (Update Supported) (see [below for nested schema](#nestedatt--rules--target_user))
+- `operator` (String) Specifies the operator to make rules on specified users or groups.
+- `target_user` (Attributes) Specifies the target user information that the rule can be applied to. (see [below for nested schema](#nestedatt--rules--target_user))
 
 Optional:
 
-- `options` (Attributes) Specifies the mapping options for this user mapping rule. (Update Supported) (see [below for nested schema](#nestedatt--rules--options))
-- `source_user` (Attributes) Specifies the source user information that the rule can be applied from. (Update Supported) (see [below for nested schema](#nestedatt--rules--source_user))
+- `options` (Attributes) Specifies the mapping options for this user mapping rule. (see [below for nested schema](#nestedatt--rules--options))
+- `source_user` (Attributes) Specifies the source user information that the rule can be applied from. (see [below for nested schema](#nestedatt--rules--source_user))
 
 <a id="nestedatt--rules--target_user"></a>
 ### Nested Schema for `rules.target_user`
 
 Required:
 
-- `user` (String) Specifies the name of the user that is being mapped. (Update Supported)
+- `user` (String) Specifies the name of the user that is being mapped.
 
 Optional:
 
-- `domain` (String) Specifies the domain of the user that is being mapped. (Update Supported)
+- `domain` (String) Specifies the domain of the user that is being mapped.
 
 
 <a id="nestedatt--rules--options"></a>
@@ -265,22 +265,22 @@ Optional:
 
 Optional:
 
-- `break` (Boolean) If true, and the rule was applied successfully, stop processing further. (Update Supported)
-- `default_user` (Attributes) Specifies the default user information that can be applied if the final credentials do not have valid UID and GID information. (Update Supported) (see [below for nested schema](#nestedatt--rules--options--default_user))
-- `group` (Boolean) If true, the primary GID and primary group SID should be copied to the existing credential. (Update Supported)
-- `groups` (Boolean) If true, all additional identifiers should be copied to the existing credential. (Update Supported)
-- `user` (Boolean) If true, the primary UID and primary user SID should be copied to the existing credential. (Update Supported)
+- `break` (Boolean) If true, and the rule was applied successfully, stop processing further.
+- `default_user` (Attributes) Specifies the default user information that can be applied if the final credentials do not have valid UID and GID information. (see [below for nested schema](#nestedatt--rules--options--default_user))
+- `group` (Boolean) If true, the primary GID and primary group SID should be copied to the existing credential.
+- `groups` (Boolean) If true, all additional identifiers should be copied to the existing credential.
+- `user` (Boolean) If true, the primary UID and primary user SID should be copied to the existing credential.
 
 <a id="nestedatt--rules--options--default_user"></a>
 ### Nested Schema for `rules.options.default_user`
 
 Required:
 
-- `user` (String) Specifies the name of the user that is being mapped. (Update Supported)
+- `user` (String) Specifies the name of the user that is being mapped.
 
 Optional:
 
-- `domain` (String) Specifies the domain of the user that is being mapped. (Update Supported)
+- `domain` (String) Specifies the domain of the user that is being mapped.
 
 
 
@@ -289,11 +289,11 @@ Optional:
 
 Required:
 
-- `user` (String) Specifies the name of the user that is being mapped. (Update Supported)
+- `user` (String) Specifies the name of the user that is being mapped.
 
 Optional:
 
-- `domain` (String) Specifies the domain of the user that is being mapped. (Update Supported)
+- `domain` (String) Specifies the domain of the user that is being mapped.
 
 
 
@@ -302,8 +302,8 @@ Optional:
 
 Optional:
 
-- `name` (String) Specifies a user name. (Update Supported)
-- `uid` (Number) Specifies a numeric user identifier. (Update Supported)
+- `name` (String) Specifies a user name.
+- `uid` (Number) Specifies a numeric user identifier.
 
 
 <a id="nestedatt--mapping_users"></a>
@@ -348,6 +348,8 @@ Read-Only:
 - `primary_group_sid` (String) Specifies the primary group SID.
 - `sid` (String) Specifies a user or group SID.
 - `uid` (String) Specifies the user UID.
+
+Unless specified otherwise, all fields of this resource can be updated.
 
 ## Import
 

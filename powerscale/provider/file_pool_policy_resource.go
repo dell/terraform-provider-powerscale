@@ -61,18 +61,20 @@ func (r *FilePoolPolicyResource) Schema(ctx context.Context, req resource.Schema
 		Description:         "This resource is used to manage the File Pool Policy entity of PowerScale Array. We can Create, Update and Delete the File Pool Policy using this resource. We can also import an existing File Pool Policy from PowerScale array. PowerScale File Pool Policy can identify logical groups of files and specify storage operations for these files.",
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
-				Description:         "A unique name for this policy. If the policy is default policy, its name should be \"Default policy\". (Update Supported)",
-				MarkdownDescription: "A unique name for this policy. If the policy is default policy, its name should be \"Default policy\". (Update Supported)",
+				Description:         "A unique name for this policy. If the policy is default policy, its name should be \"Default policy\".",
+				MarkdownDescription: "A unique name for this policy. If the policy is default policy, its name should be \"Default policy\".",
 				Required:            true,
 			},
 			"is_default_policy": schema.BoolAttribute{
-				Description:         "Specifies if the policy is default policy. Default policy applies to all files not selected by higher-priority policies.",
-				MarkdownDescription: "Specifies if the policy is default policy. Default policy applies to all files not selected by higher-priority policies.",
-				Optional:            true,
+				Description: "Specifies if the policy is default policy. Default policy applies to all files not selected by higher-priority policies." +
+					" Cannot be updated.",
+				MarkdownDescription: "Specifies if the policy is default policy. Default policy applies to all files not selected by higher-priority policies." +
+					" Cannot be updated.",
+				Optional: true,
 			},
 			"file_matching_pattern": schema.SingleNestedAttribute{
-				Description:         "Specifies the file matching rules for determining which files will be managed by this policy. (Update Supported)",
-				MarkdownDescription: "Specifies the file matching rules for determining which files will be managed by this policy. (Update Supported)",
+				Description:         "Specifies the file matching rules for determining which files will be managed by this policy.",
+				MarkdownDescription: "Specifies the file matching rules for determining which files will be managed by this policy.",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"or_criteria": schema.ListNestedAttribute{
@@ -150,8 +152,8 @@ func (r *FilePoolPolicyResource) Schema(ctx context.Context, req resource.Schema
 				},
 			},
 			"actions": schema.ListNestedAttribute{
-				Description:         "A list of actions to be taken for matching files. (Update Supported)",
-				MarkdownDescription: "A list of actions to be taken for matching files. (Update Supported)",
+				Description:         "A list of actions to be taken for matching files.",
+				MarkdownDescription: "A list of actions to be taken for matching files.",
 				Optional:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -302,14 +304,14 @@ func (r *FilePoolPolicyResource) Schema(ctx context.Context, req resource.Schema
 				},
 			},
 			"apply_order": schema.Int64Attribute{
-				Description:         "The order in which this policy should be applied (relative to other policies). (Update Supported)",
-				MarkdownDescription: "The order in which this policy should be applied (relative to other policies). (Update Supported)",
+				Description:         "The order in which this policy should be applied (relative to other policies).",
+				MarkdownDescription: "The order in which this policy should be applied (relative to other policies).",
 				Optional:            true,
 				Computed:            true,
 			},
 			"description": schema.StringAttribute{
-				Description:         "A description for this File Pool Policy. (Update Supported)",
-				MarkdownDescription: "A description for this File Pool Policy. (Update Supported)",
+				Description:         "A description for this File Pool Policy.",
+				MarkdownDescription: "A description for this File Pool Policy.",
 				Optional:            true,
 				Computed:            true,
 			},
