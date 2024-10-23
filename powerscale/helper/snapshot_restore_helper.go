@@ -71,12 +71,12 @@ func CopyFile(ctx context.Context, client *client.Client, fileParams models.File
 }
 
 // CloneFile clones a file from the source to the destination.
-func CloneFile(ctx context.Context, client *client.Client, snapshot_name string, cloneParams models.CloneParamsModel) (*powerscale.CopyErrors, error) {
+func CloneFile(ctx context.Context, client *client.Client, snapshotName string, cloneParams models.CloneParamsModel) (*powerscale.CopyErrors, error) {
 	clonePayload := client.PscaleOpenAPIClient.NamespaceApi.CopyFile(ctx, cloneParams.Destination.ValueString())
 	clonePayload = clonePayload.Overwrite(cloneParams.Overwrite.ValueBool())
 	clonePayload = clonePayload.Clone(true)
 	clonePayload = clonePayload.XIsiIfsCopySource(cloneParams.Source.ValueString())
-	clonePayload = clonePayload.Snapshot(snapshot_name)
+	clonePayload = clonePayload.Snapshot(snapshotName)
 	response, _, err := clonePayload.Execute()
 	return response, err
 }
