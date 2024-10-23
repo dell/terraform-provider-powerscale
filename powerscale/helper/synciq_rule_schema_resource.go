@@ -23,32 +23,48 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 // SyncIQRuleResourceSchema defines the schema for the syncIQ Replication Rule resource.
-func SyncIQRuleResourceSchema(ctx context.Context) schema.Schema {
+func SyncIQRulesResourceSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
 		Description:         "This resource is used to manage the SyncIQ Rule entity on PowerScale array.",
 		MarkdownDescription: "This resource is used to manage the SyncIQ Rule entity on PowerScale array.",
 		Attributes: map[string]schema.Attribute{
-			"type": schema.StringAttribute{
-				Required: true,
-				Description: "The type of system resource this rule limits." +
-					" Acceptable values are: 'bandwidth', 'file_count', 'cpu', 'worker'.",
-				MarkdownDescription: "The type of system resource this rule limits." +
-					" Acceptable values are: `bandwidth`, `file_count`, `cpu`, `worker`.",
-				Validators: []validator.String{
-					stringvalidator.OneOf(
-						"bandwidth",
-						"file_count",
-						"cpu",
-						"worker",
-					),
+			"id": schema.StringAttribute{
+				Description:         "Resource ID.",
+				MarkdownDescription: "Resource ID.",
+				Computed:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"limit": schema.Int64Attribute{
+			"bandwidth_rules": schema.ListNestedAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "A schedule defining when during a week this performance rule is in effect.  If unspecified or null, the schedule will always be in effect.",
+				MarkdownDescription: "A schedule defining when during a week this performance rule is in effect.  If unspecified or null, the schedule will always be in effect.",
+				NestedObject:        siqRuleResSchemaSingle(),
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
+			},
+		},
+	}
+}
+
+func siqRuleResSchemaSingle() schema.NestedAttributeObject {
+	return schema.NestedAttributeObject{
+		Attributes: map[string]schema.Attribute{
+			"limit": schema.Int32Attribute{
 				Required:            true,
 				Description:         "Amount the specified system resource type is limited by this rule.  Units are kb/s for bandwidth, files/s for file-count, processing percentage used for cpu, or percentage of maximum available workers.",
 				MarkdownDescription: "Amount the specified system resource type is limited by this rule.  Units are kb/s for bandwidth, files/s for file-count, processing percentage used for cpu, or percentage of maximum available workers.",
@@ -58,43 +74,64 @@ func SyncIQRuleResourceSchema(ctx context.Context) schema.Schema {
 				Computed:            true,
 				Description:         "Description of this performance rule.",
 				MarkdownDescription: "Description of this performance rule.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "Whether this performance rule is currently in effect during its specified intervals.",
 				MarkdownDescription: "Whether this performance rule is currently in effect during its specified intervals.",
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"id": schema.StringAttribute{
 				Computed:            true,
 				Description:         "The system ID given to this performance rule.",
 				MarkdownDescription: "The system ID given to this performance rule.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"schedule": schema.SingleNestedAttribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "A schedule defining when during a week this performance rule is in effect.  If unspecified or null, the schedule will always be in effect.",
 				MarkdownDescription: "A schedule defining when during a week this performance rule is in effect.  If unspecified or null, the schedule will always be in effect.",
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
+				},
 				Attributes: map[string]schema.Attribute{
 					"end": schema.StringAttribute{
 						Optional:            true,
 						Computed:            true,
 						Description:         "End time (inclusive) for this schedule, during its specified days.  Format is \"hh:mm\" (three-letter weekday name abbreviation, 24h format hour, and minute).  A null value indicates the end of the day (\"23:59\").",
 						MarkdownDescription: "End time (inclusive) for this schedule, during its specified days.  Format is `hh:mm` (three-letter weekday name abbreviation, 24h format hour, and minute).  A null value indicates the end of the day (`23:59`).",
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
 					},
 					"begin": schema.StringAttribute{
 						Optional:            true,
 						Computed:            true,
 						Description:         "Start time (inclusive) for this schedule, during its specified days.  Format is \"hh:mm\" (24h format hour, and minute).  A null value indicates the beginning of the day (\"00:00\").",
 						MarkdownDescription: "Start time (inclusive) for this schedule, during its specified days.  Format is `hh:mm` (24h format hour, and minute).  A null value indicates the beginning of the day (`00:00`).",
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
 					},
 					"days_of_week": schema.SetAttribute{
 						Description: "Set of days of the week during which this rule is in effect." +
 							" Accepted values are 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'. At least one day must be set.",
 						MarkdownDescription: "Set of days of the week during which this rule is in effect." +
 							" Accepted values are `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`. At least one day must be set.",
-						Optional:    true,
-						Computed:    true,
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseStateForUnknown(),
+						},
 						ElementType: types.StringType,
 						Validators: []validator.Set{
 							setvalidator.SizeAtLeast(1),

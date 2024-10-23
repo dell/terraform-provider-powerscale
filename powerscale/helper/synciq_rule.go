@@ -109,14 +109,49 @@ func NewSyncIQRuleDataSource[V SyncIQRuleDataSourceResponse](ctx context.Context
 	return &ret, nil
 }
 
+// NewSyncIQRulesResourceSchedule creates a new SyncIQRulesResource from resource response.
+func NewSyncIQRulesResource(ctx context.Context, source *powerscale.V3SyncRules) (models.SyncIQRulesResource, diag.Diagnostics) {
+	var dgs diag.Diagnostics
+	bw := make([]models.SyncIQRuleResource, 0)
+	for _, item := range source.Rules {
+		state, diags := NewSyncIQRuleResource(ctx, item)
+		dgs.Append(diags...)
+		bw = append(bw, state)
+	}
+	bwList, bwListDgs := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: map[string]attr.Type{
+		"description": types.StringType,
+		// Enabled indicates if the rule is enabled.
+		"enabled": types.BoolType,
+		// ID is the unique identifier of the rule.
+		"id": types.StringType,
+		// Limit is the limit of the rule.
+		"limit": types.Int32Type,
+		// Schedule is the schedule of the rule.
+		"schedule": types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"begin": types.StringType,
+				"end":   types.StringType,
+				"days_of_week": types.SetType{
+					ElemType: types.StringType,
+				},
+			},
+		},
+	}}, bw)
+	dgs.Append(bwListDgs...)
+	return models.SyncIQRulesResource{
+		BandWidthRules: bwList,
+		ID:             types.StringValue("all"),
+	}, dgs
+}
+
 // NewSyncIQRuleResource creates a new SyncIQRuleResource from resource responses.
-func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExtendedExtendedExtended) (models.SyncIQRuleResource, diag.Diagnostics) {
+func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExtended) (models.SyncIQRuleResource, diag.Diagnostics) {
 	ret := models.SyncIQRuleResource{
-		Type:        types.StringValue(source.Type),
-		Description: types.StringValue(source.Description),
-		Enabled:     types.BoolValue(source.Enabled),
-		ID:          types.StringValue(source.Id),
-		Limit:       types.Int64Value(int64(source.Limit)),
+		// Type:        types.StringValue(source.Type),
+		Description: types.StringValue(*source.Description),
+		Enabled:     types.BoolValue(*source.Enabled),
+		ID:          types.StringValue(*source.Id),
+		Limit:       types.Int32Value(*source.Limit),
 	}
 	schedule := models.SyncIQRuleResourceSchedule{
 		End:   source.Schedule.End,
@@ -158,11 +193,20 @@ func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExte
 	return ret, dgsObj
 }
 
+// GetRequestsFromSynciqRulesResource
+func GetRequestsFromSynciqRulesResource(ctx context.Context, source models.SyncIQRulesResource) models.SyncIQRulesResourceRequest {
+	ret := models.SyncIQRulesResourceRequest{
+		BandWidthRules: make([]models.SyncIQRuleResource, 0),
+	}
+	source.BandWidthRules.ElementsAs(ctx, &ret.BandWidthRules, true)
+	return ret
+}
+
 // GetRequestFromSynciqRuleResource creates a new SyncIQRule API request from resource plan.
-func GetRequestFromSynciqRuleResource(ctx context.Context, plan models.SyncIQRuleResource) powerscale.V3SyncRule {
+func GetRequestFromSynciqRuleResource(ctx context.Context, plan models.SyncIQRuleResource, ruleType string) powerscale.V3SyncRule {
 	ret := powerscale.V3SyncRule{
-		Type:        plan.Type.ValueString(),
-		Limit:       int32(plan.Limit.ValueInt64()),
+		Type:        ruleType,
+		Limit:       plan.Limit.ValueInt32(),
 		Description: GetKnownStringPointer(plan.Description),
 		Enabled:     GetKnownBoolPointer(plan.Enabled),
 	}
