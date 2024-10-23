@@ -50,8 +50,8 @@ func SyncIQRulesResourceSchema(ctx context.Context) schema.Schema {
 			"bandwidth_rules": schema.ListNestedAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "A schedule defining when during a week this performance rule is in effect.  If unspecified or null, the schedule will always be in effect.",
-				MarkdownDescription: "A schedule defining when during a week this performance rule is in effect.  If unspecified or null, the schedule will always be in effect.",
+				Description:         "List of bandwidth rules.",
+				MarkdownDescription: "List of bandwidth rules.",
 				NestedObject:        siqRuleResSchemaSingle(),
 				PlanModifiers: []planmodifier.List{
 					listplanmodifier.UseStateForUnknown(),
@@ -66,8 +66,8 @@ func siqRuleResSchemaSingle() schema.NestedAttributeObject {
 		Attributes: map[string]schema.Attribute{
 			"limit": schema.Int32Attribute{
 				Required:            true,
-				Description:         "Amount the specified system resource type is limited by this rule.  Units are kb/s for bandwidth, files/s for file-count, processing percentage used for cpu, or percentage of maximum available workers.",
-				MarkdownDescription: "Amount the specified system resource type is limited by this rule.  Units are kb/s for bandwidth, files/s for file-count, processing percentage used for cpu, or percentage of maximum available workers.",
+				Description:         "Amount of the specified system resource type that is limited by this rule. Units are kb/s for bandwidth, files/s for file-count, processing percentage used for cpu, or percentage of maximum available workers.",
+				MarkdownDescription: "Amount of the specified system resource type that is limited by this rule. Units are kb/s for bandwidth, files/s for file-count, processing percentage used for cpu, or percentage of maximum available workers.",
 			},
 			"description": schema.StringAttribute{
 				Optional:            true,
@@ -98,8 +98,8 @@ func siqRuleResSchemaSingle() schema.NestedAttributeObject {
 			"schedule": schema.SingleNestedAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "A schedule defining when during a week this performance rule is in effect.  If unspecified or null, the schedule will always be in effect.",
-				MarkdownDescription: "A schedule defining when during a week this performance rule is in effect.  If unspecified or null, the schedule will always be in effect.",
+				Description:         "A schedule defining when during a week this performance rule is in effect. If unspecified or null, the schedule will always be in effect.",
+				MarkdownDescription: "A schedule defining when during a week this performance rule is in effect. If unspecified or null, the schedule will always be in effect.",
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.UseStateForUnknown(),
 				},
@@ -107,8 +107,8 @@ func siqRuleResSchemaSingle() schema.NestedAttributeObject {
 					"end": schema.StringAttribute{
 						Optional:            true,
 						Computed:            true,
-						Description:         "End time (inclusive) for this schedule, during its specified days.  Format is \"hh:mm\" (three-letter weekday name abbreviation, 24h format hour, and minute).  A null value indicates the end of the day (\"23:59\").",
-						MarkdownDescription: "End time (inclusive) for this schedule, during its specified days.  Format is `hh:mm` (three-letter weekday name abbreviation, 24h format hour, and minute).  A null value indicates the end of the day (`23:59`).",
+						Description:         "End time (inclusive) for this schedule, during its specified days. Format is \"hh:mm\" (three-letter weekday name abbreviation, 24h format hour, and minute).  A null value indicates the end of the day (\"23:59\").",
+						MarkdownDescription: "End time (inclusive) for this schedule, during its specified days. Format is `hh:mm` (three-letter weekday name abbreviation, 24h format hour, and minute).  A null value indicates the end of the day (`23:59`).",
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
@@ -116,8 +116,8 @@ func siqRuleResSchemaSingle() schema.NestedAttributeObject {
 					"begin": schema.StringAttribute{
 						Optional:            true,
 						Computed:            true,
-						Description:         "Start time (inclusive) for this schedule, during its specified days.  Format is \"hh:mm\" (24h format hour, and minute).  A null value indicates the beginning of the day (\"00:00\").",
-						MarkdownDescription: "Start time (inclusive) for this schedule, during its specified days.  Format is `hh:mm` (24h format hour, and minute).  A null value indicates the beginning of the day (`00:00`).",
+						Description:         "Start time (inclusive) for this schedule, during its specified days. Format is \"hh:mm\" (24h format hour, and minute).  A null value indicates the beginning of the day (\"00:00\").",
+						MarkdownDescription: "Start time (inclusive) for this schedule, during its specified days. Format is `hh:mm` (24h format hour, and minute).  A null value indicates the beginning of the day (`00:00`).",
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},

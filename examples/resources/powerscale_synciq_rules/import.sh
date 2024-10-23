@@ -14,5 +14,8 @@
 # limitations under the License.
 
 # The command is
-# terraform import powerscale_user.testUser <Rule ID>
-terraform import powerscale_synciq_rule.test bw-0
+# terraform import powerscale_synciq_rules.all_rules <anystring>
+# Example:
+terraform import powerscale_synciq_rules.all_rules do_not_care
+# after running this command, populate any required parameters in the config file to start managing this resource.
+# Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.

@@ -22,17 +22,6 @@ terraform {
   }
 }
 
-<<<<<<<< HEAD:examples/resources/powerscale_synciq_rule/provider.tf
-========
-terraform {
-  required_providers {
-    powerscale = {
-      source = "registry.terraform.io/dell/powerscale"
-    }
-  }
-}
-
->>>>>>>> main:examples/resources/powerscale_support_assist/provider.tf
 provider "powerscale" {
   username = var.username
   password = var.password

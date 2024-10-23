@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 terraform {
   required_providers {
     powerscale = {
@@ -22,17 +23,6 @@ terraform {
   }
 }
 
-<<<<<<<< HEAD:examples/resources/powerscale_synciq_rule/provider.tf
-========
-terraform {
-  required_providers {
-    powerscale = {
-      source = "registry.terraform.io/dell/powerscale"
-    }
-  }
-}
-
->>>>>>>> main:examples/resources/powerscale_support_assist/provider.tf
 provider "powerscale" {
   username = var.username
   password = var.password
