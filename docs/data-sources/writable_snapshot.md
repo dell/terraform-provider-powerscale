@@ -75,10 +75,10 @@ data "powerscale_writable_snapshot" "test" {
 ### Optional
 
 - `filter` (Block, Optional) (see [below for nested schema](#nestedblock--filter))
-- `id` (String) Path of the writable snapshot.
 
 ### Read-Only
 
+- `id` (String) Identifier
 - `writable` (Attributes List) (see [below for nested schema](#nestedatt--writable))
 
 <a id="nestedblock--filter"></a>
