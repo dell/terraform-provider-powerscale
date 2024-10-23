@@ -68,6 +68,16 @@ func GetAllWritableSnapshots(ctx context.Context, client *client.Client, state *
 		}
 	}
 	resp, _, err := writablesnapshots.Execute()
+	// pagination
+	for resp.Resume != nil && (state.WritableSnapshotFilter == nil || state.WritableSnapshotFilter.Limit.IsNull()) {
+		writablesnapshots = writablesnapshots.Resume(*resp.Resume)
+		newresp, _, err := writablesnapshots.Execute()
+		if err != nil {
+			return resp, err
+		}
+		resp.Resume = newresp.Resume
+		resp.Writable = append(resp.Writable, newresp.Writable...)
+	}
 	return resp, err
 }
 

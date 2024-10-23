@@ -71,7 +71,9 @@ func TestAccWritableSnapshotDatasourceID(t *testing.T) {
 			{
 				Config: ProviderConfig + `
 				data "powerscale_writable_snapshot" "test" {
-					id = ""
+					filter {
+						path = ""
+					}
 				}
 				`,
 				ExpectError: regexp.MustCompile(`.*string length must be between 4 and 4096*|.*id must start with*`),
@@ -79,10 +81,12 @@ func TestAccWritableSnapshotDatasourceID(t *testing.T) {
 			{
 				Config: ProviderConfig + `
 				data "powerscale_writable_snapshot" "test" {
-					id = "invalid"
+					filter {
+						path = "invalid"
+					}
 				}
 				`,
-				ExpectError: regexp.MustCompile(`.*id must start with*`),
+				ExpectError: regexp.MustCompile(`.*path must start with*`),
 			},
 			// Read testing
 			{
@@ -110,7 +114,7 @@ func TestAccWritableSnapshotDatasourceID(t *testing.T) {
 	})
 }
 
-var writableSnapshotDatasourceConfig = `
+var writableSnapshotDatasourceConfig = writableSnapshotResourceConfig + `
 data "powerscale_writable_snapshot" "preq" {
 }
 data "powerscale_writable_snapshot" "test" {

@@ -30,6 +30,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -82,14 +83,9 @@ func WritablesnapshotDatasourceSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Optional:            true,
 				Computed:            true,
-				Description:         "Path of the writable snapshot.",
-				MarkdownDescription: "Path of the writable snapshot.",
-				Validators: []validator.String{
-					stringvalidator.RegexMatches(regexp.MustCompile("^/ifs$|^/ifs/"), "must start with /ifs or /ifs/"),
-					stringvalidator.LengthBetween(4, 4096),
-				},
+				Description:         "Identifier",
+				MarkdownDescription: "Identifier",
 			},
 			"writable": schema.ListNestedAttribute{
 				Computed: true,
@@ -114,12 +110,6 @@ func WritablesnapshotDatasourceSchema(ctx context.Context) schema.Schema {
 							Computed:            true,
 							Description:         "Writable Snapshot state.",
 							MarkdownDescription: "Writable Snapshot state.",
-							Validators: []validator.String{
-								stringvalidator.OneOf(
-									"active",
-									"deleting",
-								),
-							},
 						},
 						"src_id": schema.Int64Attribute{
 							Computed:            true,
@@ -160,6 +150,7 @@ func WritablesnapshotDatasourceSchema(ctx context.Context) schema.Schema {
 						Validators: []validator.String{
 							stringvalidator.RegexMatches(regexp.MustCompile("^/ifs$|^/ifs/"), "must start with /ifs or /ifs/"),
 							stringvalidator.LengthBetween(4, 4096),
+							stringvalidator.ConflictsWith(path.MatchRoot("filter").AtName("sort"), path.MatchRoot("filter").AtName("state"), path.MatchRoot("filter").AtName("limit"), path.MatchRoot("filter").AtName("dir"), path.MatchRoot("filter").AtName("resume")),
 						},
 					},
 					"sort": schema.StringAttribute{
