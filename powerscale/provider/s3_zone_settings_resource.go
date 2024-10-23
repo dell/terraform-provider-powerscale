@@ -74,9 +74,15 @@ func (r *S3ZoneSettingsResource) Metadata(_ context.Context, req resource.Metada
 // Schema defines the schema for the resource.
 func (r *S3ZoneSettingsResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Resource for managing S3ZoneSettings on PowerScale.",
-		Description:         "This resource is used to manage the S3ZoneSettings of PowerScale Array. PowerScale S3 zone settings are used to configure the S3 zone of the S3 bucket.",
-		Attributes:          S3ZoneSettingsSchema(),
+		MarkdownDescription: "This resource is used to manage the S3 Zone Settings entity of the PowerScale Array." +
+			" PowerScale S3 Zone Setting map to access zone configuration which provide default location for creating s3 buckets." +
+			" We can Create, Update and Delete the S3 Zone Setting using this resource." +
+			" We can also import an existing S3 Zone Settings from PowerScale array.",
+		Description: "This resource is used to manage the S3 Zone Settings entity of the PowerScale Array." +
+			" PowerScale S3 Zone Setting map to access zone configuration which provide default location for creating s3 buckets." +
+			" We can Create, Update and Delete the S3 Zone Setting using this resource." +
+			" We can also import an existing S3 Zone Settings from PowerScale array.",
+		Attributes: S3ZoneSettingsSchema(),
 	}
 }
 
@@ -84,9 +90,11 @@ func (r *S3ZoneSettingsResource) Schema(_ context.Context, _ resource.SchemaRequ
 func S3ZoneSettingsSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"zone": schema.StringAttribute{
-			MarkdownDescription: "The name of the access zone you want to update settings for s3 service",
-			Description:         "The name of the access zone you want to update settings for s3 service",
-			Required:            true,
+			MarkdownDescription: "The name of the access zone you want to update settings for s3 service." +
+				" If this field is updated, Terraform will delete and then recreate this resource.",
+			Description: "The name of the access zone you want to update settings for s3 service." +
+				" If this field is updated, Terraform will delete and then recreate this resource.",
+			Required: true,
 			PlanModifiers: []planmodifier.String{
 				stringplanmodifier.RequiresReplaceIfConfigured(),
 			},
@@ -99,14 +107,14 @@ func S3ZoneSettingsSchema() map[string]schema.Attribute {
 			Computed:            true,
 		},
 		"bucket_directory_create_mode": schema.Int64Attribute{
-			MarkdownDescription: " The permission mode for creating bucket directories.",
-			Description:         " The permission mode for creating bucket directories.",
+			MarkdownDescription: "The permission mode for creating bucket directories.",
+			Description:         "The permission mode for creating bucket directories.",
 			Optional:            true,
 			Computed:            true,
 		},
 		"object_acl_policy": schema.StringAttribute{
-			MarkdownDescription: "The default policy for object access control lists (ACLs), which can be either “replace” or “deny”",
-			Description:         "The default policy for object access control lists (ACLs), which can be either “replace” or “deny”",
+			MarkdownDescription: "The default policy for object access control lists (ACLs), which can be either `replace` or `deny`.",
+			Description:         "The default policy for object access control lists (ACLs), which can be either “replace” or “deny”.",
 			Optional:            true,
 			Computed:            true,
 			Validators: []validator.String{
@@ -114,8 +122,8 @@ func S3ZoneSettingsSchema() map[string]schema.Attribute {
 			},
 		},
 		"root_path": schema.StringAttribute{
-			MarkdownDescription: " The root path for the S3 bucket.",
-			Description:         " The root path for the S3 bucket.",
+			MarkdownDescription: "The root path for the S3 bucket.",
+			Description:         "The root path for the S3 bucket.",
 			Optional:            true,
 			Computed:            true,
 		},

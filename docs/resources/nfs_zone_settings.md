@@ -94,6 +94,8 @@ resource "powerscale_nfs_zone_settings" "example" {
 
 - `id` (String) ID of NFS Zone Settings. Value of ID will be same as the access zone.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

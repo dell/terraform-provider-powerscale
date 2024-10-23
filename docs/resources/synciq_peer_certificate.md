@@ -50,7 +50,7 @@ limitations under the License.
 
 # Available actions: Create, Read, Update, Delete and Import.
 
-# Step 1: Upload a certificate to PowerScale.
+# Step 1: Upload a certificate to the PowerScale filesystem.
 # This can be done using the file provisioner.
 resource "terraform_data" "cert" {
   provisioner "file" {
@@ -76,7 +76,8 @@ resource "terraform_data" "cert" {
 resource "powerscale_synciq_peer_certificate" "certificate" {
   depends_on = [terraform_data.cert]
   // required
-  // Cannot be updated, requires-replace
+  // Cannot be updated
+  // If the value of this resource is changed, Terraform will destroy this resource and recreate it.
   path = "/ifs/peerCert1.crt"
   // optional
   name         = "cert1"
@@ -104,6 +105,8 @@ resource "powerscale_synciq_peer_certificate" "certificate" {
 
 - `id` (String) ID of the SyncIQ Peer certificate.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:
@@ -126,7 +129,7 @@ Import is supported using the following syntax:
 
 # A Peer Certificate can be imported by its name
 
-# The command to import by ID is
+# The command to import is
 # terraform import powerscale_synciq_peer_certificate.certificate <certificate name>
 # Example:
 terraform import powerscale_synciq_peer_certificate.certificate2 "peer_certificate_01"

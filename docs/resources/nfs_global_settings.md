@@ -88,6 +88,8 @@ resource "powerscale_nfs_global_settings" "example" {
 
 - `id` (String) Id of NFS Global settings. Readonly.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

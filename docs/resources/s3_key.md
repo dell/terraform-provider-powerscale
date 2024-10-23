@@ -19,12 +19,12 @@ linkTitle: "powerscale_s3_key"
 page_title: "powerscale_s3_key Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  This resource is used to manage the S3 Key of PowerScale Array. PowerScale S3 keys are used to sign the requests you send to the S3 protocol. We can Create, Update and Delete the S3 Bucket using this resource.
+  This resource is used to manage the S3 Key Entity of PowerScale Array. PowerScale S3 keys are used to sign the requests you send to the S3 protocol. We can Create, Update and Delete the S3 Key using this resource.
 ---
 
 # powerscale_s3_key (Resource)
 
-This resource is used to manage the S3 Key of PowerScale Array. PowerScale S3 keys are used to sign the requests you send to the S3 protocol. We can Create, Update and Delete the S3 Bucket using this resource.
+This resource is used to manage the S3 Key Entity of PowerScale Array. PowerScale S3 keys are used to sign the requests you send to the S3 protocol. We can Create, Update and Delete the S3 Key using this resource.
 
 
 ## Example Usage
@@ -69,8 +69,8 @@ output "key" {
 
 ### Required
 
-- `user` (String) The username to create the S3 key.
-- `zone` (String) The zone of the user.
+- `user` (String) The username to create the S3 key. This resource will be recreated if the value of this field is changed.
+- `zone` (String) The zone of the user. This resource will be recreated if the value of this field is changed.
 
 ### Optional
 
@@ -84,4 +84,6 @@ output "key" {
 - `old_secret_key` (String) The secret key of the old key. Computed.
 - `secret_key` (String) The secret key of the key. Computed.
 - `secret_key_timestamp` (Number) The timestamp of the secret key. Computed.
+
+Unless specified otherwise, all fields of this resource can be updated.
 

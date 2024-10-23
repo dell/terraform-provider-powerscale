@@ -17,5 +17,5 @@
 # terraform import powerscale_cluster_identity.example_identity_settings <anyString>
 # Example:
 terraform import powerscale_cluster_identity.example_identity_settings "cluster_identity"
-# after running this command, populate the name field and other required parameters in the config file to start managing this resource.
+# after running this command, populate fields as per your requirement in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource. You can copy/paste that config to make it easier to manage the resource.

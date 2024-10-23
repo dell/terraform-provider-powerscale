@@ -75,6 +75,8 @@ resource "powerscale_ntpsettings" "example_ntp_settings" {
 - `excluded` (List of String) Node number (LNN) for nodes excluded from chimer duty.
 - `key_file` (String) Path to NTP key file within /ifs.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

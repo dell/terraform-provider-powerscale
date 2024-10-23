@@ -64,8 +64,8 @@ func (r *SnapshotResource) Schema(ctx context.Context, req resource.SchemaReques
 
 		Attributes: map[string]schema.Attribute{
 			"path": schema.StringAttribute{
-				Description:         "The /ifs path snapshotted.",
-				MarkdownDescription: "The /ifs path snapshotted.",
+				Description:         "The /ifs path snapshotted. Cannot be updated.",
+				MarkdownDescription: "The /ifs path snapshotted. Cannot be updated.",
 				Required:            true,
 			},
 			"alias": schema.StringAttribute{
@@ -74,8 +74,8 @@ func (r *SnapshotResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed:            true,
 			},
 			"name": schema.StringAttribute{
-				Description:         "The user or system supplied snapshot name. This will be null for snapshots pending delete. Only alphanumeric characters, underscores ( _ ), and hyphens (-) are allowed. (Update Supported)",
-				MarkdownDescription: "The user or system supplied snapshot name. This will be null for snapshots pending delete. Only alphanumeric characters, underscores ( _ ), and hyphens (-) are allowed. (Update Supported)",
+				Description:         "The user or system supplied snapshot name. This will be null for snapshots pending delete. Only alphanumeric characters, underscores ( _ ), and hyphens (-) are allowed.",
+				MarkdownDescription: "The user or system supplied snapshot name. This will be null for snapshots pending delete. Only alphanumeric characters, underscores ( _ ), and hyphens (-) are allowed.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -87,8 +87,8 @@ func (r *SnapshotResource) Schema(ctx context.Context, req resource.SchemaReques
 				},
 			},
 			"set_expires": schema.StringAttribute{
-				Description:         "The amount of time from creation before the snapshot will expire and be eligible for automatic deletion. Resets each time this value is updated (Update Supported)",
-				MarkdownDescription: "The amount of time from creation before the snapshot will expire and be eligible for automatic deletion. Resets each time this value is updated (Update Supported)",
+				Description:         "The amount of time from creation before the snapshot will expire and be eligible for automatic deletion. Resets each time this value is updated",
+				MarkdownDescription: "The amount of time from creation before the snapshot will expire and be eligible for automatic deletion. Resets each time this value is updated",
 				Optional:            true,
 				Computed:            true,
 				Default:             stringdefault.StaticString("Never"),

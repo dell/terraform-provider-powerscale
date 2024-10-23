@@ -205,6 +205,8 @@ Optional:
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:

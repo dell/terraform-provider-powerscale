@@ -147,6 +147,8 @@ resource "powerscale_smb_share_settings" "example" {
 
 - `id` (String) ID of SMB share Settings. Value of ID will be same as the access zone.
 
+Unless specified otherwise, all fields of this resource can be updated.
+
 ## Import
 
 Import is supported using the following syntax:
