@@ -24,7 +24,7 @@ data "powerscale_writable_snapshot" "all_snaps" {
 # Returns a the PowerScale Writable Snapshot with given Path
 data "powerscale_writable_snapshot" "test" {
   filter {
-    path = "/ifs/path/to/writable/snap"
+    path  = "/ifs/path/to/writable/snap"
     limit = 5
   }
 }

@@ -53,6 +53,7 @@ type WritableSnapshotDataSource struct {
 	LogSize  types.Int64  `tfsdk:"log_size"`
 }
 
+// WritableSnapshotFilter defines the writable snapshot filters.
 type WritableSnapshotFilter struct {
 	Path   types.String `tfsdk:"path"`
 	Sort   types.String `tfsdk:"sort"`
