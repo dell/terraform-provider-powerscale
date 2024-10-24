@@ -42,9 +42,10 @@ func GetNetworkPools(ctx context.Context, client *client.Client, state models.Ne
 	}
 
 	networkPools, _, err := networkPoolParams.Execute()
-
-	for networkPools.Resume != nil {
-		respAdd, _, errAdd := client.PscaleOpenAPIClient.NetworkApi.GetNetworkv12NetworkPools(context.Background()).Resume(*networkPools.Resume).Execute()
+	//pagination
+	for networkPools.Resume != nil && state.NetworkPoolFilter != nil {
+		networkPoolParams = networkPoolParams.Resume(*networkPools.Resume)
+		respAdd, _, errAdd := networkPoolParams.Execute()
 		if errAdd != nil {
 			return networkPools, errAdd
 		}

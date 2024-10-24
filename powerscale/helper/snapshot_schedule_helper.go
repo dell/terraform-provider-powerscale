@@ -48,16 +48,17 @@ func ListSnapshotSchedules(ctx context.Context, client *client.Client, ssFilter 
 	if err != nil {
 		return nil, err
 	}
-	totalSs := snapshotSchedules.Schedules
-	for snapshotSchedules.Resume != nil {
-		resumeSs := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv1SnapshotSchedules(ctx).Resume(*snapshotSchedules.Resume)
-		snapshotSchedules, _, err = resumeSs.Execute()
-		if err != nil {
-			return totalSs, err
+	//pagination
+	for snapshotSchedules.Resume != nil && (ssFilter == nil || ssFilter.Limit.IsNull()) {
+		listSsParam = listSsParam.Resume(*snapshotSchedules.Resume)
+		newresp, _, errAdd := listSsParam.Execute()
+		if errAdd != nil {
+			return snapshotSchedules.Schedules, err
 		}
-		totalSs = append(totalSs, snapshotSchedules.Schedules...)
+		snapshotSchedules.Resume = newresp.Resume
+		snapshotSchedules.Schedules = append(snapshotSchedules.Schedules, newresp.Schedules...)
 	}
-	return totalSs, nil
+	return snapshotSchedules.Schedules, nil
 }
 
 // ParseTimeStringToSeconds takes a string time value(in a specific format) and converts it to seconds.
