@@ -99,6 +99,7 @@ func TestAccWritableSnapshotDatasourceID(t *testing.T) {
 			{
 				Config: ProviderConfig + writableSnapshotDatasourceConfig,
 				PreConfig: func() {
+					FunctionMocker.Release()
 					FunctionMocker = mockey.Mock(helper.GetWritableSnapshot).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
@@ -106,6 +107,7 @@ func TestAccWritableSnapshotDatasourceID(t *testing.T) {
 			{
 				Config: ProviderConfig + writableSnapshotDatasourceConfig,
 				PreConfig: func() {
+					FunctionMocker.Release()
 					FunctionMocker = mockey.Mock(helper.NewWritableSnapshotDataSource).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile("mock error"),
