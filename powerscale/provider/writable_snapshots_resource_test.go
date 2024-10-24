@@ -40,6 +40,9 @@ func TestAccwritableSnapshotResourceImport(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create Success
 			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+				},
 				Config: ProviderConfig + writableSnapshotResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(writableSnapshotResourceName, "dst_path", "/ifs/abcd"),
@@ -121,6 +124,7 @@ func TestAccwritableSnapshotResource(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					FunctionMocker.Release()
 					FunctionMocker = mockey.Mock(helper.DeleteWritableSnapshot).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + writableSnapshotResourceConfig,
@@ -221,6 +225,7 @@ func TestAccwritableSnapshotResourceCreateMockErr(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					FunctionMocker.Release()
 					FunctionMocker = mockey.Mock(helper.GetWritableSnapshot).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + writableSnapshotResourceConfigUpdate,
