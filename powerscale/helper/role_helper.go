@@ -21,11 +21,12 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"errors"
+	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/models"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	"terraform-provider-powerscale/client"
-	"terraform-provider-powerscale/powerscale/models"
 )
 
 // GetRoles Get a list of Roles.
@@ -37,6 +38,17 @@ func GetRoles(ctx context.Context, client *client.Client, state models.RoleDataS
 	}
 
 	roles, _, err := roleParams.Execute()
+	// Pagination
+	for roles.Resume != nil && state.RoleFilter != nil {
+		roleParams = roleParams.Resume(*roles.Resume)
+		respAdd, _, errAdd := roleParams.Execute()
+		if errAdd != nil {
+			return roles, errAdd
+		}
+		roles.Resume = respAdd.Resume
+		roles.Roles = append(roles.Roles, respAdd.Roles...)
+	}
+
 	return roles, err
 }
 

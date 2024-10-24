@@ -42,6 +42,16 @@ func GetNetworkPools(ctx context.Context, client *client.Client, state models.Ne
 	}
 
 	networkPools, _, err := networkPoolParams.Execute()
+	//pagination
+	for networkPools.Resume != nil && state.NetworkPoolFilter != nil {
+		networkPoolParams = networkPoolParams.Resume(*networkPools.Resume)
+		respAdd, _, errAdd := networkPoolParams.Execute()
+		if errAdd != nil {
+			return networkPools, errAdd
+		}
+		networkPools.Resume = respAdd.Resume
+		networkPools.Pools = append(networkPools.Pools, respAdd.Pools...)
+	}
 	return networkPools, err
 }
 

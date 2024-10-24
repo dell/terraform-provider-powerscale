@@ -44,6 +44,17 @@ func ListNetworkRules(ctx context.Context, client *client.Client, filter *models
 	if err != nil {
 		return nil, err
 	}
+	//pagination
+	for ruleList.Resume != nil && filter == nil {
+		networkRuleParams = networkRuleParams.Resume(*ruleList.Resume)
+		newresp, _, errAdd := networkRuleParams.Execute()
+		if errAdd != nil {
+			return ruleList.Rules, errAdd
+		}
+		ruleList.Resume = newresp.Resume
+		ruleList.Rules = append(ruleList.Rules, newresp.Rules...)
+	}
+
 	rules := ruleList.GetRules()
 
 	// filter rules by filter.Names

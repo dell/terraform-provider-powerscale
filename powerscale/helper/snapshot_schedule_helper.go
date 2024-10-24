@@ -48,6 +48,16 @@ func ListSnapshotSchedules(ctx context.Context, client *client.Client, ssFilter 
 	if err != nil {
 		return nil, err
 	}
+	//pagination
+	for snapshotSchedules.Resume != nil && (ssFilter == nil || ssFilter.Limit.IsNull()) {
+		listSsParam = listSsParam.Resume(*snapshotSchedules.Resume)
+		newresp, _, errAdd := listSsParam.Execute()
+		if errAdd != nil {
+			return snapshotSchedules.Schedules, err
+		}
+		snapshotSchedules.Resume = newresp.Resume
+		snapshotSchedules.Schedules = append(snapshotSchedules.Schedules, newresp.Schedules...)
+	}
 	return snapshotSchedules.Schedules, nil
 }
 
