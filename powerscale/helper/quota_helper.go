@@ -182,7 +182,7 @@ func IsQuotaParamInvalid(plan models.QuotaResource) error {
 // RemovePercentThreshold reset percent_advisory and percent_soft data from response data
 // Since PowerScale rest api directly use actual number for percentage calculation and accuracy loss might occur
 // threshold data in response might be different from request body
-// Thus, computed data should not include percent threshold when accurate threshold is given
+// Thus, computed data should not include percent threshold when accurate threshold is given.
 func RemovePercentThreshold(ctx context.Context, prior, updated types.Object) (types.Object, diag.Diagnostics) {
 	// no comparison need in this case
 	if prior.IsNull() || updated.IsNull() {
