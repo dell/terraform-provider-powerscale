@@ -583,7 +583,7 @@ func UpdateFileSystemAccessControl(ctx context.Context, client *client.Client, d
 		if err != nil {
 			errStr := constants.SetFileSystemACLErrorMsg + "Error Updating AccessControl for the filesystem with error: "
 			message := GetErrorString(err, errStr)
-			return fmt.Errorf(message)
+			return fmt.Errorf("%s", message)
 		}
 	}
 	return nil

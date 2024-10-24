@@ -227,7 +227,7 @@ func (d *SnapshotScheduleDataSource) Read(ctx context.Context, req datasource.Re
 		}
 	}
 	if ssPlan.SnapshotScheduleFilter != nil && len(ssPlan.SnapshotScheduleFilter.Names) > 0 &&
-		(ssState.SnapshotSchedules == nil || len(ssState.SnapshotSchedules) == 0) {
+		len(ssState.SnapshotSchedules) == 0 {
 		resp.Diagnostics.AddError(
 			"Error reading snapshot schedule datasource plan",
 			"No matching snapshot schedules found. Names might be invalid.",

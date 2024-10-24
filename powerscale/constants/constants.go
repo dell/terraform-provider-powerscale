@@ -463,4 +463,16 @@ const (
 
 	// ReadSnapshotRestoreJobReportErrorMsg specifies error details occurred while reading snapshot restore job reports.
 	ReadSnapshotRestoreJobReportErrorMsg = "Could not read snapshot restore job reports "
+
+	// ListWritableSnapshotMsg specifies error details occurred while listing writable snapshot.
+	ListWritableSnapshotMsg = "Could not list Writable Snapshot "
+
+	// CopyDirectoryErrorMessage specifies error details occurred while copying directory.
+	CopyDirectoryErrorMessage = "Could not copy directory "
+
+	// CopyFileErrorMessage specifies error details occurred while copying file.
+	CopyFileErrorMessage = "Could not copy file "
+
+	// CloneFileErrorMessage specifies error details occurred while cloning file.
+	CloneFileErrorMessage = "Could not clone file "
 )
