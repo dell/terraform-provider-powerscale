@@ -22,3 +22,16 @@ func GetKnownStringPointer(in types.String) *string {
 	}
 	return in.ValueStringPointer()
 }
+
+// GetKnownBoolPointer returns a pointer to the bool value if it is known, otherwise nil
+func GetKnownBoolPointer(in types.Bool) *bool {
+	if in.IsUnknown() {
+		return nil
+	}
+	return in.ValueBoolPointer()
+}
+
+// New returns a pointer to a copy of the given value.
+func New[T any](in T) *T {
+	return &in
+}

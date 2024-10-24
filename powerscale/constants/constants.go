@@ -18,6 +18,8 @@ limitations under the License.
 package constants
 
 const (
+	// APIErrorMessage specifies Generic REST API error message.
+	APIErrorMessage = "REST API returned with error: "
 
 	// ReadSnapshotErrorMessage specifies error details occurred while reading Snapshots.
 	ReadSnapshotErrorMessage = "Could not read snapshots "

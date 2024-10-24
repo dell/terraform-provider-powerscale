@@ -50,7 +50,20 @@ func TestAccSynciqRuleDatasourceGetAll(t *testing.T) {
 					FunctionMocker.Release()
 				},
 				Config: ProviderConfig + `
+				resource "powerscale_synciq_rules" "preq" {
+					bandwidth_rules = [
+						{
+							limit       = 10000
+							schedule = {
+								begin = "00:00"
+								days_of_week = ["friday", "monday"]
+								end = "23:59"
+							}
+						},
+					]
+				}
 				data "powerscale_synciq_rule" "test" {
+					depends_on = [powerscale_synciq_rules.preq]
 				}
 				`,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -70,10 +83,20 @@ func TestAccSynciqRuleDatasourceID(t *testing.T) {
 			// Read testing
 			{
 				Config: ProviderConfig + `
-				data "powerscale_synciq_rule" "preq" {
+				resource "powerscale_synciq_rules" "preq" {
+					bandwidth_rules = [
+						{
+							limit       = 10000
+							schedule = {
+								begin = "00:00"
+								days_of_week = ["friday", "monday"]
+								end = "23:59"
+							}
+						},
+					]
 				}
 				data "powerscale_synciq_rule" "test" {
-					id = data.powerscale_synciq_rule.preq.rules[0].id
+					id = powerscale_synciq_rules.preq.bandwidth_rules[0].id
 				}
 				`,
 				Check: resource.ComposeAggregateTestCheckFunc(
