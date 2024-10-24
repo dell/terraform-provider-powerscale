@@ -377,7 +377,7 @@ func (r *FilePoolPolicyResource) Create(ctx context.Context, req resource.Create
 	}
 
 	if plan.IsDefaultPolicy.ValueBool() {
-		if plan.Actions != nil && len(plan.Actions) > 0 {
+		if len(plan.Actions) > 0 {
 			if err := helper.UpdateFilePoolDefaultPolicy(ctx, r.client, &plan); err != nil {
 				resp.Diagnostics.AddError("Error creating Default File Pool Policy.", err.Error())
 				return

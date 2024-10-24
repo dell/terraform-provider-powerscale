@@ -20,7 +20,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
-	"fmt"
+	"errors"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -49,7 +49,7 @@ func UpdateS3ZoneSetting(ctx context.Context, client *client.Client, state model
 	updateParam = updateParam.V10S3SettingsZone(toUpdate)
 	_, err = updateParam.Execute()
 	if err != nil {
-		err = fmt.Errorf(GetErrorString(err, "s3 zone setting update error: "))
+		err = errors.New(GetErrorString(err, "s3 zone setting update error: "))
 	}
 	return err
 }

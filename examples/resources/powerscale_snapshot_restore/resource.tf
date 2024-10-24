@@ -15,6 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+# Restore snapshot using snaprevert job
 resource "powerscale_snapshot_restore" "test" {
   snaprevert_params = {
     allow_dup   = true
@@ -23,3 +24,23 @@ resource "powerscale_snapshot_restore" "test" {
 }
 
 # terraform destroy will delete the snaprevert domain if restore is done using snapshot revert.
+
+# Restore snapshot using copy operation
+resource "powerscale_snapshot_restore" "test" {
+  copy_params = {
+    directory = {
+      source      = "Path of the snapshot to copy"
+      destination = "Path of the destination"
+      overwrite   = true
+    }
+  }
+}
+
+# Restore snapshot using clone operation
+resource "powerscale_snapshot_restore" "test" {
+  clone_params = {
+    source      = "Path of the snapshot to copy"
+    destination = "Path of the destination"
+    snapshot_id = "Snapshot ID"
+  }
+}

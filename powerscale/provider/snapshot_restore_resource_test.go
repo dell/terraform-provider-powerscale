@@ -18,8 +18,12 @@ limitations under the License.
 package provider
 
 import (
+	"fmt"
+	"regexp"
+	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -41,6 +45,36 @@ func TestAccSnapshotRestoreResource(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrPair("powerscale_snapshot_restore.snap_restore", "snaprevert_params.snapshot_id", "powerscale_snapshot.snap1", "id"),
 				),
+			},
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					FunctionMocker = mockey.Mock(helper.CopyDirectory).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + copyDirectoryConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					FunctionMocker = mockey.Mock(helper.CopyFile).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + copyFileConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					FunctionMocker = mockey.Mock(helper.CloneFile).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + cloneFileConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
 		},
 	})
@@ -79,5 +113,39 @@ resource "powerscale_snapshot_restore" "snap_restore" {
 	snaprevert_params = {
     	snapshot_id = powerscale_snapshot.snap1.id
   	}
+}
+`
+
+var copyDirectoryConfig = `
+resource "powerscale_snapshot_restore" "snap_restore_copy" {
+	copy_params = {
+		directory = {
+		  source      = "/namespace/ifs/.snapshot/terraform_snap/terraform_test"
+		  destination = "ifs/dest"                                 
+		}
+	}
+}
+`
+
+var copyFileConfig = `
+resource "powerscale_snapshot_restore" "snap_restore_copy" {
+	copy_params = {
+		file = {
+		  source      = "/namespace/ifs/.snapshot/terraform_snap/terraform_test/test.txt"
+		  destination = "ifs/dest/test.txt"
+		  overwrite   = true                              
+		}
+	}
+}
+`
+
+var cloneFileConfig = FileSystemResourceConfig + snapshotPre + `
+resource "powerscale_snapshot_restore" "snap_restore_copy" {
+	clone_params = {
+		  source      = "/namespace/ifs/.snapshot/terraform_snap/terraform_test/test.txt"
+		  destination = "ifs/dest/test.txt"
+		  snapshot_id = powerscale_snapshot.snap.id
+		  overwrite   = true                              
+	}
 }
 `
