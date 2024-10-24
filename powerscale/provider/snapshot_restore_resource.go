@@ -24,8 +24,13 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -65,6 +70,17 @@ func (r *SnapshotRestoreResource) Metadata(ctx context.Context, req resource.Met
 	resp.TypeName = req.ProviderTypeName + "_snapshot_restore"
 }
 
+// ConfigValidators configures the resource validators.
+func (r *SnapshotRestoreResource) ConfigValidators(ctx context.Context) []resource.ConfigValidator {
+	return []resource.ConfigValidator{
+		resourcevalidator.ExactlyOneOf(
+			path.MatchRoot("snaprevert_params"),
+			path.MatchRoot("copy_params"),
+			path.MatchRoot("clone_params"),
+		),
+	}
+}
+
 // Schema defines the schema for the resource.
 func (r *SnapshotRestoreResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
@@ -84,12 +100,123 @@ func SnapshotRestoreResourceSchema() map[string]schema.Attribute {
 			Computed:            true,
 		},
 		"snaprevert_params": schema.SingleNestedAttribute{
-			Optional: true,
+			Optional:            true,
+			Description:         "Specifies properties for a snapshot revert job.",
+			MarkdownDescription: "Specifies properties for a snapshot revert job.",
 			Attributes: map[string]schema.Attribute{
 				"allow_dup": schema.BoolAttribute{
 					Optional:            true,
 					Description:         "Whether or not to queue the job if one of the same type is already running or queued.",
 					MarkdownDescription: "Whether or not to queue the job if one of the same type is already running or queued.",
+				},
+				"snapshot_id": schema.Int32Attribute{
+					Required:            true,
+					Description:         "Snapshot ID.",
+					MarkdownDescription: "Snapshot ID.",
+				},
+			},
+		},
+		"copy_params": schema.SingleNestedAttribute{
+			Optional:            true,
+			Description:         "Specifies properties for a copy operation.",
+			MarkdownDescription: "Specifies properties for a copy operation.",
+			Attributes: map[string]schema.Attribute{
+				"directory": schema.SingleNestedAttribute{
+					Optional:            true,
+					Description:         "Specifies properties for copying directory.",
+					MarkdownDescription: "Specifies properties for copying directory.",
+					Validators: []validator.Object{
+						objectvalidator.ExactlyOneOf(path.MatchRelative().AtParent().AtName("file")),
+					},
+					Attributes: map[string]schema.Attribute{
+						"source": schema.StringAttribute{
+							Required:            true,
+							Description:         "Source of the snapshot.",
+							MarkdownDescription: "Source of the snapshot.",
+							Validators: []validator.String{
+								stringvalidator.LengthAtLeast(1),
+							},
+						},
+						"destination": schema.StringAttribute{
+							Required:            true,
+							Description:         "Destination of the snapshot.",
+							MarkdownDescription: "Destination of the snapshot.",
+							Validators: []validator.String{
+								stringvalidator.LengthAtLeast(1),
+							},
+						},
+						"overwrite": schema.BoolAttribute{
+							Optional:            true,
+							Description:         "Whether or not to overwrite the destination if it already exists.",
+							MarkdownDescription: "Whether or not to overwrite the destination if it already exists.",
+						},
+						"merge": schema.BoolAttribute{
+							Optional:            true,
+							Description:         "Whether or not to merge the destination if it already exists.",
+							MarkdownDescription: "Whether or not to merge the destination if it already exists.",
+						},
+						"continue": schema.BoolAttribute{
+							Optional:            true,
+							Description:         "Whether or not to continue if the destination already exists.",
+							MarkdownDescription: "Whether or not to continue if the destination already exists.",
+						},
+					},
+				},
+				"file": schema.SingleNestedAttribute{
+					Optional:            true,
+					Description:         "Specifies properties for copying file.",
+					MarkdownDescription: "Specifies properties for copying file.",
+					Attributes: map[string]schema.Attribute{
+						"source": schema.StringAttribute{
+							Required:            true,
+							Description:         "Source of the snapshot.",
+							MarkdownDescription: "Source of the snapshot.",
+							Validators: []validator.String{
+								stringvalidator.LengthAtLeast(1),
+							},
+						},
+						"destination": schema.StringAttribute{
+							Required:            true,
+							Description:         "Destination of the snapshot.",
+							MarkdownDescription: "Destination of the snapshot.",
+							Validators: []validator.String{
+								stringvalidator.LengthAtLeast(1),
+							},
+						},
+						"overwrite": schema.BoolAttribute{
+							Optional:            true,
+							Description:         "Whether or not to overwrite the destination if it already exists.",
+							MarkdownDescription: "Whether or not to overwrite the destination if it already exists.",
+						},
+					},
+				},
+			},
+		},
+		"clone_params": schema.SingleNestedAttribute{
+			Optional:            true,
+			Description:         "Specifies properties for a clone operation.",
+			MarkdownDescription: "Specifies properties for a clone operation.",
+			Attributes: map[string]schema.Attribute{
+				"source": schema.StringAttribute{
+					Required:            true,
+					Description:         "Source of the snapshot.",
+					MarkdownDescription: "Source of the snapshot.",
+					Validators: []validator.String{
+						stringvalidator.LengthAtLeast(1),
+					},
+				},
+				"destination": schema.StringAttribute{
+					Required:            true,
+					Description:         "Destination of the snapshot.",
+					MarkdownDescription: "Destination of the snapshot.",
+					Validators: []validator.String{
+						stringvalidator.LengthAtLeast(1),
+					},
+				},
+				"overwrite": schema.BoolAttribute{
+					Optional:            true,
+					Description:         "Whether or not to overwrite the destination if it already exists.",
+					MarkdownDescription: "Whether or not to overwrite the destination if it already exists.",
 				},
 				"snapshot_id": schema.Int32Attribute{
 					Required:            true,
