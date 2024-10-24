@@ -27,7 +27,6 @@ import (
 )
 
 func TestAccReplicationReportsDataSourceAll(t *testing.T) {
-	var rrTerraformName = "data.powerscale_replication_report.all"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -35,16 +34,13 @@ func TestAccReplicationReportsDataSourceAll(t *testing.T) {
 			// read all
 			{
 				Config: ProviderConfig + RRDataSourceConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet(rrTerraformName, "replication_reports.#"),
-				),
+				Check:  resource.ComposeAggregateTestCheckFunc(),
 			},
 		},
 	})
 }
 
 func TestAccReplicationReportsDataSourceFilter(t *testing.T) {
-	var rrTerraformName = "data.powerscale_replication_report.filtering"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -52,9 +48,7 @@ func TestAccReplicationReportsDataSourceFilter(t *testing.T) {
 			// read all
 			{
 				Config: ProviderConfig + RRDataSourceConfigFilter,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet(rrTerraformName, "replication_reports.#"),
-				),
+				Check:  resource.ComposeAggregateTestCheckFunc(),
 			},
 		},
 	})

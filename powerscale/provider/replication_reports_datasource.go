@@ -34,12 +34,12 @@ import (
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ datasource.DataSource = &ReplicationReportDataSource{}
 
-// NewReplicationReportsDataSource creates a new data source.
+// NewReplicationReportDataSource creates a new data source.
 func NewReplicationReportDataSource() datasource.DataSource {
 	return &ReplicationReportDataSource{}
 }
 
-// ReplicationReportsDataSource defines the data source implementation.
+// ReplicationReportDataSource defines the data source implementation.
 type ReplicationReportDataSource struct {
 	client *client.Client
 }
@@ -941,7 +941,7 @@ func (d *ReplicationReportDataSource) Read(ctx context.Context, req datasource.R
 		return
 	}
 	var rr []models.ReplicationReportsDetail
-	for _, rrItem := range replicationReportList.Reports {
+	for _, rrItem := range *replicationReportList {
 		entity := models.ReplicationReportsDetail{}
 		err := helper.CopyFields(ctx, rrItem, &entity)
 		if err != nil {

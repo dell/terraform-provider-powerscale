@@ -24,8 +24,8 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 )
 
-// GetRoles Get a list of replication reports.
-func GetReplicationReports(ctx context.Context, client *client.Client, state models.ReplicationReportsDatasourceModel) (*powerscale.V15SyncReports, error) {
+// GetReplicationReports gets a list of replication reports.
+func GetReplicationReports(ctx context.Context, client *client.Client, state models.ReplicationReportsDatasourceModel) (*[]powerscale.V15SyncReport, error) {
 	listRRParam := client.PscaleOpenAPIClient.SyncApi.GetSyncv15SyncReports(ctx)
 	if state.ReplicationReportFilter != nil {
 		if !state.ReplicationReportFilter.Sort.IsNull() {
@@ -58,9 +58,22 @@ func GetReplicationReports(ctx context.Context, client *client.Client, state mod
 
 	}
 	resp, _, err := listRRParam.Execute()
-	return resp, err
+	if err != nil {
+		return nil, err
+	}
+	totalReplicationReports := resp.Reports
+	for resp.Resume != nil && (state.ReplicationReportFilter == nil || state.ReplicationReportFilter.Limit.IsNull()) {
+		resumeReplicationReportParam := client.PscaleOpenAPIClient.SyncApi.GetSyncv15SyncReports(ctx).Resume(*resp.Resume)
+		resp, _, err = resumeReplicationReportParam.Execute()
+		if err != nil {
+			return &totalReplicationReports, err
+		}
+		totalReplicationReports = append(totalReplicationReports, resp.Reports...)
+	}
+	return &totalReplicationReports, nil
 }
 
+// ReplicationReportDetailMapper maps the tfsdk struct to model.
 func ReplicationReportDetailMapper(ctx context.Context, rr *powerscale.V15SyncReport) (models.ReplicationReportsDetail, error) {
 	model := models.ReplicationReportsDetail{}
 	err := CopyFields(ctx, rr, &model)

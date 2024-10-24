@@ -18,12 +18,14 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// ReplicationReportsDatasourceModel describes the struct for replication reports datasource model
 type ReplicationReportsDatasourceModel struct {
 	ID                      types.String                 `tfsdk:"id"`
 	Reports                 []ReplicationReportsDetail   `tfsdk:"replication_reports"`
 	ReplicationReportFilter *ReplicationReportFilterType `tfsdk:"filter"`
 }
 
+// ReplicationReportFilterType describes the struct for filter block
 type ReplicationReportFilterType struct {
 	Sort             types.String `tfsdk:"sort"`
 	Resume           types.String `tfsdk:"resume"`
@@ -36,6 +38,7 @@ type ReplicationReportFilterType struct {
 	Dir              types.String `tfsdk:"dir"`
 }
 
+// ReplicationReportsDetail describes the struct for replication report
 type ReplicationReportsDetail struct {
 	Action                     types.String   `tfsdk:"action"`
 	AdsStreamsReplicated       types.Int64    `tfsdk:"ads_streams_replicated"`
@@ -131,6 +134,7 @@ type ReplicationReportsDetail struct {
 	WormCommittedFileConflicts types.Int64    `tfsdk:"worm_committed_file_conflicts"`
 }
 
+// PolicyDetail describes the struct for policy detail
 type PolicyDetail struct {
 	Action                   types.String              `tfsdk:"action"`
 	FileMatchingPattern      FileMatchingPatternDetail `tfsdk:"file_matching_pattern"`
@@ -142,10 +146,12 @@ type PolicyDetail struct {
 	TargetPath               types.String              `tfsdk:"target_path"`
 }
 
+// OrCriteriaDetail describes the struct for 'or criteria' in the policy
 type OrCriteriaDetail struct {
 	AndCriteria []AndCriteriaDetail `tfsdk:"and_criteria"`
 }
 
+// AndCriteriaDetail describes the struct for 'and criteria' in the policy
 type AndCriteriaDetail struct {
 	AttributeExists types.Bool   `tfsdk:"attribute_exists"`
 	CaseSensitive   types.Bool   `tfsdk:"case_sensitive"`
@@ -156,6 +162,7 @@ type AndCriteriaDetail struct {
 	WholeWord       types.Bool   `tfsdk:"whole_word"`
 }
 
+// StatisticsDetail describes the struct for statistics
 type StatisticsDetail struct {
 	ComplianceDirLinks types.String `tfsdk:"compliance_dir_links"`
 	CorrectedLins      types.String `tfsdk:"corrected_lins"`
@@ -181,6 +188,7 @@ type StatisticsDetail struct {
 	UnlinkedFiles      types.String `tfsdk:"unlinked_files"`
 }
 
+// PhasesDetail describes the struct for phase
 type PhasesDetail struct {
 	EndTime    types.Int64      `tfsdk:"end_time"`
 	Phase      types.String     `tfsdk:"phase"`
@@ -188,6 +196,7 @@ type PhasesDetail struct {
 	Statistics StatisticsDetail `tfsdk:"statistics"`
 }
 
+// FileMatchingPatternDetail describes the struct for file matching pattern
 type FileMatchingPatternDetail struct {
 	OrCriteria []OrCriteriaDetail `tfsdk:"or_criteria"`
 }
