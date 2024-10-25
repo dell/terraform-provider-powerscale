@@ -17,15 +17,16 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	. "github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	"github.com/stretchr/testify/assert"
 	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 	"testing"
+
+	. "github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAccNetworkPoolResource(t *testing.T) {
@@ -247,64 +248,71 @@ func TestAccNetworkPoolResourceErrorReadState(t *testing.T) {
 	})
 }
 
-var poolName = "pool_at_test"
+var poolName                  = "pool_at_test"
 
-var NetworkPoolResourceConfig = fmt.Sprintf(`
+var NetworkPoolResourceConfig = `
 resource "powerscale_networkpool" "pool_test" {
 	name = "%s"
 	groupnet = "groupnet0"
 	subnet = "subnet0"
 	ranges = [
 		{
-			high = "10.225.108.142",
-			low = "10.225.108.142"
+			high = "%s",
+			low = "%s"
 		}
 	]
 }
-`, poolName)
-
-var NetworkPoolInvalidResourceConfig = fmt.Sprintf(`
+`
+var NetworkPoolInvalidResourceConfig = `
 resource "powerscale_networkpool" "pool_test" {
 	name = "%s"
 	groupnet = "groupnet0"
 	subnet = "subnet0"
 	ranges = [
 		{
-			high = "10.225.108.142",
-			low = "10.225.108.142"
+			high = "%s",
+			low = "%s"
 		}
 	]
 	alloc_method = "invalid"
 }
-`, poolName)
-
-var NetworkPoolUpdatedResourceConfig = fmt.Sprintf(`
+`
+var NetworkPoolUpdatedResourceConfig = `
 resource "powerscale_networkpool" "pool_test" {
 	name = "%s"
 	groupnet = "groupnet0"
 	subnet = "subnet0"
 	ranges = [
 		{
-			high = "10.225.108.142",
-			low = "10.225.108.142"
+			high = "%s",
+			low = "%s"
 		}
 	]
 	alloc_method = "dynamic"
 	sc_ttl = 1
 }
-`, poolName)
-
-var NetworkPoolUpdatedResourceConfig2 = fmt.Sprintf(`
+`
+var NetworkPoolUpdatedResourceConfig2 = `
 resource "powerscale_networkpool" "pool_test" {
 	name = "%s"
 	groupnet = "groupnet0"
 	subnet = "subnet0"
 	ranges = [
 		{
-			high = "10.225.108.142",
-			low = "10.225.108.142"
+			high = "%s",
+			low = "%s"
 		}
 	]
 	description = "network pool test"
 }
-`, poolName)
+`
+
+func initNetworkPoolResourceConfig() {
+	NetworkPoolResourceConfig = fmt.Sprintf(NetworkPoolResourceConfig, poolName, powerscaleNetworkpoolHigh, powerscaleNetworkpoolLow)
+
+	NetworkPoolInvalidResourceConfig = fmt.Sprintf(NetworkPoolInvalidResourceConfig, poolName, powerscaleNetworkpoolHigh, powerscaleNetworkpoolLow)
+
+	NetworkPoolUpdatedResourceConfig = fmt.Sprintf(NetworkPoolUpdatedResourceConfig, poolName, powerscaleNetworkpoolHigh, powerscaleNetworkpoolLow)
+
+	NetworkPoolUpdatedResourceConfig2 = fmt.Sprintf(NetworkPoolUpdatedResourceConfig2, poolName, powerscaleNetworkpoolHigh, powerscaleNetworkpoolLow)
+}

@@ -62,6 +62,8 @@ var powerscaleAdsproviderName = ""
 var powerscaleAdsproviderUsername = ""
 var powerscaleAdsproviderPassword = ""
 var powerscaleLdapHost = ""
+var powerscaleNetworkpoolHigh = ""
+var powerscaleNetworkpoolLow = ""
 
 var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
@@ -107,6 +109,11 @@ func init() {
 	// ldap config
 	powerscaleLdapHost = os.Getenv("POWERSCALE_LDAP_HOST")
 	initLdapVars()
+
+	// networkpool config
+	powerscaleNetworkpoolHigh = os.Getenv("POWERSCALE_NETWORKPOOL_HIGH")
+	powerscaleNetworkpoolLow = os.Getenv("POWERSCALE_NETWORKPOOL_LOW")
+	initNetworkPoolResourceConfig()
 
 	ProviderConfig = fmt.Sprintf(`
 		provider "powerscale" {
