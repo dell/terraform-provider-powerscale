@@ -58,6 +58,11 @@ var powerscaleEndpoint = ""
 var powerScaleSSHIP = ""
 var powerscaleSSHPort = "22"
 var powerscaleInsecure = false
+var powerscaleAdsproviderName = ""
+var powerscaleAdsproviderUsername = ""
+var powerscaleAdsproviderPassword = ""
+var powerscaleLdapHost = ""
+
 var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
 var BasicAuthProviderErrorConfig = ""
@@ -93,6 +98,15 @@ func init() {
 		return
 	}
 	powerScaleSSHIP = u.Hostname()
+
+	// ads provider config
+	powerscaleAdsproviderName = os.Getenv("POWERSCALE_ADS_PROVIDER_NAME")
+	powerscaleAdsproviderUsername = os.Getenv("POWERSCALE_ADS_PROVIDER_USERNAME")
+	powerscaleAdsproviderPassword = os.Getenv("POWERSCALE_ADS_PROVIDER_PASSWORD")
+
+	// ldap config
+	powerscaleLdapHost = os.Getenv("POWERSCALE_LDAP_HOST")
+	initLdapVars()
 
 	ProviderConfig = fmt.Sprintf(`
 		provider "powerscale" {

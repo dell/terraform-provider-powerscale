@@ -145,6 +145,7 @@ func TestAccLdapProviderDatasourceErrorCopyField(t *testing.T) {
 
 func TestAccLdapProviderDatasourceHelperMockErr(t *testing.T) {
 	var ldapProviderTerraformName = "data.powerscale_ldap_provider.test"
+	mockV16LdapProviders, mockV11LdapProviders := getMockLdapProviderConfig()
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -249,34 +250,23 @@ data "powerscale_ldap_provider" "test" {
 }
 `
 
+// these vars are initialized by initLdapVars function
 var ldapProviderFilterNameDataSourceConfig = `
-resource "powerscale_ldap_provider" "test" {
-	name = "tfacc_ldap"
-	base_dn = "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"
-	server_uris = ["ldap://10.225.108.11"]
-}
-
 data "powerscale_ldap_provider" "test" {
 	filter {
-    names = [powerscale_ldap_provider.test.name]
+    names = [powerscale_ldap_provider.ldap_test.name]
   }
-  depends_on = [powerscale_ldap_provider.test]
+  depends_on = [powerscale_ldap_provider.ldap_test]
 }
 `
 
 var ldapProviderFilterScopeDataSourceConfig = `
-resource "powerscale_ldap_provider" "test" {
-	name = "tfacc_ldap"
-	base_dn = "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"
-	server_uris = ["ldap://10.225.108.11"]
-}
-
 data "powerscale_ldap_provider" "test" {
 	filter {
 		scope = "user"
-		names = [powerscale_ldap_provider.test.name]
+		names = [powerscale_ldap_provider.ldap_test.name]
   }
-  depends_on = [powerscale_ldap_provider.test]
+  depends_on = [powerscale_ldap_provider.ldap_test]
 }
 `
 
