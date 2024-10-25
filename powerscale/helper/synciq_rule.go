@@ -134,7 +134,10 @@ func NewSyncIQRulesResource(ctx context.Context, source *powerscale.V3SyncRules)
 	for _, item := range source.Rules {
 		state, diags := NewSyncIQRuleResource(ctx, item)
 		dgs.Append(diags...)
-		bw = append(bw, state)
+		switch *item.Type {
+		case "bandwidth":
+			bw = append(bw, state)
+		}
 	}
 	bwList, bwListDgs := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: syncIQRuleResourceType}, bw)
 	dgs.Append(bwListDgs...)
@@ -147,7 +150,6 @@ func NewSyncIQRulesResource(ctx context.Context, source *powerscale.V3SyncRules)
 // NewSyncIQRuleResource creates a new SyncIQRuleResource from resource responses.
 func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExtended) (models.SyncIQRuleResource, diag.Diagnostics) {
 	ret := models.SyncIQRuleResource{
-		// Type:        types.StringValue(source.Type),
 		Description: types.StringValue(*source.Description),
 		Enabled:     types.BoolValue(*source.Enabled),
 		ID:          types.StringValue(*source.Id),

@@ -37,7 +37,7 @@ var (
 	_ resource.ResourceWithImportState = &SyncIQRuleResource{}
 )
 
-// NewSyncIQRuleResource creates a new data source.
+// NewSyncIQRuleResource creates a new resource.
 func NewSyncIQRuleResource() resource.Resource {
 	return &SyncIQRuleResource{
 		commonResourceConfigurer{
@@ -51,7 +51,7 @@ type SyncIQRuleResource struct {
 	commonResourceConfigurer
 }
 
-// Schema describes the data source arguments.
+// Schema describes the resource arguments.
 func (d *SyncIQRuleResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = helper.SyncIQRulesResourceSchema(ctx)
 }
@@ -141,7 +141,7 @@ func (d *SyncIQRuleResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 // update updates all supported synciq rule stacks
 func (d *SyncIQRuleResource) update(ctx context.Context, plan, state models.SyncIQRulesResource) (*models.SyncIQRulesResource, diag.Diagnostics) {
-	// upmarshall
+	// umarshal the plan and state into []powerscale.V3SyncRule
 	planReqs, stateReqs := helper.GetRequestsFromSynciqRulesResource(ctx, plan), helper.GetRequestsFromSynciqRulesResource(ctx, state)
 
 	// run update for bandwidth stack
