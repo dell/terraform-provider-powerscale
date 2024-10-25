@@ -105,6 +105,7 @@ func init() {
 	powerscaleAdsproviderName = os.Getenv("POWERSCALE_ADS_PROVIDER_NAME")
 	powerscaleAdsproviderUsername = os.Getenv("POWERSCALE_ADS_PROVIDER_USERNAME")
 	powerscaleAdsproviderPassword = os.Getenv("POWERSCALE_ADS_PROVIDER_PASSWORD")
+	initAdsProviderConfig()
 
 	// ldap config
 	powerscaleLdapHost = os.Getenv("POWERSCALE_LDAP_HOST")

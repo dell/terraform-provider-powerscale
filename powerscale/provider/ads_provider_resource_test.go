@@ -17,15 +17,16 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	"github.com/stretchr/testify/assert"
 	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 	"testing"
+
+	"github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAccAdsProviderResource(t *testing.T) {
@@ -37,8 +38,8 @@ func TestAccAdsProviderResource(t *testing.T) {
 			{
 				Config: ProviderConfig + AdsProviderResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "name", adsName),
-					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "user", "administrator"),
+					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "name", powerscaleAdsproviderName),
+					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "user", powerscaleAdsproviderUsername),
 					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "lookup_users", "true"),
 					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "check_online_interval", "300"),
 				),
@@ -48,7 +49,7 @@ func TestAccAdsProviderResource(t *testing.T) {
 				ResourceName: "powerscale_adsprovider.ads_test",
 				ImportState:  true,
 				ImportStateCheck: func(states []*terraform.InstanceState) error {
-					assert.Equal(t, adsName, states[0].Attributes["name"])
+					assert.Equal(t, powerscaleAdsproviderName, states[0].Attributes["name"])
 					assert.Equal(t, "300", states[0].Attributes["check_online_interval"])
 					return nil
 				},
@@ -74,8 +75,8 @@ func TestAccAdsProviderResourceErrorRead(t *testing.T) {
 			{
 				Config: ProviderConfig + AdsProviderResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "name", adsName),
-					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "user", "administrator"),
+					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "name", powerscaleAdsproviderName),
+					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "user", powerscaleAdsproviderUsername),
 				),
 			},
 			// ImportState testing get none ads
@@ -110,8 +111,8 @@ func TestAccAdsProviderResourceErrorUpdate(t *testing.T) {
 			{
 				Config: ProviderConfig + AdsProviderResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "name", adsName),
-					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "user", "administrator"),
+					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "name", powerscaleAdsproviderName),
+					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "user", powerscaleAdsproviderUsername),
 				),
 			},
 			// Update get error
@@ -192,8 +193,8 @@ func TestAccAdsProviderResourceErrorCopyField(t *testing.T) {
 			{
 				Config: ProviderConfig + AdsProviderResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "name", adsName),
-					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "user", "administrator"),
+					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "name", powerscaleAdsproviderName),
+					resource.TestCheckResourceAttr("powerscale_adsprovider.ads_test", "user", powerscaleAdsproviderUsername),
 				),
 			},
 			{
@@ -202,7 +203,7 @@ func TestAccAdsProviderResourceErrorCopyField(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfig + AdsProviderResourceConfig,
+				// Config:      ProviderConfig + AdsProviderResourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
 			},
 			{
@@ -237,67 +238,85 @@ func TestAccAdsProviderResourceErrorReadState(t *testing.T) {
 	})
 }
 
-var adsName = "PIE.LAB.EMC.COM"
-
-var AdsProviderResourceConfig = fmt.Sprintf(`
+var AdsProviderResourceConfig = `
 resource "powerscale_adsprovider" "ads_test" {
 	name = "%s"
-	user = "administrator"
-	password = "Password123!"
+	user = "%s"
+	password = "%s"
 }
-`, adsName)
+`
 
-var AdsProviderInvalidResourceConfig = fmt.Sprintf(`
+var AdsProviderInvalidResourceConfig = `
 resource "powerscale_adsprovider" "ads_test" {
 	name = "%s"
-	user = "administrator"
-	password = "Password123!"
+	user = "%s"
+	password = "%s"
 	sfu_support = "invalid"
 }
-`, adsName)
+`
 
-var AdsProviderCreatePreCheckConfig = fmt.Sprintf(`
+var AdsProviderCreatePreCheckConfig = `
 resource "powerscale_adsprovider" "ads_test" {
 	name = "%s"
-	user = "administrator"
-	password = "Password123!"
+	user = "%s"
+	password = "%s"
 	reset_schannel = true
 }
-`, adsName)
+`
 
-var AdsProviderUpdatedResourceConfig = fmt.Sprintf(`
+var AdsProviderUpdatedResourceConfig = `
 resource "powerscale_adsprovider" "ads_test" {
 	name = "%s"
-	user = "administrator"
-	password = "Password123!"
+	user = "%s"
+	password = "%s"
 	lookup_users = false
 	check_online_interval = 310
 }
-`, adsName)
+`
 
-var AdsProviderUpdatedResourceConfig2 = fmt.Sprintf(`
+var AdsProviderUpdatedResourceConfig2 = `
 resource "powerscale_adsprovider" "ads_test" {
 	name = "%s"
-	user = "administrator"
-	password = "Password123!"
+	user = "%s"
+	password = "%s"
 	check_online_interval = 290
 }
-`, adsName)
+`
 
-var AdsProviderUpdatePreCheckConfig = fmt.Sprintf(`
+var AdsProviderUpdatePreCheckConfig = `
 resource "powerscale_adsprovider" "ads_test" {
 	name = "%s"
-	user = "administrator"
-	password = "Password123!"
+	user = "%s"
+	password = "%s"
 	kerberos_hdfs_spn = true
 }
-`, adsName)
+`
 
-var AdsProviderUpdateGroupnetConfig = fmt.Sprintf(`
+var AdsProviderUpdateGroupnetConfig = `
 resource "powerscale_adsprovider" "ads_test" {
 	name = "%s"
-	user = "administrator"
-	password = "Password123!"
+	user = "%s"
+	password = "%s"
 	groupnet = "groupnet_x"
 }
-`, adsName)
+`
+
+func initAdsProviderConfig() {
+	// resource config
+	AdsProviderResourceConfig = fmt.Sprintf(AdsProviderResourceConfig, powerscaleAdsproviderName, powerscaleAdsproviderUsername, powerscaleAdsproviderPassword)
+	AdsProviderInvalidResourceConfig = fmt.Sprintf(AdsProviderInvalidResourceConfig, powerscaleAdsproviderName, powerscaleAdsproviderUsername, powerscaleAdsproviderPassword)
+	AdsProviderCreatePreCheckConfig = fmt.Sprintf(AdsProviderCreatePreCheckConfig, powerscaleAdsproviderName, powerscaleAdsproviderUsername, powerscaleAdsproviderPassword)
+	AdsProviderUpdatedResourceConfig = fmt.Sprintf(AdsProviderUpdatedResourceConfig, powerscaleAdsproviderName, powerscaleAdsproviderUsername, powerscaleAdsproviderPassword)
+	AdsProviderUpdatedResourceConfig2 = fmt.Sprintf(AdsProviderUpdatedResourceConfig2, powerscaleAdsproviderName, powerscaleAdsproviderUsername, powerscaleAdsproviderPassword)
+	AdsProviderUpdatePreCheckConfig = fmt.Sprintf(AdsProviderUpdatePreCheckConfig, powerscaleAdsproviderName, powerscaleAdsproviderUsername, powerscaleAdsproviderPassword)
+	AdsProviderUpdateGroupnetConfig = fmt.Sprintf(AdsProviderUpdateGroupnetConfig, powerscaleAdsproviderName, powerscaleAdsproviderUsername, powerscaleAdsproviderPassword)
+
+	// data source config
+	// All datasources are appended with AdsProviderResourceConfig as pre-requirement
+	AdsDataSourceNamesConfig = AdsProviderResourceConfig + fmt.Sprintf(AdsDataSourceNamesConfig, powerscaleAdsproviderName)
+	AdsDataSourceFilterConfig = AdsProviderResourceConfig + AdsDataSourceFilterConfig
+	AdsAllDataSourceConfig = AdsProviderResourceConfig + AdsAllDataSourceConfig
+	AdsDataSourceNameConfigErr = AdsProviderResourceConfig + AdsDataSourceNameConfigErr
+	AdsDataSourceFilterConfigErr = AdsProviderResourceConfig + AdsDataSourceFilterConfigErr
+
+}
