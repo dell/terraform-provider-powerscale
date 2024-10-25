@@ -31,9 +31,6 @@ func GetReplicationReports(ctx context.Context, client *client.Client, state mod
 		if !state.ReplicationReportFilter.Sort.IsNull() {
 			listRRParam = listRRParam.Sort(state.ReplicationReportFilter.Sort.ValueString())
 		}
-		if !state.ReplicationReportFilter.Resume.IsNull() {
-			listRRParam = listRRParam.Resume(state.ReplicationReportFilter.Resume.ValueString())
-		}
 		if !state.ReplicationReportFilter.NewerThan.IsNull() {
 			listRRParam = listRRParam.NewerThan(int32(state.ReplicationReportFilter.NewerThan.ValueInt64()))
 		}

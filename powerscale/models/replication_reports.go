@@ -28,7 +28,6 @@ type ReplicationReportsDatasourceModel struct {
 // ReplicationReportFilterType describes the struct for filter block
 type ReplicationReportFilterType struct {
 	Sort             types.String `tfsdk:"sort"`
-	Resume           types.String `tfsdk:"resume"`
 	NewerThan        types.Int64  `tfsdk:"newer_than"`
 	PolicyName       types.String `tfsdk:"policy_name"`
 	State            types.String `tfsdk:"state"`

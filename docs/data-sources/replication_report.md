@@ -97,7 +97,6 @@ Optional:
 - `newer_than` (Number) Filter the returned reports to include only those whose jobs started more recently than the specified number of days ago.
 - `policy_name` (String) Filter the returned reports to include only those with this policy name.
 - `reports_per_policy` (Number) If specified, only the N most recent reports will be returned per policy.  If no other query args are present this argument defaults to 1.
-- `resume` (String) Continue returning results from previous call using this token (token should come from the previous call, resume cannot be used with other options).
 - `sort` (String) The field that will be used for sorting.
 - `state` (String) Filter the returned reports to include only those whose jobs are in this state.
 - `summary` (Boolean) Return a summary rather than entire objects

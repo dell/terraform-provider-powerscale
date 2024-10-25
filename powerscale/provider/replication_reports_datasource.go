@@ -849,11 +849,6 @@ func (d *ReplicationReportDataSource) Schema(ctx context.Context, req datasource
 						Description:         "The field that will be used for sorting.",
 						MarkdownDescription: "The field that will be used for sorting.",
 					},
-					"resume": schema.StringAttribute{
-						Optional:            true,
-						Description:         "Continue returning results from previous call using this token (token should come from the previous call, resume cannot be used with other options).",
-						MarkdownDescription: "Continue returning results from previous call using this token (token should come from the previous call, resume cannot be used with other options).",
-					},
 					"newer_than": schema.Int64Attribute{
 						Optional:            true,
 						Description:         "Filter the returned reports to include only those whose jobs started more recently than the specified number of days ago.",
