@@ -248,7 +248,7 @@ func TestAccNetworkPoolResourceErrorReadState(t *testing.T) {
 	})
 }
 
-var poolName                  = "pool_at_test"
+var poolName = "pool_at_test"
 
 var NetworkPoolResourceConfig = `
 resource "powerscale_networkpool" "pool_test" {
