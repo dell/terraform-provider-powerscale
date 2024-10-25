@@ -26,10 +26,10 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"github.com/hashicorp/terraform-plugin-framework/path"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -149,7 +149,7 @@ func (r *NfsAliasResource) Read(ctx context.Context, req resource.ReadRequest, r
 		resp.Diagnostics.Append(diags...)
 		return
 	}
-	
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 

@@ -50,7 +50,7 @@ limitations under the License.
 
 # Returns a list of PowerScale NFS exports based on id and path filter block
 data "powerscale_nfs_export" "test" {
-  filter = {
+  filter {
     # Used for locally filtering id and path
     ids   = [1, 2, 3]
     paths = ["/ifs/primary", "/ifs/secondary"]

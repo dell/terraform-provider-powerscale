@@ -190,6 +190,9 @@ const (
 	// ListNfsExportErrorMsg specifies error details occurred while listing nfs exports.
 	ListNfsExportErrorMsg = "Could not list nfs exports "
 
+	// ListNfsAliasErrorMsg specifies error details occurred while listing nfs exports.
+	ListNfsAliasErrorMsg = "Could not list nfs aliases "
+
 	// GetSmbShareErrorMsg specifies error details occurred while getting smb share.
 	GetSmbShareErrorMsg = "Could not get smb share "
 
