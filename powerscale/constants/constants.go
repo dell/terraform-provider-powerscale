@@ -461,4 +461,16 @@ const (
 
 	// ReadSnapshotRestoreJobReportErrorMsg specifies error details occurred while reading snapshot restore job reports.
 	ReadSnapshotRestoreJobReportErrorMsg = "Could not read snapshot restore job reports "
+
+	// CreateNfsAliasErrorMsg specifies error details occurred while creating nfs alias.
+	CreateNfsAliasErrorMsg = "Could not create nfs alias"
+
+	// ReadNfsAliasErrorMsg specifies error details occurred while reading nfs alias.
+	ReadNfsAliasErrorMsg = "Could not read nfs alias"
+
+	// UpdateNfsAliasErrorMsg specifies error details occurred while updating nfs alias.
+	UpdateNfsAliasErrorMsg = "Could not update nfs alias"
+
+	// DeleteNfsAliasErrorMsg specifies error details occurred while deleting nfs alias.
+	DeleteNfsAliasErrorMsg = "Could not delete nfs alias"
 )

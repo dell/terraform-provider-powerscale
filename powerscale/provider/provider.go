@@ -204,6 +204,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewSupportAssistResource,
 		NewWriteableSnapshotResource,
 		NewSnapshotRestoreResource,
+		NewNfsAliasResource,
 	}
 }
 
