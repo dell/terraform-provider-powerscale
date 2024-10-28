@@ -91,7 +91,7 @@ output "replicationJobByState" {
 Optional:
 
 - `dir` (String) The direction of the sort.
-- `limit` (Number) Return no more than this many results at once.
+- `limit` (Number) Return no more than this many results.
 - `sort` (String) The field that will be used for sorting.
 - `state` (String) Only list SyncIQ replication jobs matching this state.
 

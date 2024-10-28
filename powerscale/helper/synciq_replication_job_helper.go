@@ -56,7 +56,7 @@ func GetSyncIQReplicationJobs(ctx context.Context, client *client.Client, filter
 	}
 
 	// Pagination
-	if resp.Resume != nil {
+	if resp.Resume != nil && (filter == nil || filter.Limit.IsNull()) {
 		jobParams = jobParams.Resume(*resp.Resume)
 		newresp, _, errAdd := jobParams.Execute()
 		if errAdd != nil {
