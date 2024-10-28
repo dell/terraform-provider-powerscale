@@ -22,6 +22,7 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"errors"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -137,14 +138,14 @@ func NewSyncIQRulesResource(ctx context.Context, source *powerscale.V3SyncRules)
 	for _, item := range source.Rules {
 		state, diags := NewSyncIQRuleResource(ctx, item)
 		dgs.Append(diags...)
-		switch *item.Type {
-		case "bandwidth":
+		switch constants.SyncIQRuleType(*item.Type) {
+		case constants.SyncIQRuleTypeBW:
 			bw = append(bw, state)
-		case "file_count":
+		case constants.SyncIQRuleTypeFC:
 			fc = append(fc, state)
-		case "cpu":
+		case constants.SyncIQRuleTypeCPU:
 			cpu = append(cpu, state)
-		case "worker":
+		case constants.SyncIQRuleTypeWK:
 			worker = append(worker, state)
 		default:
 			dgs.AddError("Unknown rule type", *item.Type)
@@ -191,25 +192,25 @@ func NewSyncIQRuleResource(ctx context.Context, source powerscale.V3SyncRuleExte
 func unmarshalJSONSyncIQRuleschedule(schedule *powerscale.V1SyncRuleSchedule) []string {
 	daysOfWeek := make([]string, 0)
 	if schedule.Monday != nil && *schedule.Monday {
-		daysOfWeek = append(daysOfWeek, "monday")
+		daysOfWeek = append(daysOfWeek, constants.SyncIQRuleDayMonday)
 	}
 	if schedule.Tuesday != nil && *schedule.Tuesday {
-		daysOfWeek = append(daysOfWeek, "tuesday")
+		daysOfWeek = append(daysOfWeek, constants.SyncIQRuleDayTuesday)
 	}
 	if schedule.Wednesday != nil && *schedule.Wednesday {
-		daysOfWeek = append(daysOfWeek, "wednesday")
+		daysOfWeek = append(daysOfWeek, constants.SyncIQRuleDayWednesday)
 	}
 	if schedule.Thursday != nil && *schedule.Thursday {
-		daysOfWeek = append(daysOfWeek, "thursday")
+		daysOfWeek = append(daysOfWeek, constants.SyncIQRuleDayThursday)
 	}
 	if schedule.Friday != nil && *schedule.Friday {
-		daysOfWeek = append(daysOfWeek, "friday")
+		daysOfWeek = append(daysOfWeek, constants.SyncIQRuleDayFriday)
 	}
 	if schedule.Saturday != nil && *schedule.Saturday {
-		daysOfWeek = append(daysOfWeek, "saturday")
+		daysOfWeek = append(daysOfWeek, constants.SyncIQRuleDaySaturday)
 	}
 	if schedule.Sunday != nil && *schedule.Sunday {
-		daysOfWeek = append(daysOfWeek, "sunday")
+		daysOfWeek = append(daysOfWeek, constants.SyncIQRuleDaySunday)
 	}
 	return daysOfWeek
 }
@@ -227,19 +228,19 @@ func marshalJSONSyncIQRuleschedule(daysOfWeek []string, schedule *powerscale.V1S
 	// set specified values to false
 	for _, day := range daysOfWeek {
 		switch day {
-		case "monday":
+		case constants.SyncIQRuleDayMonday:
 			schedule.Monday = New(true)
-		case "tuesday":
+		case constants.SyncIQRuleDayTuesday:
 			schedule.Tuesday = New(true)
-		case "wednesday":
+		case constants.SyncIQRuleDayWednesday:
 			schedule.Wednesday = New(true)
-		case "thursday":
+		case constants.SyncIQRuleDayThursday:
 			schedule.Thursday = New(true)
-		case "friday":
+		case constants.SyncIQRuleDayFriday:
 			schedule.Friday = New(true)
-		case "saturday":
+		case constants.SyncIQRuleDaySaturday:
 			schedule.Saturday = New(true)
-		case "sunday":
+		case constants.SyncIQRuleDaySunday:
 			schedule.Sunday = New(true)
 		}
 	}
@@ -263,9 +264,9 @@ func GetRequestsFromSynciqRulesResource(ctx context.Context, source models.SyncI
 }
 
 // GetRequestFromSynciqRuleResource creates a new SyncIQRule API request from resource plan.
-func GetRequestFromSynciqRuleResource(ctx context.Context, plan models.SyncIQRuleResource, ruleType string) powerscale.V3SyncRule {
+func GetRequestFromSynciqRuleResource(ctx context.Context, plan models.SyncIQRuleResource, ruleType constants.SyncIQRuleType) powerscale.V3SyncRule {
 	ret := powerscale.V3SyncRule{
-		Type:        ruleType,
+		Type:        string(ruleType),
 		Limit:       plan.Limit.ValueInt32(),
 		Description: GetKnownStringPointer(plan.Description),
 		Enabled:     GetKnownBoolPointer(plan.Enabled),
