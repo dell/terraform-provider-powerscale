@@ -793,8 +793,8 @@ func (d *SyncIQReplicationJobDataSource) Schema(ctx context.Context, req datasou
 					},
 					"limit": schema.Int64Attribute{
 						Optional:            true,
-						Description:         "Return no more than this many results at once.",
-						MarkdownDescription: "Return no more than this many results at once.",
+						Description:         "Return no more than this many results.",
+						MarkdownDescription: "Return no more than this many results.",
 					},
 					"dir": schema.StringAttribute{
 						Optional:            true,
