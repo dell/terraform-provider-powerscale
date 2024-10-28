@@ -21,22 +21,22 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 
-	 "fmt"
+	"fmt"
 	// "github.com/hashicorp/terraform-plugin-framework/attr"
-	 "github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	// "github.com/hashicorp/terraform-plugin-framework/types"
 	// "github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/models"
-	 "terraform-provider-powerscale/powerscale/constants"
 	// "terraform-provider-powerscale/powerscale/models"
 )
 
 // UpdateSyncIQGlobalSettings updates the SyncIQ global settings.
-func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAliasResourceModel, state *models.NfsAliasResourceModel)  diag.Diagnostics {
+func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAliasResourceModel, state *models.NfsAliasResourceModel) diag.Diagnostics {
 	var diags diag.Diagnostics
 	var toCreate powerscale.V2NfsAlias
-	
+
 	zoneParam := client.PscaleOpenAPIClient.ProtocolsApi.CreateProtocolsv2NfsAlias(ctx)
 	err := ReadFromState(ctx, &plan, &toCreate)
 	if err != nil {
@@ -53,7 +53,7 @@ func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsA
 		zoneParam = zoneParam.Zone(plan.Zone.ValueString())
 	}
 
-	_, _, err2 := zoneParam.V2NfsAlias(toCreate).Execute()	
+	_, _, err2 := zoneParam.V2NfsAlias(toCreate).Execute()
 	if err2 != nil {
 		errStr := constants.CreateNfsAliasErrorMsg + "with error: "
 		message := GetErrorString(err2, errStr)
@@ -66,7 +66,7 @@ func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsA
 
 	checkParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv2NfsAliases(ctx)
 	checkParam = checkParam.Check(true)
-	nfsAliases, _,err := checkParam.Execute()
+	nfsAliases, _, err := checkParam.Execute()
 	if err != nil {
 		errStr := constants.ReadNfsAliasErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
@@ -78,7 +78,7 @@ func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsA
 	}
 
 	var nfsAlias powerscale.V15NfsAliasExtended
-	for _,v := range nfsAliases.Aliases {
+	for _, v := range nfsAliases.Aliases {
 		if *v.Name == toCreate.Name {
 			nfsAlias = v
 		}
@@ -96,13 +96,12 @@ func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsA
 	return diags
 }
 
-
-func ReadNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAliasResourceModel, state *models.NfsAliasResourceModel)  diag.Diagnostics {
+func ReadNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAliasResourceModel, state *models.NfsAliasResourceModel) diag.Diagnostics {
 	var diags diag.Diagnostics
-	
+
 	checkParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv2NfsAliases(ctx)
 	checkParam = checkParam.Check(true)
-	nfsAliases, _,err := checkParam.Execute()
+	nfsAliases, _, err := checkParam.Execute()
 	if err != nil {
 		errStr := constants.ReadNfsAliasErrorMsg + "with error: "
 		message := GetErrorString(err, errStr)
@@ -115,7 +114,7 @@ func ReadNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAli
 
 	var nfsAlias powerscale.V15NfsAliasExtended
 	var found bool
-	for _,v := range nfsAliases.Aliases {
+	for _, v := range nfsAliases.Aliases {
 		if *v.Name == plan.Name.ValueString() {
 			nfsAlias = v
 			found = true

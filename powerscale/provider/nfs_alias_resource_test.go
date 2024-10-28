@@ -15,11 +15,15 @@ limitations under the License.
 package provider
 
 import (
-
-
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
+	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"fmt"
+
+	"github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccNfsAliasResource(t *testing.T) {
@@ -30,24 +34,23 @@ func TestAccNfsAliasResource(t *testing.T) {
 			// Create and Read testing
 			{
 				Config: ProviderConfig + NfsAliasResourceConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-				),
+				Check:  resource.ComposeAggregateTestCheckFunc(),
 			},
-			
 		},
 	})
 }
 
 func TestAccNfsAliasResourceCreateErr(t *testing.T) {
+	var diags diag.Diagnostics
+	diags.AddError("mock error", "mock error")
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{			
+		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfig + NfsAliasResourceConfigCreateErr,
+				Config:      ProviderConfig + NfsAliasResourceConfigCreateErr,
 				ExpectError: regexp.MustCompile(`.*Error creating nfs alias*.`),
 			},
-			
 		},
 	})
 }
@@ -59,26 +62,104 @@ func TestAccNfsAliasResourceModifyErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: ProviderConfig + NfsAliasResourceConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-				),
+				Check:  resource.ComposeAggregateTestCheckFunc(),
 			},
-			// Create and Read testing
 			{
-				Config: ProviderConfig + NfsAliasResourceConfigUpdateErr,
+				Config:      ProviderConfig + NfsAliasResourceConfigUpdateErr,
 				ExpectError: regexp.MustCompile(`.*Error updating nfs alias*.`),
 			},
 			{
-				Config: ProviderConfig + NfsAliasResourceConfigUpdateErr2,
+				Config:      ProviderConfig + NfsAliasResourceConfigUpdateErr2,
 				ExpectError: regexp.MustCompile(`.*Error updating nfs alias*.`),
 			},
-			
+		},
+	})
+}
+
+func TestAccNfsAliasResourceMockErr(t *testing.T) {
+	var diags diag.Diagnostics
+	diags.AddError("mock error", "mock error")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					FunctionMocker = mockey.Mock(helper.CreateNfsAlias).Return(diags).Build()
+				},
+				Config:      ProviderConfig + NfsAliasResourceConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					FunctionMocker = mockey.Mock(helper.ReadNfsAlias).Return(diags).Build()
+				},
+				Config:      ProviderConfig + NfsAliasResourceConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + NfsAliasResourceConfig,
+				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+		},
+	})
+}
+
+func TestAccNfsAliasResourceImportMockErr(t *testing.T) {
+	var diags diag.Diagnostics
+	diags.AddError("mock error", "mock error")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfig + NfsAliasResourceConfig,
+			},
+			// Import and read Error testing
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					FunctionMocker = mockey.Mock(helper.ReadNfsAlias).Return(diags).Build()
+				},
+				Config:            ProviderConfig + NfsAliasResourceConfig,
+				ResourceName:      "powerscale_nfs_alias.example",
+				ImportState:       true,
+				ExpectError:       regexp.MustCompile(`.*mock error*.`),
+				ImportStateVerify: true,
+			},
+			{
+				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
+					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
+				},
+				Config:       ProviderConfig + NfsAliasResourceConfig,
+				ResourceName: "powerscale_nfs_alias.example",
+				ImportState:  true,
+				ExpectError:  regexp.MustCompile(`.*mock error*.`),
+			},
 		},
 	})
 }
 
 var NfsAliasResourceConfig = `
 resource "powerscale_nfs_alias" "example" {
-	# Required field both for creating and updating
    name = "/NfsAlias"
    path = "/ifs"
    zone = "System"
@@ -87,7 +168,6 @@ resource "powerscale_nfs_alias" "example" {
 
 var NfsAliasResourceConfigCreateErr = `
 resource "powerscale_nfs_alias" "example" {
-	# Required field both for creating and updating
    name = "NfsAlias"
    path = "/ifs"
    zone = "Invalid"
@@ -96,7 +176,6 @@ resource "powerscale_nfs_alias" "example" {
 
 var NfsAliasResourceConfigUpdateErr = `
 resource "powerscale_nfs_alias" "example" {
-	# Required field both for creating and updating
    name = "/NfsAlias"
    path = "/ifs"
    zone = "Update"
@@ -105,7 +184,6 @@ resource "powerscale_nfs_alias" "example" {
 
 var NfsAliasResourceConfigUpdateErr2 = `
 resource "powerscale_nfs_alias" "example" {
-	# Required field both for creating and updating
    name = "/NfsAlias"
    path = "/Invalid"
    zone = "System"
