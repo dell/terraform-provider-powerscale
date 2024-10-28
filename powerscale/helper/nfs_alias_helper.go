@@ -20,16 +20,15 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"strconv"
 
 	"fmt"
-	// "github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	// "github.com/hashicorp/terraform-plugin-framework/types"
-	// "github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/models"
-	// "terraform-provider-powerscale/powerscale/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 // UpdateSyncIQGlobalSettings updates the SyncIQ global settings.
@@ -140,4 +139,76 @@ func ReadNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAli
 	}
 
 	return diags
+}
+
+// GetNFSAlias retrieve nfs alias information.
+func GetNFSAlias(ctx context.Context, client *client.Client, nfsModel models.NfsExportResource) (*powerscale.V2NfsExportsExtended, error) {
+	queryParam := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv2NfsExport(ctx, strconv.FormatInt(nfsModel.ID.ValueInt64(), 10))
+	if !nfsModel.Zone.IsNull() {
+		queryParam = queryParam.Zone(nfsModel.Zone.ValueString())
+	}
+	if !nfsModel.Scope.IsNull() {
+		queryParam = queryParam.Scope(nfsModel.Scope.ValueString())
+	}
+	exportRes, _, err := queryParam.Execute()
+	return exportRes, err
+}
+
+// ListNFSAliases list nfs alias entities.
+func ListNFSAliases(ctx context.Context, client *client.Client, nfsFilter *models.NfsAliasDatasourceFilter) (*[]powerscale.V15NfsAliasExtended, error) {
+	listNfsParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv2NfsAliases(ctx)
+	if nfsFilter != nil {
+		if !nfsFilter.Zone.IsNull() {
+			listNfsParam = listNfsParam.Zone(nfsFilter.Zone.ValueString())
+		}
+		if !nfsFilter.Sort.IsNull() {
+			listNfsParam = listNfsParam.Sort(nfsFilter.Sort.ValueString())
+		}
+		if !nfsFilter.Dir.IsNull() {
+			listNfsParam = listNfsParam.Dir(nfsFilter.Dir.ValueString())
+		}
+		if !nfsFilter.Check.IsNull() {
+			listNfsParam = listNfsParam.Check(nfsFilter.Check.ValueBool())
+		}
+		if !nfsFilter.Limit.IsNull() {
+			listNfsParam = listNfsParam.Limit(int32(nfsFilter.Limit.ValueInt64()))
+		}
+	}
+	NfsAliases, _, err := listNfsParam.Execute()
+	if err != nil {
+		return nil, err
+	}
+	totalNfsAliases := NfsAliases.Aliases
+	for NfsAliases.Resume != nil && (nfsFilter == nil || nfsFilter.Limit.IsNull()) {
+		resumeNfsParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv2NfsAliases(ctx).Resume(*NfsAliases.Resume)
+		NfsAliases, _, err = resumeNfsParam.Execute()
+		if err != nil {
+			return &totalNfsAliases, err
+		}
+		totalNfsAliases = append(totalNfsAliases, NfsAliases.Aliases...)
+	}
+	return &totalNfsAliases, nil
+}
+
+// FilterAliases list nfs aliases entities.
+func FilterAliases(paths []types.String, ids []types.String, exports []powerscale.V15NfsAliasExtended) ([]powerscale.V15NfsAliasExtended, error) {
+	// if names are specified filter locally
+	if len(paths) == 0 && len(ids) == 0 {
+		return exports, nil
+	}
+	var idFilteredExports []powerscale.V15NfsAliasExtended
+	if len(ids) == 0 {
+		idFilteredExports = exports
+	} else {
+		idMap := make(map[string]powerscale.V15NfsAliasExtended)
+		for _, export := range exports {
+			idMap[*export.Name] = export
+		}
+		for _, id := range ids {
+			if specifiedExport, ok := idMap[id.ValueString()]; ok {
+				idFilteredExports = append(idFilteredExports, specifiedExport)
+			}
+		}
+	}
+	return idFilteredExports, nil
 }

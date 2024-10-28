@@ -23,10 +23,39 @@ import "github.com/hashicorp/terraform-plugin-framework/types"
 type NfsAliasResourceModel struct {
 	// Query param
 	// Specifies which access zone to use.
-	Zone types.String `tfsdk:"zone"`
-
+	Zone   types.String `tfsdk:"zone"`
 	ID     types.String `tfsdk:"id"`
 	Name   types.String `tfsdk:"name"`
 	Health types.String `tfsdk:"health"`
 	Path   types.String `tfsdk:"path"`
+}
+
+// NfsAliasDatasource holds nfs aliases datasource schema attribute details.
+type NfsAliasDatasource struct {
+	ID               types.String               `tfsdk:"id"`
+	NfsAliases       []NfsAliasDatasourceEntity `tfsdk:"nfs_aliases"`
+	NfsAliasesFilter *NfsAliasDatasourceFilter  `tfsdk:"filter"`
+}
+
+// NfsAliasDatasourceFilter holds filter conditions.
+type NfsAliasDatasourceFilter struct {
+	// supported by api
+	Sort  types.String `tfsdk:"sort"`
+	Zone  types.String `tfsdk:"zone"`
+	Limit types.Int64  `tfsdk:"limit"`
+	Check types.Bool   `tfsdk:"check"`
+	Dir   types.String `tfsdk:"dir"`
+	// custom id & path list
+	IDs []types.String `tfsdk:"ids"`
+}
+
+// NfsAliasDatasourceEntity Specifies entity values for NFS exports.
+type NfsAliasDatasourceEntity struct {
+	// Specifies the system-assigned ID for the export. This ID is returned when an export is created through the POST method.
+	ID types.String `tfsdk:"id"`
+	// Specifies the zone in which the export is valid.
+	Zone   types.String `tfsdk:"zone"`
+	Name   types.String `tfsdk:"name"`
+	Path   types.String `tfsdk:"path"`
+	Health types.String `tfsdk:"health"`
 }
