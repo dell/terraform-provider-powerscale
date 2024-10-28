@@ -39,7 +39,7 @@ func TestAccAdsProviderDataSourceNames(t *testing.T) {
 				Config: ProviderConfig + AdsDataSourceNamesConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.#", "1"),
-					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.0.name", "PIE.LAB.EMC.COM"),
+					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.0.name", powerscaleAdsproviderName),
 					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.0.allocate_gids", "true"),
 					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.0.check_online_interval", "300"),
 					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.0.site", "Default-First-Site-Name"),
@@ -62,7 +62,7 @@ func TestAccAdsProviderDataSourceFilter(t *testing.T) {
 				Config: ProviderConfig + AdsDataSourceFilterConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.#", "1"),
-					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.0.name", "PIE.LAB.EMC.COM"),
+					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.0.name", powerscaleAdsproviderName),
 					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.0.site", "Default-First-Site-Name"),
 					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.0.status", "online"),
 					resource.TestCheckResourceAttr(adsTerraformName, "ads_providers_details.0.zone_name", "System"),
@@ -132,15 +132,9 @@ func TestAccAdsProviderDataSourceMappingErr(t *testing.T) {
 }
 
 var AdsDataSourceNamesConfig = `
-resource "powerscale_adsprovider" "ads_test" {
-	name = "PIE.LAB.EMC.COM"
-	user = "administrator"
-	password = "Password123!"
-}
-
 data "powerscale_adsprovider" "test" {
 	filter {
-		names = ["PIE.LAB.EMC.COM"]
+		names = ["%s"]
 	}
 	depends_on = [
 		powerscale_adsprovider.ads_test
@@ -149,12 +143,6 @@ data "powerscale_adsprovider" "test" {
 `
 
 var AdsDataSourceFilterConfig = `
-resource "powerscale_adsprovider" "ads_test" {
-	name = "PIE.LAB.EMC.COM"
-	user = "administrator"
-	password = "Password123!"
-}
-
 data "powerscale_adsprovider" "test" {
 	filter {
 		scope = "user"
@@ -166,12 +154,6 @@ data "powerscale_adsprovider" "test" {
 `
 
 var AdsAllDataSourceConfig = `
-resource "powerscale_adsprovider" "ads_test" {
-	name = "PIE.LAB.EMC.COM"
-	user = "administrator"
-	password = "Password123!"
-}
-
 data "powerscale_adsprovider" "all" {
 	depends_on = [
 		powerscale_adsprovider.ads_test
@@ -180,12 +162,6 @@ data "powerscale_adsprovider" "all" {
 `
 
 var AdsDataSourceNameConfigErr = `
-resource "powerscale_adsprovider" "ads_test" {
-	name = "PIE.LAB.EMC.COM"
-	user = "administrator"
-	password = "Password123!"
-}
-
 data "powerscale_adsprovider" "test" {
 	filter {
 		names = ["BadName"]
@@ -197,12 +173,6 @@ data "powerscale_adsprovider" "test" {
 `
 
 var AdsDataSourceFilterConfigErr = `
-resource "powerscale_adsprovider" "ads_test" {
-	name = "PIE.LAB.EMC.COM"
-	user = "administrator"
-	password = "Password123!"
-}
-
 data "powerscale_adsprovider" "test" {
 	filter {
 		invalidFilter = "badFilter"
