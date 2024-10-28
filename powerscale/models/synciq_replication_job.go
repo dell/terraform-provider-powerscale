@@ -45,19 +45,19 @@ type SyncIQReplicationJobModel struct {
 	CharSpecsReplicated        types.Int64  `tfsdk:"char_specs_replicated"`
 	TargetBytesRecovered       types.Int64  `tfsdk:"target_bytes_recovered"`
 	DirsNew                    types.Int64  `tfsdk:"dirs_new"`
-	PolicyId                   types.String `tfsdk:"policy_id"`
+	PolicyID                   types.String `tfsdk:"policy_id"`
 	UpdatedFilesReplicated     types.Int64  `tfsdk:"updated_files_replicated"`
 	FilesWithAdsReplicated     types.Int64  `tfsdk:"files_with_ads_replicated"`
 	EndTime                    types.Int64  `tfsdk:"end_time"`
 	BytesRecoverable           types.Int64  `tfsdk:"bytes_recoverable"`
-	Id                         types.String `tfsdk:"id"`
+	ID                         types.String `tfsdk:"id"`
 	UnchangedDataBytes         types.Int64  `tfsdk:"unchanged_data_bytes"`
 	SourceBytesRecovered       types.Int64  `tfsdk:"source_bytes_recovered"`
 	UpToDateFilesSkipped       types.Int64  `tfsdk:"up_to_date_files_skipped"`
 	SourceFilesUnlinked        types.Int64  `tfsdk:"source_files_unlinked"`
 	FifosReplicated            types.Int64  `tfsdk:"fifos_replicated"`
 	Error                      types.String `tfsdk:"error"`
-	JobId                      types.Int64  `tfsdk:"job_id"`
+	JobID                      types.Int64  `tfsdk:"job_id"`
 	FilesLinked                types.Int64  `tfsdk:"files_linked"`
 	SourceDirectoriesLinked    types.Int64  `tfsdk:"source_directories_linked"`
 	RetransmittedFiles         types.List   `tfsdk:"retransmitted_files"`

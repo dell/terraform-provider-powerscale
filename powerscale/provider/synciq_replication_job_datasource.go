@@ -36,7 +36,7 @@ var (
 	_ datasource.DataSourceWithConfigure = &SyncIQReplicationJobDataSource{}
 )
 
-// SyncIQReplicationJobDataSource creates a new syncIQ job data source.
+// NewSyncIQReplicationJobDataSource creates a new syncIQ job data source.
 func NewSyncIQReplicationJobDataSource() datasource.DataSource {
 	return &SyncIQReplicationJobDataSource{}
 }
