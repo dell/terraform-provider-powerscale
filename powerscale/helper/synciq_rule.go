@@ -131,18 +131,38 @@ var syncIQRuleResourceType = map[string]attr.Type{
 func NewSyncIQRulesResource(ctx context.Context, source *powerscale.V3SyncRules) (models.SyncIQRulesResource, diag.Diagnostics) {
 	var dgs diag.Diagnostics
 	bw := make([]models.SyncIQRuleResource, 0)
+	fc := make([]models.SyncIQRuleResource, 0)
+	cpu := make([]models.SyncIQRuleResource, 0)
+	worker := make([]models.SyncIQRuleResource, 0)
 	for _, item := range source.Rules {
 		state, diags := NewSyncIQRuleResource(ctx, item)
 		dgs.Append(diags...)
 		switch *item.Type {
 		case "bandwidth":
 			bw = append(bw, state)
+		case "file_count":
+			fc = append(fc, state)
+		case "cpu":
+			cpu = append(cpu, state)
+		case "worker":
+			worker = append(worker, state)
+		default:
+			dgs.AddError("Unknown rule type", *item.Type)
 		}
 	}
 	bwList, bwListDgs := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: syncIQRuleResourceType}, bw)
 	dgs.Append(bwListDgs...)
+	fcList, fcListDgs := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: syncIQRuleResourceType}, fc)
+	dgs.Append(fcListDgs...)
+	cpuList, cpuListDgs := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: syncIQRuleResourceType}, cpu)
+	dgs.Append(cpuListDgs...)
+	workerList, workerListDgs := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: syncIQRuleResourceType}, worker)
+	dgs.Append(workerListDgs...)
 	return models.SyncIQRulesResource{
 		BandWidthRules: bwList,
+		FileCountRules: fcList,
+		CPURules:       cpuList,
+		WorkerRules:    workerList,
 		ID:             types.StringValue("all"),
 	}, dgs
 }
@@ -229,8 +249,16 @@ func marshalJSONSyncIQRuleschedule(daysOfWeek []string, schedule *powerscale.V1S
 func GetRequestsFromSynciqRulesResource(ctx context.Context, source models.SyncIQRulesResource) models.SyncIQRulesResourceRequest {
 	ret := models.SyncIQRulesResourceRequest{
 		BandWidthRules: make([]models.SyncIQRuleResource, 0),
+		FileCountRules: make([]models.SyncIQRuleResource, 0),
+		CPURules:       make([]models.SyncIQRuleResource, 0),
+		WorkerRules:    make([]models.SyncIQRuleResource, 0),
 	}
+
 	source.BandWidthRules.ElementsAs(ctx, &ret.BandWidthRules, true)
+	source.FileCountRules.ElementsAs(ctx, &ret.FileCountRules, true)
+	source.CPURules.ElementsAs(ctx, &ret.CPURules, true)
+	source.WorkerRules.ElementsAs(ctx, &ret.WorkerRules, true)
+
 	return ret
 }
 

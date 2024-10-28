@@ -146,6 +146,17 @@ func (d *SyncIQRuleResource) update(ctx context.Context, plan, state models.Sync
 
 	// run update for bandwidth stack
 	dgs := d.updateStack(ctx, planReqs.BandWidthRules, stateReqs.BandWidthRules, "bandwidth")
+
+	// run update for file_count stack
+	dgs.Append(d.updateStack(ctx, planReqs.FileCountRules, stateReqs.FileCountRules, "file_count")...)
+
+	// run update for cpu stack
+	dgs.Append(d.updateStack(ctx, planReqs.CPURules, stateReqs.CPURules, "cpu")...)
+
+	// run update for worker stack
+	dgs.Append(d.updateStack(ctx, planReqs.WorkerRules, stateReqs.WorkerRules, "worker")...)
+
+	// check for any error
 	if dgs.HasError() {
 		return nil, dgs
 	}
@@ -219,11 +230,13 @@ func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTf
 
 // gets the ID for a synciq rule for a particular index in a particular stack
 func (d *SyncIQRuleResource) getID(i int, ruleType string) string {
-	var idType string
-	if ruleType == "bandwidth" {
-		idType = "bw"
+	idType := map[string]string{
+		"bandwidth":  "bw",
+		"cpu":        "cpu",
+		"file_count": "fc",
+		"worker":     "wk",
 	}
-	return fmt.Sprintf("%s-%d", idType, i)
+	return fmt.Sprintf("%s-%d", idType[ruleType], i)
 }
 
 // checks if two synciq rules are equal by comparing their JSON representations
