@@ -89,7 +89,7 @@ func ManageDataSourceSyncIQReplicationJob(ctx context.Context, plan *models.Sync
 		if err != nil {
 			resp.AddError(
 				"Unable to update SyncIQ replication job state",
-				fmt.Sprintf("Unable to update SyncIQ replication job state with error %s", err),
+				fmt.Sprintf("Unable to update SyncIQ replication job state with error %s", err.Error()),
 			)
 			return state, resp
 		}
