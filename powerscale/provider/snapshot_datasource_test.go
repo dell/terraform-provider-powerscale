@@ -102,6 +102,8 @@ var SnapshotDataSourceConfig = `
 data "powerscale_snapshot" "test" {
   filter {
     path = "/ifs/tfacc_file_system_test"
+	name = "Snapshot: 2024Apr15, 4:34 PM"
+	state = "active"
   }
 }
 output "powerscale_snapshot" {
