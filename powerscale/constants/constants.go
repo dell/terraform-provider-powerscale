@@ -475,4 +475,7 @@ const (
 
 	// CloneFileErrorMessage specifies error details occurred while cloning file.
 	CloneFileErrorMessage = "Could not clone file "
+
+	// ReadSyncIQReplicationJobErrorMessage specifies error details occurred while reading SyncIQ jobs.
+	ReadSyncIQReplicationJobErrorMessage = "Could not read SyncIQ jobs "
 )
