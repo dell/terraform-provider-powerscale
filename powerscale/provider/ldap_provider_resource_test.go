@@ -45,7 +45,7 @@ func TestAccLdapProviderResource(t *testing.T) {
 					resource.TestCheckResourceAttr(ldapResourceName, "name", "tfacc_ldap"),
 					resource.TestCheckResourceAttr(ldapResourceName, "zone_name", "System"),
 					resource.TestCheckResourceAttr(ldapResourceName, "base_dn", "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"),
-					resource.TestCheckResourceAttr(ldapResourceName, "server_uris.0", "ldap://10.225.108.11"),
+					resource.TestCheckResourceAttr(ldapResourceName, "server_uris.0", powerscaleLdapHost),
 				),
 			},
 			// ImportState testing
@@ -421,6 +421,8 @@ func TestAccLdapProviderResourceImportMockErr(t *testing.T) {
 }
 
 func TestAccLdapProviderResourceHelperMockErr(t *testing.T) {
+	mockV16LdapProviders, mockV11LdapProviders := getMockLdapProviderConfig()
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -595,7 +597,7 @@ func TestAccLdapProviderReleaseMockResource(t *testing.T) {
 var ldapProviderResourceConfig = `
 resource "powerscale_ldap_provider" "ldap_test" {
 	name = "tfacc_ldap"
-	server_uris = ["ldap://10.225.108.11"]
+	server_uris = ["%s"]
 	base_dn = "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"
 }
 `
@@ -603,7 +605,7 @@ resource "powerscale_ldap_provider" "ldap_test" {
 var ldapProviderResourceRenameConfig = `
 resource "powerscale_ldap_provider" "ldap_test" {
 	name = "tfacc_ldap_update"
-	server_uris = ["ldap://10.225.108.11"]
+	server_uris = ["%s"]
 	base_dn = "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"
 }
 `
@@ -611,7 +613,7 @@ resource "powerscale_ldap_provider" "ldap_test" {
 var ldapProviderResourceDisableConfig = `
 resource "powerscale_ldap_provider" "ldap_test" {
 	name = "tfacc_ldap"
-	server_uris = ["ldap://10.225.108.11"]
+	server_uris = ["%s"]
 	base_dn = "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"
 	enabled = false
 }
@@ -620,30 +622,41 @@ resource "powerscale_ldap_provider" "ldap_test" {
 var ldapProviderInvalidResourceConfig = `
 resource "powerscale_ldap_provider" "ldap_test" {
 	name = "tfacc_ldap"
-	server_uris = ["ldap://10.225.108.xx"]
+	server_uris = ["ldap://10.10.10.xx"]
 	base_dn = "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com"
 }
 `
 
-var mockName, mockBaseDN, mockTLSRevocationCheckLevel = "tfacc_ldap", "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com", "none"
-var mockServerUris = []string{"ldap://10.225.108.11"}
-var mockV16LdapProviders = powerscale.V16ProvidersLdap{
-	Ldap: []powerscale.V16ProvidersLdapLdapItem{
-		{
-			Name:                    &mockName,
-			BaseDn:                  &mockBaseDN,
-			ServerUris:              mockServerUris,
-			TlsRevocationCheckLevel: &mockTLSRevocationCheckLevel,
-		},
-	},
+func initLdapVars() {
+	// resource config
+	ldapProviderResourceConfig = fmt.Sprintf(ldapProviderResourceConfig, powerscaleLdapHost)
+	ldapProviderResourceRenameConfig = fmt.Sprintf(ldapProviderResourceRenameConfig, powerscaleLdapHost)
+	ldapProviderResourceDisableConfig = fmt.Sprintf(ldapProviderResourceDisableConfig, powerscaleLdapHost)
+
+	// datasource config
+	ldapProviderFilterNameDataSourceConfig = ldapProviderResourceConfig + ldapProviderFilterNameDataSourceConfig
+	ldapProviderFilterScopeDataSourceConfig = ldapProviderResourceConfig + ldapProviderFilterScopeDataSourceConfig
 }
 
-var mockV11LdapProviders = powerscale.V11ProvidersLdap{
-	Ldap: []powerscale.V11ProvidersLdapLdapItem{
-		{
-			Name:       &mockName,
-			BaseDn:     &mockBaseDN,
-			ServerUris: mockServerUris,
-		},
-	},
+func getMockLdapProviderConfig() (powerscale.V16ProvidersLdap, powerscale.V11ProvidersLdap) {
+	mockName, mockBaseDN, mockTLSRevocationCheckLevel := "tfacc_ldap", "dc=yulan,dc=pie,dc=lab,dc=emc,dc=com", "none"
+	mockServerUris := []string{powerscaleLdapHost}
+	return powerscale.V16ProvidersLdap{
+			Ldap: []powerscale.V16ProvidersLdapLdapItem{
+				{
+					Name:                    &mockName,
+					BaseDn:                  &mockBaseDN,
+					ServerUris:              mockServerUris,
+					TlsRevocationCheckLevel: &mockTLSRevocationCheckLevel,
+				},
+			},
+		}, powerscale.V11ProvidersLdap{
+			Ldap: []powerscale.V11ProvidersLdapLdapItem{
+				{
+					Name:       &mockName,
+					BaseDn:     &mockBaseDN,
+					ServerUris: mockServerUris,
+				},
+			},
+		}
 }

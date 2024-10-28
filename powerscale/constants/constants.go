@@ -18,6 +18,8 @@ limitations under the License.
 package constants
 
 const (
+	// APIErrorMessage specifies Generic REST API error message.
+	APIErrorMessage = "REST API returned with error: "
 
 	// ReadSnapshotErrorMessage specifies error details occurred while reading Snapshots.
 	ReadSnapshotErrorMessage = "Could not read snapshots "
@@ -476,4 +478,18 @@ const (
 
 	// DeleteNfsAliasErrorMsg specifies error details occurred while deleting nfs alias.
 	DeleteNfsAliasErrorMsg = "Could not delete nfs alias"
+	// ListWritableSnapshotMsg specifies error details occurred while listing writable snapshot.
+	ListWritableSnapshotMsg = "Could not list Writable Snapshot "
+
+	// CopyDirectoryErrorMessage specifies error details occurred while copying directory.
+	CopyDirectoryErrorMessage = "Could not copy directory "
+
+	// CopyFileErrorMessage specifies error details occurred while copying file.
+	CopyFileErrorMessage = "Could not copy file "
+
+	// CloneFileErrorMessage specifies error details occurred while cloning file.
+	CloneFileErrorMessage = "Could not clone file "
+
+	// ReadSyncIQReplicationJobErrorMessage specifies error details occurred while reading SyncIQ jobs.
+	ReadSyncIQReplicationJobErrorMessage = "Could not read SyncIQ jobs "
 )

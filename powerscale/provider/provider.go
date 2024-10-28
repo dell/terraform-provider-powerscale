@@ -19,11 +19,13 @@ package provider
 
 import (
 	"context"
+	"fmt"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -200,6 +202,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewS3ZoneSettingsResource,
 		NewClusterIdentityResource,
 		NewClusterTimeResource,
+		NewSyncIQRuleResource,
 		NewSyncIQPeerCertificateResource,
 		NewSupportAssistResource,
 		NewWriteableSnapshotResource,
@@ -249,6 +252,8 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewSyncIQGlobalSettingsDataSource,
 		NewSyncIQPeerCertificateDataSource,
 		NewNfsAliasDataSource,
+		NewWritableSnapshotDataSource,
+		NewSyncIQReplicationJobDataSource,
 	}
 }
 
@@ -259,4 +264,40 @@ func New(version string) func() provider.Provider {
 			version: version,
 		}
 	}
+}
+
+type commonResourceConfigurer struct {
+	client *client.Client
+	name   string
+}
+
+// Configure configures the resource.
+func (d *commonResourceConfigurer) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
+		return
+	}
+
+	pscaleClient, ok := req.ProviderData.(*client.Client)
+
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return
+	}
+
+	d.client = pscaleClient
+}
+
+// Metadata describes the resource arguments.
+func (d *commonResourceConfigurer) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_" + d.name
+}
+
+// ImportState implements resource.ResourceWithImportState.
+func (d *commonResourceConfigurer) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
