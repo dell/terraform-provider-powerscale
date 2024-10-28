@@ -27,10 +27,10 @@ output "powerscale_snapshot_data_all" {
 # Returns a subset of the PowerScale snapshots in order based on the filters provided in the filter block and their details
 data "powerscale_snapshot" "test" {
   filter {
-    path = "/ifs/data"
-    name = "SIQ-d340d80bbee0ae42a0a9ba186d37249d-new"
-    sort = "name"
-    dir = "DESC"
+    path  = "/ifs/data"
+    name  = "SIQ-d340d80bbee0ae42a0a9ba186d37249d-new"
+    sort  = "name"
+    dir   = "DESC"
     limit = 2
   }
 }
