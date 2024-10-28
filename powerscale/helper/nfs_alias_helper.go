@@ -31,7 +31,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// UpdateSyncIQGlobalSettings updates the SyncIQ global settings.
+// CreateNfsAlias created the Nfs alias on the array.
 func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAliasResourceModel, state *models.NfsAliasResourceModel) diag.Diagnostics {
 	var diags diag.Diagnostics
 	var toCreate powerscale.V2NfsAlias
@@ -95,6 +95,7 @@ func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsA
 	return diags
 }
 
+// ReadNfsAlias reads a particular nfs alias from the list of nfs aliases
 func ReadNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAliasResourceModel, state *models.NfsAliasResourceModel) diag.Diagnostics {
 	var diags diag.Diagnostics
 

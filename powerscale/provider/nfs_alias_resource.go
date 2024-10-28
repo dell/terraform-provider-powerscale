@@ -36,12 +36,12 @@ import (
 var _ resource.Resource = &NfsAliasResource{}
 var _ resource.ResourceWithImportState = &NfsAliasResource{}
 
-// NewAccessZoneResource creates a new resource.
+// NewNfsAliasResource creates a new resource.
 func NewNfsAliasResource() resource.Resource {
 	return &NfsAliasResource{}
 }
 
-// AccessZoneResource defines the resource implementation.
+// NfsAliasResource defines the resource implementation.
 type NfsAliasResource struct {
 	client *client.Client
 }
@@ -153,7 +153,7 @@ func (r *NfsAliasResource) Read(ctx context.Context, req resource.ReadRequest, r
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
-// Update updates the resource state Path, Name, AuthProviders.
+// Update updates the resource state Path, Name.
 func (r *NfsAliasResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Info(ctx, "updating access zone")
 	var plan *models.NfsAliasResourceModel
