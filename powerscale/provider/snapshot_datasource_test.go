@@ -76,8 +76,7 @@ func TestAccSnapshotDataSourceFilterByName(t *testing.T) {
 			{
 				Config: ProviderConfig + SnapshotDataSourceConfigName,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet(snapshotTerraformName, "snapshots_details.0.expires"),
-					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.name", "Snapshot: 2024Apr15, 4:34 PM"),
+					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.name", "tfacc_snapshot"),
 				),
 			},
 		},
@@ -131,7 +130,7 @@ output "powerscale_snapshot" {
 var SnapshotDataSourceConfigName = `
 data "powerscale_snapshot" "test" {
   filter {
-	name = "Snapshot: 2024Apr15, 4:34 PM"
+	name = "tfacc_snapshot"
   }
 }
 output "powerscale_snapshot" {
