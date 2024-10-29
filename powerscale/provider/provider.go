@@ -207,6 +207,7 @@ func (p *PscaleProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewSupportAssistResource,
 		NewWriteableSnapshotResource,
 		NewSnapshotRestoreResource,
+		NewNfsAliasResource,
 	}
 }
 
@@ -250,6 +251,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewSyncIQRuleDataSource,
 		NewSyncIQGlobalSettingsDataSource,
 		NewSyncIQPeerCertificateDataSource,
+		NewNfsAliasDataSource,
 		NewWritableSnapshotDataSource,
 		NewSyncIQReplicationJobDataSource,
 	}
