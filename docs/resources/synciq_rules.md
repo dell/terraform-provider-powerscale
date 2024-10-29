@@ -71,6 +71,28 @@ resource "powerscale_synciq_rules" "all_rules" {
       }
     },
   ]
+
+  cpu_rules = [
+    {
+      limit       = 16
+      description = "CPU limit"
+    }
+  ]
+
+  file_rules = [
+    {
+      limit       = 50
+      description = "File limit"
+    }
+  ]
+
+  worker_rules = [
+    {
+      limit       = 10
+      description = "Worker limit"
+      enabled     = false
+    }
+  ]
 }
 
 # After the execution of above resource block, replication rules would have been updated on the PowerScale array. For more information, Please check the terraform state file.
@@ -82,6 +104,9 @@ resource "powerscale_synciq_rules" "all_rules" {
 ### Optional
 
 - `bandwidth_rules` (Attributes List) List of bandwidth rules. (see [below for nested schema](#nestedatt--bandwidth_rules))
+- `cpu_rules` (Attributes List) List of CPU rules. (see [below for nested schema](#nestedatt--cpu_rules))
+- `file_count_rules` (Attributes List) List of file count rules. (see [below for nested schema](#nestedatt--file_count_rules))
+- `worker_rules` (Attributes List) List of worker rules. (see [below for nested schema](#nestedatt--worker_rules))
 
 ### Read-Only
 
@@ -106,6 +131,90 @@ Read-Only:
 
 <a id="nestedatt--bandwidth_rules--schedule"></a>
 ### Nested Schema for `bandwidth_rules.schedule`
+
+Optional:
+
+- `begin` (String) Start time (inclusive) for this schedule, during its specified days. Format is `hh:mm` (24h format hour, and minute).  A null value indicates the beginning of the day (`00:00`).
+- `days_of_week` (Set of String) Set of days of the week during which this rule is in effect. Accepted values are `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`. At least one day must be set.
+- `end` (String) End time (inclusive) for this schedule, during its specified days. Format is `hh:mm` (three-letter weekday name abbreviation, 24h format hour, and minute).  A null value indicates the end of the day (`23:59`).
+
+
+
+<a id="nestedatt--cpu_rules"></a>
+### Nested Schema for `cpu_rules`
+
+Required:
+
+- `limit` (Number) Amount of the specified system resource type that is limited by this rule. Units are kb/s for bandwidth, files/s for file-count, processing percentage used for cpu, or percentage of maximum available workers.
+
+Optional:
+
+- `description` (String) Description of this performance rule.
+- `enabled` (Boolean) Whether this performance rule is currently in effect during its specified intervals.
+- `schedule` (Attributes) A schedule defining when during a week this performance rule is in effect. If unspecified or null, the schedule will always be in effect. (see [below for nested schema](#nestedatt--cpu_rules--schedule))
+
+Read-Only:
+
+- `id` (String) The system ID given to this performance rule.
+
+<a id="nestedatt--cpu_rules--schedule"></a>
+### Nested Schema for `cpu_rules.schedule`
+
+Optional:
+
+- `begin` (String) Start time (inclusive) for this schedule, during its specified days. Format is `hh:mm` (24h format hour, and minute).  A null value indicates the beginning of the day (`00:00`).
+- `days_of_week` (Set of String) Set of days of the week during which this rule is in effect. Accepted values are `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`. At least one day must be set.
+- `end` (String) End time (inclusive) for this schedule, during its specified days. Format is `hh:mm` (three-letter weekday name abbreviation, 24h format hour, and minute).  A null value indicates the end of the day (`23:59`).
+
+
+
+<a id="nestedatt--file_count_rules"></a>
+### Nested Schema for `file_count_rules`
+
+Required:
+
+- `limit` (Number) Amount of the specified system resource type that is limited by this rule. Units are kb/s for bandwidth, files/s for file-count, processing percentage used for cpu, or percentage of maximum available workers.
+
+Optional:
+
+- `description` (String) Description of this performance rule.
+- `enabled` (Boolean) Whether this performance rule is currently in effect during its specified intervals.
+- `schedule` (Attributes) A schedule defining when during a week this performance rule is in effect. If unspecified or null, the schedule will always be in effect. (see [below for nested schema](#nestedatt--file_count_rules--schedule))
+
+Read-Only:
+
+- `id` (String) The system ID given to this performance rule.
+
+<a id="nestedatt--file_count_rules--schedule"></a>
+### Nested Schema for `file_count_rules.schedule`
+
+Optional:
+
+- `begin` (String) Start time (inclusive) for this schedule, during its specified days. Format is `hh:mm` (24h format hour, and minute).  A null value indicates the beginning of the day (`00:00`).
+- `days_of_week` (Set of String) Set of days of the week during which this rule is in effect. Accepted values are `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`. At least one day must be set.
+- `end` (String) End time (inclusive) for this schedule, during its specified days. Format is `hh:mm` (three-letter weekday name abbreviation, 24h format hour, and minute).  A null value indicates the end of the day (`23:59`).
+
+
+
+<a id="nestedatt--worker_rules"></a>
+### Nested Schema for `worker_rules`
+
+Required:
+
+- `limit` (Number) Amount of the specified system resource type that is limited by this rule. Units are kb/s for bandwidth, files/s for file-count, processing percentage used for cpu, or percentage of maximum available workers.
+
+Optional:
+
+- `description` (String) Description of this performance rule.
+- `enabled` (Boolean) Whether this performance rule is currently in effect during its specified intervals.
+- `schedule` (Attributes) A schedule defining when during a week this performance rule is in effect. If unspecified or null, the schedule will always be in effect. (see [below for nested schema](#nestedatt--worker_rules--schedule))
+
+Read-Only:
+
+- `id` (String) The system ID given to this performance rule.
+
+<a id="nestedatt--worker_rules--schedule"></a>
+### Nested Schema for `worker_rules.schedule`
 
 Optional:
 

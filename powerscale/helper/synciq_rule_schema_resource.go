@@ -57,6 +57,36 @@ func SyncIQRulesResourceSchema(ctx context.Context) schema.Schema {
 					listplanmodifier.UseStateForUnknown(),
 				},
 			},
+			"file_count_rules": schema.ListNestedAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "List of file count rules.",
+				MarkdownDescription: "List of file count rules.",
+				NestedObject:        siqRuleResSchemaSingle(),
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"cpu_rules": schema.ListNestedAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "List of CPU rules.",
+				MarkdownDescription: "List of CPU rules.",
+				NestedObject:        siqRuleResSchemaSingle(),
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"worker_rules": schema.ListNestedAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "List of worker rules.",
+				MarkdownDescription: "List of worker rules.",
+				NestedObject:        siqRuleResSchemaSingle(),
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
+			},
 		},
 	}
 }

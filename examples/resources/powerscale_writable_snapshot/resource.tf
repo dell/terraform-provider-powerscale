@@ -22,14 +22,79 @@ limitations under the License.
 # `terraform destroy` will delete the Writable Snapshot resource from terraform state file as well as from PowerScale.
 # For more information, Please check the terraform state file.
 
-resource "powerscale_writable_snapshot" "writablesnap" {
-  # dst_path is the path of the writable snapshot.
-  dst_path = "/ifs/abcd"
 
-  # snap_id is the source snapshot of the writable snapshot.
-  snap_id = "5709"
+# Scenario 1
+# To create multiple writable snapshots using a snap id
+
+# snapshot ID for which writable snapshot needs to be created
+variable "snap_id" {
+  description = "The ID of the source snapshot"
+  type        = string
+  # default     = "snap_id"
 }
 
-# After the execution of above resource block, Writable Snapshot Settings would have been cached in terraform state file, and
-# A new Writable Snapshot would have been created on PowerScale.
+# Number of writable snapshots to be created from the snap_id
+variable "num_writable_snapshots" {
+  description = "The number of writable snapshots to create"
+  type        = number
+  default     = 3
+}
+
+# Example to create multiple writable snapshots from a single snapshot
+resource "powerscale_writable_snapshot" "writablesnap" {
+  count = var.num_writable_snapshots
+
+  dst_path = "/ifs/writable_snapshot${count.index}"
+  snap_id  = var.snap_id
+}
+
+
+# Scenario 2
+# To create multiple writable snaphots using datasource
+
+# Fetch snapshot data using snapshot datasource filters
+data "powerscale_snapshot" "all" {
+  filter {
+    # sort = "created"
+    # dir = "asc"
+    # limit = 5
+  }
+}
+
+# output command to verify the fetched snapshot
+output "powerscale_snapshot_all_snaps" {
+  value = data.powerscale_snapshot.all.snapshots_details
+}
+
+# create multiple writable snapshots with snap id fetched using datasource
+locals {
+  writable_snapshots = [
+    for i, snap in data.powerscale_snapshot.all.snapshots_details : {
+      dst_path = "/ifs/writable_snapshot${i}"
+      snap_id  = snap.id
+    }
+  ]
+}
+
+resource "powerscale_writable_snapshot" "writablesnap" {
+  for_each = { for snap in local.writable_snapshots : snap.dst_path => snap }
+
+  dst_path = each.value.dst_path
+  snap_id  = each.value.snap_id
+}
+
+
+# Scenario 3
+# To create a single writable snapshot
+
+resource "powerscale_writable_snapshot" "writablesnap" {
+  # dst_path is the path of the writable snapshot.
+  dst_path = "/ifs/writable_snapshot"
+
+  # snap_id is the source snapshot of the writable snapshot.
+  snap_id = "snap_id"
+}
+
+# After the execution of above resource block, single/multiple Writable Snapshot(s) would have been cached in terraform state file, and
+# Single/Multiple new Writable Snapshot(s) would have been created on PowerScale.
 # For more information, Please check the terraform state file.
