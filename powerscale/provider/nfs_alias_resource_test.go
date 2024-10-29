@@ -34,7 +34,9 @@ func TestAccNfsAliasResource(t *testing.T) {
 			// Create and Read testing
 			{
 				Config: ProviderConfig + NfsAliasResourceConfig,
-				Check:  resource.ComposeAggregateTestCheckFunc(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerscale_nfs_alias.example", "name", "/NfsAlias"),
+				),
 			},
 		},
 	})
