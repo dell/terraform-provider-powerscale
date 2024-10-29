@@ -188,21 +188,13 @@ func (r *NfsAliasResource) Update(ctx context.Context, req resource.UpdateReques
 		editValues.Path = plan.Path.ValueStringPointer()
 	}
 
-	editParam := r.client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv2NfsAlias(ctx, state.ID.ValueString())
-	editParam = editParam.V2NfsAlias(editValues)
-
-	_, err := editParam.Execute()
-	if err != nil {
-		errStr := constants.UpdateNfsAliasErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating nfs alias",
-			message,
-		)
+	diags := helper.UpdateNfsAlias(ctx, r.client, editValues, state)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
 		return
 	}
 
-	diags := helper.ReadNfsAlias(ctx, r.client, *plan, state)
+	diags = helper.ReadNfsAlias(ctx, r.client, *plan, state)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return

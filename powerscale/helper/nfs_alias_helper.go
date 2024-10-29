@@ -95,11 +95,31 @@ func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsA
 	return diags
 }
 
+// UpdateNfsAlias Update a particular nfs alias
+func UpdateNfsAlias(ctx context.Context, client *client.Client, editValues powerscale.V2NfsAliasExtended, state *models.NfsAliasResourceModel) diag.Diagnostics {
+	var diags diag.Diagnostics
+
+	editParam := client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv2NfsAlias(ctx, state.ID.ValueString())
+	editParam = editParam.V2NfsAlias(editValues)
+
+	_, err := editParam.Execute()
+	if err != nil {
+		errStr := constants.UpdateNfsAliasErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		diags.AddError(
+			"Error updating nfs alias",
+			message,
+		)
+	}
+
+	return diags
+}
+
 // ReadNfsAlias reads a particular nfs alias from the list of nfs aliases
 func ReadNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAliasResourceModel, state *models.NfsAliasResourceModel) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	checkParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv2NfsAliases(ctx)
+	checkParam := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv2NfsAlias(ctx, plan.Name.ValueString())
 	checkParam = checkParam.Check(true)
 	nfsAliases, _, err := checkParam.Execute()
 	if err != nil {
