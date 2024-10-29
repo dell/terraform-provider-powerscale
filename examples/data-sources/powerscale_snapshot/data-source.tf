@@ -27,9 +27,9 @@ output "powerscale_snapshot_data_all" {
 # Returns a subset of the PowerScale snapshots in order based on the filters provided in the filter block and their details
 data "powerscale_snapshot" "test" {
   filter {
-    path  = "/ifs"
-    sort  = "name"
-    dir   = "DESC"
+    path = "/ifs"
+    sort = "name"
+    dir  = "DESC"
   }
 }
 
