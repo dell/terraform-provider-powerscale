@@ -56,6 +56,9 @@ func TestAccSynciqRulesResource(t *testing.T) {
 							}
 						},
 					]
+					file_count_rules = []
+					cpu_rules = []
+					worker_rules = []
 				}
 				`
 	with3RuleMinimal := `
@@ -113,6 +116,21 @@ func TestAccSynciqRulesResource(t *testing.T) {
 								end = "23:59"
 							}
 						},
+					]
+					file_count_rules = [
+						{
+							limit = 30
+						}
+					]
+					cpu_rules = [
+						{
+							limit = 10
+						}
+					]
+					worker_rules = [
+						{
+							limit = 10
+						}
 					]
 				}
 				`
