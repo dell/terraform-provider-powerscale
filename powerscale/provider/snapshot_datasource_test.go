@@ -66,6 +66,24 @@ func TestAccSnapshotDataSourceAll(t *testing.T) {
 	})
 }
 
+func TestAccSnapshotDataSourceFilterByName(t *testing.T) {
+	var snapshotTerraformName = "data.powerscale_snapshot.test"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Name filter read testing
+			{
+				Config: ProviderConfig + SnapshotDataSourceConfigName,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet(snapshotTerraformName, "snapshots_details.0.expires"),
+					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.name", "Snapshot: 2024Apr15, 4:34 PM"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccSnapshotDataSourceGetErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -102,8 +120,18 @@ var SnapshotDataSourceConfig = `
 data "powerscale_snapshot" "test" {
   filter {
     path = "/ifs/tfacc_file_system_test"
-	name = "Snapshot: 2024Apr15, 4:34 PM"
 	state = "active"
+  }
+}
+output "powerscale_snapshot" {
+	value = data.powerscale_snapshot.test
+}
+`
+
+var SnapshotDataSourceConfigName = `
+data "powerscale_snapshot" "test" {
+  filter {
+	name = "Snapshot: 2024Apr15, 4:34 PM"
   }
 }
 output "powerscale_snapshot" {

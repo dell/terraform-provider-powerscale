@@ -25,8 +25,11 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -157,10 +160,16 @@ func (d *SnapshotDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Attributes: map[string]schema.Attribute{
 					"path": schema.StringAttribute{
 						Optional: true,
+						Validators: []validator.String{
+							stringvalidator.ConflictsWith(path.MatchRoot("filter").AtName("limit")),
+						},
 					},
 
 					"name": schema.StringAttribute{
 						Optional: true,
+						Validators: []validator.String{
+							stringvalidator.ConflictsWith(path.MatchRoot("filter").AtName("sort"), path.MatchRoot("filter").AtName("state"), path.MatchRoot("filter").AtName("limit"), path.MatchRoot("filter").AtName("dir"), path.MatchRoot("filter").AtName("path"), path.MatchRoot("filter").AtName("schedule"), path.MatchRoot("filter").AtName("type")),
+						},
 					},
 
 					"sort": schema.StringAttribute{
@@ -263,23 +272,7 @@ func (d *SnapshotDataSource) Read(ctx context.Context, req datasource.ReadReques
 		fulldetail = append(fulldetail, detail)
 	}
 
-	// Apply the Path Filter if it is set
-	if plan.SnapshotFilter != nil && plan.SnapshotFilter.Path.ValueString() != "" {
-		for _, sdm := range fulldetail {
-			if plan.SnapshotFilter.Path.ValueString() == sdm.Path.ValueString() {
-				state.Snapshots = append(state.Snapshots, sdm)
-			}
-		}
-		// If after the filter the length is still zero then that filter is invalid
-		if len(state.Snapshots) == 0 {
-			resp.Diagnostics.AddError(
-				"Error getting snapshots",
-				fmt.Sprintf("Path `%s` is invalid, it has no snapshots ", plan.SnapshotFilter.Path.ValueString()),
-			)
-			return
-		}
-	}
-
+	// Apply the Name Filter if it is set
 	if plan.SnapshotFilter != nil && plan.SnapshotFilter.Name.ValueString() != "" {
 		for _, sdm := range fulldetail {
 			if plan.SnapshotFilter.Name.ValueString() == sdm.Name.ValueString() {
@@ -290,7 +283,32 @@ func (d *SnapshotDataSource) Read(ctx context.Context, req datasource.ReadReques
 		if len(state.Snapshots) == 0 {
 			resp.Diagnostics.AddError(
 				"Error getting snapshots",
-				fmt.Sprintf("Name `%s` is invalid, it has no snapshots ", plan.SnapshotFilter.Path.ValueString()),
+				fmt.Sprintf("Unable to find snapshot with name `%s`", plan.SnapshotFilter.Name.ValueString()),
+			)
+			return
+		}
+	}
+	// Apply the Path Filter if it is set
+	if plan.SnapshotFilter != nil && plan.SnapshotFilter.Path.ValueString() != "" {
+
+		if !plan.SnapshotFilter.Limit.IsNull() {
+			resp.Diagnostics.AddError(
+				"Error getting snapshots",
+				"Path filter cannot be applied along with limit",
+			)
+			return
+		}
+
+		for _, sdm := range fulldetail {
+			if plan.SnapshotFilter.Path.ValueString() == sdm.Path.ValueString() {
+				state.Snapshots = append(state.Snapshots, sdm)
+			}
+		}
+		// If after the filter the length is still zero then that filter is invalid
+		if len(state.Snapshots) == 0 {
+			resp.Diagnostics.AddError(
+				"Error getting snapshots",
+				fmt.Sprintf("Unable to find snapshot with path `%s`", plan.SnapshotFilter.Path.ValueString()),
 			)
 			return
 		}
