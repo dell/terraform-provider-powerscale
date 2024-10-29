@@ -64,6 +64,8 @@ var powerscaleAdsproviderPassword = ""
 var powerscaleLdapHost = ""
 var powerscaleNetworkpoolHigh = ""
 var powerscaleNetworkpoolLow = ""
+var powerscaleDNSSearch = ""
+var powerscaleDNSServer = ""
 
 var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
@@ -115,6 +117,11 @@ func init() {
 	powerscaleNetworkpoolHigh = os.Getenv("POWERSCALE_NETWORKPOOL_HIGH")
 	powerscaleNetworkpoolLow = os.Getenv("POWERSCALE_NETWORKPOOL_LOW")
 	initNetworkPoolResourceConfig()
+
+	// dns config
+	powerscaleDNSSearch = os.Getenv("POWERSCALE_DNS_SEARCH")
+	powerscaleDNSServer = os.Getenv("POWERSCALE_DNS_SERVER")
+	initGroupnetConfig()
 
 	ProviderConfig = fmt.Sprintf(`
 		provider "powerscale" {
