@@ -68,7 +68,7 @@ func TestAccGroupnetResourceCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(groupnetResourceName, "id", "tfaccGroupnetUpdate"),
 					resource.TestCheckResourceAttr(groupnetResourceName, "description", "terraform groupnet resource"),
 					resource.TestCheckResourceAttr(groupnetResourceName, "dns_search.#", "1"),
-					resource.TestCheckResourceAttr(groupnetResourceName, "dns_search.0", "pie.lab.emc.com"),
+					resource.TestCheckResourceAttr(groupnetResourceName, "dns_search.0", powerscaleDNSSearch),
 					resource.TestCheckResourceAttr(groupnetResourceName, "dns_servers.#", "1"),
 					resource.TestCheckResourceAttr(groupnetResourceName, "dns_servers.0", "10.230.44.169"),
 					resource.TestCheckResourceAttr(groupnetResourceName, "subnets.#", "0"),
@@ -165,7 +165,7 @@ func TestAccGroupnetResourceImport(t *testing.T) {
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					assert.Equal(t, "tfaccGroupnetUpdate", s[0].Attributes["name"])
 					assert.Equal(t, "1", s[0].Attributes["dns_search.#"])
-					assert.Equal(t, "pie.lab.emc.com", s[0].Attributes["dns_search.0"])
+					assert.Equal(t, powerscaleDNSSearch, s[0].Attributes["dns_search.0"])
 					assert.Equal(t, "1", s[0].Attributes["dns_servers.#"])
 					assert.Equal(t, "10.230.44.169", s[0].Attributes["dns_servers.0"])
 					return nil
@@ -336,8 +336,8 @@ resource "powerscale_groupnet" "test" {
 	allow_wildcard_subdomains = true
 	server_side_dns_search = true
 	dns_resolver_rotate = false
-	dns_search = ["pie.lab.emc.com"]
-	dns_servers = ["10.230.44.169"]
+	dns_search = ["%s"]
+	dns_servers = ["%s"]
   }
 `
 
@@ -370,3 +370,8 @@ resource "powerscale_groupnet" "test" {
 	dns_search = ["_invalid_"]
   }
 `
+
+func initGroupnetConfig() {
+	groupnetResourceConfig = fmt.Sprintf(groupnetResourceConfig, powerscaleDNSSearch, powerscaleDNSServer)
+	groupnetFilterDataSourceConfig = fmt.Sprintf(groupnetFilterDataSourceConfig, powerscaleDNSSearch, powerscaleDNSServer)
+}
