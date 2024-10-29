@@ -93,14 +93,6 @@ func TestAccNfsAliasDatasourceErrorCopy(t *testing.T) {
 	})
 }
 
-var NfsAliasDatasourceConfig = `
-data "powerscale_nfs_alias" "export_datasource_test" {
-	filter {
-		ids = ["alias1"]
-	}
-}
-`
-
 var NfsAliasDatasourceGetWithQueryParam = `
 
 data "powerscale_nfs_alias" "export_datasource_test" {
