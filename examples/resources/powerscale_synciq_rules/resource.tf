@@ -39,6 +39,28 @@ resource "powerscale_synciq_rules" "all_rules" {
       }
     },
   ]
+
+  cpu_rules = [
+    {
+      limit       = 16
+      description = "CPU limit"
+    }
+  ]
+
+  file_rules = [
+    {
+      limit       = 50
+      description = "File limit"
+    }
+  ]
+
+  worker_rules = [
+    {
+      limit       = 10
+      description = "Worker limit"
+      enabled     = false
+    }
+  ]
 }
 
 # After the execution of above resource block, replication rules would have been updated on the PowerScale array. For more information, Please check the terraform state file.

@@ -145,7 +145,18 @@ func (d *SyncIQRuleResource) update(ctx context.Context, plan, state models.Sync
 	planReqs, stateReqs := helper.GetRequestsFromSynciqRulesResource(ctx, plan), helper.GetRequestsFromSynciqRulesResource(ctx, state)
 
 	// run update for bandwidth stack
-	dgs := d.updateStack(ctx, planReqs.BandWidthRules, stateReqs.BandWidthRules, "bandwidth")
+	dgs := d.updateStack(ctx, planReqs.BandWidthRules, stateReqs.BandWidthRules, constants.SyncIQRuleTypeBW)
+
+	// run update for file_count stack
+	dgs.Append(d.updateStack(ctx, planReqs.FileCountRules, stateReqs.FileCountRules, constants.SyncIQRuleTypeFC)...)
+
+	// run update for cpu stack
+	dgs.Append(d.updateStack(ctx, planReqs.CPURules, stateReqs.CPURules, constants.SyncIQRuleTypeCPU)...)
+
+	// run update for worker stack
+	dgs.Append(d.updateStack(ctx, planReqs.WorkerRules, stateReqs.WorkerRules, constants.SyncIQRuleTypeWK)...)
+
+	// check for any error
 	if dgs.HasError() {
 		return nil, dgs
 	}
@@ -157,7 +168,7 @@ func (d *SyncIQRuleResource) update(ctx context.Context, plan, state models.Sync
 // updateStack updates any one of the synciq rule stacks
 // the stack is identified by the ruleType param
 // only bandwidth supported now
-func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTfsdk []models.SyncIQRuleResource, ruleType string) diag.Diagnostics {
+func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTfsdk []models.SyncIQRuleResource, ruleType constants.SyncIQRuleType) diag.Diagnostics {
 	var dgs diag.Diagnostics
 
 	// convert plan and state to []powerscale.V3SyncRule
@@ -172,7 +183,7 @@ func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTf
 	if toBeDeleted := len(state) - len(plan); toBeDeleted > 0 {
 		// If number of planned rules is less than existing rules, delete the excess rules from last applicable to first
 		for i := toBeDeleted - 1; i >= 0; i-- {
-			id := d.getID(i, ruleType)
+			id := constants.GetSynciqRuleID(i, ruleType)
 			err := helper.DeleteSyncIQRule(ctx, d.client, id)
 			if err != nil {
 				message := helper.GetErrorString(err, constants.APIErrorMessage)
@@ -205,7 +216,7 @@ func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTf
 		if d.areRulesEqual(planItem, stateItem) {
 			continue
 		}
-		id := d.getID(i, ruleType)
+		id := constants.GetSynciqRuleID(i, ruleType)
 		err := helper.UpdateSyncIQRule(ctx, d.client, id, planItem)
 		if err != nil {
 			message := helper.GetErrorString(err, constants.APIErrorMessage)
@@ -215,15 +226,6 @@ func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTf
 	}
 
 	return nil
-}
-
-// gets the ID for a synciq rule for a particular index in a particular stack
-func (d *SyncIQRuleResource) getID(i int, ruleType string) string {
-	var idType string
-	if ruleType == "bandwidth" {
-		idType = "bw"
-	}
-	return fmt.Sprintf("%s-%d", idType, i)
 }
 
 // checks if two synciq rules are equal by comparing their JSON representations

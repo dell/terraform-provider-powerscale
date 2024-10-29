@@ -75,10 +75,16 @@ type Schedule struct {
 type SyncIQRulesResource struct {
 	ID             types.String `tfsdk:"id"`
 	BandWidthRules types.List   `tfsdk:"bandwidth_rules"`
+	FileCountRules types.List   `tfsdk:"file_count_rules"`
+	CPURules       types.List   `tfsdk:"cpu_rules"`
+	WorkerRules    types.List   `tfsdk:"worker_rules"`
 }
 
 // SyncIQRulesResourceRequest defines a model of with a list of rules for each stack
 type SyncIQRulesResourceRequest struct {
+	FileCountRules []SyncIQRuleResource
+	CPURules       []SyncIQRuleResource
+	WorkerRules    []SyncIQRuleResource
 	BandWidthRules []SyncIQRuleResource
 }
 
