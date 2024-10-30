@@ -140,7 +140,7 @@ resource "powerscale_snapshot" "test" {
 
 data "powerscale_snapshot" "test" {
   filter {
-	name = "tfacc_snapshot_1"
+	name = "tfacc_snapshot_10"
   }
 
   depends_on = [
