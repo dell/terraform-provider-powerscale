@@ -75,7 +75,7 @@ func TestAccSnapshotDataSourceFilterByName(t *testing.T) {
 			{
 				Config: ProviderConfig + SnapshotDataSourceNameConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.powerscale_snapshot.test", "snapshots_details.0.name", "tfacc_snapshot_1"),
+					resource.TestCheckResourceAttr("data.powerscale_snapshot.test", "snapshots_details.0.name", "tfacc_snapshot_10"),
 				),
 			},
 		},
