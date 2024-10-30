@@ -40,7 +40,7 @@ func TestAccSnapshotDataSource(t *testing.T) {
 					resource.TestCheckResourceAttrSet(snapshotTerraformName, "snapshots_details.0.expires"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.has_locks", "false"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.pct_reserve", "0"),
-					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.path", "/ifs/tfacc_snapshot"),
+					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.path", "/ifs/tfacc_file_system_test"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.shadow_bytes", "0"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.state", "active"),
 				),
@@ -75,7 +75,7 @@ func TestAccSnapshotDataSourceFilterByName(t *testing.T) {
 			{
 				Config: ProviderConfig + SnapshotDataSourceNameConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.powerscale_snapshot.test", "snapshots_details.0.name", "tfacc_snapshot_10"),
+					resource.TestCheckResourceAttr("data.powerscale_snapshot.test", "snapshots_details.0.name", "tfacc_snapshot_1"),
 				),
 			},
 		},
@@ -117,12 +117,12 @@ func TestAccSnapshotDataSourceMapErr(t *testing.T) {
 var SnapshotDataSourceConfig = `
 resource "powerscale_snapshot" "test" {
   path = "/ifs/tfacc_snapshot"
-  name = "tfacc_snapshot_10"
+  name = "tfacc_snapshot_1"
 }
 
 data "powerscale_snapshot" "test" {
   filter {
-	path = "/ifs/tfacc_snapshot"
+	path = "/ifs/tfacc_file_system_test"
 	state = "active"
   }
 
@@ -134,13 +134,13 @@ data "powerscale_snapshot" "test" {
 
 var SnapshotDataSourceNameConfig = `
 resource "powerscale_snapshot" "test" {
-  path = "/ifs/tfacc_snapshot"
-  name = "tfacc_snapshot_10"
+  path = "/ifs/tfacc_file_system_test"
+  name = "tfacc_snapshot_1"
 }
 
 data "powerscale_snapshot" "test" {
   filter {
-	name = "tfacc_snapshot_10"
+	name = "tfacc_snapshot_1"
   }
 
   depends_on = [
