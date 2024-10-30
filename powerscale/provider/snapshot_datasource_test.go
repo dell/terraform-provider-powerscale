@@ -40,7 +40,7 @@ func TestAccSnapshotDataSource(t *testing.T) {
 					resource.TestCheckResourceAttrSet(snapshotTerraformName, "snapshots_details.0.expires"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.has_locks", "false"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.pct_reserve", "0"),
-					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.path", "/ifs/tfacc_file_system_test"),
+					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.path", "/ifs/tfacc_snapshot"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.shadow_bytes", "0"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.state", "active"),
 				),
@@ -67,16 +67,15 @@ func TestAccSnapshotDataSourceAll(t *testing.T) {
 }
 
 func TestAccSnapshotDataSourceFilterByName(t *testing.T) {
-	var snapshotTerraformName = "data.powerscale_snapshot.test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Name filter read testing
 			{
-				Config: ProviderConfig + SnapshotDataSourceConfigName,
+				Config: ProviderConfig + SnapshotDataSourceNameConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(snapshotTerraformName, "snapshots_details.0.name", "tfacc_snapshot"),
+					resource.TestCheckResourceAttr("data.powerscale_snapshot.test", "snapshots_details.0.name", "tfacc_snapshot_1"),
 				),
 			},
 		},
@@ -116,25 +115,37 @@ func TestAccSnapshotDataSourceMapErr(t *testing.T) {
 }
 
 var SnapshotDataSourceConfig = `
+resource "powerscale_snapshot" "test" {
+  path = "/ifs/tfacc_snapshot"
+  name = "tfacc_snapshot_10"
+}
+
 data "powerscale_snapshot" "test" {
   filter {
-    path = "/ifs/tfacc_file_system_test"
+	path = "/ifs/tfacc_snapshot"
 	state = "active"
   }
-}
-output "powerscale_snapshot" {
-	value = data.powerscale_snapshot.test
+
+  depends_on = [
+	powerscale_snapshot.test
+  ]
 }
 `
 
-var SnapshotDataSourceConfigName = `
+var SnapshotDataSourceNameConfig = `
+resource "powerscale_snapshot" "test" {
+  path = "/ifs/tfacc_snapshot"
+  name = "tfacc_snapshot_10"
+}
+
 data "powerscale_snapshot" "test" {
   filter {
-	name = "tfacc_snapshot"
+	name = "tfacc_snapshot_1"
   }
-}
-output "powerscale_snapshot" {
-	value = data.powerscale_snapshot.test
+
+  depends_on = [
+	powerscale_snapshot.test
+  ]
 }
 `
 
