@@ -25,6 +25,14 @@ data "powerscale_groupnet" "example_groupnet" {
   }
 }
 
+# Returns a list of PowerScale Groupnets in order based on the filters. 
+data "powerscale_groupnet" "example_groupnet" {
+  filter {
+    sort = "name"
+    dir = "DESC"
+  }
+}
+
 # Output value of above block by executing 'terraform output' command.
 # The user can use the fetched information by the variable data.powerscale_groupnet.example_groupnet
 output "powerscale_groupnet_filter" {
