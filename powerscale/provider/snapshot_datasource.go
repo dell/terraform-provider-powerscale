@@ -25,8 +25,11 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -157,6 +160,52 @@ func (d *SnapshotDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Attributes: map[string]schema.Attribute{
 					"path": schema.StringAttribute{
 						Optional: true,
+						Validators: []validator.String{
+							stringvalidator.ConflictsWith(path.MatchRoot("filter").AtName("limit")),
+						},
+					},
+
+					"name": schema.StringAttribute{
+						Optional: true,
+						Validators: []validator.String{
+							stringvalidator.ConflictsWith(path.MatchRoot("filter").AtName("sort"), path.MatchRoot("filter").AtName("state"), path.MatchRoot("filter").AtName("limit"), path.MatchRoot("filter").AtName("dir"), path.MatchRoot("filter").AtName("path"), path.MatchRoot("filter").AtName("schedule"), path.MatchRoot("filter").AtName("type")),
+						},
+					},
+
+					"sort": schema.StringAttribute{
+						Optional:            true,
+						Description:         "The field that will be used for sorting.",
+						MarkdownDescription: "The field that will be used for sorting.",
+					},
+
+					"limit": schema.Int64Attribute{
+						Optional:            true,
+						Description:         "Return no more than this many results at once (see resume).",
+						MarkdownDescription: "Return no more than this many results at once (see resume).",
+					},
+
+					"dir": schema.StringAttribute{
+						Optional:            true,
+						Description:         "The direction of the sort.",
+						MarkdownDescription: "The direction of the sort.",
+					},
+
+					"state": schema.StringAttribute{
+						Optional:            true,
+						Description:         "The state of the snapshot.",
+						MarkdownDescription: "The state of the snapshot.",
+					},
+
+					"type": schema.StringAttribute{
+						Optional:            true,
+						Description:         "The type of the snapshot.",
+						MarkdownDescription: "The type of the snapshot.",
+					},
+
+					"schedule": schema.StringAttribute{
+						Optional:            true,
+						Description:         "The schedule of the snapshot.",
+						MarkdownDescription: "The schedule of the snapshot.",
 					},
 				},
 			},
@@ -196,7 +245,7 @@ func (d *SnapshotDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	result, err := helper.GetAllSnapshots(ctx, d.client)
+	result, err := helper.GetAllSnapshots(ctx, d.client, &plan)
 	if err != nil {
 		errStr := constants.ReadSnapshotErrorMessage + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -223,8 +272,33 @@ func (d *SnapshotDataSource) Read(ctx context.Context, req datasource.ReadReques
 		fulldetail = append(fulldetail, detail)
 	}
 
+	// Apply the Name Filter if it is set
+	if plan.SnapshotFilter != nil && plan.SnapshotFilter.Name.ValueString() != "" {
+		for _, sdm := range fulldetail {
+			if plan.SnapshotFilter.Name.ValueString() == sdm.Name.ValueString() {
+				state.Snapshots = append(state.Snapshots, sdm)
+			}
+		}
+		// If after the filter the length is still zero then that filter is invalid
+		if len(state.Snapshots) == 0 {
+			resp.Diagnostics.AddError(
+				"Error getting snapshots",
+				fmt.Sprintf("Unable to find snapshot with name `%s`", plan.SnapshotFilter.Name.ValueString()),
+			)
+			return
+		}
+	}
 	// Apply the Path Filter if it is set
 	if plan.SnapshotFilter != nil && plan.SnapshotFilter.Path.ValueString() != "" {
+
+		if !plan.SnapshotFilter.Limit.IsNull() {
+			resp.Diagnostics.AddError(
+				"Error getting snapshots",
+				"Path filter cannot be applied along with limit",
+			)
+			return
+		}
+
 		for _, sdm := range fulldetail {
 			if plan.SnapshotFilter.Path.ValueString() == sdm.Path.ValueString() {
 				state.Snapshots = append(state.Snapshots, sdm)
@@ -234,15 +308,18 @@ func (d *SnapshotDataSource) Read(ctx context.Context, req datasource.ReadReques
 		if len(state.Snapshots) == 0 {
 			resp.Diagnostics.AddError(
 				"Error getting snapshots",
-				fmt.Sprintf("Path `%s` is invalid, it has no snapshots ", plan.SnapshotFilter.Path.ValueString()),
+				fmt.Sprintf("Unable to find snapshot with path `%s`", plan.SnapshotFilter.Path.ValueString()),
 			)
 			return
 		}
 	} else {
 		state.Snapshots = append(state.Snapshots, fulldetail...)
 	}
+
 	// save into the Terraform state.
 	state.ID = types.StringValue("snapshot_datasource")
+
+	state.SnapshotFilter = plan.SnapshotFilter
 
 	tflog.Trace(ctx, "read the snapshot datasource")
 

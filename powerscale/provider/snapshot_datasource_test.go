@@ -66,6 +66,22 @@ func TestAccSnapshotDataSourceAll(t *testing.T) {
 	})
 }
 
+func TestAccSnapshotDataSourceFilterByName(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Name filter read testing
+			{
+				Config: ProviderConfig + SnapshotDataSourceNameConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("data.powerscale_snapshot.test", "snapshots_details.0.name", "tfacc_snapshot_1"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccSnapshotDataSourceGetErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -99,13 +115,37 @@ func TestAccSnapshotDataSourceMapErr(t *testing.T) {
 }
 
 var SnapshotDataSourceConfig = `
+resource "powerscale_snapshot" "test" {
+  path = "/ifs/tfacc_file_system_test"
+  name = "tfacc_snapshot_1"
+}
+
 data "powerscale_snapshot" "test" {
   filter {
-    path = "/ifs/tfacc_file_system_test"
+	path = "/ifs/tfacc_file_system_test"
+	state = "active"
   }
+
+  depends_on = [
+	powerscale_snapshot.test
+  ]
 }
-output "powerscale_snapshot" {
-	value = data.powerscale_snapshot.test
+`
+
+var SnapshotDataSourceNameConfig = `
+resource "powerscale_snapshot" "test" {
+  path = "/ifs/tfacc_file_system_test"
+  name = "tfacc_snapshot_1"
+}
+
+data "powerscale_snapshot" "test" {
+  filter {
+	name = "tfacc_snapshot_1"
+  }
+
+  depends_on = [
+	powerscale_snapshot.test
+  ]
 }
 `
 
