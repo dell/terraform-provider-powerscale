@@ -116,7 +116,7 @@ func TestAccSnapshotDataSourceMapErr(t *testing.T) {
 
 var SnapshotDataSourceConfig = `
 resource "powerscale_snapshot" "test" {
-  path = "/ifs/tfacc_snapshot"
+  path = "/ifs/tfacc_file_system_test"
   name = "tfacc_snapshot_1"
 }
 
