@@ -25,8 +25,11 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -130,8 +133,28 @@ func (d *GroupnetDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 			"filter": schema.SingleNestedBlock{
 				Attributes: map[string]schema.Attribute{
 					"names": schema.SetAttribute{
-						Optional:    true,
-						ElementType: types.StringType,
+						Optional:            true,
+						ElementType:         types.StringType,
+						Description:         "Only list groupnet matching this name.",
+						MarkdownDescription: "Only list groupnet matching this name.",
+						Validators: []validator.Set{
+							setvalidator.ConflictsWith(path.MatchRoot("filter").AtName("sort"), path.MatchRoot("filter").AtName("limit"), path.MatchRoot("filter").AtName("dir")),
+						},
+					},
+					"sort": schema.StringAttribute{
+						Optional:            true,
+						Description:         "The field that will be used for sorting.",
+						MarkdownDescription: "The field that will be used for sorting.",
+					},
+					"limit": schema.Int64Attribute{
+						Optional:            true,
+						Description:         "Return no more than this many results at once (see resume).",
+						MarkdownDescription: "Return no more than this many results at once (see resume).",
+					},
+					"dir": schema.StringAttribute{
+						Optional:            true,
+						Description:         "The direction of the sort.",
+						MarkdownDescription: "The direction of the sort.",
 					},
 				},
 			},
@@ -173,7 +196,7 @@ func (d *GroupnetDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	groupnets, err := helper.GetAllGroupnets(ctx, d.client)
+	groupnets, err := helper.GetAllGroupnets(ctx, d.client, &state)
 	if err != nil {
 		resp.Diagnostics.AddError("Error getting the list of PowerScale Groupnets.", err.Error())
 		return
