@@ -29,10 +29,34 @@ import (
 )
 
 // GetAllSnapshots returns the full list of snapshots.
-func GetAllSnapshots(ctx context.Context, client *client.Client) ([]powerscale.V1SnapshotSnapshotExtended, error) {
-	result, _, err := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv1SnapshotSnapshots(ctx).Execute()
+func GetAllSnapshots(ctx context.Context, client *client.Client, state *models.SnapshotDataSourceModel) ([]powerscale.V1SnapshotSnapshotExtended, error) {
+	snapshotParams := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv1SnapshotSnapshots(ctx)
+
+	if state.SnapshotFilter != nil {
+		if !state.SnapshotFilter.Sort.IsNull() {
+			snapshotParams = snapshotParams.Sort(state.SnapshotFilter.Sort.ValueString())
+		}
+		if !state.SnapshotFilter.Dir.IsNull() {
+			snapshotParams = snapshotParams.Dir(state.SnapshotFilter.Dir.ValueString())
+		}
+		if !state.SnapshotFilter.Limit.IsNull() {
+			snapshotParams = snapshotParams.Limit(int32(state.SnapshotFilter.Limit.ValueInt64()))
+		}
+		if !state.SnapshotFilter.Schedule.IsNull() {
+			snapshotParams = snapshotParams.Schedule(state.SnapshotFilter.Schedule.ValueString())
+		}
+		if !state.SnapshotFilter.State.IsNull() {
+			snapshotParams = snapshotParams.State(state.SnapshotFilter.State.ValueString())
+		}
+		if !state.SnapshotFilter.Type.IsNull() {
+			snapshotParams = snapshotParams.Type_(state.SnapshotFilter.Type.ValueString())
+		}
+	}
+
+	result, _, err := snapshotParams.Execute()
+
 	//pagination
-	for result.Resume != nil {
+	for result.Resume != nil && (state.SnapshotFilter != nil || state.SnapshotFilter.Limit.IsNull()) {
 		respAdd, _, errAdd := client.PscaleOpenAPIClient.SnapshotApi.ListSnapshotv1SnapshotSnapshots(context.Background()).Resume(*result.Resume).Execute()
 		if errAdd != nil {
 			return result.Snapshots, errAdd
