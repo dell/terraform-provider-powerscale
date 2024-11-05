@@ -21,6 +21,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+// SyncIQReplicationJobResourceModel describes the SyncIQ Replication Job resource data model.
+type SyncIQReplicationJobResourceModel struct {
+	Id           types.String `tfsdk:"id"`
+	Action       types.String `tfsdk:"action"`
+	IsPaused     types.Bool   `tfsdk:"is_paused"`
+	PollInterval types.Int64  `tfsdk:"poll_interval"`
+}
+
 // SyncIQReplicationJobDataSourceModel describes the SyncIQ Replication Job datasource data model.
 type SyncIQReplicationJobDataSourceModel struct {
 	SyncIQReplicationJobs []SyncIQReplicationJobModel `tfsdk:"synciq_jobs"`

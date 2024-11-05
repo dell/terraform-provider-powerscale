@@ -22,7 +22,7 @@ OS_ARCH=linux_amd64
 
 default: install
 
-build: extract-client
+build: 
 	go mod download
 	go build -o ${BINARY}
 
