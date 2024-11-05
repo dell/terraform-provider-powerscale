@@ -41,8 +41,8 @@ const (
 func GetSynciqRuleID(i int, ruleType SyncIQRuleType) string {
 	idType := map[SyncIQRuleType]string{
 		SyncIQRuleTypeBW:  "bw",
-		SyncIQRuleTypeFC:  "cpu",
-		SyncIQRuleTypeCPU: "fc",
+		SyncIQRuleTypeFC:  "fc",
+		SyncIQRuleTypeCPU: "cpu",
 		SyncIQRuleTypeWK:  "wk",
 	}
 	return fmt.Sprintf("%s-%d", idType[ruleType], i)
