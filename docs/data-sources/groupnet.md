@@ -100,7 +100,7 @@ output "powerscale_groupnet_all" {
 Optional:
 
 - `dir` (String) The direction of the sort.
-- `limit` (Number) Return no more than this many results at once (see resume).
+- `limit` (Number) Return no more than this many results.
 - `names` (Set of String) Only list groupnet matching this name.
 - `sort` (String) The field that will be used for sorting.
 
