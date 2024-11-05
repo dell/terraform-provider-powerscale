@@ -148,8 +148,8 @@ func (d *GroupnetDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 					},
 					"limit": schema.Int64Attribute{
 						Optional:            true,
-						Description:         "Return no more than this many results at once (see resume).",
-						MarkdownDescription: "Return no more than this many results at once (see resume).",
+						Description:         "Return no more than this many results.",
+						MarkdownDescription: "Return no more than this many results.",
 					},
 					"dir": schema.StringAttribute{
 						Optional:            true,
