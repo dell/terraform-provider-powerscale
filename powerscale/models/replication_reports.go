@@ -138,8 +138,8 @@ type PolicyDetail struct {
 	Action                   types.String              `tfsdk:"action"`
 	FileMatchingPattern      FileMatchingPatternDetail `tfsdk:"file_matching_pattern"`
 	Name                     types.String              `tfsdk:"name"`
-	SourceExcludeDirectories []types.String            `tfsdk:"source_exclude_directories"`
-	SourceIncludeDirectories []types.String            `tfsdk:"source_include_directories"`
+	SourceExcludeDirectories types.List                `tfsdk:"source_exclude_directories"`
+	SourceIncludeDirectories types.List                `tfsdk:"source_include_directories"`
 	SourceRootPath           types.String              `tfsdk:"source_root_path"`
 	TargetHost               types.String              `tfsdk:"target_host"`
 	TargetPath               types.String              `tfsdk:"target_path"`
