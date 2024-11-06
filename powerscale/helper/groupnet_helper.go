@@ -104,30 +104,35 @@ func UpdateGroupnetImportState(ctx context.Context, groupnetModel *models.Groupn
 }
 
 // GetAllGroupnets returns all groupnets.
-func GetAllGroupnets(ctx context.Context, client *client.Client) (groupnets []powerscale.V10NetworkGroupnetExtended, err error) {
+func GetAllGroupnets(ctx context.Context, client *client.Client, state *models.GroupnetDataSourceModel) (groupnets []powerscale.V10NetworkGroupnetExtended, err error) {
 
 	groupnetParams := client.PscaleOpenAPIClient.NetworkApi.ListNetworkv10NetworkGroupnets(ctx)
+
+	if state.Filter != nil {
+		if !state.Filter.Sort.IsNull() {
+			groupnetParams = groupnetParams.Sort(state.Filter.Sort.ValueString())
+		}
+		if !state.Filter.Dir.IsNull() {
+			groupnetParams = groupnetParams.Dir(state.Filter.Dir.ValueString())
+		}
+		if !state.Filter.Limit.IsNull() {
+			groupnetParams = groupnetParams.Limit(int32(state.Filter.Limit.ValueInt64()))
+		}
+	}
+
 	result, _, err := groupnetParams.Execute()
-	if err != nil {
-		errStr := constants.ReadGroupnetErrorMsg + "with error: "
-		message := GetErrorString(err, errStr)
-		return nil, fmt.Errorf("error getting groupnets: %s", message)
-	}
 
-	for {
-		groupnets = append(groupnets, result.Groupnets...)
-		if result.Resume == nil || *result.Resume == "" {
-			break
+	// pagination
+	for result.Resume != nil && (state.Filter == nil || state.Filter.Limit.IsNull()) {
+		groupnetParams = groupnetParams.Resume(*result.Resume)
+		newres, _, err := groupnetParams.Execute()
+		if err != nil {
+			return result.Groupnets, err
 		}
-
-		groupnetParams = client.PscaleOpenAPIClient.NetworkApi.ListNetworkv10NetworkGroupnets(ctx).Resume(*result.Resume)
-		if result, _, err = groupnetParams.Execute(); err != nil {
-			errStr := constants.ReadGroupnetErrorMsg + "with error: "
-			message := GetErrorString(err, errStr)
-			return nil, fmt.Errorf("error getting groupnets with resume: %s", message)
-		}
+		result.Resume = newres.Resume
+		result.Groupnets = append(result.Groupnets, newres.Groupnets...)
 	}
-	return
+	return result.Groupnets, err
 }
 
 // GetGroupnet Returns the Groupnet by groupnet name.

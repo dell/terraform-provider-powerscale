@@ -43,4 +43,7 @@ type GroupnetModel struct {
 // GroupnetFilterType holds filter attribute for groupnet.
 type GroupnetFilterType struct {
 	Names []types.String `tfsdk:"names"`
+	Sort  types.String   `tfsdk:"sort"`
+	Limit types.Int64    `tfsdk:"limit"`
+	Dir   types.String   `tfsdk:"dir"`
 }
