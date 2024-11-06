@@ -23,10 +23,10 @@ import (
 
 // SyncIQReplicationJobResourceModel describes the SyncIQ Replication Job resource data model.
 type SyncIQReplicationJobResourceModel struct {
-	Id           types.String `tfsdk:"id"`
-	Action       types.String `tfsdk:"action"`
-	IsPaused     types.Bool   `tfsdk:"is_paused"`
-	PollInterval types.Int64  `tfsdk:"poll_interval"`
+	Id       types.String `tfsdk:"id"`
+	Action   types.String `tfsdk:"action"`
+	IsPaused types.Bool   `tfsdk:"is_paused"`
+	WaitTime types.Int64  `tfsdk:"wait_time"`
 }
 
 // SyncIQReplicationJobDataSourceModel describes the SyncIQ Replication Job datasource data model.

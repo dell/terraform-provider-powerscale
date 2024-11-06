@@ -98,11 +98,11 @@ func (r *SyncIQReplicationJobResource) Schema(_ context.Context, _ resource.Sche
 				MarkdownDescription: "change job state to running or paused.",
 				Default:             booldefault.StaticBool(false),
 			},
-			"poll_interval": schema.Int64Attribute{
+			"wait_time": schema.Int64Attribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Poll Interval for the job",
-				MarkdownDescription: "Poll Interval for the job",
+				Description:         "Wait Time for the job",
+				MarkdownDescription: "Wait Time for the job",
 				Default:             int64default.StaticInt64(5),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -162,7 +162,7 @@ func (r *SyncIQReplicationJobResource) Read(ctx context.Context, req resource.Re
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	time.Sleep(time.Duration(state.PollInterval.ValueInt64()) * time.Second)
+	time.Sleep(time.Duration(state.WaitTime.ValueInt64()) * time.Second)
 	tflog.Debug(ctx, "calling get syncIQ Replication Job on powerscale client")
 	readState, httpResp, err := helper.GetSyncIQReplicationJob(ctx, r.client, state.Id.ValueString())
 	if err != nil {
@@ -256,7 +256,7 @@ func (r *SyncIQReplicationJobResource) Delete(ctx context.Context, req resource.
 			message,
 		)
 	}
-	time.Sleep(time.Duration(state.PollInterval.ValueInt64()) * time.Second)
+	time.Sleep(time.Duration(state.WaitTime.ValueInt64()) * time.Second)
 	resp.State.RemoveResource(ctx)
 	tflog.Trace(ctx, "resource_SyncIQReplicationJobResource delete: finished")
 }

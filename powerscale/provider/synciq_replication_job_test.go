@@ -29,15 +29,14 @@ var password = ""
 
 func TestAccSyncIQReplicationJobResource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck: func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps:                    []resource.TestStep{
+		Steps: []resource.TestStep{
 			{
 				Config: ProviderConfig + createReplicationJobConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_synciq_replication_job.job1", "id", "TerraformPolicy"),
 				),
-
 			},
 			{
 				Config: ProviderConfig + updateReplicationJobConfig,
@@ -49,9 +48,8 @@ func TestAccSyncIQReplicationJobResource(t *testing.T) {
 	})
 }
 
-
 var createReplicationJobConfig = fmt.Sprintf(`
-resource "null_resource" "large_file" {
+resource "terraform_data" "large_file" {
   provisioner "remote-exec" {
     inline = [
       "mkdir -p /ifs/terraform/source",
@@ -59,21 +57,35 @@ resource "null_resource" "large_file" {
       "mkdir -p /ifs/terraform/target"
     ]
     connection {
-      host     = "` + host +`"
-      user     = "` + user +`"
-      password = "` + password +`"
+      host     = "` + host + `"
+      user     = "` + user + `"
+      password = "` + password + `"
+      type     = "ssh"
+    }
+  }
+
+  provisioner "remote-exec" {
+    when = destroy
+    inline = [
+      "rm -rf /ifs/terraform",
+      "echo 'yes' | isi sync rules delete bw-0",
+    ]
+    connection {
+      host     = "` + host + `"
+      user     = "` + user + `"
+      password = "` + password + `"
       type     = "ssh"
     }
   }
 }
+
 resource "powerscale_synciq_policy" "policy" {
   name             = "TerraformPolicy"
   action           = "sync"
   source_root_path = "/ifs/terraform/source"
-  target_host      = "` + host +`"
+  target_host      = "` + host + `"
   target_path      = "/ifs/terraform/target"
-  depends_on       = [null_resource.large_file]
-
+  depends_on       = [terraform_data.large_file]
 }
 
 resource "powerscale_synciq_rules" "kb-10" {
@@ -87,42 +99,13 @@ resource "powerscale_synciq_rules" "kb-10" {
       }
     },
   ]
-  depends_on = [null_resource.large_file]
-}
-
-resource "time_sleep" "wait_5_seconds" {
-  depends_on = [
-    powerscale_synciq_policy.policy,
-    powerscale_synciq_rules.kb-10
-  ]
-  create_duration = "5s"
 }
 
 resource "powerscale_synciq_replication_job" "job1" {
   action = "run"
   id     = "TerraformPolicy"
   is_paused = false
-  depends_on = [
-    time_sleep.wait_5_seconds
-  ]
-}
-
-resource "null_resource" "clean_up" {
-  provisioner "remote-exec" {
-    when = destroy
-    inline = [
-      "sleep 10",
-      "rm -rf /ifs/terraform",
-      "echo 'yes' | isi sync rules delete bw-0",
-    ]
-    connection {
-      host     = "` + host +`"
-      user     = "` + user +`"
-      password = "` + password +`"
-      type     = "ssh"
-    }
-  }
-  depends_on = [ time_sleep.wait_5_seconds ]
+  depends_on = [powerscale_synciq_policy.policy]
 }
 `)
 
