@@ -62,8 +62,8 @@ func TestAccGroupnetDataSourceFilterNames(t *testing.T) {
 					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.name", "tfaccGroupnetDatasourceDep"),
 					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.id", "tfaccGroupnetDatasourceDep"),
 					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.description", "terraform groupnet datasource"),
-					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.dns_search.0", "pie.lab.emc.com"),
-					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.dns_servers.0", "10.230.44.169"),
+					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.dns_search.0", powerscaleDNSSearch),
+					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.dns_servers.0", powerscaleDNSServer),
 					resource.TestCheckResourceAttr(groupnetTerraformName, "groupnets.0.subnets.#", "0"),
 				),
 			},
@@ -146,8 +146,8 @@ resource "powerscale_groupnet" "test" {
 	allow_wildcard_subdomains = false
 	server_side_dns_search = true
 	dns_resolver_rotate = true
-	dns_search = ["pie.lab.emc.com"]
-	dns_servers = ["10.230.44.169"]
+	dns_search = ["%s"]
+	dns_servers = ["%s"]
   }
 
 data "powerscale_groupnet" "test" {

@@ -55,11 +55,19 @@ output "powerscale_snapshot_data_all" {
   value = data.powerscale_snapshot.all
 }
 
-# Returns a subset of the PowerScale snapshots based on the path provided in the `paths` filter block and their details
+# Returns a subset of the PowerScale snapshots in order based on the filters provided in the filter block and their details
 data "powerscale_snapshot" "test" {
-  # Optional path of the filesystem, this will return all the snapshots related to that particular path
   filter {
-    path = "/ifs/tfacc_file_system_test"
+    path = "/ifs"
+    sort = "name"
+    dir  = "DESC"
+  }
+}
+
+#Returns the snapshot with the given name
+data "powerscale_snapshot" "test" {
+  filter {
+    name = "name"
   }
 }
 
@@ -88,7 +96,14 @@ output "powerscale_snapshot" {
 
 Optional:
 
+- `dir` (String) The direction of the sort.
+- `limit` (Number) Return no more than this many results at once (see resume).
+- `name` (String)
 - `path` (String)
+- `schedule` (String) The schedule of the snapshot.
+- `sort` (String) The field that will be used for sorting.
+- `state` (String) The state of the snapshot.
+- `type` (String) The type of the snapshot.
 
 
 <a id="nestedatt--snapshots_details"></a>

@@ -21,6 +21,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+// DataSource models
+
 // SyncIQRuleDataSource defines the data source implementation.
 type SyncIQRuleDataSource struct {
 	// ID is the unique identifier of the data source.
@@ -65,4 +67,44 @@ type Schedule struct {
 	Begin types.String `tfsdk:"begin"`
 	// Thursday indicates if the rule is in effect on Thursday.
 	Thursday types.Bool `tfsdk:"thursday"`
+}
+
+// Resource models
+
+// SyncIQRulesResource defines the model of a SyncIQ rules resource.
+type SyncIQRulesResource struct {
+	ID             types.String `tfsdk:"id"`
+	BandWidthRules types.List   `tfsdk:"bandwidth_rules"`
+	FileCountRules types.List   `tfsdk:"file_count_rules"`
+	CPURules       types.List   `tfsdk:"cpu_rules"`
+	WorkerRules    types.List   `tfsdk:"worker_rules"`
+}
+
+// SyncIQRulesResourceRequest defines a model of with a list of rules for each stack
+type SyncIQRulesResourceRequest struct {
+	FileCountRules []SyncIQRuleResource
+	CPURules       []SyncIQRuleResource
+	WorkerRules    []SyncIQRuleResource
+	BandWidthRules []SyncIQRuleResource
+}
+
+// SyncIQRuleResource defines the model of a SyncIQ rule.
+type SyncIQRuleResource struct {
+	// Description is the description of the rule.
+	Description types.String `tfsdk:"description"`
+	// Enabled indicates if the rule is enabled.
+	Enabled types.Bool `tfsdk:"enabled"`
+	// ID is the unique identifier of the rule.
+	ID types.String `tfsdk:"id"`
+	// Limit is the limit of the rule.
+	Limit types.Int32 `tfsdk:"limit"`
+	// Schedule is the schedule of the rule.
+	Schedule types.Object `tfsdk:"schedule"`
+}
+
+// SyncIQRuleResourceSchedule defines the schedule of a SyncIQ rule.
+type SyncIQRuleResourceSchedule struct {
+	End        *string  `tfsdk:"end"`
+	Begin      *string  `tfsdk:"begin"`
+	DaysOfWeek []string `tfsdk:"days_of_week"`
 }

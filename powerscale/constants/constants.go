@@ -18,6 +18,8 @@ limitations under the License.
 package constants
 
 const (
+	// APIErrorMessage specifies Generic REST API error message.
+	APIErrorMessage = "REST API returned with error: "
 
 	// ReadSnapshotErrorMessage specifies error details occurred while reading Snapshots.
 	ReadSnapshotErrorMessage = "Could not read snapshots "
@@ -189,6 +191,9 @@ const (
 
 	// ListNfsExportErrorMsg specifies error details occurred while listing nfs exports.
 	ListNfsExportErrorMsg = "Could not list nfs exports "
+
+	// ListNfsAliasErrorMsg specifies error details occurred while listing nfs exports.
+	ListNfsAliasErrorMsg = "Could not list nfs aliases "
 
 	// GetSmbShareErrorMsg specifies error details occurred while getting smb share.
 	GetSmbShareErrorMsg = "Could not get smb share "
@@ -462,8 +467,21 @@ const (
 	// ReadSnapshotRestoreJobReportErrorMsg specifies error details occurred while reading snapshot restore job reports.
 	ReadSnapshotRestoreJobReportErrorMsg = "Could not read snapshot restore job reports "
 
-	// ReadReplicationReportsErrorMsg specifies error details occurred while reading replication reports.
+  // ReadReplicationReportsErrorMsg specifies error details occurred while reading replication reports.
 	ReadReplicationReportsErrorMsg = "Could not read Replication Reports"
+  
+	// CreateNfsAliasErrorMsg specifies error details occurred while creating nfs alias.
+	CreateNfsAliasErrorMsg = "Could not create nfs alias"
+
+	// ReadNfsAliasErrorMsg specifies error details occurred while reading nfs alias.
+	ReadNfsAliasErrorMsg = "Could not read nfs alias"
+
+	// UpdateNfsAliasErrorMsg specifies error details occurred while updating nfs alias.
+	UpdateNfsAliasErrorMsg = "Could not update nfs alias"
+
+	// DeleteNfsAliasErrorMsg specifies error details occurred while deleting nfs alias.
+	DeleteNfsAliasErrorMsg = "Could not delete nfs alias"
+
 	// ListWritableSnapshotMsg specifies error details occurred while listing writable snapshot.
 	ListWritableSnapshotMsg = "Could not list Writable Snapshot "
 
@@ -475,4 +493,7 @@ const (
 
 	// CloneFileErrorMessage specifies error details occurred while cloning file.
 	CloneFileErrorMessage = "Could not clone file "
+
+	// ReadSyncIQReplicationJobErrorMessage specifies error details occurred while reading SyncIQ jobs.
+	ReadSyncIQReplicationJobErrorMessage = "Could not read SyncIQ jobs "
 )

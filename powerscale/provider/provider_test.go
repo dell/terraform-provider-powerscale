@@ -58,6 +58,15 @@ var powerscaleEndpoint = ""
 var powerScaleSSHIP = ""
 var powerscaleSSHPort = "22"
 var powerscaleInsecure = false
+var powerscaleAdsproviderName = ""
+var powerscaleAdsproviderUsername = ""
+var powerscaleAdsproviderPassword = ""
+var powerscaleLdapHost = ""
+var powerscaleNetworkpoolHigh = ""
+var powerscaleNetworkpoolLow = ""
+var powerscaleDNSSearch = ""
+var powerscaleDNSServer = ""
+
 var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
 var BasicAuthProviderErrorConfig = ""
@@ -93,6 +102,26 @@ func init() {
 		return
 	}
 	powerScaleSSHIP = u.Hostname()
+
+	// ads provider config
+	powerscaleAdsproviderName = os.Getenv("POWERSCALE_ADS_PROVIDER_NAME")
+	powerscaleAdsproviderUsername = os.Getenv("POWERSCALE_ADS_PROVIDER_USERNAME")
+	powerscaleAdsproviderPassword = os.Getenv("POWERSCALE_ADS_PROVIDER_PASSWORD")
+	initAdsProviderConfig()
+
+	// ldap config
+	powerscaleLdapHost = os.Getenv("POWERSCALE_LDAP_HOST")
+	initLdapVars()
+
+	// networkpool config
+	powerscaleNetworkpoolHigh = os.Getenv("POWERSCALE_NETWORKPOOL_HIGH")
+	powerscaleNetworkpoolLow = os.Getenv("POWERSCALE_NETWORKPOOL_LOW")
+	initNetworkPoolResourceConfig()
+
+	// dns config
+	powerscaleDNSSearch = os.Getenv("POWERSCALE_DNS_SEARCH")
+	powerscaleDNSServer = os.Getenv("POWERSCALE_DNS_SERVER")
+	initGroupnetConfig()
 
 	ProviderConfig = fmt.Sprintf(`
 		provider "powerscale" {
