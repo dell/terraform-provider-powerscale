@@ -218,7 +218,6 @@ Read-Only:
 - `compliance_dir_links` (String) Compliance Dir Links
 - `corrected_lins` (String) Corrected LINs
 - `deleted_dirs` (String) Deleted Dirs
-- `deleted_files` (String) Deleted Files
 - `dirs` (String) Dirs
 - `files` (String) Files
 - `flipped_lins` (String) Flipped LINs
