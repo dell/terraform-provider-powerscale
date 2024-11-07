@@ -79,7 +79,7 @@ resource "powerscale_synciq_rules" "all_rules" {
     }
   ]
 
-  file_rules = [
+  file_count_rules = [
     {
       limit       = 50
       description = "File limit"
