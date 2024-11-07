@@ -67,11 +67,11 @@ func TestAccwritableSnapshotResourceImport(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker.Release()
 				},
-				Config:       ProviderConfig + writableSnapshotResourceConfig,
-				ResourceName: writableSnapshotResourceName,
-				ImportState:  true,
+				Config:        ProviderConfig + writableSnapshotResourceConfig,
+				ResourceName:  writableSnapshotResourceName,
+				ImportState:   true,
 				ImportStateId: "/ifs/abcd",
-				ExpectError:  nil,
+				ExpectError:   nil,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					resource.TestCheckResourceAttrSet(writableSnapshotResourceName, "dst_path")
 					resource.TestCheckResourceAttrSet(writableSnapshotResourceName, "src_path")
