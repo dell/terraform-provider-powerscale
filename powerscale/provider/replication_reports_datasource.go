@@ -233,11 +233,6 @@ func (d *ReplicationReportDataSource) Schema(ctx context.Context, req datasource
 												Description:         "Marked Directories",
 												MarkdownDescription: "Marked Directories",
 											},
-											"deleted_files": schema.StringAttribute{
-												Computed:            true,
-												Description:         "Deleted Files",
-												MarkdownDescription: "Deleted Files",
-											},
 										},
 									},
 									"phase": schema.StringAttribute{

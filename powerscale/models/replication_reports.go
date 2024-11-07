@@ -166,7 +166,6 @@ type StatisticsDetail struct {
 	ComplianceDirLinks types.String `tfsdk:"compliance_dir_links"`
 	CorrectedLins      types.String `tfsdk:"corrected_lins"`
 	DeletedDirs        types.String `tfsdk:"deleted_dirs"`
-	DeletedFiles       types.String `tfsdk:"deleted_files"`
 	Dirs               types.String `tfsdk:"dirs"`
 	Files              types.String `tfsdk:"files"`
 	FlippedLins        types.String `tfsdk:"flipped_lins"`
