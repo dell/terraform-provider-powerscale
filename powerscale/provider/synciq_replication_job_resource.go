@@ -167,7 +167,7 @@ func (r *SyncIQReplicationJobResource) Read(ctx context.Context, req resource.Re
 	readState, httpResp, err := helper.GetSyncIQReplicationJob(ctx, r.client, state.Id.ValueString())
 	if err != nil {
 		// need to discuss with team if we should remove resource from state or not
-		if httpResp.StatusCode == http.StatusNotFound {
+		if httpResp != nil && httpResp.StatusCode == http.StatusNotFound {
 			resp.State.RemoveResource(ctx)
 			resp.Diagnostics.AddWarning(
 				"SyncIQ Replication Job not found: Cleaning up state",

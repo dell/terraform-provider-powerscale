@@ -18,28 +18,68 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
+	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
 
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-var host = ""
-var user = ""
-var password = ""
-
 func TestAccSyncIQReplicationJobResource(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck: func() { testAccPreCheck(t) },
+	resource.UnitTest(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfig + createReplicationJobConfig,
+				Config:      ProviderConfig + errorReplicationJob,
+				ExpectError: regexp.MustCompile(`.*SyncIQ Replication Job cannot be paused befor job creation.*`),
+			},
+			{
+				PreConfig: func() {
+					FunctionMocker = mockey.Mock(helper.ReadFromState).Return(fmt.Errorf("Error reading create plan")).Build()
+				},
+				Config:      ProviderConfig + SetupReplication() + createReplicationJob,
+				ExpectError: regexp.MustCompile("Error reading create plan"),
+			},
+			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+					FunctionMocker = mockey.Mock(helper.CreateSyncIQReplicationJob).Return(nil, fmt.Errorf("Error creating syncIQ Replication Job")).Build()
+				},
+				Config:      ProviderConfig + SetupReplication() + createReplicationJob,
+				ExpectError: regexp.MustCompile("Error creating syncIQ Replication Job"),
+			},
+			{
+				// create synciq replication job positive test
+				PreConfig: func() {
+					FunctionMocker.Release()
+				},
+				Config: ProviderConfig + SetupReplication() + createReplicationJob,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_synciq_replication_job.job1", "id", "TerraformPolicy"),
 				),
 			},
 			{
-				Config: ProviderConfig + updateReplicationJobConfig,
+				PreConfig: func() {
+					FunctionMocker = mockey.Mock(helper.GetSyncIQReplicationJob).Return(nil, nil, fmt.Errorf("Error reading syncIQ Replication Job")).Build()
+				},
+				Config:      ProviderConfig + SetupReplication() + updateReplicationJob,
+				ExpectError: regexp.MustCompile("Error reading syncIQ Replication Job"),
+			},
+			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+					FunctionMocker = mockey.Mock(helper.UpdateSyncIQReplicationJob).Return(fmt.Errorf("Error updating syncIQ Replication Job")).Build()
+				},
+				Config:      ProviderConfig + SetupReplication() + updateReplicationJob,
+				ExpectError: regexp.MustCompile("Error updating syncIQ Replication Job"),
+			},
+			{
+				PreConfig: func() {
+					FunctionMocker.Release()
+				},
+				Config: ProviderConfig + SetupReplication() + updateReplicationJob,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_synciq_replication_job.job1", "id", "TerraformPolicy"),
 				),
@@ -48,71 +88,88 @@ func TestAccSyncIQReplicationJobResource(t *testing.T) {
 	})
 }
 
-var createReplicationJobConfig = fmt.Sprintf(`
-resource "terraform_data" "large_file" {
-  provisioner "remote-exec" {
-    inline = [
-      "mkdir -p /ifs/terraform/source",
-      "head -c 1000000000 /dev/urandom > /ifs/terraform/source/large_file.dat",
-      "mkdir -p /ifs/terraform/target"
-    ]
-    connection {
-      host     = "` + host + `"
-      user     = "` + user + `"
-      password = "` + password + `"
+func SetupReplication() string {
+  connection := fmt.Sprintf(`
+  connection {
+      host     = "%s"
+      user     = "%s"
+      password = "%s"
       type     = "ssh"
     }
-  }
+  `, powerScaleSSHIP, powerscaleUsername, powerscalePassword)
 
-  provisioner "remote-exec" {
-    when = destroy
-    inline = [
-      "rm -rf /ifs/terraform",
-      "echo 'yes' | isi sync rules delete bw-0",
-    ]
-    connection {
-      host     = "` + host + `"
-      user     = "` + user + `"
-      password = "` + password + `"
-      type     = "ssh"
+  createLargeFile := `
+  resource "terraform_data" "large_file" {
+    provisioner "remote-exec" {
+      inline = [
+        "mkdir -p /ifs/terraform/source",
+        "head -c 10000000 /dev/urandom > /ifs/terraform/source/large_file.dat",
+        "mkdir -p /ifs/terraform/target"
+      ]
+      ` + connection + `
     }
+
+    provisioner "remote-exec" {
+      when = destroy
+      inline = [
+        "rm -rf /ifs/terraform",
+        "echo 'yes' | isi sync rules delete bw-0",
+      ]
+      ` + connection + `
+    }
+  }`
+
+  createSyncIQPolicy := fmt.Sprintf(`
+  resource "powerscale_synciq_policy" "policy" {
+    name             = "TerraformPolicy"
+    action           = "sync"
+    source_root_path = "/ifs/terraform/source"
+    target_host      = "%s"
+    target_path      = "/ifs/terraform/target"
+    depends_on       = [terraform_data.large_file]
   }
+  `, powerScaleSSHIP)
+
+  createBandwidthRule := `
+  resource "powerscale_synciq_rules" "kb-10" {
+    bandwidth_rules = [
+      {
+        limit = 10
+        schedule = {
+          begin        = "00:00"
+          days_of_week = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+          end          = "23:59"
+        }
+      },
+    ]
+  }
+  `
+
+  return createLargeFile + createSyncIQPolicy + createBandwidthRule
 }
 
-resource "powerscale_synciq_policy" "policy" {
-  name             = "TerraformPolicy"
-  action           = "sync"
-  source_root_path = "/ifs/terraform/source"
-  target_host      = "` + host + `"
-  target_path      = "/ifs/terraform/target"
-  depends_on       = [terraform_data.large_file]
-}
 
-resource "powerscale_synciq_rules" "kb-10" {
-  bandwidth_rules = [
-    {
-      limit = 10
-      schedule = {
-        begin        = "00:00"
-        days_of_week = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-        end          = "23:59"
-      }
-    },
-  ]
-}
-
+var createReplicationJob = `
 resource "powerscale_synciq_replication_job" "job1" {
   action = "run"
   id     = "TerraformPolicy"
   is_paused = false
   depends_on = [powerscale_synciq_policy.policy]
 }
-`)
+`
 
-var updateReplicationJobConfig = `
+var updateReplicationJob = `
 resource "powerscale_synciq_replication_job" "job1" {
   action = "run"
   id     = "TerraformPolicy"
   is_paused = true
+  depends_on = [powerscale_synciq_policy.policy]
 }
 `
+
+var errorReplicationJob = `
+resource "powerscale_synciq_replication_job" "errorJob" {
+  action = "resync_prep"
+  id     = "TerraformPolicy"
+  is_paused = true
+}`
