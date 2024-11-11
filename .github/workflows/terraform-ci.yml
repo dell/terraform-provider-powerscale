@@ -41,7 +41,7 @@ jobs:
       - name: Extract go client
         run: make clean extract-client
       - name: Run the formatter, linter, and vetter
-        uses: dell/common-github-actions/go-code-formatter-linter-vetter@main
+        uses: dell/common-github-actions/go-code-formatter-vetter@main
         with:
           directories: ./powerscale/...
   sanitize:
