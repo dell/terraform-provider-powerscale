@@ -92,21 +92,25 @@ func SetupReplication() string {
 	connection := fmt.Sprintf(`
   connection {
       host     = "%s"
+	  port     = %s
       user     = "%s"
       password = "%s"
       type     = "ssh"
     }
-  `, powerScaleSSHIP, powerscaleUsername, powerscalePassword)
+  `, powerScaleSSHIP, powerscaleSSHPort, powerscaleUsername, powerscalePassword)
 
-	createLargeFile := `
+	createLargeFile := fmt.Sprintf(`
   resource "terraform_data" "large_file" {
     provisioner "remote-exec" {
       inline = [
         "mkdir -p /ifs/terraform/source",
         "head -c 10000000 /dev/urandom > /ifs/terraform/source/large_file.dat",
-        "mkdir -p /ifs/terraform/target"
+        "mkdir -p /ifs/terraform/target",
+		"isi sync rules create bandwidth 00:00-23:59 X-S 129",
+		"echo 'confirm create policy' | isi sync policies create --name=TerraformPolicy --source-root-path=/ifs/terraform/source/ --target-host=%s --target-path=/ifs/terraform/target/ --action=sync",
+		"sleep 10",
       ]
-      ` + connection + `
+      `+connection+`
     }
 
     provisioner "remote-exec" {
@@ -114,38 +118,12 @@ func SetupReplication() string {
       inline = [
         "rm -rf /ifs/terraform",
         "echo 'yes' | isi sync rules delete bw-0",
+		"echo 'yes' | isi sync policies delete TerraformPolicy",
       ]
-      ` + connection + `
+      `+connection+`
     }
-  }`
-
-	createSyncIQPolicy := fmt.Sprintf(`
-  resource "powerscale_synciq_policy" "policy" {
-    name             = "TerraformPolicy"
-    action           = "sync"
-    source_root_path = "/ifs/terraform/source"
-    target_host      = "%s"
-    target_path      = "/ifs/terraform/target"
-    depends_on       = [terraform_data.large_file]
-  }
-  `, powerScaleSSHIP)
-
-	createBandwidthRule := `
-  resource "powerscale_synciq_rules" "kb-10" {
-    bandwidth_rules = [
-      {
-        limit = 10
-        schedule = {
-          begin        = "00:00"
-          days_of_week = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-          end          = "23:59"
-        }
-      },
-    ]
-  }
-  `
-
-	return createLargeFile + createSyncIQPolicy + createBandwidthRule
+  }`, powerScaleSSHIP)
+	return createLargeFile
 }
 
 var createReplicationJob = `
@@ -153,7 +131,7 @@ resource "powerscale_synciq_replication_job" "job1" {
   action = "run"
   id     = "TerraformPolicy"
   is_paused = false
-  depends_on = [powerscale_synciq_policy.policy]
+  depends_on = [terraform_data.large_file]
 }
 `
 
@@ -162,7 +140,7 @@ resource "powerscale_synciq_replication_job" "job1" {
   action = "run"
   id     = "TerraformPolicy"
   is_paused = true
-  depends_on = [powerscale_synciq_policy.policy]
+  depends_on = [terraform_data.large_file]
 }
 `
 
