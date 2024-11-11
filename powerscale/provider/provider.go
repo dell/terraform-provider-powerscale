@@ -252,6 +252,7 @@ func (p *PscaleProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewSyncIQRuleDataSource,
 		NewSyncIQGlobalSettingsDataSource,
 		NewSyncIQPeerCertificateDataSource,
+		NewReplicationReportDataSource,
 		NewNfsAliasDataSource,
 		NewWritableSnapshotDataSource,
 		NewSyncIQReplicationJobDataSource,

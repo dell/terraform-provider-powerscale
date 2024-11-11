@@ -56,6 +56,14 @@ data "powerscale_groupnet" "example_groupnet" {
   }
 }
 
+# Returns a list of PowerScale Groupnets in order based on the filters in the filter block. 
+data "powerscale_groupnet" "example_groupnet" {
+  filter {
+    sort = "name"
+    dir  = "DESC"
+  }
+}
+
 # Output value of above block by executing 'terraform output' command.
 # The user can use the fetched information by the variable data.powerscale_groupnet.example_groupnet
 output "powerscale_groupnet_filter" {
@@ -91,7 +99,10 @@ output "powerscale_groupnet_all" {
 
 Optional:
 
-- `names` (Set of String)
+- `dir` (String) The direction of the sort.
+- `limit` (Number) Return no more than this many results.
+- `names` (Set of String) Only list groupnet matching this name.
+- `sort` (String) The field that will be used for sorting.
 
 
 <a id="nestedatt--groupnets"></a>

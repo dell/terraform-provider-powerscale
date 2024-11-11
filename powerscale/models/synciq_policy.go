@@ -58,7 +58,7 @@ type V14SyncPolicyExtendedModel struct {
 	LastJobState                      types.String                            `tfsdk:"last_job_state"`
 	LastStarted                       types.Int64                             `tfsdk:"last_started"`
 	LastSuccess                       types.Int64                             `tfsdk:"last_success"`
-	LinkedServicePolicies             []types.String                          `tfsdk:"linked_service_policies"`
+	LinkedServicePolicies             types.List                              `tfsdk:"linked_service_policies"`
 	LogLevel                          types.String                            `tfsdk:"log_level"`
 	LogRemovedFiles                   types.Bool                              `tfsdk:"log_removed_files"`
 	Name                              types.String                            `tfsdk:"name"`
@@ -79,8 +79,8 @@ type V14SyncPolicyExtendedModel struct {
 	SnapshotSyncPattern               types.String                            `tfsdk:"snapshot_sync_pattern"`
 	SourceCertificateID               types.String                            `tfsdk:"source_certificate_id"`
 	SourceDomainMarked                types.Bool                              `tfsdk:"source_domain_marked"`
-	SourceExcludeDirectories          []types.String                          `tfsdk:"source_exclude_directories"`
-	SourceIncludeDirectories          []types.String                          `tfsdk:"source_include_directories"`
+	SourceExcludeDirectories          types.List                              `tfsdk:"source_exclude_directories"`
+	SourceIncludeDirectories          types.List                              `tfsdk:"source_include_directories"`
 	SourceNetwork                     V1SyncPolicySourceNetworkModel          `tfsdk:"source_network"`
 	SourceRootPath                    types.String                            `tfsdk:"source_root_path"`
 	SourceSnapshotArchive             types.Bool                              `tfsdk:"source_snapshot_archive"`

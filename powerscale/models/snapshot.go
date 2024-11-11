@@ -29,7 +29,14 @@ type SnapshotDataSourceModel struct {
 
 // SnapshotFilterType describes the filter data model.
 type SnapshotFilterType struct {
-	Path types.String `tfsdk:"path"`
+	Path     types.String `tfsdk:"path"`
+	Name     types.String `tfsdk:"name"`
+	Sort     types.String `tfsdk:"sort"`
+	Schedule types.String `tfsdk:"schedule"`
+	State    types.String `tfsdk:"state"`
+	Limit    types.Int64  `tfsdk:"limit"`
+	Type     types.String `tfsdk:"type"`
+	Dir      types.String `tfsdk:"dir"`
 }
 
 // SnapshotDetailModel details of the individual snapshot.

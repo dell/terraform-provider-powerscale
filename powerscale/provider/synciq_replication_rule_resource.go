@@ -198,7 +198,7 @@ func (d *SyncIQRuleResource) updateStack(ctx context.Context, planTfsdk, stateTf
 			_, err := helper.CreateSyncIQRule(ctx, d.client, plan[i])
 			if err != nil {
 				message := helper.GetErrorString(err, constants.APIErrorMessage)
-				dgs.AddError(fmt.Sprintf("Error creating syncIQ rule for index %d", i), message)
+				dgs.AddError(fmt.Sprintf("Error creating syncIQ rule for index %d type %s", i, ruleType), message)
 				return dgs
 			}
 		}
