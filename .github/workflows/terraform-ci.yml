@@ -32,10 +32,6 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  go-static-analysis:
-    uses: dell/common-github-actions/.github/workflows/go-static-analysis.yaml@main
-    name: Golang Validation
-    
   code-check:
     name: Check Go formatting, linting, vetting
     runs-on: ubuntu-latest
