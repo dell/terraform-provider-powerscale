@@ -89,7 +89,7 @@ func TestAccSyncIQReplicationJobResource(t *testing.T) {
 }
 
 func SetupReplication() string {
-  connection := fmt.Sprintf(`
+	connection := fmt.Sprintf(`
   connection {
       host     = "%s"
       user     = "%s"
@@ -98,7 +98,7 @@ func SetupReplication() string {
     }
   `, powerScaleSSHIP, powerscaleUsername, powerscalePassword)
 
-  createLargeFile := `
+	createLargeFile := `
   resource "terraform_data" "large_file" {
     provisioner "remote-exec" {
       inline = [
@@ -119,7 +119,7 @@ func SetupReplication() string {
     }
   }`
 
-  createSyncIQPolicy := fmt.Sprintf(`
+	createSyncIQPolicy := fmt.Sprintf(`
   resource "powerscale_synciq_policy" "policy" {
     name             = "TerraformPolicy"
     action           = "sync"
@@ -130,7 +130,7 @@ func SetupReplication() string {
   }
   `, powerScaleSSHIP)
 
-  createBandwidthRule := `
+	createBandwidthRule := `
   resource "powerscale_synciq_rules" "kb-10" {
     bandwidth_rules = [
       {
@@ -145,9 +145,8 @@ func SetupReplication() string {
   }
   `
 
-  return createLargeFile + createSyncIQPolicy + createBandwidthRule
+	return createLargeFile + createSyncIQPolicy + createBandwidthRule
 }
-
 
 var createReplicationJob = `
 resource "powerscale_synciq_replication_job" "job1" {
