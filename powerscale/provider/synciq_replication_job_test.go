@@ -118,7 +118,8 @@ func SetupReplication() string {
       inline = [
         "rm -rf /ifs/terraform",
         "echo 'yes' | isi sync rules delete bw-0",
-		"echo 'yes' | isi sync policies delete TerraformPolicy",
+		"echo 'yes' | isi sync job cancel --all",
+		"echo 'yes' | isi sync pol rm --all",
       ]
       `+connection+`
     }
