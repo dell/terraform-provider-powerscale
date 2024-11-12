@@ -222,7 +222,7 @@ func (r *SyncIQReplicationJobResource) Update(ctx context.Context, req resource.
 		updateJob := powerscale.V1SyncJobExtendedExtended{
 			State: isPause,
 		}
-		err := helper.UpdateSyncIQReplicationJob(ctx, r.client, state.Id.ValueString(), updateJob)
+		_, err := helper.UpdateSyncIQReplicationJob(ctx, r.client, state.Id.ValueString(), updateJob)
 		if err != nil {
 			errStr := "Could not update syncIQ Replication Job with error: "
 			message := helper.GetErrorString(err, errStr)

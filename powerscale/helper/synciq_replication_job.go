@@ -29,12 +29,12 @@ func CreateSyncIQReplicationJob(ctx context.Context, client *client.Client, job 
 }
 
 // UpdateSyncIQReplicationJob update syncIQ replication job.
-func UpdateSyncIQReplicationJob(ctx context.Context, client *client.Client, jobID string, job powerscale.V1SyncJobExtendedExtended) error {
-	_, err := client.PscaleOpenAPIClient.SyncApi.UpdateSyncv1SyncJob(ctx, jobID).V1SyncJob(job).Execute()
+func UpdateSyncIQReplicationJob(ctx context.Context, client *client.Client, jobID string, job powerscale.V1SyncJobExtendedExtended) (*http.Response,error) {
+	resp, err := client.PscaleOpenAPIClient.SyncApi.UpdateSyncv1SyncJob(ctx, jobID).V1SyncJob(job).Execute()
 	if err != nil {
-		return err
+		return resp, err
 	}
-	return nil
+	return resp, nil
 }
 
 // DeleteSyncIQReplicationJob delete syncIQ replication job.
@@ -42,6 +42,9 @@ func DeleteSyncIQReplicationJob(ctx context.Context, client *client.Client, jobI
 	deleteJob := powerscale.V1SyncJobExtendedExtended{
 		State: "canceled",
 	}
-	err := UpdateSyncIQReplicationJob(ctx, client, jobID, deleteJob)
+	resp, err := UpdateSyncIQReplicationJob(ctx, client, jobID, deleteJob)
+	if resp != nil && resp.StatusCode == http.StatusNotFound {
+		return nil // already deleted
+	}
 	return err
 }
