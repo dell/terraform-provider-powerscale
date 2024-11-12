@@ -175,7 +175,6 @@ func (r *SyncIQReplicationJobResource) Read(ctx context.Context, req resource.Re
 				"SyncIQ Replication Job not found: Cleaning up state",
 				"Use SyncIQ Reports to get latest sync status.",
 			)
-			return
 		}
 		errStr := "Could not read syncIQ Replication Job with error: "
 		message := helper.GetErrorString(err, errStr)
