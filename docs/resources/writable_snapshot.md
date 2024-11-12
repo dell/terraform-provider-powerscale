@@ -73,10 +73,10 @@ variable "num_writable_snapshots" {
 }
 
 # Example to create multiple writable snapshots from a single snapshot
-resource "powerscale_writable_snapshot" "writablesnap" {
+resource "powerscale_writable_snapshot" "writablesnap_multiple1" {
   count = var.num_writable_snapshots
 
-  dst_path = "/ifs/writable_snapshot${count.index}"
+  dst_path = "/ifs/writable_snapshot_snap${count.index}"
   snap_id  = var.snap_id
 }
 
@@ -108,7 +108,7 @@ locals {
   ]
 }
 
-resource "powerscale_writable_snapshot" "writablesnap" {
+resource "powerscale_writable_snapshot" "writablesnap_multiple2" {
   for_each = { for snap in local.writable_snapshots : snap.dst_path => snap }
 
   dst_path = each.value.dst_path
@@ -119,7 +119,7 @@ resource "powerscale_writable_snapshot" "writablesnap" {
 # Scenario 3
 # To create a single writable snapshot
 
-resource "powerscale_writable_snapshot" "writablesnap" {
+resource "powerscale_writable_snapshot" "writablesnap_single" {
   # dst_path is the path of the writable snapshot.
   dst_path = "/ifs/writable_snapshot"
 

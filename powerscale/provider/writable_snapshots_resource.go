@@ -248,9 +248,9 @@ func (r *WritableSnapshotResource) ImportState(ctx context.Context, req resource
 	// Read the resource state
 	var state models.WritableSnapshot
 	// Update the writable snapshot settings
-	writableSnapshotResponse, err := helper.GetWritableSnapshot(ctx, r.client, state.DstPath.ValueString())
+	writableSnapshotResponse, err := helper.GetWritableSnapshot(ctx, r.client, req.ID)
 	if err != nil {
-		errStr := constants.ReadWritableSnapshotErrorMsg + "with error: "
+		errStr := constants.ReadWritableSnapshotErrorMsg + " with error: "
 		message := helper.GetErrorString(err, errStr)
 		resp.Diagnostics.AddError(
 			"Error reading writable snapshot",

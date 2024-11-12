@@ -41,7 +41,9 @@ func TestAccwritableSnapshotResourceImport(t *testing.T) {
 			// Create Success
 			{
 				PreConfig: func() {
-					FunctionMocker.Release()
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
 				},
 				Config: ProviderConfig + writableSnapshotResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -65,10 +67,11 @@ func TestAccwritableSnapshotResourceImport(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker.Release()
 				},
-				Config:       ProviderConfig + writableSnapshotResourceConfig,
-				ResourceName: writableSnapshotResourceName,
-				ImportState:  true,
-				ExpectError:  nil,
+				Config:        ProviderConfig + writableSnapshotResourceConfig,
+				ResourceName:  writableSnapshotResourceName,
+				ImportState:   true,
+				ImportStateId: "/ifs/abcd",
+				ExpectError:   nil,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					resource.TestCheckResourceAttrSet(writableSnapshotResourceName, "dst_path")
 					resource.TestCheckResourceAttrSet(writableSnapshotResourceName, "src_path")
