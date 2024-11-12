@@ -38,6 +38,7 @@ func NewSyncIQReplicationJobResource() resource.Resource {
 // SyncIQReplicationJobResource is the resource implementation.
 type SyncIQReplicationJobResource struct {
 	client *client.Client
+	isDelete bool
 }
 
 // Configure implements resource.ResourceWithConfigure.
@@ -168,6 +169,7 @@ func (r *SyncIQReplicationJobResource) Read(ctx context.Context, req resource.Re
 	if err != nil {
 		// need to discuss with team if we should remove resource from state or not
 		if httpResp != nil && httpResp.StatusCode == http.StatusNotFound {
+			r.isDelete = true
 			resp.State.RemoveResource(ctx)
 			resp.Diagnostics.AddWarning(
 				"SyncIQ Replication Job not found: Cleaning up state",
@@ -240,6 +242,9 @@ func (r *SyncIQReplicationJobResource) Update(ctx context.Context, req resource.
 
 // Delete deletes the resource and removes the Terraform state on success.
 func (r *SyncIQReplicationJobResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	if r.isDelete {
+		return // already deleted
+	}
 	tflog.Trace(ctx, "resource_SyncIQReplicationJobResource delete: started")
 	var state models.SyncIQReplicationJobResourceModel
 	diags := req.State.Get(ctx, &state)
