@@ -4,6 +4,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"net/http"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
@@ -18,6 +19,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -36,7 +38,6 @@ func NewSyncIQReplicationJobResource() resource.Resource {
 // SyncIQReplicationJobResource is the resource implementation.
 type SyncIQReplicationJobResource struct {
 	client   *client.Client
-	isDelete bool
 }
 
 // Configure implements resource.ResourceWithConfigure.
@@ -161,37 +162,33 @@ func (r *SyncIQReplicationJobResource) Read(ctx context.Context, req resource.Re
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	// time.Sleep(time.Duration(state.WaitTime.ValueInt64()) * time.Second)
-	// tflog.Debug(ctx, "calling get syncIQ Replication Job on powerscale client")
-	// readState, httpResp, err := helper.GetSyncIQReplicationJob(ctx, r.client, state.Id.ValueString())
-	// if err != nil {
-	// 	// need to discuss with team if we should remove resource from state or not
-	// 	if httpResp != nil && httpResp.StatusCode == http.StatusNotFound {
-	// 		r.isDelete = true
-	// 		resp.State.RemoveResource(ctx)
-	// 		resp.Diagnostics.AddWarning(
-	// 			"SyncIQ Replication Job not found: Cleaning up state",
-	// 			"Use SyncIQ Reports to get latest sync status.",
-	// 		)
-	// 		return
-	// 	}
-	// 	errStr := "Could not read syncIQ Replication Job with error: "
-	// 	message := helper.GetErrorString(err, errStr)
-	// 	resp.Diagnostics.AddError(
-	// 		"Error reading syncIQ Replication Job",
-	// 		message,
-	// 	)
-	// 	return
-	// }
-	// if len(readState.Jobs) > 0 {
-	// 	job := readState.Jobs[0]
-	// 	state.Id = types.StringValue(job.PolicyName)
-	// 	if job.State == "running" {
-	// 		state.IsPaused = types.BoolValue(false)
-	// 	} else if job.State == "paused" {
-	// 		state.IsPaused = types.BoolValue(true)
-	// 	}
-	// }
+	time.Sleep(time.Duration(state.WaitTime.ValueInt64()) * time.Second)
+	tflog.Debug(ctx, "calling get syncIQ Replication Job on powerscale client")
+	readState, httpResp, err := helper.GetSyncIQReplicationJob(ctx, r.client, state.Id.ValueString())
+	if err != nil {
+		if httpResp != nil && httpResp.StatusCode == http.StatusNotFound {
+			diags = resp.State.Set(ctx, &state)
+			resp.Diagnostics.Append(diags...)
+			tflog.Trace(ctx, "resource_SyncIQReplicationJobResource read: finished")
+			return
+		}
+		errStr := "Could not read syncIQ Replication Job with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError(
+			"Error reading syncIQ Replication Job",
+			message,
+		)
+		return
+	}
+	if len(readState.Jobs) > 0 {
+		job := readState.Jobs[0]
+		state.Id = types.StringValue(job.PolicyName)
+		if job.State == "running" {
+			state.IsPaused = types.BoolValue(false)
+		} else if job.State == "paused" {
+			state.IsPaused = types.BoolValue(true)
+		}
+	}
 
 	tflog.Trace(ctx, "resource_SyncIQReplicationJobResource read: finished reading state")
 	//Save into State
@@ -240,9 +237,6 @@ func (r *SyncIQReplicationJobResource) Update(ctx context.Context, req resource.
 
 // Delete deletes the resource and removes the Terraform state on success.
 func (r *SyncIQReplicationJobResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	if r.isDelete {
-		return // already deleted
-	}
 	tflog.Trace(ctx, "resource_SyncIQReplicationJobResource delete: started")
 	var state models.SyncIQReplicationJobResourceModel
 	diags := req.State.Get(ctx, &state)
