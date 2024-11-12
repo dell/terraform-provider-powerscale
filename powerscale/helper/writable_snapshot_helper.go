@@ -68,6 +68,9 @@ func GetAllWritableSnapshots(ctx context.Context, client *client.Client, state *
 		}
 	}
 	resp, _, err := writablesnapshots.Execute()
+	if err != nil {
+		return resp, err
+	}
 	// pagination
 	for resp.Resume != nil && (state.WritableSnapshotFilter == nil || state.WritableSnapshotFilter.Limit.IsNull()) {
 		writablesnapshots = writablesnapshots.Resume(*resp.Resume)
