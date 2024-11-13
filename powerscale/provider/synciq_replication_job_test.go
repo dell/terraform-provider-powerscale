@@ -106,6 +106,7 @@ func SetupReplication() string {
         "mkdir -p /ifs/terraformAT/source",
         "head -c 10000000 /dev/urandom > /ifs/terraformAT/source/large_file.dat",
         "mkdir -p /ifs/terraformAT/target",
+		" isi sync settings modify --service=on",
 		"isi sync rules create bandwidth 00:00-23:59 X-S 129",
 		"echo 'confirm create policy' | isi sync policies create --name=TerraformPolicy --source-root-path=/ifs/terraformAT/source/ --target-host=%s --target-path=/ifs/terraformAT/target/ --action=sync",
 		"sleep 10",
