@@ -30,6 +30,11 @@ var (
 	_ resource.ResourceWithImportState = &synciqPolicyResource{}
 )
 
+const (
+	paused  = "paused"
+	running = "running"
+)
+
 // NewSyncIQReplicationJobResource is a helper function to simplify the provider implementation.
 func NewSyncIQReplicationJobResource() resource.Resource {
 	return &SyncIQReplicationJobResource{}
@@ -212,9 +217,9 @@ func (r *SyncIQReplicationJobResource) Update(ctx context.Context, req resource.
 		return
 	}
 	if !plan.IsPaused.Equal(state.IsPaused) {
-		isPause := "running"
+		isPause := running
 		if plan.IsPaused.ValueBool() {
-			isPause = "paused"
+			isPause = paused
 		}
 		updateJob := powerscale.V1SyncJobExtendedExtended{
 			State: isPause,
