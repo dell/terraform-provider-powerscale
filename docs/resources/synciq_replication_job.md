@@ -34,7 +34,7 @@ Resource for managing SyncIQReplicationJobResource on OpenManage Enterprise.
 
 ### Required
 
-- `action` (String) Action for the job
+- `action` (String) Action for the job - run, test, resync_prep, allow_write, allow_write_revert
 - `id` (String) ID/Name of the policy
 
 ### Optional

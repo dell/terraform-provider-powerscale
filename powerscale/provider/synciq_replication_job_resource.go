@@ -87,8 +87,8 @@ func (r *SyncIQReplicationJobResource) Schema(_ context.Context, _ resource.Sche
 			},
 			"action": schema.StringAttribute{
 				Required:            true,
-				Description:         "Action for the job",
-				MarkdownDescription: "Action for the job",
+				Description:         "Action for the job - run, test, resync_prep, allow_write, allow_write_revert",
+				MarkdownDescription: "Action for the job - run, test, resync_prep, allow_write, allow_write_revert",
 				Validators: []validator.String{
 					stringvalidator.OneOf("run", "test", "resync_prep", "allow_write", "allow_write_revert"),
 				},
