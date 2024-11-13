@@ -534,7 +534,7 @@ resource "powerscale_filesystem" "file_system_test" {
 	name = "tfaccDirTf"
   
 	recursive = true
-	overwrite = false
+	overwrite = true
 	group = {
 	  id   = "GID:0"
 	  name = "wheel"
