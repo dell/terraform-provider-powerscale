@@ -29,7 +29,7 @@ func CreateSyncIQReplicationJob(ctx context.Context, client *client.Client, job 
 }
 
 // UpdateSyncIQReplicationJob update syncIQ replication job.
-func UpdateSyncIQReplicationJob(ctx context.Context, client *client.Client, jobID string, job powerscale.V1SyncJobExtendedExtended) (*http.Response,error) {
+func UpdateSyncIQReplicationJob(ctx context.Context, client *client.Client, jobID string, job powerscale.V1SyncJobExtendedExtended) (*http.Response, error) {
 	resp, err := client.PscaleOpenAPIClient.SyncApi.UpdateSyncv1SyncJob(ctx, jobID).V1SyncJob(job).Execute()
 	if err != nil {
 		return resp, err

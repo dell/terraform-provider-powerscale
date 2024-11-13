@@ -37,7 +37,7 @@ func NewSyncIQReplicationJobResource() resource.Resource {
 
 // SyncIQReplicationJobResource is the resource implementation.
 type SyncIQReplicationJobResource struct {
-	client   *client.Client
+	client *client.Client
 }
 
 // Configure implements resource.ResourceWithConfigure.

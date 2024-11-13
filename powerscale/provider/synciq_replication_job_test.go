@@ -70,7 +70,7 @@ func TestAccSyncIQReplicationJobResource(t *testing.T) {
 			{
 				PreConfig: func() {
 					FunctionMocker.Release()
-					FunctionMocker = mockey.Mock(helper.UpdateSyncIQReplicationJob).Return(fmt.Errorf("Error updating syncIQ Replication Job")).Build()
+					FunctionMocker = mockey.Mock(helper.UpdateSyncIQReplicationJob).Return(nil, fmt.Errorf("Error updating syncIQ Replication Job")).Build()
 				},
 				Config:      ProviderConfig + SetupReplication() + updateReplicationJob,
 				ExpectError: regexp.MustCompile("Error updating syncIQ Replication Job"),
