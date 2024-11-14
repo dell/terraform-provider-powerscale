@@ -5,6 +5,7 @@ go 1.22
 require (
 	dell/powerscale-go-client v0.0.0
 	github.com/bytedance/mockey v1.2.12
+	github.com/google/cel-go v0.22.0
 	github.com/hashicorp/terraform-plugin-framework v1.11.0
 	github.com/hashicorp/terraform-plugin-framework-validators v0.13.0
 	github.com/hashicorp/terraform-plugin-go v0.23.0
@@ -26,8 +27,10 @@ require (
 )
 
 require (
+	cel.dev/expr v0.18.0 // indirect
 	github.com/ProtonMail/go-crypto v1.1.0-alpha.2 // indirect
 	github.com/agext/levenshtein v1.2.2 // indirect
+	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/fatih/color v1.17.0 // indirect
@@ -60,20 +63,23 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/oklog/run v1.0.0 // indirect
+	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/zclconf/go-cty v1.14.4 // indirect
 	golang.org/x/crypto v0.26.0 // indirect
+	golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240227224415-6ceb2ff114de // indirect
-	google.golang.org/grpc v1.63.2 // indirect
-	google.golang.org/protobuf v1.34.0 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240826202546-f6391c0de4c7 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7 // indirect
+	google.golang.org/grpc v1.65.0 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
 

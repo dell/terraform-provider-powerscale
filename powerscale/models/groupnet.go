@@ -24,6 +24,7 @@ type GroupnetDataSourceModel struct {
 	Groupnets []GroupnetModel     `tfsdk:"groupnets"`
 	ID        types.String        `tfsdk:"id"`
 	Filter    *GroupnetFilterType `tfsdk:"filter"`
+	Where     *string             `tfsdk:"where"`
 }
 
 // GroupnetModel holds groupnet schema attribute details.

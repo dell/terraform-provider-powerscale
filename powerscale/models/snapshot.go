@@ -25,6 +25,7 @@ type SnapshotDataSourceModel struct {
 	Snapshots []SnapshotDetailModel `tfsdk:"snapshots_details"`
 	// filter
 	SnapshotFilter *SnapshotFilterType `tfsdk:"filter"`
+	Where          *string             `tfsdk:"where"`
 }
 
 // SnapshotFilterType describes the filter data model.

@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/cel"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
@@ -63,6 +64,11 @@ func (d *SnapshotDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Description:         "Identifier",
 				MarkdownDescription: "Identifier",
 				Computed:            true,
+			},
+			"where": schema.StringAttribute{
+				Description:         "Where clause to filter snapshots",
+				MarkdownDescription: "Where clause to filter snapshots",
+				Optional:            true,
 			},
 			"snapshots_details": schema.ListNestedAttribute{
 				Description:         "List of Snapshots",
@@ -270,6 +276,15 @@ func (d *SnapshotDataSource) Read(ctx context.Context, req datasource.ReadReques
 			return
 		}
 		fulldetail = append(fulldetail, detail)
+	}
+
+	// Apply where clause
+	fulldetail, err = cel.FilterOptionalCel(fulldetail, plan.Where)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error filtering snapshots",
+			err.Error(),
+		)
 	}
 
 	// Apply the Name Filter if it is set

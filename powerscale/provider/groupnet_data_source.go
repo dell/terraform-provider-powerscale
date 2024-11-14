@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"strings"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/cel"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
@@ -66,6 +67,11 @@ func (d *GroupnetDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Computed:            true,
 				MarkdownDescription: "Unique identifier of the groupnet instance.",
 				Description:         "Unique identifier of the groupnet instance.",
+			},
+			"where": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Specifies the where clause.",
+				Description:         "Specifies the where clause.",
 			},
 			"groupnets": schema.ListNestedAttribute{
 				MarkdownDescription: "List of groupnets.",
@@ -206,6 +212,13 @@ func (d *GroupnetDataSource) Read(ctx context.Context, req datasource.ReadReques
 	if err := helper.UpdateGroupnetDataSourceState(ctx, &state, groupnets); err != nil {
 		resp.Diagnostics.AddError("Error reading groupnets datasource plan",
 			fmt.Sprintf("Could not list groupnets with error: %s", err.Error()))
+		return
+	}
+
+	// apply where clause
+	state.Groupnets, err = cel.FilterOptionalCel(state.Groupnets, state.Where)
+	if err != nil {
+		resp.Diagnostics.AddError("Error applying where clause.", err.Error())
 		return
 	}
 
