@@ -61,8 +61,8 @@ resource "powerscale_snapshot_restore" "test" {
 resource "powerscale_snapshot_restore" "test" {
   copy_params = {
     directory = {
-      source      = "Path of the snapshot to copy"
-      destination = "Path of the destination" # '/' is not required at the start e.g. ifs/dest
+      source      = "Path of the snapshot to copy" # e.g. /namespace/ifs/.snapshot/snapshot_name/directory
+      destination = "Path of the destination"      # '/' is not required at the start e.g. ifs/dest
       overwrite   = true
     }
   }
@@ -71,8 +71,8 @@ resource "powerscale_snapshot_restore" "test" {
 # Restore snapshot using clone operation
 resource "powerscale_snapshot_restore" "test" {
   clone_params = {
-    source      = "Path of the snapshot to copy"
-    destination = "Path of the destination" # '/' is not required at the start e.g. ifs/dest/test.txt
+    source      = "Path of the snapshot to copy" # e.g. /namespace/ifs/.snapshot/snapshot_name/directory/file
+    destination = "Path of the destination"      # '/' is not required at the start e.g. ifs/dest/test.txt
     snapshot_id = "Snapshot ID"
   }
 }
