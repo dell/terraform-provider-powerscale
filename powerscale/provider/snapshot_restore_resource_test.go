@@ -22,6 +22,7 @@ import (
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+	"time"
 
 	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -41,6 +42,9 @@ func TestAccSnapshotRestoreResource(t *testing.T) {
 				),
 			},
 			{
+				PreConfig: func() {
+					time.Sleep(30 * time.Second)
+				},
 				Config: ProviderConfig + snapRevertResourceConfigUpdate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrPair("powerscale_snapshot_restore.snap_restore", "snaprevert_params.snapshot_id", "powerscale_snapshot.snap1", "id"),
@@ -48,6 +52,7 @@ func TestAccSnapshotRestoreResource(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					time.Sleep(30 * time.Second)
 					if FunctionMocker != nil {
 						FunctionMocker.Release()
 					}
