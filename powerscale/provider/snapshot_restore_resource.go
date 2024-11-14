@@ -114,6 +114,11 @@ func SnapshotRestoreResourceSchema() map[string]schema.Attribute {
 					Description:         "Snapshot ID.",
 					MarkdownDescription: "Snapshot ID.",
 				},
+				"job_id": schema.Int32Attribute{
+					Computed:            true,
+					Description:         "Job ID.",
+					MarkdownDescription: "Job ID.",
+				},
 			},
 		},
 		"copy_params": schema.SingleNestedAttribute{
@@ -139,8 +144,8 @@ func SnapshotRestoreResourceSchema() map[string]schema.Attribute {
 						},
 						"destination": schema.StringAttribute{
 							Required:            true,
-							Description:         "Destination of the snapshot.",
-							MarkdownDescription: "Destination of the snapshot.",
+							Description:         "Destination of the snapshot, e.g. ifs/dest. ",
+							MarkdownDescription: "Destination of the snapshot, e.g. ifs/dest.",
 							Validators: []validator.String{
 								stringvalidator.LengthAtLeast(1),
 							},
@@ -177,8 +182,8 @@ func SnapshotRestoreResourceSchema() map[string]schema.Attribute {
 						},
 						"destination": schema.StringAttribute{
 							Required:            true,
-							Description:         "Destination of the snapshot.",
-							MarkdownDescription: "Destination of the snapshot.",
+							Description:         "Destination of the snapshot, e.g. ifs/dest/test.txt .",
+							MarkdownDescription: "Destination of the snapshot, e.g. ifs/dest/test.txt .",
 							Validators: []validator.String{
 								stringvalidator.LengthAtLeast(1),
 							},
@@ -207,8 +212,8 @@ func SnapshotRestoreResourceSchema() map[string]schema.Attribute {
 				},
 				"destination": schema.StringAttribute{
 					Required:            true,
-					Description:         "Destination of the snapshot.",
-					MarkdownDescription: "Destination of the snapshot.",
+					Description:         "Destination of the snapshot, e.g. ifs/dest/test.txt .",
+					MarkdownDescription: "Destination of the snapshot, e.g. ifs/dest/test.txt .",
 					Validators: []validator.String{
 						stringvalidator.LengthAtLeast(1),
 					},
