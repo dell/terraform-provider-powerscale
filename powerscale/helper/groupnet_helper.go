@@ -121,7 +121,9 @@ func GetAllGroupnets(ctx context.Context, client *client.Client, state *models.G
 	}
 
 	result, _, err := groupnetParams.Execute()
-
+	if err != nil {
+		return nil, err
+	}
 	// pagination
 	for result.Resume != nil && (state.Filter == nil || state.Filter.Limit.IsNull()) {
 		groupnetParams = groupnetParams.Resume(*result.Resume)
