@@ -61,8 +61,8 @@ resource "powerscale_snapshot_restore" "test" {
 resource "powerscale_snapshot_restore" "test" {
   copy_params = {
     directory = {
-      source      = "Path of the snapshot to copy"
-      destination = "Path of the destination"
+      source      = "Path of the snapshot to copy" # e.g. /namespace/ifs/.snapshot/snapshot_name/directory
+      destination = "Path of the destination"      # '/' is not required at the start e.g. ifs/dest
       overwrite   = true
     }
   }
@@ -71,8 +71,8 @@ resource "powerscale_snapshot_restore" "test" {
 # Restore snapshot using clone operation
 resource "powerscale_snapshot_restore" "test" {
   clone_params = {
-    source      = "Path of the snapshot to copy"
-    destination = "Path of the destination"
+    source      = "Path of the snapshot to copy" # e.g. /namespace/ifs/.snapshot/snapshot_name/directory/file
+    destination = "Path of the destination"      # '/' is not required at the start e.g. ifs/dest/test.txt
     snapshot_id = "Snapshot ID"
   }
 }
@@ -96,7 +96,7 @@ resource "powerscale_snapshot_restore" "test" {
 
 Required:
 
-- `destination` (String) Destination of the snapshot.
+- `destination` (String) Destination of the snapshot, e.g. ifs/dest/test.txt .
 - `snapshot_id` (Number) Snapshot ID.
 - `source` (String) Source of the snapshot.
 
@@ -118,7 +118,7 @@ Optional:
 
 Required:
 
-- `destination` (String) Destination of the snapshot.
+- `destination` (String) Destination of the snapshot, e.g. ifs/dest.
 - `source` (String) Source of the snapshot.
 
 Optional:
@@ -133,7 +133,7 @@ Optional:
 
 Required:
 
-- `destination` (String) Destination of the snapshot.
+- `destination` (String) Destination of the snapshot, e.g. ifs/dest/test.txt .
 - `source` (String) Source of the snapshot.
 
 Optional:
@@ -152,6 +152,10 @@ Required:
 Optional:
 
 - `allow_dup` (Boolean) Whether or not to queue the job if one of the same type is already running or queued.
+
+Read-Only:
+
+- `job_id` (Number) Job ID.
 
 Unless specified otherwise, all fields of this resource can be updated.
 
