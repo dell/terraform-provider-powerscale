@@ -54,6 +54,9 @@ func GetAllSnapshots(ctx context.Context, client *client.Client, state *models.S
 	}
 
 	result, _, err := snapshotParams.Execute()
+	if err != nil {
+		return nil, err
+	}
 
 	//pagination
 	for result.Resume != nil && (state.SnapshotFilter != nil || state.SnapshotFilter.Limit.IsNull()) {
