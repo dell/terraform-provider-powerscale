@@ -20,9 +20,9 @@ OpenSource Licenses for Terraform Provider for PowerScale
 # Direct Dependencies
 
 Package: golang.org/x/net  
-Version: v0.31.0  
-Copyright: Copyright (c) 2009 The Go Authors. All rights reserved.   
-License: [BSD-3-Clause](https://github.com/golang/net/blob/v0.11.0/LICENSE)     
+Version: v0.30.0  
+Copyright: Copyright (c) 2009 The Go Authors.
+License: [BSD-3-Clause](https://github.com/golang/net/blob/v0.30.0/LICENSE)
 Source: [net](https://github.com/golang/net)
 * * *
 
@@ -421,10 +421,10 @@ License: [MIT](https://github.com/zclconf/go-cty/blob/v1.15.0/LICENSE)
 Source: [go-cty](https://github.com/zclconf/go-cty)
 * * *
 
-Package: golang.org/x/crypto        
-Version: v0.29.0        
-Copyright: Copyright (c) 2009 The Go Authors    
-License: [BSD-3-Clause](https://github.com/golang/crypto/blob/v0.29.0/LICENSE)  
+Package: golang.org/x/crypto
+Version: v0.28.0
+Copyright: Copyright (c) 2009 The Go Authors
+License: [BSD-3-Clause](https://github.com/golang/crypto/blob/v0.28.0/LICENSE)  
 Source: [x/crypto](https://github.com/golang/crypto)
 * * *
 
@@ -449,10 +449,10 @@ License: [BSD-3-Clause](https://github.com/golang/sys/blob/v0.27.0/LICENSE)
 Source: [x/sys](https://github.com/golang/sys)
 * * *
 
-Package: golang.org/x/text      
-Version: v0.20.0        
-Copyright: Copyright (c) 2009 The Go Authors    
-License: [BSD-3-Clause](https://github.com/golang/text/blob/v0.20.0/LICENSE)        
+Package: golang.org/x/text
+Version: v0.219.0
+Copyright: Copyright (c) 2009 The Go Authors
+License: [BSD-3-Clause](https://github.com/golang/text/blob/v0.219.0/LICENSE)
 Source: [x/text](https://github.com/golang/text)
 * * *
 
