@@ -450,9 +450,9 @@ Source: [x/sys](https://github.com/golang/sys)
 * * *
 
 Package: golang.org/x/text
-Version: v0.219.0
+Version: v0.19.0
 Copyright: Copyright (c) 2009 The Go Authors
-License: [BSD-3-Clause](https://github.com/golang/text/blob/v0.219.0/LICENSE)
+License: [BSD-3-Clause](https://github.com/golang/text/blob/v0.19.0/LICENSE)
 Source: [x/text](https://github.com/golang/text)
 * * *
 
