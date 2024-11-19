@@ -53,9 +53,9 @@ data "powerscale_synciq_replication_report" "all" {
 }
 
 # Output value of above block by executing 'terraform output' command
-# You can use the the fetched information by the variable data.powerscale_replication_report.all
+# You can use the the fetched information by the variable data.powerscale_synciq_replication_report.all
 output "powerscale_synciq_replication_report" {
-  value = data.powerscale_replication_report.all
+  value = data.powerscale_synciq_replication_report.all
 }
 
 # Returns a list of PowerScale Replication Report based on the filters specified in the filter block.
@@ -69,9 +69,9 @@ data "powerscale_synciq_replication_report" "filtering" {
 }
 
 # Output value of above block by executing 'terraform output' command
-# You can use the the fetched information by the variable data.powerscale_replication_report.filtering
+# You can use the the fetched information by the variable data.powerscale_synciq_replication_report.filtering
 output "powerscale_replication_report_filter" {
-  value = data.powerscale_replication_report.filtering
+  value = data.powerscale_synciq_replication_report.filtering
 }
 ```
 
