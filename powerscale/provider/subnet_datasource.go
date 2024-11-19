@@ -20,13 +20,17 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -178,11 +182,17 @@ func (d *SubnetDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 						MarkdownDescription: "List of subnet name.",
 						Optional:            true,
 						ElementType:         types.StringType,
+						Validators: []validator.Set{
+							setvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+						},
 					},
 					"groupnet_name": schema.StringAttribute{
 						Description:         "Specifies which groupnet to query.",
 						MarkdownDescription: "Specifies which groupnet to query.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 				},
 			},
@@ -232,6 +242,7 @@ func (d *SubnetDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 
+	var validSubnets []string
 	for _, subnet := range *subnets {
 		entity := models.V12GroupnetSubnetExtended{}
 		err := helper.CopyFields(ctx, subnet, &entity)
@@ -240,8 +251,17 @@ func (d *SubnetDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 				fmt.Sprintf("Could not list subnets with error: %s", err.Error()))
 			return
 		}
+		validSubnets = append(validSubnets, entity.Name.ValueString())
 		subnetState.Subnets = append(subnetState.Subnets, entity)
 	}
+
+	if subnetPlan.SubnetFilter != nil && len(subnetState.Subnets) < len(subnetPlan.SubnetFilter.Names) {
+		resp.Diagnostics.AddError(
+			"Error one or more of the filtered subnet name is not a valid powerscale Subnet.",
+			fmt.Sprintf("Valid Subnets: [%v], filtered list: [%v]", strings.Join(validSubnets, " , "), subnetPlan.SubnetFilter.Names),
+		)
+	}
+
 	subnetState.ID = types.StringValue("Subnet-id")
 	subnetState.SubnetFilter = subnetPlan.SubnetFilter
 	resp.Diagnostics.Append(resp.State.Set(ctx, &subnetState)...)

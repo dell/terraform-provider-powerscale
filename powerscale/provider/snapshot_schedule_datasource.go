@@ -25,8 +25,11 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -134,11 +137,17 @@ func (d *SnapshotScheduleDataSource) Schema(_ context.Context, _ datasource.Sche
 						MarkdownDescription: "Names to filter snapshot schedules.",
 						Optional:            true,
 						ElementType:         types.StringType,
+						Validators: []validator.Set{
+							setvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+						},
 					},
 					"sort": schema.StringAttribute{
 						Description:         "The field that will be used for sorting. Choices are id, name, path, pattern, schedule, duration, alias, next_run, and next_snapshot. Default is id.",
 						MarkdownDescription: "The field that will be used for sorting. Choices are id, name, path, pattern, schedule, duration, alias, next_run, and next_snapshot. Default is id.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"limit": schema.Int64Attribute{
 						Description:         "Return no more than this many results at once.",
@@ -149,6 +158,9 @@ func (d *SnapshotScheduleDataSource) Schema(_ context.Context, _ datasource.Sche
 						Description:         "The direction of the sort.Supported Values:ASC , DESC",
 						MarkdownDescription: "The direction of the sort.Supported Values:ASC , DESC",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 				},
 			},

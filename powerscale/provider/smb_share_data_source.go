@@ -26,8 +26,11 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -349,6 +352,9 @@ func (d *SmbShareDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 						MarkdownDescription: "Names to filter smb shares.",
 						Optional:            true,
 						ElementType:         types.StringType,
+						Validators: []validator.Set{
+							setvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+						},
 					},
 					"sort": schema.StringAttribute{
 						Description:         "The field that will be used for sorting.",
@@ -359,6 +365,9 @@ func (d *SmbShareDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 						Description:         "Specifies which access zone to use.",
 						MarkdownDescription: "Specifies which access zone to use.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"resume": schema.StringAttribute{
 						Description: "Continue returning results from previous call using this token " +
@@ -460,6 +469,11 @@ func (d *SmbShareDataSource) Read(ctx context.Context, req datasource.ReadReques
 				filteredShares = append(filteredShares, entity)
 			}
 		}
+
+		if filteredShares == nil {
+			resp.Diagnostics.AddError("Error reading smb share datasource plan", "No shares found with the specified name(s)")
+		}
+
 	} else {
 		entity := models.SmbShareDatasourceEntity{}
 		for _, share := range *totalSmbShares {
