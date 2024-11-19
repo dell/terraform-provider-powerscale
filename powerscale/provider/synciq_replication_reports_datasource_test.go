@@ -84,12 +84,12 @@ func TestAccReplicationReportsDataSourceGettingErr(t *testing.T) {
 }
 
 var RRDataSourceConfig = `
-data "powerscale_replication_report" "all" {
+data "powerscale_synciq_replication_report" "all" {
 }
 `
 
 var RRDataSourceConfigFilter = `
-data "powerscale_replication_report" "filtering" {
+data "powerscale_synciq_replication_report" "filtering" {
 	filter {
 		reports_per_policy = 2
 	}
@@ -97,7 +97,7 @@ data "powerscale_replication_report" "filtering" {
 `
 
 var RRDataSourceNameConfigErr = `
-data "powerscale_replication_report" "test" {
+data "powerscale_synciq_replication_report" "test" {
 	filter {
 		policy_name = "InvalidName"
 	}
@@ -105,7 +105,7 @@ data "powerscale_replication_report" "test" {
 `
 
 var RRDataSourceFilterConfigErr = `
-data "powerscale_role" "test" {
+data "powerscale_synciq_replication_report" "test" {
 	filter {
 		invalidFilter = "Invalid"
 	}
