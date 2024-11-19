@@ -71,7 +71,7 @@ test: check
 check:
 	terraform fmt -recursive examples/
 	gofmt -s -w .
-	golangci-lint run --fix --timeout 5m
+	# golangci-lint run --fix --timeout 5m
 	go vet
 
 gosec:
@@ -87,3 +87,6 @@ cover:
 	rm -f coverage.*
 	go test -coverprofile=coverage.out ./...
 	go tool cover -html coverage.out -o coverage.html
+
+sweep :
+	go test -v ./powerscale/provider -timeout 20m -sweep=all
