@@ -20,16 +20,17 @@ package provider
 import (
 	"context"
 	"fmt"
+	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
+	"terraform-provider-powerscale/powerscale/helper"
+	"terraform-provider-powerscale/powerscale/models"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"terraform-provider-powerscale/client"
-	"terraform-provider-powerscale/powerscale/constants"
-	"terraform-provider-powerscale/powerscale/helper"
-	"terraform-provider-powerscale/powerscale/models"
 )
 
 var (
@@ -356,11 +357,17 @@ func (d *QuotaDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest
 						Description:         "Only list quotas matching this path (see also recurse_path_*).",
 						MarkdownDescription: "Only list quotas matching this path (see also recurse_path_*).",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"persona": schema.StringAttribute{
 						Description:         "Only list user or group quotas matching this persona (must be used with the corresponding type argument).",
 						MarkdownDescription: "Only list user or group quotas matching this persona (must be used with the corresponding type argument).",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"recurse_path_children": schema.BoolAttribute{
 						Description:         "If used with the path argument, match all quotas at that path or any descendent sub-directory.",
@@ -376,6 +383,9 @@ func (d *QuotaDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest
 						Description:         "Use the named report as a source rather than the live quotas.",
 						MarkdownDescription: "Use the named report as a source rather than the live quotas.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"type": schema.StringAttribute{
 						Description:         "Only list quotas matching this type.",
@@ -390,6 +400,9 @@ func (d *QuotaDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest
 						Description:         "Optional named zone to use for user and group resolution.",
 						MarkdownDescription: "Optional named zone to use for user and group resolution.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 				},
 			},
