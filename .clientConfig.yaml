@@ -1,0 +1,9 @@
+inputSpec: goClientZip/PowerScale_API_9.5.0.json
+generatorName: go
+outputDir: powerscale-go-client
+ignoreFileOverride: .openapi-generator-ignore
+# openapiGeneratorIgnoreList:
+#   - model_v1_filepool_policy_file_matching_pattern_or_criteria_item_and_criteria_item.go
+#   - model_v1_filepool_default_policy_action.go
+typeMappings:
+  integer+unsigned64: uint64

@@ -23,11 +23,12 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/net/html"
 	"math/big"
 	"net/http"
 	"reflect"
 	"strings"
+
+	"golang.org/x/net/html"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -35,6 +36,7 @@ import (
 )
 
 // CopyFields copy the source of a struct to destination of struct with terraform types.
+// Unsigned integers are not properly handled.
 func CopyFields(ctx context.Context, source, destination interface{}) error {
 	tflog.Debug(ctx, "Copy fields", map[string]interface{}{
 		"source":      source,
@@ -94,7 +96,7 @@ func CopyFields(ctx context.Context, source, destination interface{}) error {
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				destinationFieldValue = types.Int64Value(sourceField.Int())
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-				destinationFieldValue = types.Int64Value(sourceField.Int())
+				destinationFieldValue = types.Int64Value(int64(sourceField.Uint()))
 			case reflect.Float32, reflect.Float64:
 				// destinationFieldValue = types.Float64Value(sourceField.Float())
 				destinationFieldValue = types.NumberValue(big.NewFloat(sourceField.Float()))

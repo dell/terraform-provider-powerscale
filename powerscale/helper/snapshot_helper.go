@@ -121,7 +121,14 @@ func SnapshotDetailMapper(ctx context.Context, snap powerscale.V1SnapshotSnapsho
 		return model, err
 	}
 	model.ID = types.StringValue(fmt.Sprint(snap.Id))
-	model.TargetID = types.Int64Value(int64(snap.TargetId))
+	// Max uint64 is returned when aliasing to live filesystem
+	// Other than that, valid targetIDs have a max value of max int64
+	// In Terraform, we shall represent by -1 live system alias by -1
+	if snap.TargetId == 18446744073709551615 {
+		model.TargetID = types.Int64Value(-1)
+	} else {
+		model.TargetID = types.Int64Value(int64(snap.TargetId))
+	}
 	model.SetExpires = types.StringNull()
 	return model, nil
 }
