@@ -20,10 +20,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"math"
+	"strconv"
 	"terraform-provider-powerscale/client"
-	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
@@ -97,12 +96,6 @@ func (d StoragepoolTierDataSource) Schema(ctx context.Context, req datasource.Sc
 							MarkdownDescription: "Manage protection settings.",
 							Computed:            true,
 						},
-						// "node_type_ids": schema.ListAttribute{
-						// 	Description:         "Apply to files with manually-managed protection.",
-						// 	MarkdownDescription: "Apply to files with manually-managed protection.",
-						// 	Computed:            true,
-						// 	ElementType:         types.StringType,
-						// },
 						"transfer_limit_pct": schema.Int64Attribute{
 							Description:         "Enable global namespace acceleration.",
 							MarkdownDescription: "Enable global namespace acceleration.",
@@ -119,108 +112,108 @@ func (d StoragepoolTierDataSource) Schema(ctx context.Context, req datasource.Sc
 							Computed:            true,
 							Attributes: map[string]schema.Attribute{
 								"avail_bytes": schema.StringAttribute{
-									Description:         "Avail bytes",
-									MarkdownDescription: "Avail bytes",
+									Description:         "Available free bytes remaining in the pool when virtual hot spare is taken into account.",
+									MarkdownDescription: "Available free bytes remaining in the pool when virtual hot spare is taken into account.",
 									Computed:            true,
 								},
 								"avail_hdd_bytes": schema.StringAttribute{
-									Description:         "Avail hdd bytes",
-									MarkdownDescription: "Avail hdd bytes",
+									Description:         "Available free bytes remaining in the pool on HDD drives when virtual hot spare is taken into account.",
+									MarkdownDescription: "Available free bytes remaining in the pool on HDD drives when virtual hot spare is taken into account.",
 									Computed:            true,
 								},
 								"avail_ssd_bytes": schema.StringAttribute{
-									Description:         "Avail ssd bytes",
-									MarkdownDescription: "Avail ssd bytes",
+									Description:         "Available free bytes remaining in the pool on SSD drives when virtual hot spare is taken into account.",
+									MarkdownDescription: "Available free bytes remaining in the pool on SSD drives when virtual hot spare is taken into account.",
 									Computed:            true,
 								},
 								"balanced": schema.BoolAttribute{
-									Description:         "Balanced",
-									MarkdownDescription: "Balanced",
+									Description:         "Whether or not the pool usage is currently balanced.",
+									MarkdownDescription: "Whether or not the pool usage is currently balanced.",
 									Computed:            true,
 								},
 								"free_bytes": schema.StringAttribute{
-									Description:         "Free bytes",
-									MarkdownDescription: "Free bytes",
+									Description:         "Free bytes remaining in the pool.",
+									MarkdownDescription: "Free bytes remaining in the pool.",
 									Computed:            true,
 								},
 								"free_hdd_bytes": schema.StringAttribute{
-									Description:         "Free hdd bytes",
-									MarkdownDescription: "Free hdd bytes",
+									Description:         "Free bytes remaining in the pool on HDD drives.",
+									MarkdownDescription: "Free bytes remaining in the pool on HDD drives.",
 									Computed:            true,
 								},
 								"free_ssd_bytes": schema.StringAttribute{
-									Description:         "Free ssd bytes",
-									MarkdownDescription: "Free ssd bytes",
+									Description:         "Free bytes remaining in the pool on SSD drives.",
+									MarkdownDescription: "Free bytes remaining in the pool on SSD drives.",
 									Computed:            true,
 								},
 								"pct_used": schema.StringAttribute{
-									Description:         "Pct used",
-									MarkdownDescription: "Pct used",
+									Description:         "Percentage of usable space in the pool which is used.",
+									MarkdownDescription: "Percentage of usable space in the pool which is used.",
 									Computed:            true,
 								},
 								"pct_used_hdd": schema.StringAttribute{
-									Description:         "Pct used hdd",
-									MarkdownDescription: "Pct used hdd",
+									Description:         "Percentage of usable space on HDD drives in the pool which is used.",
+									MarkdownDescription: "Percentage of usable space on HDD drives in the pool which is used.",
 									Computed:            true,
 								},
 								"pct_used_ssd": schema.StringAttribute{
-									Description:         "Pct used ssd",
-									MarkdownDescription: "Pct used ssd",
+									Description:         "Percentage of usable space on SSD drives in the pool which is used.",
+									MarkdownDescription: "Percentage of usable space on SSD drives in the pool which is used.",
 									Computed:            true,
 								},
 								"total_bytes": schema.StringAttribute{
-									Description:         "Total bytes",
-									MarkdownDescription: "Total bytes",
+									Description:         "Total bytes in the pool.",
+									MarkdownDescription: "Total bytes in the pool.",
 									Computed:            true,
 								},
 								"total_hdd_bytes": schema.StringAttribute{
-									Description:         "Total hdd bytes",
-									MarkdownDescription: "Total hdd bytes",
+									Description:         "Total bytes in the pool on HDD drives.",
+									MarkdownDescription: "Total bytes in the pool on HDD drives.",
 									Computed:            true,
 								},
 								"total_ssd_bytes": schema.StringAttribute{
-									Description:         "Total ssd bytes",
-									MarkdownDescription: "Total ssd bytes",
+									Description:         "Total bytes in the pool on SSD drives.",
+									MarkdownDescription: "Total bytes in the pool on SSD drives.",
 									Computed:            true,
 								},
 								"usable_bytes": schema.StringAttribute{
-									Description:         "Usable bytes",
-									MarkdownDescription: "Usable bytes",
+									Description:         "Total bytes in the pool drives when virtual hot spare is taken into account.",
+									MarkdownDescription: "Total bytes in the pool drives when virtual hot spare is taken into account.",
 									Computed:            true,
 								},
 								"usable_hdd_bytes": schema.StringAttribute{
-									Description:         "Usable hdd bytes",
-									MarkdownDescription: "Usable hdd bytes",
+									Description:         "Total bytes in the pool on HDD drives when virtual hot spare is taken into account.",
+									MarkdownDescription: "Total bytes in the pool on HDD drives when virtual hot spare is taken into account.",
 									Computed:            true,
 								},
 								"usable_ssd_bytes": schema.StringAttribute{
-									Description:         "Usable ssd bytes",
-									MarkdownDescription: "Usable ssd bytes",
+									Description:         "Total bytes in the pool on SSD drives when virtual hot spare is taken into account.",
+									MarkdownDescription: "Total bytes in the pool on SSD drives when virtual hot spare is taken into account.",
 									Computed:            true,
 								},
 								"used_bytes": schema.StringAttribute{
-									Description:         "Used bytes",
-									MarkdownDescription: "Used bytes",
+									Description:         "Used bytes in the pool.",
+									MarkdownDescription: "Used bytes in the pool.",
 									Computed:            true,
 								},
 								"used_hdd_bytes": schema.StringAttribute{
-									Description:         "Used hdd bytes",
-									MarkdownDescription: "Used hdd bytes",
+									Description:         "Used bytes in the pool on HDD drives.",
+									MarkdownDescription: "Used bytes in the pool on HDD drives.",
 									Computed:            true,
 								},
 								"used_ssd_bytes": schema.StringAttribute{
-									Description:         "Used ssd bytes",
-									MarkdownDescription: "Used ssd bytes",
+									Description:         "Used bytes in the pool on SSD drives.",
+									MarkdownDescription: "Used bytes in the pool on SSD drives.",
 									Computed:            true,
 								},
 								"virtual_hot_spare_bytes": schema.StringAttribute{
-									Description:         "Virtual hot spare bytes",
-									MarkdownDescription: "Virtual hot spare bytes",
+									Description:         "Bytes reserved for virtual hot spare in the pool.",
+									MarkdownDescription: "Bytes reserved for virtual hot spare in the pool.",
 									Computed:            true,
 								},
 							},
 						},
-					},	
+					},
 				},
 			},
 		},
@@ -262,21 +255,20 @@ func (d StoragepoolTierDataSource) Read(ctx context.Context, req datasource.Read
 	// Read and map StoragePool tier state
 	storagepoolTiers, err := helper.GetAllStoragepoolTiers(ctx, d.client)
 	if err != nil {
-		errStr := constants.ReadSmartPoolSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError("Error reading Storagepool tiers", message)
+		resp.Diagnostics.AddError("Error reading Storagepool tiers", err.Error())
 		return
 	}
-	allTiers := make([]models.StoragepoolTierModel, len(storagepoolTiers.GetTiers()))
-	eachTierValue := storagepoolTiers.GetTiers()
+	allTiers := make([]models.StoragepoolTierModel, len(storagepoolTiers))
 	for i := range len(allTiers) {
-		err = helper.CopyFields(ctx, eachTierValue[i], &allTiers[i])
+		err = helper.CopyFields(ctx, storagepoolTiers[i], &allTiers[i])
 		if err != nil {
 			resp.Diagnostics.AddError("Error copying fields of storagepool tiers datasource", err.Error())
 			return
 		}
-		allTiers[i].Id = types.StringValue(strconv.Itoa(int(eachTierValue[i].GetId())))
-		allTiers[i].TransferLimitPct = types.Int64Value(int64(math.Round(eachTierValue[i].GetTransferLimitPct())))
+		allTiers[i].Id = types.StringValue(strconv.Itoa(int(storagepoolTiers[i].GetId())))
+		if storagepoolTiers[i].HasTransferLimitPct() {
+			allTiers[i].TransferLimitPct = types.Int64Value(int64(math.Round(storagepoolTiers[i].GetTransferLimitPct())))
+		}
 	}
 	idValue := "storagepool_tier_"
 	var state models.StoragepoolTierDataSourceModel

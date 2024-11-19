@@ -31,7 +31,6 @@ type StoragepoolTierModel struct {
 	Id       types.String `tfsdk:"id"`
 	Lnns     types.List   `tfsdk:"lnns"`
 	Name     types.String `tfsdk:"name"`
-	// NodeTypeIds        types.List   `tfsdk:"node_type_ids"`
 	TransferLimitPct   types.Int64  	`tfsdk:"transfer_limit_pct"`
 	TransferLimitState types.String 	`tfsdk:"transfer_limit_state"`
 	Usage	*StoragepoolTierUsageModel 	`tfsdk:"usage"`  

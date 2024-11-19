@@ -20,7 +20,9 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"fmt"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
 )
 
 // GetStoragepoolTier gets storage pool tier.
@@ -30,12 +32,14 @@ func GetStoragepoolTier(ctx context.Context, client *client.Client, path string)
 }
 
 // GetAllStoragepoolTiers returns the full list of storage pool tiers.
-func GetAllStoragepoolTiers(ctx context.Context, client *client.Client) (*powerscale.V16StoragepoolTiers, error) {
+func GetAllStoragepoolTiers(ctx context.Context, client *client.Client) ([]powerscale.V16StoragepoolTierExtended, error) {
 	StoragepoolTierParams := client.PscaleOpenAPIClient.StoragepoolApi.ListStoragepoolv16StoragepoolTiers(ctx)
 
 	StoragepoolTiers, _, err := StoragepoolTierParams.Execute()
 	if err != nil {
-		return nil, err
+		errStr := constants.ReadStoragepoolTiersErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return nil, fmt.Errorf("error getting storagepool tiers: %s", message)
 	}
-	return StoragepoolTiers, err
+	return StoragepoolTiers.Tiers, nil
 }

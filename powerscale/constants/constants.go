@@ -496,4 +496,7 @@ const (
 
 	// ReadSyncIQReplicationJobErrorMessage specifies error details occurred while reading SyncIQ jobs.
 	ReadSyncIQReplicationJobErrorMessage = "Could not read SyncIQ jobs "
+
+	// ReadStoragepoolTiersErrorMsg specifies error details occurred while reading storagepool tiers.
+	ReadStoragepoolTiersErrorMsg = "Could not read storagepool tiers "
 )
