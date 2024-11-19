@@ -52,7 +52,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 | **Terraform Provider** | **PowerScale Version** | **OS**                    | **Terraform**               | **Golang** |
 |------------------------|:-----------------------|:--------------------------|-----------------------------|------------|
-| v1.5.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.8.x <br> 1.9.x         | 1.22       |
+| v1.6.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.8.x <br> 1.9.x         | 1.22       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
 * [Cluster](docs/data-sources/cluster.md)
@@ -92,6 +92,10 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * [SyncIQ Global Settings](docs/data-sources/synciq_global_settings.md)
 * [SyncIQ Rule](docs/data-sources/synciq_rule.md)
 * [SyncIQ Peer Certificate](docs/data-sources/synciq_peer_certificate.md)
+* [SyncIQ Replication Report](docs/data-sources/synciq_replication_report.md)
+* [NFS Alias](docs/data-sources/nfs_alias.md)
+* [Writeable Snapshot](docs/data-sources/writable_snapshot.md)
+* [SyncIQ Replication Job](docs/data-sources/synciq_replication_job.md)
 
 ## List of Resources in Terraform Provider for Dell PowerScale
 * [Access Zone](docs/resources/accesszone.md)
@@ -136,6 +140,11 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * [SyncIQ Policy](docs/resources/synciq_policy.md)
 * [SyncIQ Global Settings](docs/resources/synciq_global_settings.md)
 * [SyncIQ Peer Certificate](docs/resources/synciq_peer_certificate.md)
+* [Support Assist](docs/resources/support_assist.md)
+* [Writeable Snapshot](docs/resources/writable_snapshot.md)
+* [Snapshot Restore](docs/resources/snapshot_restore.md)
+* [NFS Alias](docs/resources/nfs_alias.md)
+* [SyncIQ Replication Job](docs/resources/synciq_replication_job.md)
 
 ## Installation and execution of Terraform Provider for Dell PowerScale
 
@@ -148,7 +157,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerscale = { 
-      version = "1.5.0"
+      version = "1.6.0"
       source = "registry.terraform.io/dell/powerscale"
     }
   }

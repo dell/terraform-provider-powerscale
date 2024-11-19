@@ -15,6 +15,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
+# v1.6.0 (Nov 29, 2024)
+## Release Summary
+The release supports resources and data sources mentioned in the Features section for Dell PowerScale.
+## Features
+
+### Data Sources:
+
+* `powerscale_synciq_replication_report` for reading SyncIQ Replication Report in PowerScale.
+* `powerscale_nfs_alias` for reading NFS Alias in PowerScale.
+* `powerscale_writable_snapshot` for reading Writeable Snapshot in PowerScale.
+* `powerscale_synciq_replication_job` for reading SyncIQ Replication Job in PowerScale.
+
+
+### Resources
+
+* `powerscale_writable_snapshot` for managing Writeable Snapshots in PowerScale.
+* `powerscale_snapshot_restore` for Restoring from snapshot in PowerScale.
+* `powerscale_nfs_alias` for managing NFS Alias in PowerScale.
+* `powerscale_synciq_replication_job` for managing SyncIQ Replication Jobs in PowerScale.
+
+### Others
+N/A
+
+## Enhancements
+* Datasources are enhanced to support filters.
+
+## Bug Fixes
+N/A
+
+
 # v1.5.0 (Sept 27, 2024)
 ## Release Summary
 The release supports resources and data sources mentioned in the Features section for Dell PowerScale.
