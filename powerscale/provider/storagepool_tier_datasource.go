@@ -35,7 +35,7 @@ import (
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ datasource.DataSource = &StoragepoolTierDataSource{}
 
-// NewSmartPoolSettingDataSource creates a new data source.
+// NewStoragepoolTierDataSource creates a new data source.
 func NewStoragepoolTierDataSource() datasource.DataSource {
 	return &StoragepoolTierDataSource{}
 }
@@ -54,23 +54,23 @@ func (d StoragepoolTierDataSource) Metadata(ctx context.Context, req datasource.
 func (d StoragepoolTierDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "This datasource is used to query the StoragePool tiers from PowerScale array. " +
+		MarkdownDescription: "This datasource is used to query the Storagepool tiers from PowerScale array. " +
 			"The information fetched from this datasource can be used for getting the details or for further processing in resource block. " +
-			"PowerScale StoragePool tiers provide the ability to configure SmartPools on the cluster.",
-		Description: "This datasource is used to query the StoragePool tiers from PowerScale array. " +
+			"PowerScale Storagepool tiers provide the ability to configure Storagepool tiers on the cluster.",
+		Description: "This datasource is used to query the Storagepool tiers from PowerScale array. " +
 			"The information fetched from this datasource can be used for getting the details or for further processing in resource block. " +
-			"PowerScale StoragePool tiers provide the ability to configure SmartPools on the cluster.",
+			"PowerScale Storagepool tiers provide the ability to configure Storagepool tiers on the cluster.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Id of StoragePool tiers. Readonly. Fixed value of \"storagepool_tiers\"",
-				MarkdownDescription: "Id of StoragePool tiers. Readonly. Fixed value of \"storagepool_tiers\"",
+				Description:         "Id of Storagepool tiers. Readonly. Fixed value of \"storagepool_tiers\"",
+				MarkdownDescription: "Id of Storagepool tiers. Readonly. Fixed value of \"storagepool_tiers\"",
 				Optional:            false,
 				Required:            false,
 				Computed:            true,
 			}, // Need to created nested attributes
 			"storagepool_tiers": schema.ListNestedAttribute{
-				Description:         "List of StoragePool tiers",
-				MarkdownDescription: "List of StoragePool tiers",
+				Description:         "List of Storagepool tiers",
+				MarkdownDescription: "List of Storagepool tiers",
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -252,7 +252,7 @@ func (d StoragepoolTierDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 
-	// Read and map StoragePool tier state
+	// Read and map Storagepool tier state
 	storagepoolTiers, err := helper.GetAllStoragepoolTiers(ctx, d.client)
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading Storagepool tiers", err.Error())
