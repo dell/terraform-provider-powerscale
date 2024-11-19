@@ -20,13 +20,17 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -110,16 +114,25 @@ func (d *NfsAliasDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 						MarkdownDescription: "IDs to filter nfs Aliases.",
 						Optional:            true,
 						ElementType:         types.StringType,
+						Validators: []validator.Set{
+							setvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+						},
 					},
 					"sort": schema.StringAttribute{
 						Description:         "The field that will be used for sorting.",
 						MarkdownDescription: "The field that will be used for sorting.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"zone": schema.StringAttribute{
 						Description:         "Specifies which access zone to use.",
 						MarkdownDescription: "Specifies which access zone to use.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"limit": schema.Int64Attribute{
 						Description:         "Return no more than this many results at once (see resume).",
@@ -130,6 +143,9 @@ func (d *NfsAliasDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 						Description:         "The direction of the sort.",
 						MarkdownDescription: "The direction of the sort.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"check": schema.BoolAttribute{
 						Description:         "Check for conflicts when listing Aliases.",
@@ -185,26 +201,38 @@ func (d *NfsAliasDataSource) Read(ctx context.Context, req datasource.ReadReques
 	var paths []types.String
 	if aliasPlan.NfsAliasesFilter != nil {
 		exportsIDs = aliasPlan.NfsAliasesFilter.IDs
-	}
-	filteredAliases, err := helper.FilterAliases(paths, exportsIDs, *totalNfsAliases)
-	if err != nil {
-		errStr := constants.ListNfsAliasErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError("Error filtering nfs alias",
-			message)
-		return
-	}
 
-	for _, export := range filteredAliases {
-		entity := models.NfsAliasDatasourceEntity{}
-		err := helper.CopyFields(ctx, export, &entity)
+		filteredAliases, err := helper.FilterAliases(paths, exportsIDs, *totalNfsAliases)
 		if err != nil {
-			resp.Diagnostics.AddError("Error reading nfs aliases datasource plan",
-				fmt.Sprintf("Could not list nfs aliases with error: %s", err.Error()))
+			errStr := constants.ListNfsAliasErrorMsg + "with error: "
+			message := helper.GetErrorString(err, errStr)
+			resp.Diagnostics.AddError("Error filtering nfs alias",
+				message)
 			return
 		}
-		aliasState.NfsAliases = append(aliasState.NfsAliases, entity)
+
+		var validAliases []string
+		for _, export := range filteredAliases {
+			entity := models.NfsAliasDatasourceEntity{}
+			err := helper.CopyFields(ctx, export, &entity)
+			if err != nil {
+				resp.Diagnostics.AddError("Error reading nfs aliases datasource plan",
+					fmt.Sprintf("Could not list nfs aliases with error: %s", err.Error()))
+				return
+			}
+			aliasState.NfsAliases = append(aliasState.NfsAliases, entity)
+
+			validAliases = append(validAliases, entity.ID.ValueString())
+		}
+
+		if len(aliasState.NfsAliases) < len(aliasPlan.NfsAliasesFilter.IDs) {
+			resp.Diagnostics.AddError(
+				"Error one or more of the filtered NFS Alias id is not a valid powerscale NFS Alias.",
+				fmt.Sprintf("Valid NFS Aliases: [%v], filtered list: [%v]", strings.Join(validAliases, " , "), aliasPlan.NfsAliasesFilter.IDs),
+			)
+		}
 	}
+
 	aliasState.ID = types.StringValue("nfs_alias")
 	aliasState.NfsAliasesFilter = aliasPlan.NfsAliasesFilter
 	resp.Diagnostics.Append(resp.State.Set(ctx, &aliasState)...)
