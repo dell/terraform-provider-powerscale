@@ -854,6 +854,11 @@ func (d *ReplicationReportDataSource) Read(ctx context.Context, req datasource.R
 		)
 		return
 	}
+	
+	if len(*replicationReportList) == 0 {
+		resp.Diagnostics.AddError("Error reading replication reports", "No replication report found")
+	}
+
 	var rr []models.ReplicationReportsDetail
 	for _, rrItem := range *replicationReportList {
 		entity := models.ReplicationReportsDetail{}
@@ -864,9 +869,6 @@ func (d *ReplicationReportDataSource) Read(ctx context.Context, req datasource.R
 			return
 		}
 		rr = append(rr, entity)
-	}
-	if rr == nil {
-		resp.Diagnostics.AddError("Error reading replication reports", "No replication report found")
 	}
 
 	state.Reports = rr
