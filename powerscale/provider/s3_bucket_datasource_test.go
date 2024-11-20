@@ -44,7 +44,7 @@ func TestAccS3BucketDatasource(t *testing.T) {
 	})
 }
 
-func TestAccS3BucketsourceGetAll(t *testing.T) {
+func TestAccS3BucketDatasourceGetAll(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -157,7 +157,11 @@ resource "powerscale_s3_bucket" "bucket_resource_test" {
 	}]
 }
 
-data "powerscale_s3_bucket" "bucket_datasource_test_all" {}
+data "powerscale_s3_bucket" "bucket_datasource_test_all" {
+  	depends_on = [
+    	powerscale_s3_bucket.bucket_resource_test
+  	]
+}
 `, bucketName, bucketName)
 
 var S3BucketDatasourceConfig = fmt.Sprintf(`
@@ -165,6 +169,7 @@ resource "powerscale_s3_bucket" "bucket_resource_test" {
 	name = "%s"
 	path = "/ifs/%s"
 	create_path = true
+	zone  = "System"
 	acl = [{
 		grantee = {
 			name = "Everyone"
@@ -172,15 +177,13 @@ resource "powerscale_s3_bucket" "bucket_resource_test" {
 		}
 		permission = "FULL_CONTROL"
 	}]
+		
 }
 
 data "powerscale_s3_bucket" "bucket_datasource_test" {
 	filter {
 		zone  = "System"
-		owner = "root"
+		owner = powerscale_s3_bucket.bucket_resource_test.owner
 	}
-  	depends_on = [
-    	powerscale_s3_bucket.bucket_resource_test
-  	]
 }
 `, bucketName, bucketName)
