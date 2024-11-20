@@ -38,6 +38,10 @@ func GetRoles(ctx context.Context, client *client.Client, state models.RoleDataS
 	}
 
 	roles, _, err := roleParams.Execute()
+	if err != nil {
+		return nil, err
+	}
+	
 	// Pagination
 	for roles.Resume != nil && state.RoleFilter != nil {
 		roleParams = roleParams.Resume(*roles.Resume)
