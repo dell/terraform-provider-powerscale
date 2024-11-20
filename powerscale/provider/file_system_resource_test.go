@@ -34,7 +34,7 @@ var createMockerLocal *mockey.Mocker
 var setACLMockerLocal *mockey.Mocker
 var metadataMocker *mockey.Mocker
 
-func TestFileSystemResourceWithUIDChange(t *testing.T) {
+func TestAccFileSystemResourceWithUIDChange(t *testing.T) {
 	var fileSystemResourceName = "powerscale_filesystem.file_system_test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -74,7 +74,7 @@ func TestFileSystemResourceWithUIDChange(t *testing.T) {
 	})
 }
 
-func TestFileSystemResource(t *testing.T) {
+func TestAccFileSystemResource(t *testing.T) {
 	var fileSystemResourceName = "powerscale_filesystem.file_system_test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -155,7 +155,7 @@ func TestFileSystemResource(t *testing.T) {
 	})
 }
 
-func TestFileSystemResourceUpdate(t *testing.T) {
+func TestAccFileSystemResourceUpdate(t *testing.T) {
 	var fileSystemResourceName = "powerscale_filesystem.file_system_test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -195,7 +195,7 @@ func TestFileSystemResourceUpdate(t *testing.T) {
 		},
 	})
 }
-func TestFileSystemResourceUpdateMetadataError(t *testing.T) {
+func TestAccFileSystemResourceUpdateMetadataError(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -246,7 +246,7 @@ func TestFileSystemResourceUpdateMetadataError(t *testing.T) {
 	})
 }
 
-func TestFileSystemResourceUpdateGetAclError(t *testing.T) {
+func TestAccFileSystemResourceUpdateGetAclError(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -315,7 +315,7 @@ func TestFileSystemResourceUpdateGetAclError(t *testing.T) {
 	})
 }
 
-func TestFileSystemResourceUpdateUserErr(t *testing.T) {
+func TestAccFileSystemResourceUpdateUserErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -361,7 +361,7 @@ func TestFileSystemResourceUpdateUserErr(t *testing.T) {
 		},
 	})
 }
-func TestFileSystemResourceUpdateFail(t *testing.T) {
+func TestAccFileSystemResourceUpdateFail(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
