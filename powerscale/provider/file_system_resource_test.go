@@ -556,7 +556,7 @@ resource "powerscale_filesystem" "file_system_test" {
 	name = "tfaccDirTfUpd"
   
 	recursive = true
-	overwrite = false
+	overwrite = true
 	group = {
 	  id   = "GID:0"
 	  name = "wheel"
@@ -579,7 +579,7 @@ resource "powerscale_filesystem" "file_system_test" {
 	name = "tfaccDirTfUpd"
   
 	recursive = true
-	overwrite = false
+	overwrite = true
 	group = {
 	  id   = "GID:0"
 	  name = "wheel"
@@ -602,7 +602,7 @@ resource "powerscale_filesystem" "file_system_test" {
 	name = "tfaccDirTfUpdErr"
   
 	recursive = true
-	overwrite = false
+	overwrite = true
 	group = {
 	  id   = "GID:0"
 	  name = "wheel"
@@ -626,7 +626,7 @@ resource "powerscale_filesystem" "file_system_test" {
 	name = "tfaccDirTf"
   
 	recursive = true
-	overwrite = false
+	overwrite = true
 	group = {
 	  id   = "GID:0"
 	  name = "wheel"
@@ -657,7 +657,7 @@ resource "powerscale_filesystem" "file_system_test" {
 	name = "tfaccDirTf"
   
 	recursive = true
-	overwrite = false
+	overwrite = true
 	group = {
 	  id   = "GID:0"
 	}
@@ -689,7 +689,7 @@ resource "powerscale_filesystem" "file_system_test" {
 
 	name = "tfaccDirTf"
 	recursive = true
-	overwrite = false
+	overwrite = true
 	group = {
 		name = "tfaccUserGroupDatasource",
 	}
