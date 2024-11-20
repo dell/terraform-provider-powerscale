@@ -283,6 +283,9 @@ func (r *SnapshotRestoreResource) Update(ctx context.Context, request resource.U
 
 	state, diags := helper.ManageSnapshotRestore(ctx, r.client, plan)
 	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
 
 	// Save updated data into Terraform state
 	response.Diagnostics.Append(response.State.Set(ctx, &state)...)
