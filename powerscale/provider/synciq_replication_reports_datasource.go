@@ -866,7 +866,7 @@ func (d *ReplicationReportDataSource) Read(ctx context.Context, req datasource.R
 		rr = append(rr, entity)
 	}
 	if rr == nil {
-		resp.Diagnostics.AddError("Error reading replication reports", "No replication report found with the specified filter(s)")
+		resp.Diagnostics.AddError("Error reading replication reports", "No replication report found")
 	}
 
 	state.Reports = rr
