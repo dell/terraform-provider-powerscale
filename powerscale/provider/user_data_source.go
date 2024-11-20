@@ -26,6 +26,7 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -260,6 +261,9 @@ func (d *UserDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 									Optional:            true,
 								},
 							},
+						},
+						Validators: []validator.List{
+							listvalidator.SizeAtLeast(1),
 						},
 					},
 					"name_prefix": schema.StringAttribute{

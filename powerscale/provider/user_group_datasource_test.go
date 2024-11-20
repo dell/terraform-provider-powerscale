@@ -113,7 +113,6 @@ func TestAccUserGroupDataSourceAll(t *testing.T) {
 var userGroupFilterDataSourceConfig = `
 data "powerscale_user_group" "test" {
   filter {
-	names = []
 	cached = false
 	# name_prefix = ""
 	# domain = ""
