@@ -868,7 +868,7 @@ func (d *ReplicationReportDataSource) Read(ctx context.Context, req datasource.R
 	if rr == nil {
 		resp.Diagnostics.AddError("Error reading replication reports", "No replication report found with the specified filter(s)")
 	}
-	
+
 	state.Reports = rr
 	state.ID = types.StringValue("synciq_replication_report_datasource")
 	// Save data into Terraform state
