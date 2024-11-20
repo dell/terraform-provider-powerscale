@@ -25,8 +25,10 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -170,11 +172,17 @@ func (d *S3BucketDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 						Description:         "Specifies which access zone to use.",
 						MarkdownDescription: "Specifies which access zone to use.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"owner": schema.StringAttribute{
 						Description:         "Specifies the name of the owner.",
 						MarkdownDescription: "Specifies the name of the owner.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 				},
 			},
@@ -216,6 +224,10 @@ func (d *S3BucketDataSource) Read(ctx context.Context, req datasource.ReadReques
 			return
 		}
 		filteredBuckets = append(filteredBuckets, entity)
+	}
+
+	if filteredBuckets == nil {
+		resp.Diagnostics.AddError("Error reading s3 buckets", "No buckets found with the specified filter(s)")
 	}
 
 	state.ID = types.StringValue("s3_bucket_datasource")

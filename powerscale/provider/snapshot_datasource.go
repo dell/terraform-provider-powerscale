@@ -148,8 +148,8 @@ func (d *SnapshotDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 							Computed:            true,
 						},
 						"target_id": schema.Int64Attribute{
-							Description:         "The ID of the snapshot pointed to if this is an alias. 18446744073709551615 (max uint64) is returned for an alias to the live filesystem.",
-							MarkdownDescription: "The ID of the snapshot pointed to if this is an alias. 18446744073709551615 (max uint64) is returned for an alias to the live filesystem.",
+							Description:         "The ID of the snapshot pointed to if this is an alias. An alias to the live filesystem is represented by the value -1.",
+							MarkdownDescription: "The ID of the snapshot pointed to if this is an alias. An alias to the live filesystem is represented by the value -1.",
 							Computed:            true,
 						},
 						"target_name": schema.StringAttribute{

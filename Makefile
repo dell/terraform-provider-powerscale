@@ -87,3 +87,6 @@ cover:
 	rm -f coverage.*
 	go test -coverprofile=coverage.out ./...
 	go tool cover -html coverage.out -o coverage.html
+
+sweep :
+	go test -v ./powerscale/provider -timeout 20m -sweep=all
