@@ -854,7 +854,7 @@ func (d *ReplicationReportDataSource) Read(ctx context.Context, req datasource.R
 		)
 		return
 	}
-	
+
 	if len(*replicationReportList) == 0 {
 		resp.Diagnostics.AddError("Error reading replication reports", "No replication report found")
 	}
