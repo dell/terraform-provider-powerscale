@@ -148,6 +148,7 @@ resource "powerscale_s3_bucket" "bucket_resource_test" {
 	name = "%s"
 	path = "/ifs/%s"
 	create_path = true
+	zone  = "System"
 	acl = [{
 		grantee = {
 			name = "Everyone"
