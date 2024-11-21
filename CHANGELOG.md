@@ -33,13 +33,14 @@ The release supports resources and data sources mentioned in the Features sectio
 * `powerscale_writable_snapshot` for managing Writeable Snapshots in PowerScale.
 * `powerscale_snapshot_restore` for Restoring from snapshot in PowerScale.
 * `powerscale_nfs_alias` for managing NFS Alias in PowerScale.
-* `powerscale_synciq_replication_job` for managing SyncIQ Replication Jobs in PowerScale.
+* `powerscale_synciq_replication_job` for managing SyncIQ Replication Job in PowerScale.
+* `powerscale_synciq_rules` for managing SyncIQ Replication Performance Rules in PowerScale.
 
 ### Others
 N/A
 
 ## Enhancements
-* Datasources are enhanced to support filters.
+* Selected data sources are enhanced to support additional filters.
 
 ## Bug Fixes
 N/A

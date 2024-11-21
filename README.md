@@ -145,6 +145,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * [Snapshot Restore](docs/resources/snapshot_restore.md)
 * [NFS Alias](docs/resources/nfs_alias.md)
 * [SyncIQ Replication Job](docs/resources/synciq_replication_job.md)
+* [SyncIQ Rules](docs/resources/synciq_rules.md)
 
 ## Installation and execution of Terraform Provider for Dell PowerScale
 
