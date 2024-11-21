@@ -64,10 +64,9 @@ func (d StoragepoolTierDataSource) Schema(ctx context.Context, req datasource.Sc
 			"id": schema.StringAttribute{
 				Description:         "Id of Storagepool tiers. Readonly. Fixed value of \"storagepool_tiers\"",
 				MarkdownDescription: "Id of Storagepool tiers. Readonly. Fixed value of \"storagepool_tiers\"",
-				Optional:            false,
 				Required:            false,
 				Computed:            true,
-			}, // Need to created nested attributes
+			},
 			"storagepool_tiers": schema.ListNestedAttribute{
 				Description:         "List of Storagepool tiers",
 				MarkdownDescription: "List of Storagepool tiers",
