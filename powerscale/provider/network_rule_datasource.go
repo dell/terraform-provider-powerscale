@@ -25,8 +25,11 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -119,21 +122,33 @@ func (d *NetworkRuleDataSource) Schema(ctx context.Context, req datasource.Schem
 						MarkdownDescription: "Filter network rules by names.",
 						Optional:            true,
 						ElementType:         types.StringType,
+						Validators: []validator.Set{
+							setvalidator.SizeAtLeast(1),
+						},
 					},
 					"groupnet": schema.StringAttribute{
 						Description:         "If specified, only rules for this groupnet will be returned.",
 						MarkdownDescription: "If specified, only rules for this groupnet will be returned.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"subnet": schema.StringAttribute{
 						Description:         "If specified, only rules for this subnet will be returned.",
 						MarkdownDescription: "If specified, only rules for this subnet will be returned.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 					"pool": schema.StringAttribute{
 						Description:         "If specified, only rules for this pool will be returned.",
 						MarkdownDescription: "If specified, only rules for this pool will be returned.",
 						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtLeast(1),
+						},
 					},
 				},
 			},
