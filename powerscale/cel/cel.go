@@ -2,6 +2,7 @@ package cel
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log"
 	"reflect"
@@ -16,28 +17,37 @@ func convertGoToCelMap(in any) any {
 	val := reflect.ValueOf(in)
 	switch val.Kind() {
 	case reflect.Ptr:
-		// if pointer, deref the pointer and recurse
+		// if pointer and not nil, deref the pointer and recurse
+		if val.IsNil() {
+			return nil
+		}
 		return convertGoToCelMap(val.Elem().Interface())
 	case reflect.Struct:
 		// if struct
 		switch inV := in.(type) {
 		case attr.Value:
 			// if attr.Value, convert using terraform conversion rules
+			if inV.IsNull() {
+				return nil
+			}
 			return convertTerraformValueToCelType(inV)
 		}
 		return convertStructToCelMap(in)
 	case reflect.Map:
 		// if map, recurse for each value
-		out := make(map[string]any)
-		for k, v := range in.(map[string]any) {
-			out[k] = convertGoToCelMap(v)
+		out := make(map[string]any, val.Len())
+		iter := val.MapRange()
+		for iter.Next() {
+			k := iter.Key().String()
+			v := iter.Value()
+			out[k] = convertGoToCelMap(v.Interface())
 		}
 		return out
 	case reflect.Slice, reflect.Array:
 		// if slice, recurse for each value
-		out := make([]any, 0)
-		for _, v := range in.([]any) {
-			out = append(out, convertGoToCelMap(v))
+		out := make([]any, val.Len())
+		for i := 0; i < val.Len(); i++ {
+			out[i] = convertGoToCelMap(val.Index(i).Interface())
 		}
 		return out
 	}
@@ -90,10 +100,14 @@ func convertStructToCelMap(in any) map[string]any {
 	itype := val.Type()
 	ret := make(map[string]any)
 	for i := 0; i < val.NumField(); i++ {
-		field := itype.Field(i)
+		value := convertGoToCelMap(val.Field(i).Interface())
+		if value == nil {
+			continue
+		}
 		// get field tfsdk tag
+		field := itype.Field(i)
 		tfTag := field.Tag.Get("tfsdk")
-		ret[tfTag] = convertGoToCelMap(val.Field(i).Interface())
+		ret[tfTag] = value
 	}
 	return ret
 }
@@ -119,8 +133,11 @@ func filterCel[T any](inputs []T, filter string) ([]T, error) {
 	ret := make([]T, 0)
 	var ferr error
 	for _, input := range inputs {
+		mval := convertGoToCelMap(input)
+		jval, _ := json.MarshalIndent(mval, "", "  ")
+		log.Println("Input:", string(jval))
 		out, _, err := prg.Eval(map[string]any{
-			"self": convertGoToCelMap(input),
+			"self": mval,
 		})
 		if err != nil {
 			ferr = errors.Join(ferr, err)

@@ -23,6 +23,7 @@ import "github.com/hashicorp/terraform-plugin-framework/types"
 type FilePoolPolicyDataSourceModel struct {
 	FilePoolPolicies []FilePoolPolicyDetailModel `tfsdk:"file_pool_policies"`
 	ID               types.String                `tfsdk:"id"`
+	Where            *string                     `tfsdk:"where"`
 	Filter           *FilePoolPolicyFilterType   `tfsdk:"filter"`
 }
 

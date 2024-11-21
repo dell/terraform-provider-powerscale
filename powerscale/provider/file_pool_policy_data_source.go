@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"strings"
 	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/cel"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
@@ -62,6 +63,11 @@ func (d *FilePoolPolicyDataSource) Schema(ctx context.Context, req datasource.Sc
 				Computed:            true,
 				MarkdownDescription: "Unique identifier of the file pool policy instance.",
 				Description:         "Unique identifier of the file pool policy instance.",
+			},
+			"where": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Specifies the where clause.",
+				Description:         "Specifies the where clause.",
 			},
 			"file_pool_policies": schema.ListNestedAttribute{
 				MarkdownDescription: "List of file pool policies.",
@@ -410,6 +416,13 @@ func (d *FilePoolPolicyDataSource) Read(ctx context.Context, req datasource.Read
 		}
 	} else {
 		state.FilePoolPolicies = append(state.FilePoolPolicies, *defaultPolicyState)
+	}
+
+	// apply where clause
+	state.FilePoolPolicies, err = cel.FilterOptionalCel(state.FilePoolPolicies, state.Where)
+	if err != nil {
+		resp.Diagnostics.AddError("Error applying where clause.", err.Error())
+		return
 	}
 
 	state.ID = types.StringValue("filepool_policy_datasource")
