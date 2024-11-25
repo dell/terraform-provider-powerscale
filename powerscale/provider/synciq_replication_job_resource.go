@@ -91,7 +91,7 @@ func (r *SyncIQReplicationJobResource) Metadata(_ context.Context, req resource.
 // Schema defines the schema for the resource.
 func (r *SyncIQReplicationJobResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Resource for managing SyncIQReplicationJobResource on OpenManage Enterprise.",
+		MarkdownDescription: "Resource for managing SyncIQ ReplicationJob on PowerScale. This resource can be used to manually trigger the replication job to replicate data from source powerscale cluster to a target powerscale cluster.",
 		Version:             1,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
@@ -103,9 +103,19 @@ func (r *SyncIQReplicationJobResource) Schema(_ context.Context, _ resource.Sche
 				},
 			},
 			"action": schema.StringAttribute{
-				Required:            true,
-				Description:         "Action for the job - run, test, resync_prep, allow_write, allow_write_revert",
-				MarkdownDescription: "Action for the job - run, test, resync_prep, allow_write, allow_write_revert",
+				Required: true,
+				Description: `Action for the job 
+				 run - to start the replication job using synciq policy
+				 test - to test the replication job using synciq policy, 
+				 resync_prep - Resync_prep is a preparation step in PowerScale SyncIQ replication jobs that helps ensure a successful replication operation by performing a series of checks and verifications on the source and target volumes before starting the replication process., 
+				 allow_write - allow_write determines whether the replication job allows writes to the target volume during the replication process. When configured, the target volume is writable, and any changes made to the target volume will be replicated to the source volume. This is useful in scenarios where you need to make changes to the target volume, such as updating files or creating new files, while the replication job is running.,
+				 allow_write_revert - allow_write_revert determines whether the replication job allows writes to the target volume when reverting a replication job. When configure, the target volume is writable during the revert process, allowing changes made to the target volume during the revert process to be replicated to the source volume.`,
+				MarkdownDescription: `Action for the job 
+				 run - to start the replication job using synciq policy
+				 test - to test the replication job using synciq policy, 
+				 resync_prep - Resync_prep is a preparation step in PowerScale SyncIQ replication jobs that helps ensure a successful replication operation by performing a series of checks and verifications on the source and target volumes before starting the replication process., 
+				 allow_write - allow_write determines whether the replication job allows writes to the target volume during the replication process. When configured, the target volume is writable, and any changes made to the target volume will be replicated to the source volume. This is useful in scenarios where you need to make changes to the target volume, such as updating files or creating new files, while the replication job is running.,
+				 allow_write_revert - allow_write_revert determines whether the replication job allows writes to the target volume when reverting a replication job. When configure, the target volume is writable during the revert process, allowing changes made to the target volume during the revert process to be replicated to the source volume.`,
 				Validators: []validator.String{
 					stringvalidator.OneOf("run", "test", "resync_prep", "allow_write", "allow_write_revert"),
 				},
