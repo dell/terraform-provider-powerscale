@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-# Restore snapshot using snaprevert job
+# Restore snapshot using snaprevert job. SnapRevert domain will be deleted once `terraform destroy` is executed.
 resource "powerscale_snapshot_restore" "test" {
   snaprevert_params = {
     allow_dup   = true
