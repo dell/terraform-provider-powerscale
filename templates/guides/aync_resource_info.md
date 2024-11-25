@@ -33,6 +33,7 @@ When utilizing Terraform, it is essential to consider the implications of asynch
 
 # List of Asynchronous Resources
 1. SyncIQ replication Job
+2. Snapshot Restore (Only SnapRevert Operation)
 
 
 

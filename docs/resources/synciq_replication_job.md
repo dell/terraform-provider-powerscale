@@ -19,12 +19,18 @@ linkTitle: "powerscale_synciq_replication_job"
 page_title: "powerscale_synciq_replication_job Resource - terraform-provider-powerscale"
 subcategory: ""
 description: |-
-  Resource for managing SyncIQ ReplicationJob on PowerScale. This resource can be used to manually trigger the replication job to replicate data from source powerscale cluster to a target powerscale cluster.
+  The PowerScale SyncIQ ReplicationJob resource provides a means of managing replication jobs on PowerScale clusters.
+           This resource allows for the manual triggering of replication jobs to replicate data from a source PowerScale cluster to a target PowerScale cluster.
+           Note: The replication job is an asynchronous operation, and this resource does not provide real-time monitoring of the job's status.
+           To check the status of the job,please use the powerscalesynciqreplication_report datasource.
 ---
 
 # powerscale_synciq_replication_job (Resource)
 
-Resource for managing SyncIQ ReplicationJob on PowerScale. This resource can be used to manually trigger the replication job to replicate data from source powerscale cluster to a target powerscale cluster.
+The PowerScale SyncIQ ReplicationJob resource provides a means of managing replication jobs on PowerScale clusters.
+		 This resource allows for the manual triggering of replication jobs to replicate data from a source PowerScale cluster to a target PowerScale cluster. 
+		 Note: The replication job is an asynchronous operation, and this resource does not provide real-time monitoring of the job's status. 
+		 To check the status of the job,please use the powerscale_synciq_replication_report datasource.
 
 
 ## Example Usage

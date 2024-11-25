@@ -91,8 +91,11 @@ func (r *SyncIQReplicationJobResource) Metadata(_ context.Context, req resource.
 // Schema defines the schema for the resource.
 func (r *SyncIQReplicationJobResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Resource for managing SyncIQ ReplicationJob on PowerScale. This resource can be used to manually trigger the replication job to replicate data from source powerscale cluster to a target powerscale cluster.",
-		Version:             1,
+		MarkdownDescription: `The PowerScale SyncIQ ReplicationJob resource provides a means of managing replication jobs on PowerScale clusters.
+		 This resource allows for the manual triggering of replication jobs to replicate data from a source PowerScale cluster to a target PowerScale cluster. 
+		 Note: The replication job is an asynchronous operation, and this resource does not provide real-time monitoring of the job's status. 
+		 To check the status of the job,please use the powerscale_synciq_replication_report datasource.`,
+		Version: 1,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Required:            true,
