@@ -49,7 +49,7 @@ Next, a SyncIQ policy needs to be created. A policy defines the rules for data m
 
 resource "powerscale_synciq_policy" "policy1" {
   name             = "policy1"
-  action           = "sync"
+  action           = "sync" # action can be sync or copy
   source_root_path = "/ifs"
   target_host      = "10.10.10.10"
   target_path      = "/ifs/policy1Sink"
@@ -63,7 +63,7 @@ A replication job is created from the SyncIQ policy using the powerscale_synciq_
 ### Create replication job from SyncIQ policy
 
 resource "powerscale_synciq_replication_job" "job1" {
-  action    = "run"
+  action    = "run" # action can be run, test, resync_prep, allow_write or allow_write_revert
   id        = "policy1"
   is_paused = false
 }
