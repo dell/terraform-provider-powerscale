@@ -50,7 +50,7 @@ Next, a SyncIQ policy needs to be created. A policy defines the rules for data m
 resource "powerscale_synciq_policy" "policy1" {
   name             = "policy1"
   action           = "sync" # action can be sync or copy
-  source_root_path = "/ifs"
+  source_root_path = "/ifs/Source"
   target_host      = "10.10.10.10"
   target_path      = "/ifs/policy1Sink"
 }
