@@ -761,50 +761,66 @@ func (d *ReplicationReportDataSource) Schema(ctx context.Context, req datasource
 			},
 		},
 		Blocks: map[string]schema.Block{
-			"filter": schema.SingleNestedBlock{
-				Attributes: map[string]schema.Attribute{
-					"sort": schema.StringAttribute{
-						Optional:            true,
-						Description:         "The field that will be used for sorting.",
-						MarkdownDescription: "The field that will be used for sorting.",
-					},
-					"newer_than": schema.Int64Attribute{
-						Optional:            true,
-						Description:         "Filter the returned reports to include only those whose jobs started more recently than the specified number of days ago.",
-						MarkdownDescription: "Filter the returned reports to include only those whose jobs started more recently than the specified number of days ago.",
-					},
-					"policy_name": schema.StringAttribute{
-						Optional:            true,
-						Description:         "Filter the returned reports to include only those with this policy name.",
-						MarkdownDescription: "Filter the returned reports to include only those with this policy name.",
-					},
-					"state": schema.StringAttribute{
-						Optional:            true,
-						Description:         "Filter the returned reports to include only those whose jobs are in this state.",
-						MarkdownDescription: "Filter the returned reports to include only those whose jobs are in this state.",
-					},
-					"limit": schema.Int64Attribute{
-						Optional:            true,
-						Description:         "Return no more than this many results at once (see resume).",
-						MarkdownDescription: "Return no more than this many results at once (see resume).",
-					},
-					"reports_per_policy": schema.Int64Attribute{
-						Optional:            true,
-						Description:         "If specified, only the N most recent reports will be returned per policy.  If no other query args are present this argument defaults to 1. ",
-						MarkdownDescription: "If specified, only the N most recent reports will be returned per policy.  If no other query args are present this argument defaults to 1. ",
-					},
-					"summary": schema.BoolAttribute{
-						Optional:            true,
-						Description:         "Return a summary rather than entire objects",
-						MarkdownDescription: "Return a summary rather than entire objects",
-					},
-					"dir": schema.StringAttribute{
-						Optional:            true,
-						Description:         "The direction of the sort.",
-						MarkdownDescription: "The direction of the sort.",
+			"filter": schema.ListNestedBlock{
+				NestedObject: schema.NestedBlockObject{
+					Attributes: map[string]schema.Attribute{
+						"name": schema.StringAttribute{
+							Optional:            true,
+							Description:         "Filter the returned reports to include only those with this name.",
+							MarkdownDescription: "Filter the returned reports to include only those with this name.",
+						},
+						"value": schema.StringAttribute{
+							Optional:            true,
+							Description:         "Filter the returned reports to include only those with this value.",
+							MarkdownDescription: "Filter the returned reports to include only those with this value.",
+						},
 					},
 				},
 			},
+			// "filter": schema.SingleNestedBlock{
+			// 	Attributes: map[string]schema.Attribute{
+			// 		"sort": schema.StringAttribute{
+			// 			Optional:            true,
+			// 			Description:         "The field that will be used for sorting.",
+			// 			MarkdownDescription: "The field that will be used for sorting.",
+			// 		},
+			// 		"newer_than": schema.Int64Attribute{
+			// 			Optional:            true,
+			// 			Description:         "Filter the returned reports to include only those whose jobs started more recently than the specified number of days ago.",
+			// 			MarkdownDescription: "Filter the returned reports to include only those whose jobs started more recently than the specified number of days ago.",
+			// 		},
+			// 		"policy_name": schema.StringAttribute{
+			// 			Optional:            true,
+			// 			Description:         "Filter the returned reports to include only those with this policy name.",
+			// 			MarkdownDescription: "Filter the returned reports to include only those with this policy name.",
+			// 		},
+			// 		"state": schema.StringAttribute{
+			// 			Optional:            true,
+			// 			Description:         "Filter the returned reports to include only those whose jobs are in this state.",
+			// 			MarkdownDescription: "Filter the returned reports to include only those whose jobs are in this state.",
+			// 		},
+			// 		"limit": schema.Int64Attribute{
+			// 			Optional:            true,
+			// 			Description:         "Return no more than this many results at once (see resume).",
+			// 			MarkdownDescription: "Return no more than this many results at once (see resume).",
+			// 		},
+			// 		"reports_per_policy": schema.Int64Attribute{
+			// 			Optional:            true,
+			// 			Description:         "If specified, only the N most recent reports will be returned per policy.  If no other query args are present this argument defaults to 1. ",
+			// 			MarkdownDescription: "If specified, only the N most recent reports will be returned per policy.  If no other query args are present this argument defaults to 1. ",
+			// 		},
+			// 		"summary": schema.BoolAttribute{
+			// 			Optional:            true,
+			// 			Description:         "Return a summary rather than entire objects",
+			// 			MarkdownDescription: "Return a summary rather than entire objects",
+			// 		},
+			// 		"dir": schema.StringAttribute{
+			// 			Optional:            true,
+			// 			Description:         "The direction of the sort.",
+			// 			MarkdownDescription: "The direction of the sort.",
+			// 		},
+			// 	},
+			// },
 		},
 	}
 }

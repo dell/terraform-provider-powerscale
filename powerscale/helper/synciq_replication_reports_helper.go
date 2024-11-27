@@ -20,6 +20,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"strconv"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -27,39 +28,75 @@ import (
 // GetReplicationReports gets a list of replication reports.
 func GetReplicationReports(ctx context.Context, client *client.Client, state models.ReplicationReportsDatasourceModel) (*[]powerscale.V15SyncReport, error) {
 	listRRParam := client.PscaleOpenAPIClient.SyncApi.GetSyncv15SyncReports(ctx)
-	if state.ReplicationReportFilter != nil {
-		if !state.ReplicationReportFilter.Sort.IsNull() {
-			listRRParam = listRRParam.Sort(state.ReplicationReportFilter.Sort.ValueString())
+	isLimit := false
+	for _, filter := range state.ReplicationReportFilter {
+		if !filter.Name.IsNull() && !filter.Value.IsNull() {
+			filterName := filter.Name.ValueString()
+			filterValue := filter.Value.ValueString()
+			if filterName == "Sort" {
+				listRRParam = listRRParam.Sort(filterValue)
+			}
+			if filterName == "NewerThan" {
+				intVal, _ := strconv.Atoi(filterValue)
+				listRRParam = listRRParam.NewerThan(int32(intVal))
+			}
+			if filterName == "PolicyName" {
+				listRRParam = listRRParam.PolicyName(filterValue)
+			}
+			if filterName == "State" {
+				listRRParam = listRRParam.State(filterValue)
+			}
+			if filterName == "Limit" {
+				intVal, _ := strconv.Atoi(filterValue)
+				listRRParam = listRRParam.Limit(int32(intVal))
+				isLimit = true
+			}
+			if filterName == "ReportsPerPolicy" {
+				intVal, _ := strconv.Atoi(filterValue)
+				listRRParam = listRRParam.ReportsPerPolicy(int32(intVal))
+			}
+			if filterName == "Summary" {
+				boolVal, _ := strconv.ParseBool(filterValue)
+				listRRParam = listRRParam.Summary(boolVal)
+			}
+			if filterName == "Dir" {
+				listRRParam = listRRParam.Dir(filterValue)
+			}
 		}
-		if !state.ReplicationReportFilter.NewerThan.IsNull() {
-			listRRParam = listRRParam.NewerThan(int32(state.ReplicationReportFilter.NewerThan.ValueInt64()))
-		}
-		if !state.ReplicationReportFilter.PolicyName.IsNull() {
-			listRRParam = listRRParam.PolicyName(state.ReplicationReportFilter.PolicyName.ValueString())
-		}
-		if !state.ReplicationReportFilter.State.IsNull() {
-			listRRParam = listRRParam.State(state.ReplicationReportFilter.State.ValueString())
-		}
-		if !state.ReplicationReportFilter.Limit.IsNull() {
-			listRRParam = listRRParam.Limit(int32(state.ReplicationReportFilter.Limit.ValueInt64()))
-		}
-		if !state.ReplicationReportFilter.ReportsPerPolicy.IsNull() {
-			listRRParam = listRRParam.ReportsPerPolicy(int32(state.ReplicationReportFilter.ReportsPerPolicy.ValueInt64()))
-		}
-		if !state.ReplicationReportFilter.Dir.IsNull() {
-			listRRParam = listRRParam.Dir(state.ReplicationReportFilter.Dir.ValueString())
-		}
-		if !state.ReplicationReportFilter.Summary.IsNull() {
-			listRRParam = listRRParam.Summary(state.ReplicationReportFilter.Summary.ValueBool())
-		}
-
 	}
+
+	// if state.ReplicationReportFilter != nil {
+	// 	if !state.ReplicationReportFilter.Sort.IsNull() {
+	// 		listRRParam = listRRParam.Sort(state.ReplicationReportFilter.Sort.ValueString())
+	// 	}
+	// 	if !state.ReplicationReportFilter.NewerThan.IsNull() {
+	// 		listRRParam = listRRParam.NewerThan(int32(state.ReplicationReportFilter.NewerThan.ValueInt64()))
+	// 	}
+	// 	if !state.ReplicationReportFilter.PolicyName.IsNull() {
+	// 		listRRParam = listRRParam.PolicyName(state.ReplicationReportFilter.PolicyName.ValueString())
+	// 	}
+	// 	if !state.ReplicationReportFilter.State.IsNull() {
+	// 		listRRParam = listRRParam.State(state.ReplicationReportFilter.State.ValueString())
+	// 	}
+	// 	if !state.ReplicationReportFilter.Limit.IsNull() {
+	// 		listRRParam = listRRParam.Limit(int32(state.ReplicationReportFilter.Limit.ValueInt64()))
+	// 	}
+	// 	if !state.ReplicationReportFilter.ReportsPerPolicy.IsNull() {
+	// 		listRRParam = listRRParam.ReportsPerPolicy(int32(state.ReplicationReportFilter.ReportsPerPolicy.ValueInt64()))
+	// 	}
+	// 	if !state.ReplicationReportFilter.Dir.IsNull() {
+	// 		listRRParam = listRRParam.Dir(state.ReplicationReportFilter.Dir.ValueString())
+	// 	}
+	// 	if !state.ReplicationReportFilter.Summary.IsNull() {
+	// 		listRRParam = listRRParam.Summary(state.ReplicationReportFilter.Summary.ValueBool())
+	// 	}
+	// }
 	resp, _, err := listRRParam.Execute()
 	if err != nil {
 		return nil, err
 	}
 	totalReplicationReports := resp.Reports
-	for resp.Resume != nil && (state.ReplicationReportFilter == nil || state.ReplicationReportFilter.Limit.IsNull()) {
+	for resp.Resume != nil && isLimit {
 		resumeReplicationReportParam := client.PscaleOpenAPIClient.SyncApi.GetSyncv15SyncReports(ctx).Resume(*resp.Resume)
 		resp, _, err = resumeReplicationReportParam.Execute()
 		if err != nil {

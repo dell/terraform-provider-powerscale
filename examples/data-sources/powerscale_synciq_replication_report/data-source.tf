@@ -30,11 +30,31 @@ output "powerscale_synciq_replication_report" {
 # Returns a list of PowerScale Replication Report based on the filters specified in the filter block.
 data "powerscale_synciq_replication_report" "filtering" {
   filter {
-    policy_name        = "Policy"
-    reports_per_policy = 2
-    sort               = "policy_name"
-    dir                = "ASC"
+    name = "PolicyName"
+    value = "Policy"
   }
+
+  filter {
+    name = "ReportsPerPolicy"
+    value = "2"
+  }
+
+  filter {
+    name = "Sort"
+    value = "policy_name"
+  }
+
+  filter {
+    name = "Dir"
+    value = "ASC"
+  }
+
+  # filter {
+  #   policy_name        = "Policy"
+  #   reports_per_policy = 2
+  #   sort               = "policy_name"
+  #   dir                = "ASC"
+  # }
 }
 
 # Output value of above block by executing 'terraform output' command

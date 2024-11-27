@@ -22,20 +22,24 @@ import "github.com/hashicorp/terraform-plugin-framework/types"
 type ReplicationReportsDatasourceModel struct {
 	ID                      types.String                 `tfsdk:"id"`
 	Reports                 []ReplicationReportsDetail   `tfsdk:"replication_reports"`
-	ReplicationReportFilter *ReplicationReportFilterType `tfsdk:"filter"`
+	ReplicationReportFilter []ReplicationReportFilterType `tfsdk:"filter"`
 }
 
-// ReplicationReportFilterType describes the struct for filter block
 type ReplicationReportFilterType struct {
-	Sort             types.String `tfsdk:"sort"`
-	NewerThan        types.Int64  `tfsdk:"newer_than"`
-	PolicyName       types.String `tfsdk:"policy_name"`
-	State            types.String `tfsdk:"state"`
-	Limit            types.Int64  `tfsdk:"limit"`
-	ReportsPerPolicy types.Int64  `tfsdk:"reports_per_policy"`
-	Summary          types.Bool   `tfsdk:"summary"`
-	Dir              types.String `tfsdk:"dir"`
+	Name types.String `tfsdk:"name"`
+	Value types.String `tfsdk:"value"`
 }
+// ReplicationReportFilterType describes the struct for filter block
+// type ReplicationReportFilterType struct {
+// 	Sort             types.String `tfsdk:"sort"`
+// 	NewerThan        types.Int64  `tfsdk:"newer_than"`
+// 	PolicyName       types.String `tfsdk:"policy_name"`
+// 	State            types.String `tfsdk:"state"`
+// 	Limit            types.Int64  `tfsdk:"limit"`
+// 	ReportsPerPolicy types.Int64  `tfsdk:"reports_per_policy"`
+// 	Summary          types.Bool   `tfsdk:"summary"`
+// 	Dir              types.String `tfsdk:"dir"`
+// }
 
 // ReplicationReportsDetail describes the struct for replication report
 type ReplicationReportsDetail struct {
