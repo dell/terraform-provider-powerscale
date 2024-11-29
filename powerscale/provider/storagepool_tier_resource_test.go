@@ -157,7 +157,7 @@ func TestAccStoragepoolTierResourceImportMockErr(t *testing.T) {
 var StoragepoolTierResourceConfig = `
 resource "powerscale_storagepool_tier" "example" {
     children = [
-        "x410_34tb_1.6tb-ssd_64gb"
+        "simulator_100gb_6gb"
     ]
     name = "Sample_terraform_tier_1"
     transfer_limit_pct = 20
@@ -175,7 +175,7 @@ resource "powerscale_storagepool_tier" "example" {
 var StoragepoolTierResourceConfigCreateErr = `
 resource "powerscale_storagepool_tier" "example" {
     children = [
-        "x410_34tb_1.6tb-ssd_64gb"
+        "simulator_100gb_6gb"
     ]
 	name = "Sample_terraform_tier_1"
     transfer_limit_pct = 110
@@ -192,7 +192,7 @@ resource "powerscale_storagepool_tier" "example" {
 var StoragepoolTierResourceConfigUpdateErr2 = `
 resource "powerscale_storagepool_tier" "example" {
     children = [
-        "x410_34tb_1.6tb-ssd_64gb"
+        "simulator_100gb_6gb"
     ]
 	name = "Sample_terraform_tier_1"
     transfer_limit_pct = 110
