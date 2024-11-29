@@ -20,42 +20,42 @@ OpenSource Licenses for Terraform Provider for PowerScale
 # Direct Dependencies
 
 Package: golang.org/x/net  
-Version: v0.28.0  
-Copyright: Copyright (c) 2009 The Go Authors. All rights reserved.   
-License: [BSD-3-Clause](https://github.com/golang/net/blob/v0.11.0/LICENSE)     
+Version: v0.30.0  
+Copyright: Copyright (c) 2009 The Go Authors.
+License: [BSD-3-Clause](https://github.com/golang/net/blob/v0.30.0/LICENSE)
 Source: [net](https://github.com/golang/net)
 * * *
 
 Package: github.com/bytedance/mockey  
-Version: v1.2.11  
+Version: v1.2.13  
 Copyright: Copyright 2022 ByteDance Inc.  
 License: [Apache-2.0 license](https://github.com/bytedance/mockey/blob/v1.2.4/LICENSE-APACHE)       
 Source: [mockey](https://github.com/bytedance/mockey)
 * * *
 
 Package: github.com/hashicorp/terraform-plugin-framework  
-Version: v1.11.0  
+Version: v1.13.0  
 Copyright: Copyright (c) 2021 HashiCorp, Inc.  
 License: [MPL-2.0 license](https://github.com/hashicorp/terraform-plugin-framework/blob/v1.3.1/LICENSE)     
 Source: [terraform-plugin-framework](https://github.com/hashicorp/terraform-plugin-framework)
 * * *
 
 Package: github.com/hashicorp/terraform-plugin-go  
-Version: v0.23.0  
+Version: v0.25.0  
 Copyright: Copyright (c) 2020 HashiCorp, Inc.  
 License: [MPL-2.0 license](https://github.com/hashicorp/terraform-plugin-go/blob/v0.16.0/LICENSE)       
 Source: [terraform-plugin-go](https://github.com/hashicorp/terraform-plugin-go)
 * * *
 
 Package: github.com/hashicorp/terraform-plugin-testing  
-Version: v1.9.0  
+Version: v1.10.0  
 Copyright: Copyright (c) 2014 HashiCorp, Inc.  
 License: [MPL-2.0 license](https://github.com/hashicorp/terraform-plugin-testing/blob/v1.3.0/LICENSE)       
 Source: [terraform-plugin-testing](https://github.com/hashicorp/terraform-plugin-testing)
 * * *
 
 Package: github.com/hashicorp/terraform-plugin-framework-validators  
-Version: v0.13.0  
+Version: v0.15.0  
 Copyright: Copyright (c) 2022 HashiCorp, Inc.  
 License: [MPL-2.0 license](https://github.com/hashicorp/terraform-plugin-framework-validators/blob/v0.10.0/LICENSE)     
 Source: [terraform-plugin-framework-validators](https://github.com/hashicorp/terraform-plugin-framework-validators)
@@ -86,9 +86,9 @@ Source: [go-spew](https://github.com/davecgh/go-spew)
 * * *
 
 Package: github.com/gopherjs/gopherjs       
-Version: v0.0.0-20181017120253-0766667cb4d1     
+Version: v1.12.80     
 Copyright: Copyright (c) 2014 The GopherJS Authors. All rights reserved.  
-License: [MIT](https://github.com/gopherjs/gopherjs/blob/v0.0.0-20181017120253-0766667cb4d1/LICENSE)     
+License: [MIT](https://github.com/gopherjs/gopherjs/blob/master/LICENSE)     
 Source: [gopherjs](https://github.com/gopherjs/gopherjs)
 * * *
 
@@ -107,21 +107,21 @@ Source: [go-difflib](https://github.com/pmezard/go-difflib)
 * * *
 
 Package: github.com/smartystreets/assertions        
-Version: v0.0.0-20180927180507-b2de0cb4f26d      
+Version: v1.2.0      
 Copyright: Copyright (c) 2016 SmartyStreets, Inc.  
-License: [MIT](https://github.com/smartystreets/assertions/blob/v0.0.0-20180927180507-b2de0cb4f26d/LICENSE.md)     
+License: [MIT](https://github.com/smarty/assertions/blob/master/LICENSE.md)     
 Source: [assertions](https://github.com/smartystreets/assertions)
 * * *
 
 Package: github.com/smartystreets/goconvey      
-Version: v1.6.4        
+Version: v1.7.2        
 Copyright: Copyright (c) 2015 SmartyStreets, Inc.  
-License: [Apache-2.0](https://github.com/smartystreets/goconvey/blob/v1.6.4/LICENSE)     
+License: [Apache-2.0](https://github.com/smartystreets/goconvey/blob/v1.7.2/LICENSE.md)     
 Source: [goconvey](https://github.com/smartystreets/goconvey)
 * * *
 
 Package: golang.org/x/arch      
-Version: v0.0.0-20201008161808-52c3e6f60cff        
+Version: v0.11.0        
 Copyright: Copyright (c) 2009 The Go Authors. All rights reserved.  
 License: [BSD-3-Clause](https://github.com/golang/arch/blob/52c3e6f60cff/LICENSE)     
 Source: [arch](https://github.com/golang/arch)
@@ -226,9 +226,9 @@ Source: [go-multierror](https://github.com/hashicorp/go-multierror)
 * * *
 
 Package: github.com/hashicorp/go-plugin     
-Version: v1.6.0  
+Version: v1.6.2  
 Copyright: Copyright (c) 2015-2022 HashiCorp, Inc.  
-License: [MPL-2.0](https://github.com/hashicorp/go-plugin/blob/v1.6.0/LICENSE)   
+License: [MPL-2.0](https://github.com/hashicorp/go-plugin/blob/v1.6.2/LICENSE)   
 Source: [go-plugin](https://github.com/hashicorp/go-plugin)
 * * *
 
@@ -247,9 +247,9 @@ Source: [go-version](https://github.com/hashicorp/go-version)
 * * *
 
 Package: github.com/hashicorp/hc-install     
-Version: v0.7.0  
+Version: v0.8.0  
 Copyright: Copyright (c) 2015-2022 HashiCorp, Inc.  
-License: [MPL-2.0](https://github.com/hashicorp/hc-install/blob/v0.7.0/LICENSE)   
+License: [MPL-2.0](https://github.com/hashicorp/hc-install/blob/v0.8.0/LICENSE)   
 Source: [hc-install](https://github.com/hashicorp/hc-install)
 * * *
 
@@ -415,44 +415,44 @@ Source: [tagparser](https://github.com/vmihailenco/tagparser)
 * * *
 
 Package: github.com/zclconf/go-cty  
-Version: v1.14.4        
+Version: v1.15.0        
 Copyright: Copyright (c) 2019 ZCL       
-License: [MIT](https://github.com/zclconf/go-cty/blob/v1.14.4/LICENSE)  
+License: [MIT](https://github.com/zclconf/go-cty/blob/v1.15.0/LICENSE)  
 Source: [go-cty](https://github.com/zclconf/go-cty)
 * * *
 
-Package: golang.org/x/crypto        
-Version: v0.26.0        
-Copyright: Copyright (c) 2009 The Go Authors    
-License: [BSD-3-Clause](https://github.com/golang/crypto/blob/v0.26.0/LICENSE)  
+Package: golang.org/x/crypto
+Version: v0.28.0
+Copyright: Copyright (c) 2009 The Go Authors
+License: [BSD-3-Clause](https://github.com/golang/crypto/blob/v0.28.0/LICENSE)  
 Source: [x/crypto](https://github.com/golang/crypto)
 * * *
 
 Package: golang.org/x/mod       
-Version: v0.17.0    
+Version: v0.19.0    
 Copyright: Copyright (c) 2009 The Go Authors    
-License: [BSD-3-Clause](https://github.com/golang/mod/blob/v0.17.0/LICENSE)     
+License: [BSD-3-Clause](https://github.com/golang/mod/blob/v0.19.0/LICENSE)     
 Source: [x/mod](https://github.com/golang/mod)
 * * *
 
 Package: golang.org/x/sync  
-Version: v0.8.0     
+Version: v0.9.0     
 Copyright: Copyright (c) 2016 The Go Authors        
-License: [BSD-3-Clause](https://github.com/golang/sync/blob/v0.8.0/LICENSE)     
+License: [BSD-3-Clause](https://github.com/golang/sync/blob/v0.9.0/LICENSE)     
 Source: [x/sync](https://github.com/golang/sync)
 * * *
 
 Package: golang.org/x/sys       
-Version: v0.24.0        
+Version: v0.27.0        
 Copyright: Copyright (c) 2009 The Go Authors    
-License: [BSD-3-Clause](https://github.com/golang/sys/blob/v0.24.0/LICENSE)     
+License: [BSD-3-Clause](https://github.com/golang/sys/blob/v0.27.0/LICENSE)     
 Source: [x/sys](https://github.com/golang/sys)
 * * *
 
-Package: golang.org/x/text      
-Version: v0.17.0        
-Copyright: Copyright (c) 2009 The Go Authors    
-License: [BSD-3-Clause](https://github.com/golang/text/blob/v0.17.0/LICENSE)        
+Package: golang.org/x/text
+Version: v0.19.0
+Copyright: Copyright (c) 2009 The Go Authors
+License: [BSD-3-Clause](https://github.com/golang/text/blob/v0.19.0/LICENSE)
 Source: [x/text](https://github.com/golang/text)
 * * *
 
@@ -478,16 +478,16 @@ Source: [googleapis](https://github.com/googleapis/googleapis)
 * * *
 
 Package: google.golang.org/grpc     
-Version: v1.63.2        
+Version: v1.67.1        
 Copyright: Copyright (c) 2015 Google Inc.       
-License: [Apache-2.0](https://github.com/grpc/grpc-go/blob/v1.63.2/LICENSE)     
+License: [Apache-2.0](https://github.com/grpc/grpc-go/blob/v1.67.1/LICENSE)     
 Source: [grpc-go](https://github.com/grpc/grpc-go)
 * * *
 
 Package: google.golang.org/protobuf     
-Version: v1.34.0        
+Version: v1.35.1        
 Copyright: Copyright (c) 2015 Google Inc.       
-License: [BSD-3](https://github.com/protocolbuffers/protobuf-go/blob/v1.34.0/LICENSE)      
+License: [BSD-3](https://github.com/protocolbuffers/protobuf-go/blob/v1.35.1/LICENSE)      
 Source: [protobuf-go](https://github.com/protocolbuffers/protobuf-go)
 * * *
 

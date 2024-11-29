@@ -33,6 +33,7 @@ type SnapshotRestoreModel struct {
 type SnapRevertParamsModel struct {
 	AllowDup types.Bool  `tfsdk:"allow_dup"`
 	SnapID   types.Int32 `tfsdk:"snapshot_id"`
+	JobID    types.Int32 `tfsdk:"job_id"`
 }
 
 // CopyParamsModel represents the copy parameters model.

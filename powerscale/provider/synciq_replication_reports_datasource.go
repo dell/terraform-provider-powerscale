@@ -46,7 +46,7 @@ type ReplicationReportDataSource struct {
 
 // Metadata describes the data source arguments.
 func (d *ReplicationReportDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_replication_report"
+	resp.TypeName = req.ProviderTypeName + "_synciq_replication_report"
 }
 
 // Schema describes the data source arguments.
@@ -854,6 +854,11 @@ func (d *ReplicationReportDataSource) Read(ctx context.Context, req datasource.R
 		)
 		return
 	}
+
+	if len(*replicationReportList) == 0 {
+		resp.Diagnostics.AddError("Error reading replication reports", "No replication report found")
+	}
+
 	var rr []models.ReplicationReportsDetail
 	for _, rrItem := range *replicationReportList {
 		entity := models.ReplicationReportsDetail{}
@@ -865,8 +870,9 @@ func (d *ReplicationReportDataSource) Read(ctx context.Context, req datasource.R
 		}
 		rr = append(rr, entity)
 	}
+
 	state.Reports = rr
-	state.ID = types.StringValue("replication_report_datasource")
+	state.ID = types.StringValue("synciq_replication_report_datasource")
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	tflog.Info(ctx, "Done with reading replication report data source ")

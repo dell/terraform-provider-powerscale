@@ -20,6 +20,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"errors"
 	"fmt"
 	"strconv"
 	"terraform-provider-powerscale/client"
@@ -27,6 +28,7 @@ import (
 	"terraform-provider-powerscale/powerscale/models"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
@@ -161,29 +163,22 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 			return state, resp
 		}
 
-		strID = strconv.Itoa(int(createResponse.Id))
-		tflog.Info(ctx, fmt.Sprintf("SnapRestore job id: %v", createResponse.Id))
-		jobResponse, err = GetSnapshotRestoreJob(ctx, client, strID)
-		if err != nil {
-			errStr := constants.ReadSnapshotRestoreJobErrorMsg + "with error: "
-			message := GetErrorString(err, errStr)
-			resp.AddError(
-				"Error getting job",
-				message,
-			)
-			return state, resp
+		snapRevertType := map[string]attr.Type{
+			"allow_dup":   types.BoolType,
+			"snapshot_id": types.Int32Type,
+			"job_id":      types.Int32Type,
 		}
 
-		jobResponse, diag = CheckJobStatus(ctx, client, strID, jobResponse)
-		resp.Append(diag...)
-
-		if jobResponse.State == "failed" {
-			resp.AddError(
-				"Error getting job report",
-				"Please check if snaprevert domain is created",
-			)
-			return state, resp
+		snapRevertMap := make(map[string]attr.Value)
+		if snapRevert.AllowDup.IsNull() {
+			snapRevertMap["allow_dup"] = types.BoolNull()
+		} else {
+			snapRevertMap["allow_dup"] = types.BoolValue(snapRevert.AllowDup.ValueBool())
 		}
+		snapRevertMap["snapshot_id"] = types.Int32Value(snapRevert.SnapID.ValueInt32())
+		snapRevertMap["job_id"] = types.Int32Value(createResponse.Id)
+		snapRevertObject, _ := types.ObjectValue(snapRevertType, snapRevertMap)
+		state.SnapRevertParams = snapRevertObject
 	} else if !plan.CopyParams.IsNull() {
 		var copyParams models.CopyParamsModel
 		diag := plan.CopyParams.As(ctx, &copyParams, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
@@ -198,10 +193,16 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 				return state, diag
 			}
 
-			_, err := CopyDirectory(ctx, client, directoryParams)
-			if err != nil {
+			copyResponse, err := CopyDirectory(ctx, client, directoryParams)
+			if err != nil || copyResponse != nil {
+				var message string
 				errStr := constants.CopyDirectoryErrorMessage + "with error: "
-				message := GetErrorString(err, errStr)
+				if err != nil {
+					message = GetErrorString(err, errStr)
+				} else {
+					message = GetErrorString(errors.New(*copyResponse.CopyErrors[0].Message), errStr)
+				}
+
 				resp.AddError(
 					fmt.Sprintf("Error copying the directory with path %v", directoryParams.Source.ValueString()),
 					message,
@@ -214,10 +215,16 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 			if diag.HasError() {
 				return state, diag
 			}
-			_, err := CopyFile(ctx, client, fileParams)
-			if err != nil {
+			copyResponse, err := CopyFile(ctx, client, fileParams)
+			if err != nil || copyResponse != nil {
+				var message string
 				errStr := constants.CopyFileErrorMessage + "with error: "
-				message := GetErrorString(err, errStr)
+				if err != nil {
+					message = GetErrorString(err, errStr)
+				} else {
+					message = GetErrorString(errors.New(*copyResponse.CopyErrors[0].Message), errStr)
+				}
+
 				resp.AddError(
 					fmt.Sprintf("Error copying the file with path %v", fileParams.Source.ValueString()),
 					message,
@@ -244,10 +251,16 @@ func ManageSnapshotRestore(ctx context.Context, client *client.Client, plan mode
 			return state, resp
 		}
 
-		_, err = CloneFile(ctx, client, response.Name, cloneParams)
-		if err != nil {
+		cloneResponse, err := CloneFile(ctx, client, response.Name, cloneParams)
+		if err != nil || cloneResponse != nil {
+			var message string
 			errStr := constants.CloneFileErrorMessage + "with error: "
-			message := GetErrorString(err, errStr)
+			if err != nil {
+				message = GetErrorString(err, errStr)
+			} else {
+				message = GetErrorString(errors.New(*cloneResponse.CopyErrors[0].Message), errStr)
+			}
+
 			resp.AddError(
 				fmt.Sprintf("Error cloning the file with path %v", cloneParams.Source.ValueString()),
 				message,

@@ -128,5 +128,5 @@ Read-Only:
 - `shadow_bytes` (Number) The amount of shadow bytes referred to by this snapshot.
 - `size` (Number) The amount of storage in bytes used to store this snapshot.
 - `state` (String) Snapshot state.
-- `target_id` (Number) The ID of the snapshot pointed to if this is an alias. 18446744073709551615 (max uint64) is returned for an alias to the live filesystem.
+- `target_id` (Number) The ID of the snapshot pointed to if this is an alias. An alias to the live filesystem is represented by the value -1.
 - `target_name` (String) The name of the snapshot pointed to if this is an alias.

@@ -14,15 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-title: "powerscale_replication_report data source"
-linkTitle: "powerscale_replication_report"
-page_title: "powerscale_replication_report Data Source - terraform-provider-powerscale"
+title: "powerscale_synciq_replication_report data source"
+linkTitle: "powerscale_synciq_replication_report"
+page_title: "powerscale_synciq_replication_report Data Source - terraform-provider-powerscale"
 subcategory: ""
 description: |-
   
 ---
 
-# powerscale_replication_report (Data Source)
+# powerscale_synciq_replication_report (Data Source)
 
 
 
@@ -49,17 +49,17 @@ limitations under the License.
 # This Terraform DataSource is used to query the details of existing Replication Report from PowerScale array.
 
 # Returns the entire list of PowerScale replication report.
-data "powerscale_replication_report" "all" {
+data "powerscale_synciq_replication_report" "all" {
 }
 
 # Output value of above block by executing 'terraform output' command
-# You can use the the fetched information by the variable data.powerscale_replication_report.all
-output "powerscale_replication_report_all" {
-  value = data.powerscale_replication_report.all
+# You can use the the fetched information by the variable data.powerscale_synciq_replication_report.all
+output "powerscale_synciq_replication_report" {
+  value = data.powerscale_synciq_replication_report.all
 }
 
 # Returns a list of PowerScale Replication Report based on the filters specified in the filter block.
-data "powerscale_replication_report" "filtering" {
+data "powerscale_synciq_replication_report" "filtering" {
   filter {
     policy_name        = "Policy"
     reports_per_policy = 2
@@ -69,9 +69,9 @@ data "powerscale_replication_report" "filtering" {
 }
 
 # Output value of above block by executing 'terraform output' command
-# You can use the the fetched information by the variable data.powerscale_replication_report.filtering
+# You can use the the fetched information by the variable data.powerscale_synciq_replication_report.filtering
 output "powerscale_replication_report_filter" {
-  value = data.powerscale_replication_report.filtering
+  value = data.powerscale_synciq_replication_report.filtering
 }
 ```
 
