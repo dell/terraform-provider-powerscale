@@ -133,8 +133,7 @@ func ReadStoragepoolTier(ctx context.Context, client *client.Client, state *mode
 		return diags
 	}
 
-	var storagepoolTier powerscale.V16StoragepoolTierExtended
-	storagepoolTier = storagepoolTiers.Tiers[0]
+	var storagepoolTier = storagepoolTiers.Tiers[0]
 
 	err = CopyFields(ctx, storagepoolTier, state)
 	if storagepoolTier.TransferLimitPct != nil {
