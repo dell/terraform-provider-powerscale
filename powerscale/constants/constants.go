@@ -496,4 +496,16 @@ const (
 
 	// ReadSyncIQReplicationJobErrorMessage specifies error details occurred while reading SyncIQ jobs.
 	ReadSyncIQReplicationJobErrorMessage = "Could not read SyncIQ jobs "
+
+	// ReadStoragepoolTierErrorMsg specifies error details occurred while reading Storage pool tiers.
+	ReadStoragepoolTierErrorMsg = "Could not read storagepool tier "
+
+	// CreateStoragepoolTierErrorMsg specifies error details occurred while creating Storage pool tiers.
+	CreateStoragepoolTierErrorMsg = "Could not create storagepool tier "
+
+	// UpdateStoragepoolTierErrorMsg specifies error details occurred while updating Storage pool Tier settings.
+	UpdateStoragepoolTierErrorMsg = "Could not update storagepool tier settings "
+
+	// DeleteStoragepoolTierErrorMsg specifies error details occurred while deleting Storage pool Tier.
+	DeleteStoragepoolTierErrorMsg = "Could not delete storagepool tier "
 )
