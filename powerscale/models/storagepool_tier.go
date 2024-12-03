@@ -57,4 +57,18 @@ type StoragepoolTierUsageModel struct {
 	UsedHddBytes         types.String `tfsdk:"used_hdd_bytes"`
 	UsedSsdBytes         types.String `tfsdk:"used_ssd_bytes"`
 	VirtualHotSpareBytes types.String `tfsdk:"virtual_hot_spare_bytes"`
+
+type StoragepoolTierResourceModel struct {
+	Children types.List `tfsdk:"children"`
+	// Nodepools. The names or IDs of the tier's children.
+	Id types.Int64 `tfsdk:"id"`
+	// The unique identifier of the storagepool tier.
+	Lnns types.List `tfsdk:"lnns"`
+	// The nodes that are part of this tier.
+	Name types.String `tfsdk:"name"`
+	// The tier name.
+	TransferLimitPct types.Int64 `tfsdk:"transfer_limit_pct"`
+	// Stop moving files to this tier when this limit is met.
+	TransferLimitState types.String `tfsdk:"transfer_limit_state"`
+	// How the transfer limit value is being applied.
 }

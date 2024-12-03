@@ -499,4 +499,16 @@ const (
 
 	// ReadStoragepoolTiersErrorMsg specifies error details occurred while reading storagepool tiers.
 	ReadStoragepoolTiersErrorMsg = "Could not read storagepool tiers "
+
+	// ReadStoragepoolTierErrorMsg specifies error details occurred while reading Storage pool tiers.
+	ReadStoragepoolTierErrorMsg = "Could not read storagepool tier "
+
+	// CreateStoragepoolTierErrorMsg specifies error details occurred while creating Storage pool tiers.
+	CreateStoragepoolTierErrorMsg = "Could not create storagepool tier "
+
+	// UpdateStoragepoolTierErrorMsg specifies error details occurred while updating Storage pool Tier settings.
+	UpdateStoragepoolTierErrorMsg = "Could not update storagepool tier settings "
+
+	// DeleteStoragepoolTierErrorMsg specifies error details occurred while deleting Storage pool Tier.
+	DeleteStoragepoolTierErrorMsg = "Could not delete storagepool tier "
 )
