@@ -57,6 +57,7 @@ type StoragepoolTierUsageModel struct {
 	UsedHddBytes         types.String `tfsdk:"used_hdd_bytes"`
 	UsedSsdBytes         types.String `tfsdk:"used_ssd_bytes"`
 	VirtualHotSpareBytes types.String `tfsdk:"virtual_hot_spare_bytes"`
+}
 
 type StoragepoolTierResourceModel struct {
 	Children types.List `tfsdk:"children"`

@@ -20,7 +20,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
-  "strconv"
+    "strconv"
 	"fmt"
 	"math"
 	"terraform-provider-powerscale/client"
@@ -47,7 +47,7 @@ func GetAllStoragepoolTiers(ctx context.Context, client *client.Client) ([]power
 		return nil, fmt.Errorf("error getting storagepool tiers: %s", message)
 	}
 	return StoragepoolTiers.Tiers, nil
-)
+}
 
 // CreateStoragepoolTier created the storagepool tier on the array.
 func CreateStoragepoolTier(ctx context.Context, client *client.Client, plan models.StoragepoolTierResourceModel, state *models.StoragepoolTierResourceModel) diag.Diagnostics {
