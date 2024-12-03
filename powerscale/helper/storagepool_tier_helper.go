@@ -20,14 +20,14 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
-    "strconv"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"math"
+	"strconv"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/models"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 // GetStoragepoolTier gets storage pool tier.
