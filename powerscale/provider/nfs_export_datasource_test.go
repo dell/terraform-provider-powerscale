@@ -20,11 +20,12 @@ package provider
 import (
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccNfsExportDatasource(t *testing.T) {
@@ -127,8 +128,9 @@ data "powerscale_nfs_export" "export_datasource_test" {
 }
 `
 
-var NfsExportDatasourceGetWithQueryParam = `
+var NfsExportDatasourceGetWithQueryParam = FileSystemResourceConfigCommon2 + `
 resource "powerscale_nfs_export" "test_export" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	paths = ["/ifs/tfacc_nfs_export"]
 }
 
@@ -146,8 +148,9 @@ data "powerscale_nfs_export" "export_datasource_test" {
 }
 `
 
-var NfsExportDatasourceGetAllConfig = `
+var NfsExportDatasourceGetAllConfig = FileSystemResourceConfigCommon2 + `
 resource "powerscale_nfs_export" "test_export" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	paths = ["/ifs/tfacc_nfs_export"]
 }
 
