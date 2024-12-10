@@ -90,8 +90,8 @@ func (d StoragepoolTierDataSource) Schema(ctx context.Context, req datasource.Sc
 							ElementType:         types.Int32Type,
 						},
 						"name": schema.StringAttribute{
-							Description:         "Manage protection settings.",
-							MarkdownDescription: "Manage protection settings.",
+							Description:         "Name of storagepool tier.",
+							MarkdownDescription: "Name of storagepool tier.",
 							Computed:            true,
 						},
 						"transfer_limit_pct": schema.Int64Attribute{

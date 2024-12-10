@@ -72,7 +72,7 @@ Read-Only:
 - `children` (List of String) Manage I/O optimization settings.
 - `id` (String) Id of storagepool tier.
 - `lnns` (List of Number) Apply to files with manually-managed I/O optimization settings.
-- `name` (String) Manage protection settings.
+- `name` (String) Name of storagepool tier.
 - `transfer_limit_pct` (Number) Enable global namespace acceleration.
 - `transfer_limit_state` (String) Whether or not namespace operation optimizations are currently in effect.
 - `usage` (Attributes) Usage. (see [below for nested schema](#nestedatt--storagepool_tiers--usage))

@@ -77,19 +77,23 @@ func TestAccStoragepoolTierDatasourceErrorCopy(t *testing.T) {
 	})
 }
 
-var StoragepoolTierDatasourceAllConfig = `
+var StoragepoolTierDatasourceAllConfig = StoragepoolTierResourceConfigForDatasource + `
 
 data "powerscale_storagepool_tier" "all_test" {
 
+	depends_on = [powerscale_storagepool_tier.example]
 }
 `
 
-var StoragepoolTierDatasourceAllWithResourceConfig = `
+var StoragepoolTierResourceConfigForDatasource = `
 resource "powerscale_storagepool_tier" "example" {
-	name = "TestExample"
-}
+    name = "TestSPT"
+    transfer_limit_pct = 20
+  }
+`
 
+var StoragepoolTierDatasourceAllWithResourceConfig = `
 data "powerscale_storagepool_tier" "all_test" {
-
+	
 }
 `
