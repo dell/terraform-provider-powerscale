@@ -70,7 +70,7 @@ func TestAccStoragepoolTierDatasourceErrorCopy(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfig + StoragepoolTierDatasourceAllConfig,
+				Config:      ProviderConfig + StoragepoolTierDatasourceAllWithResourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
 			},
 		},
@@ -78,6 +78,16 @@ func TestAccStoragepoolTierDatasourceErrorCopy(t *testing.T) {
 }
 
 var StoragepoolTierDatasourceAllConfig = `
+
+data "powerscale_storagepool_tier" "all_test" {
+
+}
+`
+
+var StoragepoolTierDatasourceAllWithResourceConfig = `
+resource "powerscale_storagepool_tier" "example" {
+	name = "TestExample"
+}
 
 data "powerscale_storagepool_tier" "all_test" {
 
