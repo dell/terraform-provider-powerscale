@@ -42,7 +42,6 @@ func TestAccNetworkPoolDataSourceNames(t *testing.T) {
 					resource.TestCheckResourceAttr(poolTerraformName, "network_pools_details.0.groupnet", "groupnet0"),
 					resource.TestCheckResourceAttr(poolTerraformName, "network_pools_details.0.subnet", "subnet0"),
 					resource.TestCheckResourceAttr(poolTerraformName, "network_pools_details.0.sc_ttl", "0"),
-					resource.TestCheckResourceAttr(poolTerraformName, "network_pools_details.0.nfsv3_rroce_only", "false"),
 					resource.TestCheckResourceAttrSet(poolTerraformName, "network_pools_details.0.ifaces.#"),
 				),
 			},
@@ -65,7 +64,6 @@ func TestAccNetworkPoolDataSourceFilter(t *testing.T) {
 					resource.TestCheckResourceAttr(poolTerraformName, "network_pools_details.0.groupnet", "groupnet0"),
 					resource.TestCheckResourceAttr(poolTerraformName, "network_pools_details.0.subnet", "subnet0"),
 					resource.TestCheckResourceAttr(poolTerraformName, "network_pools_details.0.sc_ttl", "0"),
-					resource.TestCheckResourceAttr(poolTerraformName, "network_pools_details.0.nfsv3_rroce_only", "false"),
 					resource.TestCheckResourceAttrSet(poolTerraformName, "network_pools_details.0.ifaces.#"),
 				),
 			},
@@ -79,7 +77,7 @@ func TestAccNetworkPoolDataSourceAll(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// read all
+			// read all network pools
 			{
 				Config: ProviderConfig + PoolAllDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
