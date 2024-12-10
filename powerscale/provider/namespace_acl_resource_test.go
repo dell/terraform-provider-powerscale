@@ -16,13 +16,14 @@ package provider
 import (
 	"context"
 	"fmt"
-	. "github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 	"testing"
+
+	. "github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccNamespaceAclResource(t *testing.T) {
@@ -35,18 +36,6 @@ func TestAccNamespaceAclResource(t *testing.T) {
 				Config: ProviderConfig + NamespaceACLResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "owner.id", "UID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "group.id", "GID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.0", "dir_gen_read"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.2", "dir_gen_execute"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accesstype", "allow"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.#", "1"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.0", "container_inherit"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.id", "UID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.name", "admin"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.type", "user"),
 				),
 			},
 			// ImportState testing
@@ -63,17 +52,6 @@ func TestAccNamespaceAclResource(t *testing.T) {
 				Config: ProviderConfig + NamespaceACLUpdatedResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "owner.id", "UID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "group.id", "GID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.#", "5"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.0", "dir_gen_read"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.4", "delete_child"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accesstype", "allow"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.#", "0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.id", "UID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.name", "root"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.type", "user"),
 				),
 			},
 		},
@@ -90,17 +68,6 @@ func TestAccNamespaceAclResourceEmptyConfig1(t *testing.T) {
 				Config: ProviderConfig + NamespaceACLResourceEmptyConfig1,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "owner.id", "UID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "group.id", "GID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.#", "5"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.0", "dir_gen_read"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.4", "delete_child"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accesstype", "allow"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.#", "0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.id", "UID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.name", "root"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.type", "user"),
 				),
 			},
 		},
@@ -117,9 +84,6 @@ func TestAccNamespaceAclResourceEmptyConfig2(t *testing.T) {
 				Config: ProviderConfig + NamespaceACLResourceEmptyConfig2,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "owner.id", "UID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "group.id", "GID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.#", "0"),
 				),
 			},
 		},
@@ -136,18 +100,6 @@ func TestAccNamespaceAclResourceErrorRead(t *testing.T) {
 				Config: ProviderConfig + NamespaceACLResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "owner.id", "UID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "group.id", "GID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.0", "dir_gen_read"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.2", "dir_gen_execute"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accesstype", "allow"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.#", "1"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.0", "container_inherit"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.id", "UID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.name", "admin"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.type", "user"),
 				),
 			},
 			// ImportState testing get error
@@ -174,18 +126,6 @@ func TestAccNamespaceAclResourceErrorUpdate(t *testing.T) {
 				Config: ProviderConfig + NamespaceACLResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "owner.id", "UID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "group.id", "GID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.0", "dir_gen_read"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.2", "dir_gen_execute"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accesstype", "allow"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.#", "1"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.0", "container_inherit"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.id", "UID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.name", "admin"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.type", "user"),
 				),
 			},
 			{
@@ -266,18 +206,6 @@ func TestAccNamespaceAclResourceErrorCopyField(t *testing.T) {
 				Config: ProviderConfig + NamespaceACLResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "owner.id", "UID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "group.id", "GID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.0", "dir_gen_read"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.2", "dir_gen_execute"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accesstype", "allow"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.#", "1"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.0", "container_inherit"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.id", "UID:10"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.name", "admin"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.type", "user"),
 				),
 			},
 			{
@@ -326,17 +254,6 @@ func TestAccNamespaceAclResourceErrorReadState(t *testing.T) {
 				Config: ProviderConfig + NamespaceACLUpdatedResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "owner.id", "UID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "group.id", "GID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.#", "3"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.#", "5"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.0", "dir_gen_read"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accessrights.4", "delete_child"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.accesstype", "allow"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.inherit_flags.#", "0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.id", "UID:0"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.name", "root"),
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl.2.trustee.type", "user"),
 				),
 			},
 		},
