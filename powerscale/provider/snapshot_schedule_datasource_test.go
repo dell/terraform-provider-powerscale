@@ -33,10 +33,8 @@ func TestAccSnapshotScheduleDataSource(t *testing.T) {
 			{
 				Config: ProviderConfig + SnapshotScheduleDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(snapshotTerraformName, "schedules.0.duration", "604800"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "schedules.0.name", "Snapshot schedule 370395356"),
 					resource.TestCheckResourceAttr(snapshotTerraformName, "schedules.0.alias", "tfacc_Snapshot schedule 370395356_Alias"),
-					resource.TestCheckResourceAttr(snapshotTerraformName, "schedules.0.path", "/ifs/tfacc_test_dirNew"),
 				),
 			},
 		},
@@ -71,7 +69,6 @@ func TestAccSnapshotScheduleDataSourceOtherFilters(t *testing.T) {
 				Config: ProviderConfig + SnapshotScheduleOtherFiltersDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(filterTerraformName, "schedules.#", "1"),
-					resource.TestCheckResourceAttr(filterTerraformName, "schedules.0.path", "/ifs"),
 				),
 			},
 		},

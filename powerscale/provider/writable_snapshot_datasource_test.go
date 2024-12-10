@@ -118,6 +118,7 @@ func TestAccWritableSnapshotDatasourceID(t *testing.T) {
 
 var writableSnapshotDatasourceConfig = writableSnapshotResourceConfig + `
 data "powerscale_writable_snapshot" "preq" {
+	depends_on = [powerscale_writable_snapshot.test]
 }
 data "powerscale_writable_snapshot" "test" {
 	filter {
