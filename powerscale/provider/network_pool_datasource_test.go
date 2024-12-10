@@ -77,7 +77,7 @@ func TestAccNetworkPoolDataSourceAll(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// read all
+			// read all network pools
 			{
 				Config: ProviderConfig + PoolAllDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
