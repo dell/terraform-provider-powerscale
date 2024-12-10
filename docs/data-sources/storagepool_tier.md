@@ -69,12 +69,12 @@ output "powerscale_storagepool_tier" {
 
 Read-Only:
 
-- `children` (List of String) Manage I/O optimization settings.
+- `children` (List of String) The names or IDs of the tier's children.
 - `id` (String) Id of storagepool tier.
-- `lnns` (List of Number) Apply to files with manually-managed I/O optimization settings.
+- `lnns` (List of Number) The nodes that are part of this tier.
 - `name` (String) Name of storagepool tier.
-- `transfer_limit_pct` (Number) Enable global namespace acceleration.
-- `transfer_limit_state` (String) Whether or not namespace operation optimizations are currently in effect.
+- `transfer_limit_pct` (Number) Stop moving files to this tier when this limit is met.
+- `transfer_limit_state` (String) How the transfer limit value is being applied.
 - `usage` (Attributes) Usage. (see [below for nested schema](#nestedatt--storagepool_tiers--usage))
 
 <a id="nestedatt--storagepool_tiers--usage"></a>

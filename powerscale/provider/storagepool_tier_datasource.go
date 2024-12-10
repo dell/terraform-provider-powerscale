@@ -78,14 +78,14 @@ func (d StoragepoolTierDataSource) Schema(ctx context.Context, req datasource.Sc
 							Computed:            true,
 						},
 						"children": schema.ListAttribute{
-							Description:         "Manage I/O optimization settings.",
-							MarkdownDescription: "Manage I/O optimization settings.",
+							Description:         "The names or IDs of the tier's children.",
+							MarkdownDescription: "The names or IDs of the tier's children.",
 							Computed:            true,
 							ElementType:         types.StringType,
 						},
 						"lnns": schema.ListAttribute{
-							Description:         "Apply to files with manually-managed I/O optimization settings.",
-							MarkdownDescription: "Apply to files with manually-managed I/O optimization settings.",
+							Description:         "The nodes that are part of this tier.",
+							MarkdownDescription: "The nodes that are part of this tier.",
 							Computed:            true,
 							ElementType:         types.Int32Type,
 						},
@@ -95,13 +95,13 @@ func (d StoragepoolTierDataSource) Schema(ctx context.Context, req datasource.Sc
 							Computed:            true,
 						},
 						"transfer_limit_pct": schema.Int64Attribute{
-							Description:         "Enable global namespace acceleration.",
-							MarkdownDescription: "Enable global namespace acceleration.",
+							Description:         "Stop moving files to this tier when this limit is met.",
+							MarkdownDescription: "Stop moving files to this tier when this limit is met.",
 							Computed:            true,
 						},
 						"transfer_limit_state": schema.StringAttribute{
-							Description:         "Whether or not namespace operation optimizations are currently in effect.",
-							MarkdownDescription: "Whether or not namespace operation optimizations are currently in effect.",
+							Description:         "How the transfer limit value is being applied.",
+							MarkdownDescription: "How the transfer limit value is being applied.",
 							Computed:            true,
 						},
 						"usage": schema.SingleNestedAttribute{
