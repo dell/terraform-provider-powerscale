@@ -21,13 +21,14 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 	"testing"
+
+	"github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccNFSExport(t *testing.T) {
@@ -232,8 +233,28 @@ func TestAccNFSExportErrorDelete(t *testing.T) {
 	})
 }
 
-var NFSExportResourceConfig = `
+var FileSystemResourceConfigCommon2 = `
+resource "powerscale_filesystem" "file_system_test" {
+	directory_path         = "/ifs"	
+	name = "tfacc_nfs_export1"
+	
+	  recursive = true
+	  overwrite = false
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+`
+var NFSExportResourceConfig = FileSystemResourceConfigCommon2 + `
 resource "powerscale_nfs_export" "test_export" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	paths = ["/ifs/tfacc_nfs_export"]
 	force = true
 	map_all = {
@@ -259,8 +280,9 @@ resource "powerscale_nfs_export" "test_export" {
 }
 `
 
-var NFSExportUpdatedResourceConfig = `
+var NFSExportUpdatedResourceConfig = FileSystemResourceConfigCommon2 + `
 resource "powerscale_nfs_export" "test_export" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	paths = ["/ifs/tfacc_nfs_export"]
 	force = true
 	map_all = {
@@ -288,7 +310,7 @@ resource "powerscale_nfs_export" "test_export" {
 }
 `
 
-var NFSExportUpdatedResourceConfig2 = `
+var NFSExportUpdatedResourceConfig2 = FileSystemResourceConfigCommon2 + `
 resource "powerscale_nfs_export" "test_export" {
 	paths = ["/ifs/tfacc_nfs_export"]
 	force = true
