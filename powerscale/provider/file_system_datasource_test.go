@@ -46,7 +46,7 @@ func TestAccFileSystemDataSource(t *testing.T) {
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.group.type", "group"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.owner.id", "UID:0"),
 					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.owner.name", "root"),
-					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.owner.type", "user"),				
+					resource.TestCheckResourceAttr(fsTerraform, "file_systems_details.file_system_namespace_acl.owner.type", "user"),
 				),
 			},
 		},
