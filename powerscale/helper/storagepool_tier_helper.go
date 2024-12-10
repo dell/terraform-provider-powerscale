@@ -20,17 +20,34 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
-	"strconv"
-
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"math"
+	"strconv"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/models"
-
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+// GetStoragepoolTier gets storage pool tier.
+func GetStoragepoolTier(ctx context.Context, client *client.Client, path string) (*powerscale.V16StoragepoolTiersExtended, error) {
+	StoragepoolTier, _, err := client.PscaleOpenAPIClient.StoragepoolApi.GetStoragepoolv16StoragepoolTier(ctx, path).Execute()
+	return StoragepoolTier, err
+}
+
+// GetAllStoragepoolTiers returns the full list of storage pool tiers.
+func GetAllStoragepoolTiers(ctx context.Context, client *client.Client) ([]powerscale.V16StoragepoolTierExtended, error) {
+	StoragepoolTierParams := client.PscaleOpenAPIClient.StoragepoolApi.ListStoragepoolv16StoragepoolTiers(ctx)
+
+	StoragepoolTiers, _, err := StoragepoolTierParams.Execute()
+	if err != nil {
+		errStr := constants.ReadStoragepoolTiersErrorMsg + "with error: "
+		message := GetErrorString(err, errStr)
+		return nil, fmt.Errorf("error getting storagepool tiers: %s", message)
+	}
+	return StoragepoolTiers.Tiers, nil
+}
 
 // CreateStoragepoolTier created the storagepool tier on the array.
 func CreateStoragepoolTier(ctx context.Context, client *client.Client, plan models.StoragepoolTierResourceModel, state *models.StoragepoolTierResourceModel) diag.Diagnostics {
