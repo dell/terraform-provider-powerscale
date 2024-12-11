@@ -34,7 +34,7 @@ func TestAccStoragepoolTierDatasourceGetAll(t *testing.T) {
 		Steps: []resource.TestStep{
 			//Read testing
 			{
-				Config: ProviderConfig + StoragepoolTierDatasourceAllConfig,
+				Config: ProviderConfig + StoragepoolTierDatasourceAllWithResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.powerscale_storagepool_tier.all_test", "storagepool_tiers.#"),
 				),
@@ -70,29 +70,28 @@ func TestAccStoragepoolTierDatasourceErrorCopy(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfig + StoragepoolTierDatasourceAllWithResourceConfig,
+				Config:      ProviderConfig + StoragepoolTierDatasourceAllConfig,
 				ExpectError: regexp.MustCompile("mock error"),
 			},
 		},
 	})
 }
 
-var StoragepoolTierDatasourceAllConfig = StoragepoolTierResourceConfigForDatasource + `
+var StoragepoolTierDatasourceAllWithResourceConfig = StoragepoolTierResourceConfigForDatasource + `
 
 data "powerscale_storagepool_tier" "all_test" {
-
 	depends_on = [powerscale_storagepool_tier.example]
 }
 `
 
 var StoragepoolTierResourceConfigForDatasource = `
 resource "powerscale_storagepool_tier" "example" {
-    name = "TestSPT"
+    name = "Sample_terraform_tier_1"
     transfer_limit_pct = 20
-  }
+}
 `
 
-var StoragepoolTierDatasourceAllWithResourceConfig = `
+var StoragepoolTierDatasourceAllConfig = `
 data "powerscale_storagepool_tier" "all_test" {
 	
 }
