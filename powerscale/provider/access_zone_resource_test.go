@@ -270,6 +270,19 @@ func TestAccAccessZoneResourceGetImportSpecificErr(t *testing.T) {
 	})
 }
 
+var tfaccAccessZoneConfig = `
+resource "powerscale_accesszone" "tfaccAccessZone" {
+	# Required fields
+	name = "tfaccAccessZone"
+	groupnet = "groupnet0"
+	path = "/ifs"
+  
+	# Optional to apply Auth Providers
+	
+	custom_auth_providers = ["lsa-file-provider:System", "lsa-local-provider:tfaccAccessZone"]
+  }
+`
+
 var AccessZoneResourceConfig = `
 resource "powerscale_accesszone" "zone" {
 	# Required fields
