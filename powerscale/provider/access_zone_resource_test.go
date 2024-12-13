@@ -279,7 +279,7 @@ resource "powerscale_accesszone" "tfaccAccessZone" {
   
 	# Optional to apply Auth Providers
 	
-	custom_auth_providers = ["lsa-file-provider:System", "lsa-local-provider:tfaccAccessZone"]
+	custom_auth_providers = ["lsa-file-provider:System", "lsa-local-provider:System"]
   }
 `
 
