@@ -341,6 +341,18 @@ resource "powerscale_accesszone" "zone" {
 	# Optional to apply Auth Providers
 	custom_auth_providers = ["System"]
   }
+
+  resource "powerscale_accesszone" "zoneCopy" {
+	# Required fields
+	name = "tfaccAccessZoneError"
+	groupnet = "groupnet0"
+	path = "/ifs"
+  
+	# Optional to apply Auth Providers
+	custom_auth_providers = ["System"]
+
+	depends_on = [powerscale_accesszone.zone]
+  }
 `
 var AccessZoneUpdateResourceConfigError = `
 resource "powerscale_accesszone" "zone" {
