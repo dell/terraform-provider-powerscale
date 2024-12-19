@@ -258,7 +258,7 @@ func TestAccAccessZoneResourceGetImportSpecificErr(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
-					mocker = mockey.Mock(helper.GetSpecificZone).Return(nil, fmt.Errorf("access zone read specific mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetSpecificZone).Return(nil, fmt.Errorf("access zone read specific mock error")).Build()
 				},
 				ResourceName:            accessZoneResourceName,
 				ImportState:             true,
@@ -269,6 +269,19 @@ func TestAccAccessZoneResourceGetImportSpecificErr(t *testing.T) {
 		},
 	})
 }
+
+var tfaccAccessZoneConfig = `
+resource "powerscale_accesszone" "tfaccAccessZone" {
+	# Required fields
+	name = "tfaccAccessZone"
+	groupnet = "groupnet0"
+	path = "/ifs"
+  
+	# Optional to apply Auth Providers
+	
+	custom_auth_providers = ["lsa-file-provider:System", "lsa-local-provider:System"]
+  }
+`
 
 var AccessZoneResourceConfig = `
 resource "powerscale_accesszone" "zone" {
@@ -327,6 +340,18 @@ resource "powerscale_accesszone" "zone" {
   
 	# Optional to apply Auth Providers
 	custom_auth_providers = ["System"]
+  }
+
+  resource "powerscale_accesszone" "zoneCopy" {
+	# Required fields
+	name = "tfaccAccessZoneError"
+	groupnet = "groupnet0"
+	path = "/ifs"
+  
+	# Optional to apply Auth Providers
+	custom_auth_providers = ["System"]
+
+	depends_on = [powerscale_accesszone.zone]
   }
 `
 var AccessZoneUpdateResourceConfigError = `
