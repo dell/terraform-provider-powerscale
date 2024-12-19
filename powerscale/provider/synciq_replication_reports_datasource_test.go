@@ -19,21 +19,27 @@ package provider
 
 import (
 	"fmt"
-	"github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccReplicationReportsDataSourceAll(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		ExternalProviders: map[string]resource.ExternalProvider{
+			"time": {
+				Source: "hashicorp/time",
+			},
+		},
 		Steps: []resource.TestStep{
 			// read all
 			{
-				Config: ProviderConfig + RRDataSourceConfig,
+				Config: ProviderConfig + SetupHostIP() + RRDataSourceConfig,
 				Check:  resource.ComposeAggregateTestCheckFunc(),
 			},
 		},
@@ -44,10 +50,15 @@ func TestAccReplicationReportsDataSourceFilter(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		ExternalProviders: map[string]resource.ExternalProvider{
+			"time": {
+				Source: "hashicorp/time",
+			},
+		},
 		Steps: []resource.TestStep{
 			// read all
 			{
-				Config: ProviderConfig + RRDataSourceConfigFilter,
+				Config: ProviderConfig + SetupHostIP() + RRDataSourceConfigFilter,
 				Check:  resource.ComposeAggregateTestCheckFunc(),
 			},
 		},
@@ -71,28 +82,72 @@ func TestAccReplicationReportsDataSourceGettingErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		ExternalProviders: map[string]resource.ExternalProvider{
+			"time": {
+				Source: "hashicorp/time",
+			},
+		},
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.GetReplicationReports).Return(nil, fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfig + RRDataSourceConfig,
+				Config:      ProviderConfig + SetupHostIP() + RRDataSourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
 		},
 	})
 }
 
-var RRDataSourceConfig = `
-data "powerscale_synciq_replication_report" "all" {
+func SetupHostIP() string {
+	var result = fmt.Sprintf(`
+		locals {
+			host_ip = "%s"
+		}
+	`, powerScaleSSHIP)
+
+	return result
+
+}
+
+var JobConfig = `
+resource "powerscale_synciq_policy" "policy1" {
+	name             = "tf_acc_do_not_delete"
+	action           = "copy"
+	source_root_path = "/ifs"
+	target_host      = local.host_ip
+	target_path      = "/ifs/replica-target"
+}
+
+resource "powerscale_synciq_replication_job" "job1" {
+  action = "run"
+  id     = powerscale_synciq_policy.policy1.id
+  is_paused = false
+  wait_time = 5
+  depends_on = [
+    powerscale_synciq_policy.policy1
+  ]
+}
+
+resource "time_sleep" "wait_60_seconds" {
+  create_duration = "90s"
+
+  depends_on = [powerscale_synciq_replication_job.job1]
 }
 `
 
-var RRDataSourceConfigFilter = `
+var RRDataSourceConfig = JobConfig + `
+data "powerscale_synciq_replication_report" "all" {
+	depends_on = [time_sleep.wait_60_seconds]
+}
+`
+
+var RRDataSourceConfigFilter = JobConfig + `
 data "powerscale_synciq_replication_report" "filtering" {
 	filter {
-		reports_per_policy = 2
+		reports_per_policy = 1
 	}
+	depends_on = [time_sleep.wait_60_seconds]
 }
 `
 
