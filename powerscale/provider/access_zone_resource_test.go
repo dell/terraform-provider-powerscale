@@ -258,7 +258,7 @@ func TestAccAccessZoneResourceGetImportSpecificErr(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
-					mocker = mockey.Mock(helper.GetSpecificZone).Return(nil, fmt.Errorf("access zone read specific mock error")).Build()
+					FunctionMocker = mockey.Mock(helper.GetSpecificZone).Return(nil, fmt.Errorf("access zone read specific mock error")).Build()
 				},
 				ResourceName:            accessZoneResourceName,
 				ImportState:             true,
