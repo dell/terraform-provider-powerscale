@@ -73,29 +73,6 @@ func TestAccNfsZoneSettingsDataSourceReadWithFilter(t *testing.T) {
 	})
 }
 
-func TestAccNfsZoneSettingsDataSourceReadWithEmptyFilter(t *testing.T) {
-	dataSourceName := "data.powerscale_nfs_zone_settings.empty"
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			// read testing
-			{
-				Config: ProviderConfig + nfsZoneSettingsDataSourceConfigWithEmptyFilter,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet(dataSourceName, "id"),
-					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_no_domain"),
-					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_no_domain_uids"),
-					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_allow_numeric_ids"),
-					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_no_names"),
-					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_replace_domain"),
-					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_domain"),
-				),
-			},
-		},
-	})
-}
-
 func TestAccNfsZoneSettingsDataSourceReadMockErr(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -117,6 +94,28 @@ func TestAccNfsZoneSettingsDataSourceReadMockErr(t *testing.T) {
 				},
 				Config:      ProviderConfig + nfsZoneSettingsDataSourceConfigWithFilter,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
+			},
+		},
+	})
+}
+func TestAccNfsZoneSettingsDataSourceReadEmptyFilter(t *testing.T) {
+	dataSourceName := "data.powerscale_nfs_zone_settings.empty"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// read testing
+			{
+				Config: ProviderConfig + nfsZoneSettingsDataSourceConfigWithEmptyFilter,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet(dataSourceName, "id"),
+					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_no_domain"),
+					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_no_domain_uids"),
+					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_allow_numeric_ids"),
+					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_no_names"),
+					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_replace_domain"),
+					resource.TestCheckResourceAttrSet(dataSourceName, "nfs_zone_settings.nfsv4_domain"),
+				),
 			},
 		},
 	})

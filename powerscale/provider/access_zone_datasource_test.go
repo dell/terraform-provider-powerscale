@@ -21,11 +21,12 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	"github.com/stretchr/testify/assert"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -140,34 +141,40 @@ func TestQueryZoneNameByID(t *testing.T) {
 	assert.Equal(t, "Zone0", name)
 }
 
-var AzDataSourceConfig = `
+var AzDataSourceConfig = tfaccAccessZoneConfig + `
 data "powerscale_accesszone" "test" {
   filter {
     names = ["tfaccAccessZone"]
   }
+
+  depends_on = [powerscale_accesszone.tfaccAccessZone]
 }
 output "powerscale_accesszone" {
 	value = data.powerscale_accesszone.test
 }
 `
 
-var AzDataSourceConfigErr = `
+var AzDataSourceConfigErr = tfaccAccessZoneConfig + `
 data "powerscale_accesszone" "test" {
   filter {
     names = ["BadName"]
   }
+
+  depends_on = [powerscale_accesszone.tfaccAccessZone]
 }
 output "powerscale_accesszone" {
 	value = data.powerscale_accesszone.test
 }
 `
 
-var AzDataSourceConfigErrFilter = `
+var AzDataSourceConfigErrFilter = tfaccAccessZoneConfig + `
 data "powerscale_accesszone" "test" {
   filter {
     names = ["BadName"]
 	invalidFilter = "badFilter"
   }
+
+  depends_on = [powerscale_accesszone.tfaccAccessZone]
 }
 output "powerscale_accesszone" {
 	value = data.powerscale_accesszone.test

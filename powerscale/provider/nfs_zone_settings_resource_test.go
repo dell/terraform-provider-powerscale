@@ -256,20 +256,24 @@ func TestAccNfsZoneSettingsImportMockErr(t *testing.T) {
 	})
 }
 
-var nfsZoneSettingsResourceConfigBasic = `
+var nfsZoneSettingsResourceConfigBasic = tfaccAccessZoneConfig + `
 resource "powerscale_nfs_zone_settings" "example" {
 	zone = "tfaccAccessZone"
+
+	depends_on = [powerscale_accesszone.tfaccAccessZone]
 }
 `
 
-var nfsZoneSettingsResourceConfigNewDomain = `
+var nfsZoneSettingsResourceConfigNewDomain = tfaccAccessZoneConfig + `
 resource "powerscale_nfs_zone_settings" "example" {
 	zone = "tfaccAccessZone"
 	nfsv4_domain = "localdomain_New"
+	
+	depends_on = [powerscale_accesszone.tfaccAccessZone]
 }
 `
 
-var nfsZoneSettingsResourceConfigUpdatedDomain = `
+var nfsZoneSettingsResourceConfigUpdatedDomain = tfaccAccessZoneConfig + `
 resource "powerscale_nfs_zone_settings" "example" {
 	zone = "tfaccAccessZone"
 	nfsv4_no_names = false
@@ -278,5 +282,7 @@ resource "powerscale_nfs_zone_settings" "example" {
 	nfsv4_domain = "localdomain_Updated"
 	nfsv4_no_domain = false
 	nfsv4_no_domain_uids = true
+
+	depends_on = [powerscale_accesszone.tfaccAccessZone]
 }
 `
