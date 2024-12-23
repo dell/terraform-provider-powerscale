@@ -101,7 +101,7 @@ func TestAccReplicationReportsDataSourceGettingErr(t *testing.T) {
 
 func SetupHostIP() string {
 
-	if powerScaleSSHIP == "127.0.0.1" || powerScaleSSHIP == "0.0.0.0" {
+	if powerScaleSSHIP == "localhost" || powerScaleSSHIP == "0.0.0.0" {
 		return `
 		locals {
 			host_ip = "10.10.10.10"
