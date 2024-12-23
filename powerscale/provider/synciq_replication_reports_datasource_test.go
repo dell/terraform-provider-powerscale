@@ -100,6 +100,14 @@ func TestAccReplicationReportsDataSourceGettingErr(t *testing.T) {
 }
 
 func SetupHostIP() string {
+
+	if powerScaleSSHIP == "127.0.0.1" || powerScaleSSHIP == "0.0.0.0" {
+		return `
+		locals {
+			host_ip = "10.10.10.10"
+		}
+	`
+	}
 	var result = fmt.Sprintf(`
 		locals {
 			host_ip = "%s"
@@ -112,11 +120,11 @@ func SetupHostIP() string {
 
 var JobConfig = `
 resource "powerscale_synciq_policy" "policy1" {
-	name             = "tf_acc_do_not_delete"
-	action           = "copy"
+	name             = "tfaccPolicy"
+	action           = "sync"
 	source_root_path = "/ifs"
 	target_host      = local.host_ip
-	target_path      = "/ifs/replica-target"
+	target_path      = "/ifs/tfaccSink"
 }
 
 resource "powerscale_synciq_replication_job" "job1" {
