@@ -66,8 +66,9 @@ func TestAccSynciqPolicyDatasourceID(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing
 			{
-				Config: ProviderConfig + `
+				Config: ProviderConfig + PolicyConfig + `
 				data "powerscale_synciq_policy" "preq" {
+					depends_on = [powerscale_synciq_policy.policy1]
 				}
 				data "powerscale_synciq_policy" "test" {
 					id = data.powerscale_synciq_policy.preq.policies[0].id
@@ -98,3 +99,13 @@ func TestAccSynciqPolicyDatasourceID(t *testing.T) {
 		},
 	})
 }
+
+var PolicyConfig = `
+	resource "powerscale_synciq_policy" "policy1" {
+		name = "tfaccPolicy"
+		action           = "sync"
+		source_root_path = "/ifs"
+		target_host      = "10.10.10.10"
+		target_path      = "/ifs/tfaccSink"
+	}
+`
