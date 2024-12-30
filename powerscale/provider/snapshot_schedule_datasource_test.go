@@ -14,6 +14,7 @@ limitations under the License.
 package provider
 
 import (
+	powerscale "dell/powerscale-go-client"
 	"fmt"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -23,7 +24,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccSnapshotScheduleDataSource(t *testing.T) {
+func TestAccSnapshotScheduleDataSourceA(t *testing.T) {
 	var snapshotTerraformName = "data.powerscale_snapshot_schedule.test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -33,8 +34,8 @@ func TestAccSnapshotScheduleDataSource(t *testing.T) {
 			{
 				Config: ProviderConfig + SnapshotScheduleDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(snapshotTerraformName, "schedules.0.name", "Snapshot schedule 370395356"),
-					resource.TestCheckResourceAttr(snapshotTerraformName, "schedules.0.alias", "tfacc_Snapshot schedule 370395356_Alias"),
+					resource.TestCheckResourceAttr(snapshotTerraformName, "schedules.0.name", "tfacc_snap_schedule_test"),
+					resource.TestCheckResourceAttr(snapshotTerraformName, "schedules.0.alias", "test_alias"),
 				),
 			},
 		},
@@ -89,9 +90,14 @@ func TestAccSnapshotScheduleDataSourceGetErr(t *testing.T) {
 			},
 		},
 	})
+	FunctionMocker.UnPatch()
+
 }
 
 func TestAccSnapshotScheduleDataSourceGetErrCopyAll(t *testing.T) {
+	FunctionMockerList := mockey.Mock(helper.ListSnapshotSchedules).Return([]powerscale.V1SnapshotScheduleExtended{
+		{}, {},
+	}, nil).Build()
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -100,14 +106,27 @@ func TestAccSnapshotScheduleDataSourceGetErrCopyAll(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfig + SnapshotScheduleAllDataSourceConfig,
+				Config:      ProviderConfig + SnapshotScheduleAllDataSourceConfig2,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
 		},
 	})
+	FunctionMockerList.UnPatch()
+}
+
+func NewValue[v any](in v) *v {
+	return &in
 }
 
 func TestAccSnapshotScheduleDataSourceGetErrCopy(t *testing.T) {
+	FunctionMockerList := mockey.Mock(helper.ListSnapshotSchedules).Return([]powerscale.V1SnapshotScheduleExtended{
+		{
+			Name: NewValue("tfacc_snap_schedule_test"),
+		},
+		{
+			Name: NewValue("tfacc_snap_schedule_test1"),
+		},
+	}, nil).Build()
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -116,17 +135,30 @@ func TestAccSnapshotScheduleDataSourceGetErrCopy(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfig + SnapshotScheduleDataSourceConfig,
+				Config:      ProviderConfig + SnapshotScheduleDataSourceConfig2,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
 		},
 	})
+	FunctionMockerList.UnPatch()
 }
 
-var SnapshotScheduleDataSourceConfig = `
+var SnapshotScheduleCommonConfig = FileSystemResourceConfigCommon + `
+resource "powerscale_snapshot_schedule" "test" {
+	# Required name of snapshot schedule
+	depends_on = [powerscale_filesystem.file_system_test] 
+	name = "tfacc_snap_schedule_test"
+	alias = "test_alias"
+	path = "/ifs/tfacc_file_system_test"
+	retention_time = "3 Hour(s)"
+}
+`
+
+var SnapshotScheduleDataSourceConfig = SnapshotScheduleCommonConfig + `
 data "powerscale_snapshot_schedule" "test" {
+  depends_on = [powerscale_snapshot_schedule.test]
   filter {
-    names = ["Snapshot schedule 370395356"]
+    names = ["tfacc_snap_schedule_test"]
   }
 }
 output "powerscale_snapshot_schedule" {
@@ -134,17 +166,30 @@ output "powerscale_snapshot_schedule" {
 }
 `
 
-var SnapshotScheduleAllDataSourceConfig = `
+var SnapshotScheduleAllDataSourceConfig = SnapshotScheduleCommonConfig + `
 data "powerscale_snapshot_schedule" "all" {
+depends_on = [powerscale_snapshot_schedule.test]
 }
 `
 
-var SnapshotScheduleOtherFiltersDataSourceConfig = `
+var SnapshotScheduleOtherFiltersDataSourceConfig = SnapshotScheduleCommonConfig + `
 data "powerscale_snapshot_schedule" "filterTest" {
+depends_on = [powerscale_snapshot_schedule.test]
 	filter {	   
 		dir = "ASC"
 		limit = 1
 		sort = "name"
 	  }
+}
+`
+var SnapshotScheduleDataSourceConfig2 = `
+data "powerscale_snapshot_schedule" "test" {
+	  filter {
+		names = ["tfacc_snap_schedule_test"]
+	  }
+	}
+`
+var SnapshotScheduleAllDataSourceConfig2 = `
+data "powerscale_snapshot_schedule" "all" {
 }
 `

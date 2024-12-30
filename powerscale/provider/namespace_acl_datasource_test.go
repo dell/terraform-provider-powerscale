@@ -95,9 +95,30 @@ func TestAccNamespaceAclDataSourceParamErr(t *testing.T) {
 	})
 }
 
-var NamespaceACLDataSourceConfig = `
+var FileSystemResourceConfigAcl = `
+resource "powerscale_filesystem" "file_system_test" {
+	directory_path         = "/ifs"	
+	name = "tfaccAcl"
+	
+	  recursive = true
+	  overwrite = true
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+`
+
+var NamespaceACLDataSourceConfig = FileSystemResourceConfigAcl + `
 resource "powerscale_namespace_acl" "namespace_acl_test" {
-	namespace = "ifs/home"
+	depends_on = [powerscale_filesystem.file_system_test]
+	namespace = "ifs/tfaccAcl"
 	nsaccess = true
 	owner = { id = "UID:0"}
 	group = { id = "GID:0"}
@@ -131,7 +152,7 @@ resource "powerscale_namespace_acl" "namespace_acl_test" {
 
 data "powerscale_namespace_acl" "test" {
 	filter {
-		namespace = "ifs/home"
+		namespace = "ifs/tfaccAcl"
 		nsaccess = true
 	}
     depends_on = [

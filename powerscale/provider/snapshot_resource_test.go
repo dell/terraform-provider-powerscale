@@ -160,18 +160,20 @@ func TestAccSnapshotResourceReadAndUpdateError(t *testing.T) {
 	})
 }
 
-var SnapshotResourceConfig = `
+var SnapshotResourceConfig = FileSystemResourceConfigCommon + `
 resource "powerscale_snapshot" "test" {
   # Required path to the filesystem to which the snapshot will be taken of
   path = "/ifs/tfacc_file_system_test"
+  depends_on = [powerscale_filesystem.file_system_test]
 }
 `
 
-var SnapshotResourceConfigUpdate = `
+var SnapshotResourceConfigUpdate = FileSystemResourceConfigCommon + `
 resource "powerscale_snapshot" "test" {
   path = "/ifs/tfacc_file_system_test"
   name = "tfacc_snapshot_1"
   set_expires = "1 Day"
+  depends_on = [powerscale_filesystem.file_system_test]
 }
 `
 
