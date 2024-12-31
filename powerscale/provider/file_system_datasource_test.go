@@ -27,7 +27,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccFileSystemDataSourceA(t *testing.T) {
+func TestAccFileSystemDataSource(t *testing.T) {
 	var fsTerraform = "data.powerscale_filesystem.system"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },

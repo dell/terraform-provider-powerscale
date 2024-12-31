@@ -42,7 +42,7 @@ func TestAccSnapshotScheduleResource(t *testing.T) {
 			{
 				Config: ProviderConfig + SnapshotScheduleResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "path", "/ifs"),
+					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "path", "/ifs/tfacc_file_system_test"),
 					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "name", "tfacc_snap_schedule_test"),
 					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "duration", "10800"),
 					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "alias", "test_alias"),
@@ -54,7 +54,7 @@ func TestAccSnapshotScheduleResource(t *testing.T) {
 				ImportState:  true,
 				ImportStateCheck: func(states []*terraform.InstanceState) error {
 					assert.Equal(t, "tfacc_snap_schedule_test", states[0].Attributes["name"])
-					assert.Equal(t, "/ifs", states[0].Attributes["path"])
+					assert.Equal(t, "/ifs/tfacc_file_system_test", states[0].Attributes["path"])
 					return nil
 				},
 			},
@@ -213,17 +213,39 @@ func TestAccSnapshotScheduleResourceMappingError(t *testing.T) {
 	})
 }
 
-var SnapshotScheduleResourceConfig = `
+var FileSystemResourceConfigCommon3 = `
+resource "powerscale_filesystem" "file_system_test2" {
+	directory_path         = "/ifs"	
+	name = "tfacc_test"	
+	  recursive = true
+	  overwrite = true
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+`
+
+var SnapshotScheduleResourceConfig = FileSystemResourceConfigCommon + `
 resource "powerscale_snapshot_schedule" "test" {
+  depends_on = [powerscale_filesystem.file_system_test]
   # Required name of snapshot schedule
   name = "tfacc_snap_schedule_test"
   alias = "test_alias"
   retention_time = "3 Hour(s)"
+  path = "/ifs/tfacc_file_system_test"
 }
 `
 
-var SnapshotScheduleUpdateResourceConfig = `
+var SnapshotScheduleUpdateResourceConfig = FileSystemResourceConfigCommon3 + `
 resource "powerscale_snapshot_schedule" "test" {
+depends_on = [powerscale_filesystem.file_system_test2]
 	# Required name of snapshot schedule
 	name = "tfacc_snap_schedule_update"
 	alias = "test_alias_updated"
