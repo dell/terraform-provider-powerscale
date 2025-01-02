@@ -150,9 +150,30 @@ func TestAccFileSystemDataSourceReleaseMock(t *testing.T) {
 	})
 }
 
-var FileSystemDataSourceConfig = `
+var FileSystemResourceConfigCommon = `
+resource "powerscale_filesystem" "file_system_test" {
+	directory_path         = "/ifs"	
+	name = "tfacc_file_system_test"	
+	  recursive = true
+	  overwrite = true
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+`
+
+var FileSystemDataSourceConfig = FileSystemResourceConfigCommon + `
 data "powerscale_filesystem" "system" {
 	# Required parameter, path of the directory filesystem you would like to create a datasource out of 
+
+	depends_on = [powerscale_filesystem.file_system_test]
 	directory_path = "/ifs/tfacc_file_system_test"
   }
 `

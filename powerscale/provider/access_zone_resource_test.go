@@ -32,7 +32,7 @@ import (
 var mocker *mockey.Mocker
 var createMocker *mockey.Mocker
 
-func TestAccAccessZoneA(t *testing.T) {
+func TestAccAccessZoneResourceCreate(t *testing.T) {
 	var accessZoneResourceName = "powerscale_accesszone.zone"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },

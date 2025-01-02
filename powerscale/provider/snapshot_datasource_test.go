@@ -114,25 +114,61 @@ func TestAccSnapshotDataSourceMapErr(t *testing.T) {
 }
 
 var SnapshotDataSourceConfig = `
+resource "powerscale_filesystem" "file_system_test2" {
+	directory_path         = "/ifs"	
+	name = "tfacc_file_system_test"
+	
+	  recursive = true
+	  overwrite = true
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+}
+
 resource "powerscale_snapshot" "test" {
-  path = "/ifs/tfacc_file_system_test"
-  name = "tfacc_snapshot_1"
+	depends_on = [powerscale_filesystem.file_system_test2]
+	path = "/ifs/tfacc_file_system_test"
+	name = "tfacc_snapshot_1"
+	set_expires = "1 Day"
 }
 
 data "powerscale_snapshot" "test" {
+depends_on = [powerscale_snapshot.test]
   filter {
 	path = "/ifs/tfacc_file_system_test"
 	state = "active"
   }
-
-  depends_on = [
-	powerscale_snapshot.test
-  ]
 }
 `
 
 var SnapshotDataSourceNameConfig = `
+resource "powerscale_filesystem" "file_system_test2" {
+	directory_path         = "/ifs"	
+	name = "tfacc_file_system_test"
+	
+	  recursive = true
+	  overwrite = true
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+}
+
 resource "powerscale_snapshot" "test" {
+depends_on = [powerscale_filesystem.file_system_test2]
   path = "/ifs/tfacc_file_system_test"
   name = "tfacc_snapshot_1"
 }
@@ -149,6 +185,32 @@ data "powerscale_snapshot" "test" {
 `
 
 var SnapshotAllDataSourceConfig = `
+resource "powerscale_filesystem" "file_system_test2" {
+	directory_path         = "/ifs"	
+	name = "tfacc_file_system_test"
+	
+	  recursive = true
+	  overwrite = true
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+}
+
+resource "powerscale_snapshot" "test" {
+	depends_on = [powerscale_filesystem.file_system_test2]
+	path = "/ifs/tfacc_file_system_test"
+	name = "tfacc_snapshot_1"
+	set_expires = "1 Day"
+}
+
 data "powerscale_snapshot" "all" {
+  depends_on = [powerscale_snapshot.test]
 }
 `

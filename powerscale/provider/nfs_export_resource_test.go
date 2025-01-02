@@ -236,10 +236,10 @@ func TestAccNFSExportErrorDelete(t *testing.T) {
 var FileSystemResourceConfigCommon2 = `
 resource "powerscale_filesystem" "file_system_test" {
 	directory_path         = "/ifs"	
-	name = "tfacc_nfs_export1"
+	name = "tfacc_nfs_export"
 	
 	  recursive = true
-	  overwrite = false
+	  overwrite = true
 	  group = {
 		id   = "GID:0"
 		name = "wheel"
