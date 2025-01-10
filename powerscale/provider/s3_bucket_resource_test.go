@@ -282,8 +282,28 @@ func TestAccS3BucketResourceErrorReadState(t *testing.T) {
 
 var bucketName = "tfacc-test-s3-bucket"
 
-var S3BucketResourceConfig = fmt.Sprintf(`
+var FileSystemResourceConfigCommon6 = fmt.Sprintf(`
+resource "powerscale_filesystem" "file_system_test" {
+	directory_path         = "/ifs"	
+	name = "%s"	
+	  recursive = true
+	  overwrite = true
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+`, bucketName)
+
+var S3BucketResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_s3_bucket" "bucket_test" {
+	depends_on = [powerscale_filesystem.file_system_test]	
 	name = "%s"
 	path = "/ifs/%s"
 	create_path = true
@@ -298,8 +318,9 @@ resource "powerscale_s3_bucket" "bucket_test" {
 }
 `, bucketName, bucketName)
 
-var S3BucketInvalidResourceConfig = fmt.Sprintf(`
+var S3BucketInvalidResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_s3_bucket" "bucket_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s"
 	path = "/ifs/%s"
 	create_path = true
@@ -314,8 +335,9 @@ resource "powerscale_s3_bucket" "bucket_test" {
 }
 `, bucketName, bucketName)
 
-var S3BucketUpdatedResourceConfig = fmt.Sprintf(`
+var S3BucketUpdatedResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_s3_bucket" "bucket_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s"
 	path = "/ifs/%s"
 	create_path = true
@@ -325,8 +347,9 @@ resource "powerscale_s3_bucket" "bucket_test" {
 }
 `, bucketName, bucketName)
 
-var S3BucketResourceConfigUpdateName = fmt.Sprintf(`
+var S3BucketResourceConfigUpdateName = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_s3_bucket" "bucket_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s-update"
 	path = "/ifs/%s"
 	create_path = true
@@ -342,6 +365,22 @@ resource "powerscale_s3_bucket" "bucket_test" {
 `, bucketName, bucketName)
 
 var S3BucketResourceConfigUpdatePath = fmt.Sprintf(`
+resource "powerscale_filesystem" "file_system_test" {
+	directory_path         = "/ifs"	
+	name = "%s-update"	
+	  recursive = true
+	  overwrite = true
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+}
 resource "powerscale_s3_bucket" "bucket_test" {
 	name = "%s"
 	path = "/ifs/%s-update"
@@ -355,10 +394,11 @@ resource "powerscale_s3_bucket" "bucket_test" {
 		permission = "FULL_CONTROL"
 	}]
 }
-`, bucketName, bucketName)
+`, bucketName, bucketName, bucketName)
 
-var S3BucketResourceConfigUpdateZone = fmt.Sprintf(`
+var S3BucketResourceConfigUpdateZone = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_s3_bucket" "bucket_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s"
 	path = "/ifs/%s"
 	create_path = true

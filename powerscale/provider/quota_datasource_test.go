@@ -19,11 +19,12 @@ package provider
 
 import (
 	"fmt"
-	"github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccQuotaDatasource(t *testing.T) {
@@ -74,8 +75,29 @@ func TestAccQuotaDatasourceErrorCopyField(t *testing.T) {
 	})
 }
 
-var QuotaDatasourceConfig = `
+var FileSystemResourceConfigCommon7 = `
+resource "powerscale_filesystem" "file_system_test" {
+	depends_on = [powerscale_filesystem.file_system_test] 
+	directory_path         = "/ifs"	
+	name = "tfacc_quota_test"	
+	  recursive = true
+	  overwrite = true
+	  group = {
+		id   = "GID:0"
+		name = "wheel"
+		type = "group"
+	  }
+	  owner = {
+		  id   = "UID:0",
+		 name = "root",
+		 type = "user"
+	   }
+	}
+`
+
+var QuotaDatasourceConfig = FileSystemResourceConfigCommon7 + `
 resource "powerscale_quota" "quota_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	path = "/ifs/tfacc_quota_test"
 	type = "directory"
 	include_snapshots = false
