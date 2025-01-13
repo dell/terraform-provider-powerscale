@@ -335,7 +335,7 @@ resource "powerscale_quota" "quota_test" {
 }
 `
 
-var QuotaResourceConfigNewPath = `
+var QuotaResourceConfigNewPath = FileSystemResourceConfigCommon7 + `
 
 resource "powerscale_filesystem" "file_system_test2" {
 	directory_path         = "/ifs"	
