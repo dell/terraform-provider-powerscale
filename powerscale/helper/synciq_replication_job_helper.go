@@ -42,7 +42,7 @@ func GetSyncIQReplicationJobs(ctx context.Context, client *client.Client, filter
 		}
 
 		if !filter.Limit.IsNull() {
-			jobParams = jobParams.Limit(int32(filter.Limit.ValueInt32()))
+			jobParams = jobParams.Limit((filter.Limit.ValueInt32()))
 		}
 
 		if !filter.State.IsNull() {

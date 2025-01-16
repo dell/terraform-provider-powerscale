@@ -196,13 +196,13 @@ func (r *S3KeyResource) Read(ctx context.Context, request resource.ReadRequest, 
 	// precheck to invalidate the refresh
 	errMsg := "[UNKNOWN KEY] Key Generated Outside of Terraform"
 	// A discrepancy between the old key timestamp and the secret key timestamp indicates that the key was created externally, not through Terraform.
-	if int64(resp.Keys.GetOldKeyTimestamp()) != int64(s3key.SecretKeyTimestamp.ValueInt64()) {
+	if int64(resp.Keys.GetOldKeyTimestamp()) != (s3key.SecretKeyTimestamp.ValueInt64()) {
 		s3key.OldSecretKey = types.StringValue(errMsg)
 	} else {
 		s3key.OldSecretKey = s3key.SecretKey
 	}
 	// the secret key's timestamp not align post get key, it implies the key was generated outside of Terraform.
-	if int64(resp.Keys.GetSecretKeyTimestamp()) != int64(s3key.SecretKeyTimestamp.ValueInt64()) {
+	if int64(resp.Keys.GetSecretKeyTimestamp()) != (s3key.SecretKeyTimestamp.ValueInt64()) {
 		response.Diagnostics.AddWarning(errMsg, errMsg)
 		s3key.SecretKey = types.StringValue(errMsg)
 	}

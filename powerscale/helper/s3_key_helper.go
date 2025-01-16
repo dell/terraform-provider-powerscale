@@ -32,7 +32,7 @@ func GenerateS3Key(ctx context.Context, c *client.Client, state models.S3KeyReso
 	if len(state.Zone.ValueString()) > 0 {
 		param = param.Zone(state.Zone.ValueString())
 	}
-	expiryTime := int32(state.ExistingKeyExpiryTime.ValueInt32())
+	expiryTime := (state.ExistingKeyExpiryTime.ValueInt32())
 	eket := powerscale.V10S3Key{
 		ExistingKeyExpiryTime: &expiryTime,
 	}

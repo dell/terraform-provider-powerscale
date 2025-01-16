@@ -174,7 +174,7 @@ func QueryZoneNameByID(ctx context.Context, client *client.Client, zoneID int64)
 		return "", err
 	}
 	for _, zone := range zones.Zones {
-		if int64(*zone.ZoneId) == int64(zoneID) {
+		if int64(*zone.ZoneId) == (zoneID) {
 			return *zone.Name, nil
 		}
 	}

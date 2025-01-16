@@ -40,7 +40,7 @@ func GetAllSnapshots(ctx context.Context, client *client.Client, state *models.S
 			snapshotParams = snapshotParams.Dir(state.SnapshotFilter.Dir.ValueString())
 		}
 		if !state.SnapshotFilter.Limit.IsNull() {
-			snapshotParams = snapshotParams.Limit(int32(state.SnapshotFilter.Limit.ValueInt32()))
+			snapshotParams = snapshotParams.Limit((state.SnapshotFilter.Limit.ValueInt32()))
 		}
 		if !state.SnapshotFilter.Schedule.IsNull() {
 			snapshotParams = snapshotParams.Schedule(state.SnapshotFilter.Schedule.ValueString())

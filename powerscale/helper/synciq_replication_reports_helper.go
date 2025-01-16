@@ -32,7 +32,7 @@ func GetReplicationReports(ctx context.Context, client *client.Client, state mod
 			listRRParam = listRRParam.Sort(state.ReplicationReportFilter.Sort.ValueString())
 		}
 		if !state.ReplicationReportFilter.NewerThan.IsNull() {
-			listRRParam = listRRParam.NewerThan(int32(state.ReplicationReportFilter.NewerThan.ValueInt32()))
+			listRRParam = listRRParam.NewerThan((state.ReplicationReportFilter.NewerThan.ValueInt32()))
 		}
 		if !state.ReplicationReportFilter.PolicyName.IsNull() {
 			listRRParam = listRRParam.PolicyName(state.ReplicationReportFilter.PolicyName.ValueString())
@@ -41,10 +41,10 @@ func GetReplicationReports(ctx context.Context, client *client.Client, state mod
 			listRRParam = listRRParam.State(state.ReplicationReportFilter.State.ValueString())
 		}
 		if !state.ReplicationReportFilter.Limit.IsNull() {
-			listRRParam = listRRParam.Limit(int32(state.ReplicationReportFilter.Limit.ValueInt32()))
+			listRRParam = listRRParam.Limit((state.ReplicationReportFilter.Limit.ValueInt32()))
 		}
 		if !state.ReplicationReportFilter.ReportsPerPolicy.IsNull() {
-			listRRParam = listRRParam.ReportsPerPolicy(int32(state.ReplicationReportFilter.ReportsPerPolicy.ValueInt32()))
+			listRRParam = listRRParam.ReportsPerPolicy((state.ReplicationReportFilter.ReportsPerPolicy.ValueInt32()))
 		}
 		if !state.ReplicationReportFilter.Dir.IsNull() {
 			listRRParam = listRRParam.Dir(state.ReplicationReportFilter.Dir.ValueString())

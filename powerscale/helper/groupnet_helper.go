@@ -116,7 +116,7 @@ func GetAllGroupnets(ctx context.Context, client *client.Client, state *models.G
 			groupnetParams = groupnetParams.Dir(state.Filter.Dir.ValueString())
 		}
 		if !state.Filter.Limit.IsNull() {
-			groupnetParams = groupnetParams.Limit(int32(state.Filter.Limit.ValueInt32()))
+			groupnetParams = groupnetParams.Limit((state.Filter.Limit.ValueInt32()))
 		}
 	}
 

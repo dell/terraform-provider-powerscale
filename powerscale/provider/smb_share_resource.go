@@ -562,7 +562,7 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 	zoneName := shareState.Zone.ValueString()
 	// if share name is updated, query original zone
 	if !sharePlan.Zone.Equal(shareState.Zone) {
-		zoneName, err = helper.QueryZoneNameByID(ctx, r.client, int64(shareState.Zid.ValueInt64()))
+		zoneName, err = helper.QueryZoneNameByID(ctx, r.client, (shareState.Zid.ValueInt64()))
 		if err != nil {
 			response.Diagnostics.AddError(
 				"Error update smb share",
