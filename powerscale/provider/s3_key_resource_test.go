@@ -111,7 +111,7 @@ func TestAccS3KeyResource(t *testing.T) {
 	})
 }
 
-func tfConfig(resource, user, zone string, expiry int) string {
+func tfConfig(resource, user, zone string, expiry int32) string {
 	return fmt.Sprintf(`
 resource "powerscale_s3_key" "%s" {
     user = "%s"

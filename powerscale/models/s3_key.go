@@ -24,7 +24,7 @@ type S3KeyResourceData struct {
 	AccessID              types.String `tfsdk:"access_id"`
 	User                  types.String `tfsdk:"user"`
 	Zone                  types.String `tfsdk:"zone"`
-	ExistingKeyExpiryTime types.Int64  `tfsdk:"existing_key_expiry_time"`
+	ExistingKeyExpiryTime types.Int32  `tfsdk:"existing_key_expiry_time"`
 	SecretKey             types.String `tfsdk:"secret_key"`
 	SecretKeyTimestamp    types.Int64  `tfsdk:"secret_key_timestamp"`
 	OldSecretKey          types.String `tfsdk:"old_secret_key"`

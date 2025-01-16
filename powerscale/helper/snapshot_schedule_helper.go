@@ -41,7 +41,7 @@ func ListSnapshotSchedules(ctx context.Context, client *client.Client, ssFilter 
 			listSsParam = listSsParam.Dir(ssFilter.Dir.ValueString())
 		}
 		if !ssFilter.Limit.IsNull() {
-			listSsParam = listSsParam.Limit(int32(ssFilter.Limit.ValueInt64()))
+			listSsParam = listSsParam.Limit(int32(ssFilter.Limit.ValueInt32()))
 		}
 	}
 	snapshotSchedules, _, err := listSsParam.Execute()

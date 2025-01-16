@@ -379,7 +379,7 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		for _, user := range state.Users {
 			for _, name := range state.Filter.Names {
 				if (!name.Name.IsNull() && user.Name.Equal(name.Name)) ||
-					(!name.UID.IsNull() && fmt.Sprintf("UID:%d", name.UID.ValueInt64()) == user.UID.ValueString()) {
+					(!name.UID.IsNull() && fmt.Sprintf("UID:%d", name.UID.ValueInt32()) == user.UID.ValueString()) {
 					filteredUsers = append(filteredUsers, user)
 					validUsers = append(validUsers, fmt.Sprintf("Name: %s, UID: %s", user.Name, user.UID))
 					break

@@ -192,7 +192,7 @@ func ListNFSAliases(ctx context.Context, client *client.Client, nfsFilter *model
 			listNfsParam = listNfsParam.Check(nfsFilter.Check.ValueBool())
 		}
 		if !nfsFilter.Limit.IsNull() {
-			listNfsParam = listNfsParam.Limit(int32(nfsFilter.Limit.ValueInt64()))
+			listNfsParam = listNfsParam.Limit(int32(nfsFilter.Limit.ValueInt32()))
 		}
 	}
 	NfsAliases, _, err := listNfsParam.Execute()

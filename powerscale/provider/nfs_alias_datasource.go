@@ -134,7 +134,7 @@ func (d *NfsAliasDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 							stringvalidator.LengthAtLeast(1),
 						},
 					},
-					"limit": schema.Int64Attribute{
+					"limit": schema.Int32Attribute{
 						Description:         "Return no more than this many results at once (see resume).",
 						MarkdownDescription: "Return no more than this many results at once (see resume).",
 						Optional:            true,

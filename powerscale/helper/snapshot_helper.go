@@ -40,7 +40,7 @@ func GetAllSnapshots(ctx context.Context, client *client.Client, state *models.S
 			snapshotParams = snapshotParams.Dir(state.SnapshotFilter.Dir.ValueString())
 		}
 		if !state.SnapshotFilter.Limit.IsNull() {
-			snapshotParams = snapshotParams.Limit(int32(state.SnapshotFilter.Limit.ValueInt64()))
+			snapshotParams = snapshotParams.Limit(int32(state.SnapshotFilter.Limit.ValueInt32()))
 		}
 		if !state.SnapshotFilter.Schedule.IsNull() {
 			snapshotParams = snapshotParams.Schedule(state.SnapshotFilter.Schedule.ValueString())
@@ -90,7 +90,10 @@ func ModifySnapshot(ctx context.Context, client *client.Client, id string, edit 
 
 // CreateSnapshot returns the full list of snapshots.
 func CreateSnapshot(ctx context.Context, client *client.Client, plan *models.SnapshotDetailModel) (*powerscale.Createv1SnapshotSnapshotResponse, error) {
-	expire := CalclulateExpire(plan.SetExpires.ValueString())
+	expire, err := CalclulateExpire(plan.SetExpires.ValueString())
+	if err != nil {
+		return nil, err
+	}
 	nameDefault := time.Now().String()
 	// Path should always be set
 	// Name should default to current date if unset
@@ -127,9 +130,8 @@ func SnapshotDetailMapper(ctx context.Context, snap powerscale.V1SnapshotSnapsho
 	if snap.TargetId == 18446744073709551615 {
 		model.TargetID = types.Int64Value(-1)
 	} else {
-		model.TargetID = types.Int64Value(int64(snap.TargetId))
+		model.TargetID = types.Int64Value(int64(snap.TargetId)) // #nosec G115 --- validated, set to -1 if targetID is max uint64
 	}
-	model.TargetID = types.Int64Value(int64(snap.TargetId))
 	model.SetExpires = types.StringNull()
 	return model, nil
 }
@@ -148,7 +150,7 @@ func SnapshotResourceDetailMapper(ctx context.Context, snap powerscale.Createv1S
 }
 
 // CalclulateExpire Calculates the Unix Epic based on 1 day, 1 week or 1 month from the current date and time.
-func CalclulateExpire(setExpireValue string) int32 {
+func CalclulateExpire(setExpireValue string) (int32, error) {
 	expireTime := time.Now().Unix()
 	// 86400 is the Epoch day in seconds
 	switch setExpireValue {
@@ -161,5 +163,9 @@ func CalclulateExpire(setExpireValue string) int32 {
 	case "1 Month":
 		expireTime = expireTime + (86400 * 30)
 	}
-	return int32(expireTime)
+
+	if expireTime > 2147483647 || expireTime < -2147483648 {
+		return 0, fmt.Errorf("integer overflow when converting to int32")
+	}
+	return int32(expireTime), nil // #nosec G104 --- validated, set to 0 if expireTime is out of int32 range
 }

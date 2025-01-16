@@ -791,7 +791,7 @@ func (d *SyncIQReplicationJobDataSource) Schema(ctx context.Context, req datasou
 						Description:         "Only list SyncIQ replication jobs matching this state.",
 						MarkdownDescription: "Only list SyncIQ replication jobs matching this state.",
 					},
-					"limit": schema.Int64Attribute{
+					"limit": schema.Int32Attribute{
 						Optional:            true,
 						Description:         "Return no more than this many results.",
 						MarkdownDescription: "Return no more than this many results.",

@@ -42,7 +42,7 @@ type NfsAliasDatasourceFilter struct {
 	// supported by api
 	Sort  types.String `tfsdk:"sort"`
 	Zone  types.String `tfsdk:"zone"`
-	Limit types.Int64  `tfsdk:"limit"`
+	Limit types.Int32  `tfsdk:"limit"`
 	Check types.Bool   `tfsdk:"check"`
 	Dir   types.String `tfsdk:"dir"`
 	// custom id & path list

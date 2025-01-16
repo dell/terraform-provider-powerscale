@@ -21,6 +21,12 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"strings"
+	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/constants"
+	"terraform-provider-powerscale/powerscale/helper"
+	"terraform-provider-powerscale/powerscale/models"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -29,11 +35,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"strings"
-	"terraform-provider-powerscale/client"
-	"terraform-provider-powerscale/powerscale/constants"
-	"terraform-provider-powerscale/powerscale/helper"
-	"terraform-provider-powerscale/powerscale/models"
 )
 
 // SmbShareResource creates a new resource.
@@ -561,7 +562,7 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 	zoneName := shareState.Zone.ValueString()
 	// if share name is updated, query original zone
 	if !sharePlan.Zone.Equal(shareState.Zone) {
-		zoneName, err = helper.QueryZoneNameByID(ctx, r.client, int32(shareState.Zid.ValueInt64()))
+		zoneName, err = helper.QueryZoneNameByID(ctx, r.client, int64(shareState.Zid.ValueInt64()))
 		if err != nil {
 			response.Diagnostics.AddError(
 				"Error update smb share",
