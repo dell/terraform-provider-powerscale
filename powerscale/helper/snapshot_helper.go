@@ -119,6 +119,8 @@ func CreateSnapshot(ctx context.Context, client *client.Client, plan *models.Sna
 // SnapshotDetailMapper Does the mapping from response to model.
 func SnapshotDetailMapper(ctx context.Context, snap powerscale.V1SnapshotSnapshotExtended) (models.SnapshotDetailModel, error) {
 	model := models.SnapshotDetailModel{}
+	targetid := snap.TargetId
+	snap.TargetId = 0
 	err := CopyFields(ctx, &snap, &model)
 	if err != nil {
 		return model, err
@@ -127,10 +129,10 @@ func SnapshotDetailMapper(ctx context.Context, snap powerscale.V1SnapshotSnapsho
 	// Max uint64 is returned when aliasing to live filesystem
 	// Other than that, valid targetIDs have a max value of max int64
 	// In Terraform, we shall represent by -1 live system alias by -1
-	if snap.TargetId == 18446744073709551615 {
+	if targetid == 18446744073709551615 {
 		model.TargetID = types.Int64Value(-1)
 	} else {
-		model.TargetID = types.Int64Value(int64(snap.TargetId)) // #nosec G115 --- validated, set to -1 if targetID is max uint64
+		model.TargetID = types.Int64Value(int64(targetid)) // #nosec G115 --- validated, set to -1 if targetID is max uint64
 	}
 	model.SetExpires = types.StringNull()
 	return model, nil
