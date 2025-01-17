@@ -86,18 +86,17 @@ func TestAccNfsAliasDatasourceErrorCopy(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.CopyFields).Return(fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfig + NfsAliasDatasourceGetAllConfig,
+				Config:      ProviderConfig + NfsAliasDatasourceGetErrorConfig,
 				ExpectError: regexp.MustCompile("mock error"),
 			},
 		},
 	})
 }
 
-var NfsAliasDatasourceGetWithQueryParam = `
-
+var NfsAliasDatasourceGetWithQueryParam = NfsAliasResourceConfig + `
 data "powerscale_nfs_alias" "export_datasource_test" {
+	depends_on = [powerscale_nfs_alias.example]
 	filter {
-        check = true
         dir   = "ASC"
 		limit = 10
         sort  = "name"
@@ -105,11 +104,17 @@ data "powerscale_nfs_alias" "export_datasource_test" {
 }
 `
 
-var NfsAliasDatasourceGetAllConfig = `
-
+var NfsAliasDatasourceGetAllConfig = NfsAliasResourceConfig + `
 data "powerscale_nfs_alias" "alias_datasource_test" {
+	depends_on = [powerscale_nfs_alias.example]
   	filter {
 		limit = 1
 	}
 }
 `
+var NfsAliasDatasourceGetErrorConfig = `
+data "powerscale_nfs_alias" "alias_datasource_test" {
+	filter {
+		limit = 1
+	}
+}`

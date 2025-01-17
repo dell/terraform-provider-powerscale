@@ -255,7 +255,7 @@ func (d *UserDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 										stringvalidator.LengthAtLeast(1),
 									},
 								},
-								"uid": schema.Int64Attribute{
+								"uid": schema.Int32Attribute{
 									Description:         "Specifies a numeric user identifier.",
 									MarkdownDescription: "Specifies a numeric user identifier.",
 									Optional:            true,
