@@ -132,8 +132,8 @@ type SmbShareDatasourceFilter struct {
 	Sort   types.String `tfsdk:"sort"`
 	Zone   types.String `tfsdk:"zone"`
 	Resume types.String `tfsdk:"resume"`
-	Limit  types.Int64  `tfsdk:"limit"`
-	Offset types.Int64  `tfsdk:"offset"`
+	Limit  types.Int32  `tfsdk:"limit"`
+	Offset types.Int32  `tfsdk:"offset"`
 	Scope  types.String `tfsdk:"scope"`
 	Dir    types.String `tfsdk:"dir"`
 	// custom name list

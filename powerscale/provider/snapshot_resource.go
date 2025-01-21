@@ -278,7 +278,13 @@ func (r *SnapshotResource) Update(ctx context.Context, req resource.UpdateReques
 		state.Name = plan.Name
 	}
 	if plan.Expires != state.Expires {
-		expire := helper.CalclulateExpire(plan.SetExpires.ValueString())
+		expire, err := helper.CalclulateExpire(plan.SetExpires.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error editing snapshot",
+				err.Error(),
+			)
+		}
 		editVal.Expires = &expire
 	}
 	err := helper.ModifySnapshot(ctx, r.client, state.ID.ValueString(), editVal)

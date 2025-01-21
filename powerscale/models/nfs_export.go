@@ -155,8 +155,8 @@ type NfsExportDatasourceFilter struct {
 	Zone   types.String `tfsdk:"zone"`
 	Resume types.String `tfsdk:"resume"`
 	Scope  types.String `tfsdk:"scope"`
-	Limit  types.Int64  `tfsdk:"limit"`
-	Offset types.Int64  `tfsdk:"offset"`
+	Limit  types.Int32  `tfsdk:"limit"`
+	Offset types.Int32  `tfsdk:"offset"`
 	Path   types.String `tfsdk:"path"`
 	Check  types.Bool   `tfsdk:"check"`
 	Dir    types.String `tfsdk:"dir"`

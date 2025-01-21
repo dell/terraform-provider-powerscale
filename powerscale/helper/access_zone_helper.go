@@ -168,13 +168,13 @@ func ExtractCustomAuthForInput(ctx context.Context, stateResponse, plan models.A
 }
 
 // QueryZoneNameByID returns a specific zone id by name.
-func QueryZoneNameByID(ctx context.Context, client *client.Client, zoneID int32) (string, error) {
+func QueryZoneNameByID(ctx context.Context, client *client.Client, zoneID int64) (string, error) {
 	zones, err := GetAllAccessZones(ctx, client)
 	if err != nil {
 		return "", err
 	}
 	for _, zone := range zones.Zones {
-		if *zone.ZoneId == zoneID {
+		if int64(*zone.ZoneId) == (zoneID) {
 			return *zone.Name, nil
 		}
 	}

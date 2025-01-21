@@ -163,7 +163,7 @@ func WritablesnapshotDatasourceSchema(ctx context.Context) schema.Schema {
 						Description:         "Only list writable snapshots matching this state.",
 						MarkdownDescription: "Only list writable snapshots matching this state.",
 					},
-					"limit": schema.Int64Attribute{
+					"limit": schema.Int32Attribute{
 						Optional:            true,
 						Description:         "Return no more than this many results at once (see resume).",
 						MarkdownDescription: "Return no more than this many results at once (see resume).",

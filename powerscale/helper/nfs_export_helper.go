@@ -149,10 +149,10 @@ func ListNFSExports(ctx context.Context, client *client.Client, nfsFilter *model
 			listNfsParam = listNfsParam.Check(nfsFilter.Check.ValueBool())
 		}
 		if !nfsFilter.Limit.IsNull() {
-			listNfsParam = listNfsParam.Limit(int32(nfsFilter.Limit.ValueInt64()))
+			listNfsParam = listNfsParam.Limit((nfsFilter.Limit.ValueInt32()))
 		}
 		if !nfsFilter.Offset.IsNull() {
-			listNfsParam = listNfsParam.Offset(int32(nfsFilter.Offset.ValueInt64()))
+			listNfsParam = listNfsParam.Offset((nfsFilter.Offset.ValueInt32()))
 		}
 	}
 	NfsExports, _, err := listNfsParam.Execute()

@@ -34,7 +34,7 @@ type SnapshotFilterType struct {
 	Sort     types.String `tfsdk:"sort"`
 	Schedule types.String `tfsdk:"schedule"`
 	State    types.String `tfsdk:"state"`
-	Limit    types.Int64  `tfsdk:"limit"`
+	Limit    types.Int32  `tfsdk:"limit"`
 	Type     types.String `tfsdk:"type"`
 	Dir      types.String `tfsdk:"dir"`
 }

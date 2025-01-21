@@ -308,7 +308,7 @@ func GetLookupMappingUsers(ctx context.Context, client *client.Client, zone stri
 		getParam = getParam.User(user.Name.ValueString())
 	}
 	if !user.UID.IsNull() {
-		getParam = getParam.Uid(int32(user.UID.ValueInt64()))
+		getParam = getParam.Uid((user.UID.ValueInt32()))
 	}
 	if zone != "" {
 		getParam = getParam.Zone(zone)

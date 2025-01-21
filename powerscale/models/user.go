@@ -78,7 +78,7 @@ type UserFilterType struct {
 // UserMemberItem holds identity attribute for a auth member.
 type UserMemberItem struct {
 	Name types.String `tfsdk:"name"`
-	UID  types.Int64  `tfsdk:"uid"`
+	UID  types.Int32  `tfsdk:"uid"`
 }
 
 // UserResourceModel describes the resource data model.

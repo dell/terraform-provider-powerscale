@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"math"
 	"math/big"
 	"reflect"
 	"sort"
@@ -437,10 +438,16 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 					destinationField.Set(reflect.ValueOf(intVal.ValueInt64Pointer()))
 				}
 				if destinationField.Kind() == reflect.Int32 {
-					destinationField.Set(reflect.ValueOf(int32(intVal.ValueInt64())))
+					if intVal.ValueInt64() > math.MaxInt32 || intVal.ValueInt64() < math.MinInt32 {
+						return fmt.Errorf("value %d is out of range for int32", intVal.ValueInt64())
+					}
+					destinationField.Set(reflect.ValueOf(int32(intVal.ValueInt64()))) // #nosec G115 - Validated, Error returned if value is out of range
 				}
 				if destinationField.Kind() == reflect.Ptr && destinationField.Type().Elem().Kind() == reflect.Int32 {
-					val := int32(intVal.ValueInt64())
+					if intVal.ValueInt64() > math.MaxInt32 || intVal.ValueInt64() < math.MinInt32 {
+						return fmt.Errorf("value %d is out of range for int32", intVal.ValueInt64())
+					}
+					val := int32(intVal.ValueInt64()) // #nosec G115 - Validated, Error returned if value is out of range
 					destinationField.Set(reflect.ValueOf(&val))
 				}
 			case basetypes.BoolValue:
@@ -561,10 +568,16 @@ func assignObjectToField(ctx context.Context, source basetypes.ObjectValue, dest
 					destinationField.Set(reflect.ValueOf(intVal.ValueInt64Pointer()))
 				}
 				if destinationField.Kind() == reflect.Int32 {
-					destinationField.Set(reflect.ValueOf(int32(intVal.ValueInt64())))
+					if intVal.ValueInt64() > math.MaxInt32 || intVal.ValueInt64() < math.MinInt32 {
+						return fmt.Errorf("value %d is out of range for int32", intVal.ValueInt64())
+					}
+					destinationField.Set(reflect.ValueOf(int32(intVal.ValueInt64()))) // #nosec G115 - Validated, Error returned if value is out of range
 				}
 				if destinationField.Kind() == reflect.Ptr && destinationField.Type().Elem().Kind() == reflect.Int32 {
-					val := int32(intVal.ValueInt64())
+					if intVal.ValueInt64() > math.MaxInt32 || intVal.ValueInt64() < math.MinInt32 {
+						return fmt.Errorf("value %d is out of range for int32", intVal.ValueInt64())
+					}
+					val := int32(intVal.ValueInt64()) // #nosec G115 - Validated, Error returned if value is out of range
 					destinationField.Set(reflect.ValueOf(&val))
 				}
 			case basetypes.BoolType{}:

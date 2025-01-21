@@ -57,7 +57,7 @@ type SnapshotScheduleFilter struct {
 	// The field that will be used for sorting. Choices are id, name, path, pattern, schedule, duration, alias, next_run, and next_snapshot. Default is id.
 	Sort types.String `tfsdk:"sort"`
 	// Return no more than this many results at once.
-	Limit types.Int64 `tfsdk:"limit"`
+	Limit types.Int32 `tfsdk:"limit"`
 	// The direction of the sort.Supported Values:ASC , DESC
 	Dir types.String `tfsdk:"dir"`
 
