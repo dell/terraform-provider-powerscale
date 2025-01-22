@@ -143,8 +143,9 @@ func TestAccS3BucketDatasourceErrorCopyFields(t *testing.T) {
 	FunctionMocker.UnPatch()
 }
 
-var S3BucketAllDatasourceConfig = fmt.Sprintf(`
+var S3BucketAllDatasourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_s3_bucket" "bucket_resource_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s"
 	path = "/ifs/%s"
 	create_path = true
@@ -165,8 +166,9 @@ data "powerscale_s3_bucket" "bucket_datasource_test_all" {
 }
 `, bucketName, bucketName)
 
-var S3BucketDatasourceConfig = fmt.Sprintf(`
+var S3BucketDatasourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_s3_bucket" "bucket_resource_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s"
 	path = "/ifs/%s"
 	create_path = true
