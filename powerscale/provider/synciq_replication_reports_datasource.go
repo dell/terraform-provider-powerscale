@@ -768,7 +768,7 @@ func (d *ReplicationReportDataSource) Schema(ctx context.Context, req datasource
 						Description:         "The field that will be used for sorting.",
 						MarkdownDescription: "The field that will be used for sorting.",
 					},
-					"newer_than": schema.Int64Attribute{
+					"newer_than": schema.Int32Attribute{
 						Optional:            true,
 						Description:         "Filter the returned reports to include only those whose jobs started more recently than the specified number of days ago.",
 						MarkdownDescription: "Filter the returned reports to include only those whose jobs started more recently than the specified number of days ago.",
@@ -783,12 +783,12 @@ func (d *ReplicationReportDataSource) Schema(ctx context.Context, req datasource
 						Description:         "Filter the returned reports to include only those whose jobs are in this state.",
 						MarkdownDescription: "Filter the returned reports to include only those whose jobs are in this state.",
 					},
-					"limit": schema.Int64Attribute{
+					"limit": schema.Int32Attribute{
 						Optional:            true,
 						Description:         "Return no more than this many results at once (see resume).",
 						MarkdownDescription: "Return no more than this many results at once (see resume).",
 					},
-					"reports_per_policy": schema.Int64Attribute{
+					"reports_per_policy": schema.Int32Attribute{
 						Optional:            true,
 						Description:         "If specified, only the N most recent reports will be returned per policy.  If no other query args are present this argument defaults to 1. ",
 						MarkdownDescription: "If specified, only the N most recent reports will be returned per policy.  If no other query args are present this argument defaults to 1. ",

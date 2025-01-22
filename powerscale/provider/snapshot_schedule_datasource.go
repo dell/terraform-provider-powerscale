@@ -149,7 +149,7 @@ func (d *SnapshotScheduleDataSource) Schema(_ context.Context, _ datasource.Sche
 							stringvalidator.LengthAtLeast(1),
 						},
 					},
-					"limit": schema.Int64Attribute{
+					"limit": schema.Int32Attribute{
 						Description:         "Return no more than this many results at once.",
 						MarkdownDescription: "Return no more than this many results at once.",
 						Optional:            true,

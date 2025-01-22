@@ -44,6 +44,6 @@ type GroupnetModel struct {
 type GroupnetFilterType struct {
 	Names []types.String `tfsdk:"names"`
 	Sort  types.String   `tfsdk:"sort"`
-	Limit types.Int64    `tfsdk:"limit"`
+	Limit types.Int32    `tfsdk:"limit"`
 	Dir   types.String   `tfsdk:"dir"`
 }

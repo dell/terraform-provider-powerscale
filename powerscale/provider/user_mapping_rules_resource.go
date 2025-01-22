@@ -225,7 +225,7 @@ func (r *UserMappingRulesResource) Schema(ctx context.Context, req resource.Sche
 							Optional:            true,
 							Validators:          []validator.String{stringvalidator.LengthAtLeast(1)},
 						},
-						"uid": schema.Int64Attribute{
+						"uid": schema.Int32Attribute{
 							Description:         "Specifies a numeric user identifier.",
 							MarkdownDescription: "Specifies a numeric user identifier.",
 							Optional:            true,

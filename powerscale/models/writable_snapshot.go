@@ -59,7 +59,7 @@ type WritableSnapshotFilter struct {
 	Sort   types.String `tfsdk:"sort"`
 	Resume types.String `tfsdk:"resume"`
 	State  types.String `tfsdk:"state"`
-	Limit  types.Int64  `tfsdk:"limit"`
+	Limit  types.Int32  `tfsdk:"limit"`
 	Dir    types.String `tfsdk:"dir"`
 }
 

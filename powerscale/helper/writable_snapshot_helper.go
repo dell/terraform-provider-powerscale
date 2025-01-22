@@ -58,7 +58,7 @@ func GetAllWritableSnapshots(ctx context.Context, client *client.Client, state *
 			writablesnapshots = writablesnapshots.State(state.WritableSnapshotFilter.State.ValueString())
 		}
 		if !state.WritableSnapshotFilter.Limit.IsNull() {
-			writablesnapshots = writablesnapshots.Limit(int32(state.WritableSnapshotFilter.Limit.ValueInt64()))
+			writablesnapshots = writablesnapshots.Limit((state.WritableSnapshotFilter.Limit.ValueInt32()))
 		}
 		if !state.WritableSnapshotFilter.Dir.IsNull() {
 			writablesnapshots = writablesnapshots.Dir(state.WritableSnapshotFilter.Dir.ValueString())

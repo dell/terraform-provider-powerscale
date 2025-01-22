@@ -41,7 +41,7 @@ type SyncIQJobFilterModel struct {
 	// The field that will be used for sorting.
 	Sort types.String `tfsdk:"sort"`
 	// Return no more than this many results at once.
-	Limit types.Int64 `tfsdk:"limit"`
+	Limit types.Int32 `tfsdk:"limit"`
 	// The direction of the sort. Supported Values: ASC, DESC.
 	Dir types.String `tfsdk:"dir"`
 	// Filter on the state of the SyncIQ job.

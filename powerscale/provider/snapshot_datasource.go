@@ -178,7 +178,7 @@ func (d *SnapshotDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 						MarkdownDescription: "The field that will be used for sorting.",
 					},
 
-					"limit": schema.Int64Attribute{
+					"limit": schema.Int32Attribute{
 						Optional:            true,
 						Description:         "Return no more than this many results at once (see resume).",
 						MarkdownDescription: "Return no more than this many results at once (see resume).",

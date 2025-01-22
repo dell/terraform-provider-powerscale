@@ -23,6 +23,7 @@ import (
 	powerscale "dell/powerscale-go-client"
 	"encoding/json"
 	"fmt"
+	"math"
 	"math/big"
 	"net/http"
 	"reflect"
@@ -96,7 +97,10 @@ func CopyFields(ctx context.Context, source, destination interface{}) error {
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				destinationFieldValue = types.Int64Value(sourceField.Int())
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-				destinationFieldValue = types.Int64Value(int64(sourceField.Uint()))
+				if sourceField.Uint() > math.MaxInt64 {
+					return fmt.Errorf("source field value is too large for int64")
+				}
+				destinationFieldValue = types.Int64Value(int64(sourceField.Uint())) // #nosec G115 --- validated, Error returned if value is too large for int64
 			case reflect.Float32, reflect.Float64:
 				// destinationFieldValue = types.Float64Value(sourceField.Float())
 				destinationFieldValue = types.NumberValue(big.NewFloat(sourceField.Float()))

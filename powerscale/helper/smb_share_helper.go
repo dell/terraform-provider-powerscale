@@ -84,10 +84,10 @@ func ListSmbShares(ctx context.Context, client *client.Client, smbFilter *models
 			listSmbParam = listSmbParam.Dir(smbFilter.Dir.ValueString())
 		}
 		if !smbFilter.Limit.IsNull() {
-			listSmbParam = listSmbParam.Limit(int32(smbFilter.Limit.ValueInt64()))
+			listSmbParam = listSmbParam.Limit((smbFilter.Limit.ValueInt32()))
 		}
 		if !smbFilter.Offset.IsNull() {
-			listSmbParam = listSmbParam.Offset(int32(smbFilter.Offset.ValueInt64()))
+			listSmbParam = listSmbParam.Offset((smbFilter.Offset.ValueInt32()))
 		}
 	}
 	smbShares, _, err := listSmbParam.Execute()

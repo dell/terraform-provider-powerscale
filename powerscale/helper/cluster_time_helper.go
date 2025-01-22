@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"math"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/models"
@@ -104,7 +105,16 @@ func ManageClusterTime(ctx context.Context, client *client.Client, plan models.C
 			return state, resp
 		}
 
-		timeUpdate.Time = int32(t.Unix())
+		if t.Unix() > math.MaxInt32 {
+			message := "Time value is too large for int32"
+			resp.AddError(
+				"Error updating cluster time",
+				message,
+			)
+			return state, resp
+		}
+
+		timeUpdate.Time = int32(t.Unix()) // #nosec G115 --- validated, Error returned if value is too large for int32
 
 		err = UpdateClusterTime(ctx, client, timeUpdate)
 		if err != nil {

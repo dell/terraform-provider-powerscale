@@ -376,12 +376,12 @@ func (d *SmbShareDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 							"(token should come from the previous call, resume cannot be used with other options).",
 						Optional: true,
 					},
-					"limit": schema.Int64Attribute{
+					"limit": schema.Int32Attribute{
 						Description:         "Return no more than this many results at once (see resume).",
 						MarkdownDescription: "Return no more than this many results at once (see resume).",
 						Optional:            true,
 					},
-					"offset": schema.Int64Attribute{
+					"offset": schema.Int32Attribute{
 						Description:         "The position of the first item returned for a paginated query within the full result set.",
 						MarkdownDescription: "The position of the first item returned for a paginated query within the full result set.",
 						Optional:            true,
