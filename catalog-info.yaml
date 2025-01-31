@@ -1,0 +1,29 @@
+# nonk8s
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: dell-terraform-provider-powerscale
+  description: "Terraform Provider for Dell PowerScale"
+  tags:
+    - devops
+    - automation
+    - terraform
+    - dell
+    - infrastructure-as-code
+    - terraform-provider
+    - powerscale
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: dell/terraform-provider-powerscale
+  links:   
+    - url: 'https://dell.github.io/terraform-docs/docs/storage/platforms/powerscale/'
+      title: 'Dell Terraform Providers Documentation'
+      icon: 'web'
+    - url: 'https://github.com/dell/terraform-provider-powerscale/issues'
+      title: 'Contact Technical Support'
+      icon: 'help'
+spec:
+  type: service
+  lifecycle: production
+  owner: user:default/varun.chinta
+  visibility: all
