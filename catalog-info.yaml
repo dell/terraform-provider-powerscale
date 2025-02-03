@@ -19,7 +19,7 @@ metadata:
     - url: 'https://dell.github.io/terraform-docs/docs/storage/platforms/powerscale/'
       title: 'Dell Terraform Providers Documentation'
       icon: 'web'
-    - url: 'https://github.com/dell/terraform-provider-powerscale/issues'
+    - url: 'https://github.com/dell/dell-terraform-providers/issues'
       title: 'Contact Technical Support'
       icon: 'help'
 spec:
