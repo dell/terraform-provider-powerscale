@@ -87,15 +87,6 @@ func GetSupportAssistv17Task(ctx context.Context, client *client.Client, id stri
 	return response, err
 }
 
-// GetClusterVersion retrieves the cluster version.
-func GetClusterVersion(ctx context.Context, client *client.Client) (string, error) {
-	clusterVersion, _, err := client.PscaleOpenAPIClient.ClusterApi.GetClusterv3ClusterVersion(ctx).Execute()
-	if err != nil {
-		return "", err
-	}
-	return clusterVersion.Nodes[0].Release, err
-}
-
 // ManageSupportAssist manages the support assist settings.
 func ManageSupportAssist(ctx context.Context, client *client.Client, plan models.SupportAssistModel) (state models.SupportAssistModel, resp diag.Diagnostics) {
 	// Update support assist terms status

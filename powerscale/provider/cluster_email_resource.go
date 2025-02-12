@@ -18,16 +18,14 @@ package provider
 
 import (
 	"context"
-	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"terraform-provider-powerscale/client"
+	"terraform-provider-powerscale/powerscale/helper"
+	"terraform-provider-powerscale/powerscale/models"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"terraform-provider-powerscale/client"
-	"terraform-provider-powerscale/powerscale/constants"
-	"terraform-provider-powerscale/powerscale/helper"
-	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -189,60 +187,8 @@ func (r *ClusterEmailResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	var toUpdate powerscale.V1ClusterEmailExtended
-	// Get param from tf input
-	err := helper.ReadFromState(ctx, &plan.Settings, &toUpdate)
-	if err != nil {
-		errStr := constants.UpdateClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			fmt.Sprintf("Could not read cluster email param with error: %s", message),
-		)
-		return
-	}
-	// if the field is set to empty, set it to null to update back to default
-	// if not set, unset the field to not update it
-	if plan.Settings.UserTemplate.IsUnknown() {
-		toUpdate.UserTemplate.Unset()
-	} else if plan.Settings.UserTemplate.ValueString() == "" {
-		toUpdate.UserTemplate.Set(nil)
-	}
-	err = helper.UpdateClusterEmail(ctx, r.client, toUpdate)
-	if err != nil {
-		errStr := constants.UpdateClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			message,
-		)
-		return
-	}
-
-	clusterEmail, err := helper.GetClusterEmail(ctx, r.client)
-	if err != nil {
-		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			message,
-		)
-		return
-	}
-	var state models.ClusterEmail
-	err = helper.CopyFields(ctx, clusterEmail, &state)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error copying fields of cluster email resource",
-			err.Error(),
-		)
-		return
-	}
-	state.ID = types.StringValue("cluster_email")
-	state.Settings.SMTPAuthPasswd = plan.Settings.SMTPAuthPasswd
-	if state.Settings.SMTPAuthPasswd.IsUnknown() {
-		state.Settings.SMTPAuthPasswd = types.StringValue("")
-	}
+	state, diags := helper.ManageClusterEmail(ctx, r.client, plan)
+	resp.Diagnostics.Append(diags...)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -258,29 +204,9 @@ func (r *ClusterEmailResource) Read(ctx context.Context, req resource.ReadReques
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	clusterEmail, err := helper.GetClusterEmail(ctx, r.client)
-	if err != nil {
-		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			message,
-		)
-		return
-	}
-	err = helper.CopyFields(ctx, clusterEmail, &state)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error copying fields of cluster email resource",
-			err.Error(),
-		)
-		return
-	}
-	state.ID = types.StringValue("cluster_email")
-	if state.Settings.SMTPAuthPasswd.IsUnknown() {
-		state.Settings.SMTPAuthPasswd = types.StringValue("")
-	}
+		
+	diags := helper.ReadClusterEmail(ctx, r.client, &state)
+	resp.Diagnostics.Append(diags...)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -295,59 +221,9 @@ func (r *ClusterEmailResource) Update(ctx context.Context, req resource.UpdateRe
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	var toUpdate powerscale.V1ClusterEmailExtended
-	// Get param from tf input
-	err := helper.ReadFromState(ctx, plan.Settings, &toUpdate)
-	if err != nil {
-		errStr := constants.UpdateClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			fmt.Sprintf("Could not read cluster email param with error: %s", message),
-		)
-		return
-	}
-	if plan.Settings.UserTemplate.IsUnknown() {
-		toUpdate.UserTemplate.Unset()
-	} else if plan.Settings.UserTemplate.ValueString() == "" {
-		toUpdate.UserTemplate.Set(nil)
-	}
-	err = helper.UpdateClusterEmail(ctx, r.client, toUpdate)
-	if err != nil {
-		errStr := constants.UpdateClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			message,
-		)
-		return
-	}
-
-	clusterEmail, err := helper.GetClusterEmail(ctx, r.client)
-	if err != nil {
-		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating cluster email",
-			message,
-		)
-		return
-	}
-	var state models.ClusterEmail
-	err = helper.CopyFields(ctx, clusterEmail, &state)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error copying fields of cluster email resource",
-			err.Error(),
-		)
-		return
-	}
-	state.ID = types.StringValue("cluster_email")
-	state.Settings.SMTPAuthPasswd = plan.Settings.SMTPAuthPasswd
-	if state.Settings.SMTPAuthPasswd.IsUnknown() {
-		state.Settings.SMTPAuthPasswd = types.StringValue("")
-	}
+	
+	state, diags := helper.ManageClusterEmail(ctx, r.client, plan)
+	resp.Diagnostics.Append(diags...)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -375,28 +251,9 @@ func (r *ClusterEmailResource) Delete(ctx context.Context, req resource.DeleteRe
 func (r *ClusterEmailResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Info(ctx, "Importing Cluster Email resource")
 	var state models.ClusterEmail
-	clusterEmail, err := helper.GetClusterEmail(ctx, r.client)
-	if err != nil {
-		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error reading cluster email",
-			message,
-		)
-		return
-	}
-	err = helper.CopyFields(ctx, clusterEmail, &state)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error copying fields of cluster email resource",
-			err.Error(),
-		)
-		return
-	}
-	state.ID = types.StringValue("cluster_email")
-	if state.Settings.SMTPAuthPasswd.IsUnknown() {
-		state.Settings.SMTPAuthPasswd = types.StringValue("")
-	}
+	
+	diags := helper.ReadClusterEmail(ctx, r.client, &state)
+	resp.Diagnostics.Append(diags...)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
