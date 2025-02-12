@@ -74,6 +74,7 @@ func TestAccNfsAliasDatasourceErrorList(t *testing.T) {
 			},
 		},
 	})
+	FunctionMocker.Release()
 }
 
 func TestAccNfsAliasDatasourceErrorCopy(t *testing.T) {
