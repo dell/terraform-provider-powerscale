@@ -39,7 +39,7 @@ func TestAccReplicationReportsDataSourceAll(t *testing.T) {
 		Steps: []resource.TestStep{
 			// read all
 			{
-				Config: ProviderConfig + SetupHostIP() + RRDataSourceConfig,
+				Config: ProviderConfig + SetupHostIP() + RRDataSourceConfig + SyncIQSettingsConfig,
 				Check:  resource.ComposeAggregateTestCheckFunc(),
 			},
 		},
@@ -58,7 +58,7 @@ func TestAccReplicationReportsDataSourceFilter(t *testing.T) {
 		Steps: []resource.TestStep{
 			// read all
 			{
-				Config: ProviderConfig + SetupHostIP() + RRDataSourceConfigFilter,
+				Config: ProviderConfig + SetupHostIP() + RRDataSourceConfigFilter + SyncIQSettingsConfig,
 				Check:  resource.ComposeAggregateTestCheckFunc(),
 			},
 		},
@@ -71,7 +71,7 @@ func TestAccReplicationReportsDataSourceFilterErr(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfig + RRDataSourceFilterConfigErr,
+				Config:      ProviderConfig + RRDataSourceFilterConfigErr + SyncIQSettingsConfig,
 				ExpectError: regexp.MustCompile(`.*Unsupported argument*.`),
 			},
 		},
@@ -92,7 +92,7 @@ func TestAccReplicationReportsDataSourceGettingErr(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.GetReplicationReports).Return(nil, fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfig + SetupHostIP() + RRDataSourceConfig,
+				Config:      ProviderConfig + SetupHostIP() + RRDataSourceConfig + SyncIQSettingsConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
 			},
 		},

@@ -37,7 +37,7 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.ReadFromState).Return(fmt.Errorf("mock create plan read error")).Build()
 				},
-				Config: ProviderConfig + `
+				Config: ProviderConfig + SyncIQSettingsConfig + `
 				resource "powerscale_synciq_policy" "policy" {
 					name = "tfaccPolicy"
 					action = "sync"
@@ -52,7 +52,7 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker.Release()
 				},
-				Config: ProviderConfig + `
+				Config: ProviderConfig + SyncIQSettingsConfig + `
 				resource "powerscale_synciq_policy" "policy" {
 					name = "tfaccPolicy"
 					action = "sync"
@@ -80,7 +80,7 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.ReadFromState).Return(fmt.Errorf("mock update plan reading error")).Build()
 				},
-				Config: ProviderConfig + `
+				Config: ProviderConfig + SyncIQSettingsConfig + `
 				resource "powerscale_synciq_policy" "policy" {
 					name = "tfaccPolicy2"
 					action = "sync"
@@ -95,7 +95,7 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 				PreConfig: func() {
 					FunctionMocker.Release()
 				},
-				Config: ProviderConfig + `
+				Config: ProviderConfig + SyncIQSettingsConfig + `
 				resource "powerscale_synciq_policy" "policy" {
 					name = "tfaccPolicy2"
 					action = "sync"
@@ -121,7 +121,7 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 			},
 			// create negative - Existing name
 			{
-				Config: ProviderConfig + `
+				Config: ProviderConfig + SyncIQSettingsConfig + `
 				resource "powerscale_synciq_policy" "policy" {
 					name = "tfaccPolicy2"
 					action = "sync"
@@ -157,7 +157,7 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 			// update negative - Invalid source root path
 			// root path needs to start with /ifs
 			{
-				Config: ProviderConfig + `
+				Config: ProviderConfig + SyncIQSettingsConfig + `
 				resource "powerscale_synciq_policy" "policy" {
 					name = "tfaccPolicy2"
 					action = "sync"
@@ -226,3 +226,9 @@ func TestAccSynciqPolicyResource(t *testing.T) {
 		},
 	})
 }
+
+var SyncIQSettingsConfig = `
+resource "powerscale_synciq_global_settings" "test" {
+   service = "on"
+}
+`

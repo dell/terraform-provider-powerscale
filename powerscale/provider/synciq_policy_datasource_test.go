@@ -66,7 +66,7 @@ func TestAccSynciqPolicyDatasourceID(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing
 			{
-				Config: ProviderConfig + PolicyConfig + `
+				Config: ProviderConfig + PolicyConfig + SyncIQSettingsConfig + `
 				data "powerscale_synciq_policy" "preq" {
 					depends_on = [powerscale_synciq_policy.policy1]
 				}
