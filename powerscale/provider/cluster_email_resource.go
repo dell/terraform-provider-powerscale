@@ -204,7 +204,7 @@ func (r *ClusterEmailResource) Read(ctx context.Context, req resource.ReadReques
 	if resp.Diagnostics.HasError() {
 		return
 	}
-		
+
 	diags := helper.ReadClusterEmail(ctx, r.client, &state)
 	resp.Diagnostics.Append(diags...)
 
@@ -221,7 +221,7 @@ func (r *ClusterEmailResource) Update(ctx context.Context, req resource.UpdateRe
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	
+
 	state, diags := helper.ManageClusterEmail(ctx, r.client, plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -251,7 +251,7 @@ func (r *ClusterEmailResource) Delete(ctx context.Context, req resource.DeleteRe
 func (r *ClusterEmailResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Info(ctx, "Importing Cluster Email resource")
 	var state models.ClusterEmail
-	
+
 	diags := helper.ReadClusterEmail(ctx, r.client, &state)
 	resp.Diagnostics.Append(diags...)
 
