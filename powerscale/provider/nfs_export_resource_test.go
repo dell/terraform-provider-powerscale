@@ -52,7 +52,7 @@ func TestAccNFSExport(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"map_all", "force", "ignore_bad_auth", "ignore_bad_paths",
-					"ignore_conflicts", "ignore_unresolvable_hosts"},
+					"ignore_conflicts", "ignore_unresolvable_hosts", "security_flavors"},
 			},
 			{
 				Config: ProviderConfig + NFSExportUpdatedResourceConfig,

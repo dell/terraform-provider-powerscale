@@ -66,10 +66,11 @@ func TestAccSmbShareSettingsResourceImport(t *testing.T) {
 			},
 			// import testing
 			{
-				ResourceName:      resourceName,
-				ImportState:       true,
-				ImportStateId:     "System",
-				ImportStateVerify: true,
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateId:           "System",
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"file_filter_extensions", "host_acl", "mangle_map"},
 			},
 		},
 	})

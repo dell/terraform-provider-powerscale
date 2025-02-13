@@ -20,16 +20,17 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"strconv"
 	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -832,6 +833,7 @@ func (r NfsExportResource) Create(ctx context.Context, request resource.CreateRe
 	}
 
 	helper.ResolvePersonaDiff(ctx, exportPlanBackUp, &exportPlan)
+	helper.NFSExportListsDiff(ctx, exportPlanBackUp, &exportPlan)
 	diags = response.State.Set(ctx, exportPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -887,6 +889,7 @@ func (r NfsExportResource) Read(ctx context.Context, request resource.ReadReques
 	}
 
 	helper.ResolvePersonaDiff(ctx, exportStateBackUp, &exportState)
+	helper.NFSExportListsDiff(ctx, exportStateBackUp, &exportState)
 	diags = response.State.Set(ctx, exportState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -958,6 +961,7 @@ func (r NfsExportResource) Update(ctx context.Context, request resource.UpdateRe
 		return
 	}
 	helper.ResolvePersonaDiff(ctx, exportPlan, &exportState)
+	helper.NFSExportListsDiff(ctx, exportPlan, &exportState)
 	diags = response.State.Set(ctx, exportState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {

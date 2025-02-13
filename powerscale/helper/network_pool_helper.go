@@ -92,3 +92,13 @@ func DeleteNetworkPool(ctx context.Context, client *client.Client, npID string, 
 	_, err := client.PscaleOpenAPIClient.NetworkApi.DeleteNetworkv12GroupnetsGroupnetSubnetsSubnetPool(ctx, npID, groupnet, subnet).Execute()
 	return err
 }
+
+// For List set explicitly from plan
+// This is to keep state in similar order to plan
+// Lists returned from the array are not always in the same order as they appear in the plan
+func NetworkPoolListsDiff(ctx context.Context, plan models.NetworkPoolResourceModel, state *models.NetworkPoolResourceModel) {
+	state.Ifaces = ListCheck(plan.Ifaces, plan.Ifaces.ElementType(ctx))
+	state.Ranges = ListCheck(plan.Ranges, plan.Ranges.ElementType(ctx))
+	state.ScDNSZoneAliases = ListCheck(plan.ScDNSZoneAliases, plan.ScDNSZoneAliases.ElementType(ctx))
+	state.StaticRoutes = ListCheck(plan.StaticRoutes, plan.StaticRoutes.ElementType(ctx))
+}

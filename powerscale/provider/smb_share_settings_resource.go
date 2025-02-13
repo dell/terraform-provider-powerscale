@@ -344,6 +344,14 @@ func (r *SmbShareSettingsResource) Create(ctx context.Context, request resource.
 		return
 	}
 
+	var sharePlanBackup models.SmbShareSettingsResourceModel
+	diagsB := request.Plan.Get(ctx, &sharePlanBackup)
+
+	response.Diagnostics.Append(diagsB...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
 	zone := sharePlan.Zone.ValueString()
 	scope := sharePlan.Scope.ValueString()
 
@@ -386,6 +394,7 @@ func (r *SmbShareSettingsResource) Create(ctx context.Context, request resource.
 	}
 	state.Zone = sharePlan.Zone
 	state.ID = types.StringValue("smb_share_settings_" + sharePlan.Zone.ValueString())
+	helper.SMBShareSettingsListsDiff(ctx, sharePlanBackup, &state)
 	diags = response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -400,6 +409,13 @@ func (r SmbShareSettingsResource) Read(ctx context.Context, request resource.Rea
 	var shareState models.SmbShareSettingsResourceModel
 	diags := request.State.Get(ctx, &shareState)
 	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	var shareStateBackup models.SmbShareSettingsResourceModel
+	diagsB := request.State.Get(ctx, &shareStateBackup)
+	response.Diagnostics.Append(diagsB...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -426,6 +442,7 @@ func (r SmbShareSettingsResource) Read(ctx context.Context, request resource.Rea
 
 	shareState.Zone = types.StringValue(zone)
 	shareState.ID = types.StringValue("smb_share_settings_" + zone)
+	helper.SMBShareSettingsListsDiff(ctx, shareStateBackup, &shareState)
 	diags = response.State.Set(ctx, &shareState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -440,6 +457,13 @@ func (r SmbShareSettingsResource) Update(ctx context.Context, request resource.U
 	var sharePlan models.SmbShareSettingsResourceModel
 	diags := request.Plan.Get(ctx, &sharePlan)
 	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	var sharePlanBackup models.SmbShareSettingsResourceModel
+	diagsB := request.Plan.Get(ctx, &sharePlanBackup)
+	response.Diagnostics.Append(diagsB...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -488,6 +512,7 @@ func (r SmbShareSettingsResource) Update(ctx context.Context, request resource.U
 	// Zone need to be manually set
 	shareState.Zone = sharePlan.Zone
 	shareState.ID = types.StringValue("smb_share_settings_" + sharePlan.Zone.ValueString())
+	helper.SMBShareSettingsListsDiff(ctx, sharePlanBackup, &shareState)
 	diags = response.State.Set(ctx, shareState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {

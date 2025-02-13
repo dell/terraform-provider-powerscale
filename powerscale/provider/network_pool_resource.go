@@ -21,14 +21,15 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -286,6 +287,14 @@ func (r *NetworkPoolResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
+	var planBackup models.NetworkPoolResourceModel
+	diagsB := req.Plan.Get(ctx, &planBackup)
+
+	resp.Diagnostics.Append(diagsB...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	poolToCreate := powerscale.V12SubnetsSubnetPool{}
 	// Get param from tf input
 	err := helper.ReadFromState(ctx, plan, &poolToCreate)
@@ -344,7 +353,7 @@ func (r *NetworkPoolResource) Create(ctx context.Context, req resource.CreateReq
 		)
 		return
 	}
-
+	helper.NetworkPoolListsDiff(ctx, planBackup, &plan)
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -360,6 +369,13 @@ func (r *NetworkPoolResource) Read(ctx context.Context, req resource.ReadRequest
 	var poolState models.NetworkPoolResourceModel
 	diags := req.State.Get(ctx, &poolState)
 	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var poolStateBackup models.NetworkPoolResourceModel
+	diagsB := req.State.Get(ctx, &poolStateBackup)
+	resp.Diagnostics.Append(diagsB...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -400,7 +416,7 @@ func (r *NetworkPoolResource) Read(ctx context.Context, req resource.ReadRequest
 		)
 		return
 	}
-
+	helper.NetworkPoolListsDiff(ctx, poolStateBackup, &poolState)
 	diags = resp.State.Set(ctx, poolState)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -416,6 +432,14 @@ func (r *NetworkPoolResource) Update(ctx context.Context, req resource.UpdateReq
 	var poolPlan models.NetworkPoolResourceModel
 	diags := req.Plan.Get(ctx, &poolPlan)
 	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var planBackup models.NetworkPoolResourceModel
+	diagsB := req.Plan.Get(ctx, &planBackup)
+
+	resp.Diagnostics.Append(diagsB...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -489,6 +513,7 @@ func (r *NetworkPoolResource) Update(ctx context.Context, req resource.UpdateReq
 		)
 		return
 	}
+	helper.NetworkPoolListsDiff(ctx, planBackup, &poolPlan)
 	diags = resp.State.Set(ctx, poolPlan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {

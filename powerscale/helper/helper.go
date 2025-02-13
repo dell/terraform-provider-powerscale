@@ -353,3 +353,13 @@ func GetClusterVersion(ctx context.Context, client *client.Client) (string, erro
 	}
 	return clusterVersion.Nodes[0].Release, err
 }
+
+// For List set explicitly from plan
+// This is to keep state in similar order to plan
+// Lists returned from the array are not always in the same order as they appear in the plan
+func ListCheck(list types.List, elementType attr.Type) types.List {
+	if list.IsUnknown() {
+		return types.ListNull(elementType)
+	}
+	return list
+}

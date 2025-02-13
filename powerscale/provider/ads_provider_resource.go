@@ -21,13 +21,14 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -446,6 +447,14 @@ func (r *AdsProviderResource) Create(ctx context.Context, req resource.CreateReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	var absBackupPlan models.AdsProviderResourceModel
+	diagsBackup := req.Plan.Get(ctx, &absBackupPlan)
+
+	resp.Diagnostics.Append(diagsBackup...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	if helper.IsCreateAdsProviderParamInvalid(plan) {
 		resp.Diagnostics.AddError(
 			"Error creating ads provider",
@@ -512,6 +521,8 @@ func (r *AdsProviderResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
+	helper.AdsListsDiff(ctx, absBackupPlan, &plan)
+
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -527,6 +538,13 @@ func (r *AdsProviderResource) Read(ctx context.Context, req resource.ReadRequest
 	var adsState models.AdsProviderResourceModel
 	diags := req.State.Get(ctx, &adsState)
 	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var absBackupPlan models.AdsProviderResourceModel
+	diagsBack := req.State.Get(ctx, &absBackupPlan)
+	resp.Diagnostics.Append(diagsBack...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -568,6 +586,7 @@ func (r *AdsProviderResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
+	helper.AdsListsDiff(ctx, absBackupPlan, &adsState)
 	diags = resp.State.Set(ctx, adsState)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -583,6 +602,14 @@ func (r *AdsProviderResource) Update(ctx context.Context, req resource.UpdateReq
 	var adsPlan models.AdsProviderResourceModel
 	diags := req.Plan.Get(ctx, &adsPlan)
 	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var absBackupPlan models.AdsProviderResourceModel
+	diagsBackup := req.Plan.Get(ctx, &absBackupPlan)
+
+	resp.Diagnostics.Append(diagsBackup...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -671,6 +698,8 @@ func (r *AdsProviderResource) Update(ctx context.Context, req resource.UpdateReq
 		)
 		return
 	}
+
+	helper.AdsListsDiff(ctx, absBackupPlan, &adsState)
 	diags = resp.State.Set(ctx, adsPlan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {

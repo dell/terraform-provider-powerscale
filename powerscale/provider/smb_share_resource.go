@@ -420,6 +420,14 @@ func (r SmbShareResource) Create(ctx context.Context, request resource.CreateReq
 		return
 	}
 
+	var sharePlanBackup models.SmbShareResource
+	diagsB := request.Plan.Get(ctx, &sharePlanBackup)
+
+	response.Diagnostics.Append(diagsB...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
 	shareToCreate := powerscale.V7SmbShare{}
 	// Get param from tf input
 	err := helper.ReadFromState(ctx, sharePlan, &shareToCreate)
@@ -467,7 +475,7 @@ func (r SmbShareResource) Create(ctx context.Context, request resource.CreateReq
 		)
 		return
 	}
-
+	helper.SMBShareListsDiff(ctx, sharePlanBackup, &sharePlan)
 	diags = response.State.Set(ctx, sharePlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -482,6 +490,13 @@ func (r SmbShareResource) Read(ctx context.Context, request resource.ReadRequest
 	var shareState models.SmbShareResource
 	diags := request.State.Get(ctx, &shareState)
 	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	var shareStateBackup models.SmbShareResource
+	diagsB := request.State.Get(ctx, &shareStateBackup)
+	response.Diagnostics.Append(diagsB...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -518,6 +533,7 @@ func (r SmbShareResource) Read(ctx context.Context, request resource.ReadRequest
 		)
 		return
 	}
+	helper.SMBShareListsDiff(ctx, shareStateBackup, &shareState)
 	diags = response.State.Set(ctx, shareState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -539,6 +555,14 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 	var shareState models.SmbShareResource
 	diags = response.State.Get(ctx, &shareState)
 	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	var sharePlanBackup models.SmbShareResource
+	diagsB := request.Plan.Get(ctx, &sharePlanBackup)
+
+	response.Diagnostics.Append(diagsB...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -612,6 +636,7 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 	}
 	// Zone need to be manually set
 	shareState.Zone = sharePlan.Zone
+	helper.SMBShareListsDiff(ctx, sharePlanBackup, &shareState)
 	diags = response.State.Set(ctx, shareState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
