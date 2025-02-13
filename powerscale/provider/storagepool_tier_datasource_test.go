@@ -58,6 +58,7 @@ func TestAccStoragepoolTierDatasourceErrorList(t *testing.T) {
 			},
 		},
 	})
+	FunctionMocker.Release()
 }
 
 func TestAccStoragepoolTierDatasourceErrorCopy(t *testing.T) {
