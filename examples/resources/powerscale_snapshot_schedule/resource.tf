@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ resource "powerscale_snapshot_schedule" "snap_schedule" {
   # path = "/ifs/tfacc_test"
 
   # Time value in String for which snapshots created by this snapshot schedule should be retained. Values supported are of format : 
-  # "Never Expires, x Seconds(s), x Minute(s), x Hour(s), x Week(s), x Day(s), x Month(s), x Year(s) where x can be any integer value.
+  # "Never Expires, x Second(s), x Minute(s), x Hour(s), x Week(s), x Day(s), x Year(s) where x can be any integer value.
   # Default set to : "1 Week(s)"
   # retention_time = "3 Hour(s)" 
 
