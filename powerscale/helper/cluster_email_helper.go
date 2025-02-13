@@ -138,7 +138,7 @@ func ManageClusterEmail(ctx context.Context, client *client.Client, plan models.
 	return state, resp
 }
 
-// ReadClusterEmail manages read and import of cluster email
+// ReadClusterEmail manages read and import of cluster email.
 func ReadClusterEmail(ctx context.Context, client *client.Client, state *models.ClusterEmail) (resp diag.Diagnostics) {
 	clusterVersion, err := GetClusterVersion(ctx, client)
 	if err != nil {
