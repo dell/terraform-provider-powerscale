@@ -58,9 +58,11 @@ func TestAccStoragepoolTierDatasourceErrorList(t *testing.T) {
 			},
 		},
 	})
+	FunctionMocker.Release()
 }
 
 func TestAccStoragepoolTierDatasourceErrorCopy(t *testing.T) {
+	FunctionMocker2 = mockey.Mock(helper.GetAllStoragepoolTiers).Return(nil, fmt.Errorf("mock error")).Build()
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -75,6 +77,7 @@ func TestAccStoragepoolTierDatasourceErrorCopy(t *testing.T) {
 			},
 		},
 	})
+	FunctionMocker2.Release()
 }
 
 var StoragepoolTierDatasourceAllWithResourceConfig = StoragepoolTierResourceConfigForDatasource + `
