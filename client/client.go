@@ -373,6 +373,9 @@ func (t *TokenTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return nil, fmt.Errorf("got empty response for request [%s]", req.URL.Path)
 	}
 	if resp.StatusCode == http.StatusUnauthorized {
+		if t.Client == nil || t.Client.GetConfig() == nil {
+			return nil, fmt.Errorf("Unauthorized request unable to create client, please validate the username and password are correct")
+		}
 		config := t.Client.GetConfig()
 		err := sessionAuth(t.Ctx, t.Username, t.Password, config)
 		if err != nil {
