@@ -44,7 +44,7 @@ func TestAccSnapshotScheduleResource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "path", "/ifs/tfacc_file_system_test"),
 					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "name", "tfacc_snap_schedule_test"),
-					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "duration", "10800"),
+					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "retention_time", "3 Hour(s)"),
 					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "alias", "test_alias"),
 				),
 			},
@@ -58,12 +58,12 @@ func TestAccSnapshotScheduleResource(t *testing.T) {
 					return nil
 				},
 			},
-			// Update name, path ,alias and duration then do Read testing
+			// Update name, path ,alias then do Read testing
 			{
 				Config: ProviderConfig + SnapshotScheduleUpdateResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "path", "/ifs/tfacc_test"),
-					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "duration", "14400"),
+					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "retention_time", "4 Hour(s)"),
 					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "alias", "test_alias_updated"),
 					resource.TestCheckResourceAttr(snapshotScheduleResourceName, "name", "tfacc_snap_schedule_update"),
 				),

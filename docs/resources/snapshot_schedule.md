@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ This resource is used to manage the Snapshot Schedule entity on PowerScale array
 
 ```terraform
 /*
-Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ resource "powerscale_snapshot_schedule" "snap_schedule" {
   # path = "/ifs/tfacc_test"
 
   # Time value in String for which snapshots created by this snapshot schedule should be retained. Values supported are of format : 
-  # "Never Expires, x Seconds(s), x Minute(s), x Hour(s), x Week(s), x Day(s), x Month(s), x Year(s) where x can be any integer value.
+  # "Never Expires, x Second(s), x Minute(s), x Hour(s), x Week(s), x Day(s), x Year(s) where x can be any integer value.
   # Default set to : "1 Week(s)"
   # retention_time = "3 Hour(s)" 
 
@@ -102,12 +102,11 @@ resource "powerscale_snapshot_schedule" "snap_schedule" {
 ### Optional
 
 - `alias` (String) Alias name to create for each snapshot.
-- `duration` (Number) Time in seconds added to creation time to construction expiration time.
 - `next_run` (Number) Unix Epoch time of next snapshot to be created.
 - `next_snapshot` (String) Formatted name (see pattern) of next snapshot to be created
 - `path` (String) The /ifs path snapshotted.
 - `pattern` (String) Pattern expanded with strftime to create snapshot names.Some sample values for pattern are: 'snap-%F' would yield snap-1984-03-20 , 'backup-%FT%T' would yield backup-1984-03-20T22:30:00
-- `retention_time` (String) Time value in String for which snapshots created by this snapshot schedule should be retained.Values supported are of format : Never Expires, x Seconds(s), x Minute(s), x Hour(s), x Week(s), x Day(s), x Month(s), x Year(s) where x can be any integer value
+- `retention_time` (String) Time value in String for which snapshots created by this snapshot schedule should be retained.Values supported are of format : Never Expires, x Second(s), x Minute(s), x Hour(s), x Day(s), x Week(s), x Year(s) where x can be any integer value
 - `schedule` (String) The isidate-compatible natural language description of the schedule. It specifies the frequency of the schedule. You can specify this as combination of <interval> and <frequency> where each of them can be defined as: 
 				<interval>:
 					*Every [ ( other | <integer> ) ] ( weekday | day | week [ on <day>] | month [ on the <integer> ] | <day>[, ...] [ of every [ ( other | <integer> ) ] week ] | The last (day | weekday | <day>) of every [ (other | <integer>) ] month | The <integer> (weekday | <day>) of every [ (other | <integer>) ] month | The <integer> of every [ (other | <integer>) ] month | Yearly on <month> <integer> | Yearly on the (last | <integer>) [ weekday | <day> ] of <month>
@@ -130,7 +129,7 @@ Unless specified otherwise, all fields of this resource can be updated.
 Import is supported using the following syntax:
 
 ```shell
-# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
