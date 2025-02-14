@@ -77,15 +77,9 @@ func (r *SnapshotScheduleResource) Schema(ctx context.Context, req resource.Sche
 					stringvalidator.LengthAtMost(255),
 				},
 			},
-			"duration": schema.Int64Attribute{
-				Description:         "Time in seconds added to creation time to construction expiration time.",
-				MarkdownDescription: "Time in seconds added to creation time to construction expiration time.",
-				Computed:            true,
-				Optional:            true,
-			},
 			"retention_time": schema.StringAttribute{
-				Description:         "Time value in String for which snapshots created by this snapshot schedule should be retained.Values supported are of format : " + "Never Expires, x Seconds(s), x Minute(s), x Hour(s), x Week(s), x Day(s), x Month(s), x Year(s) where x can be any integer value",
-				MarkdownDescription: "Time value in String for which snapshots created by this snapshot schedule should be retained.Values supported are of format : " + "Never Expires, x Seconds(s), x Minute(s), x Hour(s), x Week(s), x Day(s), x Month(s), x Year(s) where x can be any integer value",
+				Description:         "Time value in String for which snapshots created by this snapshot schedule should be retained.Values supported are of format : " + "Never Expires, x Second(s), x Minute(s), x Hour(s), x Day(s), x Week(s), x Year(s) where x can be any integer value",
+				MarkdownDescription: "Time value in String for which snapshots created by this snapshot schedule should be retained.Values supported are of format : " + "Never Expires, x Second(s), x Minute(s), x Hour(s), x Day(s), x Week(s), x Year(s) where x can be any integer value",
 				Optional:            true,
 				Computed:            true,
 				Default:             stringdefault.StaticString("1 Week(s)"),
@@ -253,12 +247,12 @@ func (r SnapshotScheduleResource) Read(ctx context.Context, request resource.Rea
 		return
 	}
 	state := models.SnapshotScheduleResource{}
+	state.RetentionTime = plan.RetentionTime
 	err = helper.SnapshotScheduleMapper(ctx, result, &state)
 	if err != nil {
 		response.Diagnostics.AddError(constants.ReadSnapshotScheduleErrorMessage+" with error: ", err.Error())
 		return
 	}
-	state.RetentionTime = plan.RetentionTime
 	response.Diagnostics.Append(response.State.Set(ctx, &state)...)
 	tflog.Info(ctx, "Read Snapshot Schedule  completed")
 }
