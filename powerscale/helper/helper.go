@@ -28,6 +28,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"terraform-provider-powerscale/client"
 
 	"golang.org/x/net/html"
 
@@ -342,4 +343,13 @@ func extractText(n *html.Node, message *string) {
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		extractText(c, message)
 	}
+}
+
+// GetClusterVersion retrieves the cluster version.
+func GetClusterVersion(ctx context.Context, client *client.Client) (string, error) {
+	clusterVersion, _, err := client.PscaleOpenAPIClient.ClusterApi.GetClusterv3ClusterVersion(ctx).Execute()
+	if err != nil {
+		return "", err
+	}
+	return clusterVersion.Nodes[0].Release, err
 }
