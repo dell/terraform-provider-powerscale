@@ -211,6 +211,20 @@ func FilterExports(paths []types.String, ids []types.Int64, exports []powerscale
 	return filteredExports, nil
 }
 
+// For List set explicitly from plan
+// This is to keep state in similar order to plan
+// Lists returned from the array are not always in the same order as they appear in the plan
+func NFSExportListsDiff(ctx context.Context, plan models.NfsExportResource, state *models.NfsExportResource) {
+	state.Clients = ListCheck(plan.Clients, plan.Clients.ElementType(ctx))
+	state.ConflictingPaths = ListCheck(plan.ConflictingPaths, plan.ConflictingPaths.ElementType(ctx))
+	state.Paths = ListCheck(plan.Paths, plan.Paths.ElementType(ctx))
+	state.ReadOnlyClients = ListCheck(plan.ReadOnlyClients, plan.ReadOnlyClients.ElementType(ctx))
+	state.ReadWriteClients = ListCheck(plan.ReadWriteClients, plan.ReadWriteClients.ElementType(ctx))
+	state.RootClients = ListCheck(plan.RootClients, plan.RootClients.ElementType(ctx))
+	state.SecurityFlavors = ListCheck(plan.SecurityFlavors, plan.SecurityFlavors.ElementType(ctx))
+	state.UnresolvedClients = ListCheck(plan.UnresolvedClients, plan.UnresolvedClients.ElementType(ctx))
+}
+
 // ResolvePersonaDiff implement state
 // For nfs export persona info, response may only contain UID while type/username is given
 // Need to manually copy plan info to state, or state would keep the type/username as null, which is inconsistent.

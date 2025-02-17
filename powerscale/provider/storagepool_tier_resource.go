@@ -127,10 +127,15 @@ func (r *StoragepoolTierResource) Configure(ctx context.Context, req resource.Co
 // Create allocates the resource.
 func (r *StoragepoolTierResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Info(ctx, "creating storagepool tier")
-	var plan, state models.StoragepoolTierResourceModel
+	var plan, planBackup, state models.StoragepoolTierResourceModel
 	// Read Terraform plan data into the model
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &planBackup)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -140,7 +145,7 @@ func (r *StoragepoolTierResource) Create(ctx context.Context, req resource.Creat
 		resp.Diagnostics.Append(diags...)
 		return
 	}
-
+	helper.StoragepoolTierListsDiff(ctx, planBackup, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 
 	tflog.Info(ctx, "Done with Create Storagepool tier resource state")
@@ -149,10 +154,16 @@ func (r *StoragepoolTierResource) Create(ctx context.Context, req resource.Creat
 // Read reads the resource state.
 func (r *StoragepoolTierResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Info(ctx, "Reading storagepool tier resource")
-	var state models.StoragepoolTierResourceModel
+	var state, stateBackup models.StoragepoolTierResourceModel
 
 	// Read Terraform prior state plan into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Read Terraform prior state plan into the model
+	resp.Diagnostics.Append(req.State.Get(ctx, &stateBackup)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -162,6 +173,7 @@ func (r *StoragepoolTierResource) Read(ctx context.Context, req resource.ReadReq
 		resp.Diagnostics.Append(diags...)
 		return
 	}
+	helper.StoragepoolTierListsDiff(ctx, stateBackup, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	tflog.Info(ctx, "Done with Read storagepool tier resource state")
 }
@@ -171,9 +183,16 @@ func (r *StoragepoolTierResource) Update(ctx context.Context, req resource.Updat
 	tflog.Info(ctx, "updating storagepool settings resource state")
 	var plan *models.StoragepoolTierResourceModel
 	var state models.StoragepoolTierResourceModel
+	var planBackup models.StoragepoolTierResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Read Terraform plan data into the model
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &planBackup)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -233,6 +252,7 @@ func (r *StoragepoolTierResource) Update(ctx context.Context, req resource.Updat
 		return
 	}
 
+	helper.StoragepoolTierListsDiff(ctx, planBackup, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	tflog.Info(ctx, "Done with Update Storagepool Tier resource state")
 }

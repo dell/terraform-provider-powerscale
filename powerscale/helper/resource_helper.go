@@ -500,6 +500,7 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 					return err
 				}
 			case basetypes.ListValue:
+
 				listVal, ok := sourceValue.Field(i).Interface().(basetypes.ListValue)
 				if !ok || listVal.IsNull() || listVal.IsUnknown() {
 					continue
