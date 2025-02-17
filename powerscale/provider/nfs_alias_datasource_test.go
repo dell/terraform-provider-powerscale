@@ -74,9 +74,11 @@ func TestAccNfsAliasDatasourceErrorList(t *testing.T) {
 			},
 		},
 	})
+	FunctionMocker.Release()
 }
 
 func TestAccNfsAliasDatasourceErrorCopy(t *testing.T) {
+	FunctionMocker2 = mockey.Mock(helper.ListNFSAliases).Return(nil, fmt.Errorf("mock error")).Build()
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -91,6 +93,7 @@ func TestAccNfsAliasDatasourceErrorCopy(t *testing.T) {
 			},
 		},
 	})
+	FunctionMocker2.Release()
 }
 
 var NfsAliasDatasourceGetWithQueryParam = NfsAliasResourceConfig + `

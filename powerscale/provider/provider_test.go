@@ -71,6 +71,7 @@ var ProviderConfig = ""
 var SessionAuthProviderConfig = ""
 var BasicAuthProviderErrorConfig = ""
 var FunctionMocker *mockey.Mocker
+var FunctionMocker2 *mockey.Mocker
 
 func init() {
 	_, err := loadEnvFile("powerscale.env")
