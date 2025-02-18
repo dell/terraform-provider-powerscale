@@ -83,6 +83,9 @@ func TestAccSnapshotScheduleDataSourceGetErr(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
 					FunctionMocker = mockey.Mock(helper.ListSnapshotSchedules).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + SnapshotScheduleAllDataSourceConfig,
