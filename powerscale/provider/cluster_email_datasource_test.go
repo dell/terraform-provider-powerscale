@@ -62,6 +62,13 @@ func TestAccClusterEmailDatasourceErrorGetAll(t *testing.T) {
 				Config:      ProviderConfig + clusterEmailDataSourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
 			},
+			{
+				PreConfig: func() {
+					FunctionMocker = Mock(helper.GetClusterVersion).Return("", fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfig + clusterEmailDataSourceConfig,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
 		},
 	})
 }

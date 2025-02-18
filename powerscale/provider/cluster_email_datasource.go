@@ -19,13 +19,15 @@ package provider
 
 import (
 	"context"
+	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -156,7 +158,23 @@ func (d *ClusterEmailDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 
-	clusterEmail, err := helper.GetClusterEmail(ctx, d.client)
+	clusterVersion, err := helper.GetClusterVersion(ctx, d.client)
+	if err != nil {
+		errStr := constants.ReadClusterErrorMsg + "with error: "
+		message := helper.GetErrorString(err, errStr)
+		resp.Diagnostics.AddError(
+			"Error reading cluster version",
+			message,
+		)
+		return
+	}
+
+	var clusterEmail *powerscale.V1ClusterEmail
+	if clusterVersion == "9.10.0.0" {
+		clusterEmail, err = helper.GetV21ClusterEmail(ctx, d.client)
+	} else {
+		clusterEmail, err = helper.GetClusterEmail(ctx, d.client)
+	}
 	if err != nil {
 		errStr := constants.ReadClusterEmailSettingsErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
