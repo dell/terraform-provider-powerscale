@@ -15,6 +15,30 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
+# v1.7.0 (Feb 28, 2025)
+## Release Summary
+The release supports resources and data sources mentioned in the Features section for Dell PowerScale.
+## Features
+
+### Data Sources:
+
+* `powerscale_storagepool_tier` for reading the Storagepool Tier in PowerScale.
+
+### Resources
+
+* `powerscale_storagepool_tier` for managing the Storagepool Tier entity of PowerScale.
+
+### Others
+N/A
+
+## Enhancements
+N/A
+
+## Bug Fixes
+* resource/nfs_export: Fixes the ordering issue for clients
+* resource/snapshot_schedule: Fixes the import issue 
+
+
 # v1.6.0 (Nov 29, 2024)
 ## Release Summary
 The release supports resources and data sources mentioned in the Features section for Dell PowerScale.
