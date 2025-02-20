@@ -251,7 +251,6 @@ func (r *StoragepoolTierResource) Update(ctx context.Context, req resource.Updat
 		resp.Diagnostics.Append(diags...)
 		return
 	}
-
 	helper.StoragepoolTierListsDiff(ctx, planBackup, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	tflog.Info(ctx, "Done with Update Storagepool Tier resource state")
@@ -291,6 +290,14 @@ func (r *StoragepoolTierResource) ImportState(ctx context.Context, req resource.
 		resp.Diagnostics.Append(diags...)
 		return
 	}
+	if len(state.Children.Elements()) == 0 {
+		state.Children = types.ListNull(types.StringType)
+	}
+	if len(state.Lnns.Elements()) == 0 {
+		state.Lnns = types.ListNull(types.Int32Type)
+	}
+
+	helper.StoragepoolTierListsDiff(ctx, state, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	tflog.Info(ctx, "Done with Update Storagepool Tier resource state")
 
