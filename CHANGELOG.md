@@ -32,7 +32,7 @@ The release supports resources and data sources mentioned in the Features sectio
 N/A
 
 ## Enhancements
-N/A
+* All existing resources and datasources are qualified against PowerScale v9.10.
 
 ## Bug Fixes
 * resource/nfs_export: Fixes the ordering issue for clients
@@ -135,7 +135,7 @@ The release supports resources and data sources mentioned in the Features sectio
 N/A
 
 ## Enhancements
-* All existing resources and datasources are qualified against PowerScale v9.10.
+N/A
 
 ## Bug Fixes
 N/A
