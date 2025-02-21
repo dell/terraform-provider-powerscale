@@ -233,7 +233,7 @@ func (r *StoragepoolTierResource) Update(ctx context.Context, req resource.Updat
 	}
 
 	if !updatedThroughCondition && state.TransferLimitPct != plan.TransferLimitPct {
-		value := int32(plan.TransferLimitPct.ValueInt32())
+		value := plan.TransferLimitPct.ValueInt32()
 		editValues.TransferLimitPct = &value
 		if plan.TransferLimitState.IsNull() || plan.TransferLimitState.IsUnknown() {
 			editValues.TransferLimitState = nil
