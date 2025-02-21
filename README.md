@@ -52,7 +52,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 | **Terraform Provider** | **PowerScale Version** | **OS**                    | **Terraform**               | **Golang** |
 |------------------------|:-----------------------|:--------------------------|-----------------------------|------------|
-| v1.7.0                 | 9.5 <br> 9.7 <br> 9.8 <br> 9.10  | ubuntu22.04 <br>  rhel9.x |    1.8.x <br> 1.9.x         | 1.22       |
+| v1.7.0                 | 9.5 <br> 9.7 <br> 9.8 <br> 9.10  | ubuntu22.04 <br>  rhel9.x |    1.9.x <br> 1.10.x         | 1.23       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
 * [Cluster](docs/data-sources/cluster.md)

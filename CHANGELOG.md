@@ -135,7 +135,7 @@ The release supports resources and data sources mentioned in the Features sectio
 N/A
 
 ## Enhancements
-N/A
+* All existing resources and datasources are qualified against PowerScale v9.10.
 
 ## Bug Fixes
 N/A
