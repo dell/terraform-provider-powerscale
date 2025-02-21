@@ -29,7 +29,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	//"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type V16StoragepoolTierExtended struct {
@@ -70,7 +69,6 @@ func GetAllStoragepoolTiers(ctx context.Context, client *client.Client) ([]power
 func CreateStoragepoolTier(ctx context.Context, client *client.Client, plan models.StoragepoolTierResourceModel, state *models.StoragepoolTierResourceModel) diag.Diagnostics {
 	var diags diag.Diagnostics
 	var toCreate powerscale.V16StoragepoolTier
-	//var planType powerscale.V16StoragepoolTierExtended
 
 	zoneParam := client.PscaleOpenAPIClient.StoragepoolApi.CreateStoragepoolv16StoragepoolTier(ctx)
 	err := ReadFromState(ctx, &plan, &toCreate)
