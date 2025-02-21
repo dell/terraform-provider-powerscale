@@ -64,6 +64,9 @@ func TestAccClusterEmailDatasourceErrorGetAll(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					if FunctionMocker != nil {
+						FunctionMocker.Release()
+					}
 					FunctionMocker = Mock(helper.GetClusterVersion).Return("", fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + clusterEmailDataSourceConfig,
