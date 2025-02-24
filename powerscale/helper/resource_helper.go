@@ -450,6 +450,17 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 					val := int32(intVal.ValueInt64()) // #nosec G115 - Validated, Error returned if value is out of range
 					destinationField.Set(reflect.ValueOf(&val))
 				}
+			case basetypes.Int32Value:
+				intVal, ok := sourceValue.Field(i).Interface().(basetypes.Int32Value)
+				if !ok || intVal.IsNull() || intVal.IsUnknown() {
+					continue
+				}
+				if destinationField.Kind() == reflect.Int32 {
+					destinationField.Set(reflect.ValueOf(intVal.ValueInt32()))
+				}
+				if destinationField.Kind() == reflect.Ptr && destinationField.Type().Elem().Kind() == reflect.Int32 {
+					destinationField.Set(reflect.ValueOf(intVal.ValueInt32Pointer()))
+				}
 			case basetypes.BoolValue:
 				boolVal, ok := sourceValue.Field(i).Interface().(basetypes.BoolValue)
 				if !ok || boolVal.IsNull() || boolVal.IsUnknown() {
