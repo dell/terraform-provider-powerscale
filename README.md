@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ limitations under the License.
 
 The Terraform Provider for Dell Technologies (Dell) PowerScale allows Data Center and IT administrators to use Hashicorp Terraform to automate and orchestrate the provisioning and management of Dell PowerScale storage systems.
 
-The Terraform Provider can be used to manage access zone, active directory, cluster, user, user group, file system, smb share, nfs export, snapshot, snapshot schedule, quota, groupnet, subnet, network pool, network settings, smart pool settings, ldap providers, network rule, file pool policy, ntp server, ntp settings, cluster email settings, acl settings, nfs export settings, role, user mapping rules, role privilege, s3 bucket, nfs global settings, nfs zone settings, smb share settings, smb server settings, namespace acl, cluster identity, cluster snmp, cluster owner, cluster time, support assist, s3 keys, s3 zone settings, s3 global settings, synciq policies, synciq rules, synciq global settings, synciq peer certificates, writeable snapshots, snapshot restore, nfs alias, synciq replication job and synciq rules.
+The Terraform Provider can be used to manage access zone, active directory, cluster, user, user group, file system, smb share, nfs export, snapshot, snapshot schedule, quota, groupnet, subnet, network pool, network settings, smart pool settings, ldap providers, network rule, file pool policy, ntp server, ntp settings, cluster email settings, acl settings, nfs export settings, role, user mapping rules, role privilege, s3 bucket, nfs global settings, nfs zone settings, smb share settings, smb server settings, namespace acl, cluster identity, cluster snmp, cluster owner, cluster time, support assist, s3 keys, s3 zone settings, s3 global settings, synciq policies, synciq rules, synciq global settings, synciq peer certificates, writeable snapshots, snapshot restore, nfs alias, synciq replication job, synciq rules and storage pool tiers.
 
 The logged-in user configured in the Terraform provider must possess adequate permissions against the target Dell PowerScale System.
 
@@ -52,7 +52,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 | **Terraform Provider** | **PowerScale Version** | **OS**                    | **Terraform**               | **Golang** |
 |------------------------|:-----------------------|:--------------------------|-----------------------------|------------|
-| v1.6.0                 | 9.5 <br> 9.7 <br> 9.8  | ubuntu22.04 <br>  rhel9.x |    1.8.x <br> 1.9.x         | 1.22       |
+| v1.7.0                 | 9.5 <br> 9.7 <br> 9.8 <br> 9.10  | ubuntu22.04 <br>  rhel9.x |    1.9.x <br> 1.10.x         | 1.23       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
 * [Cluster](docs/data-sources/cluster.md)
@@ -96,6 +96,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * [NFS Alias](docs/data-sources/nfs_alias.md)
 * [Writeable Snapshot](docs/data-sources/writable_snapshot.md)
 * [SyncIQ Replication Job](docs/data-sources/synciq_replication_job.md)
+* [Storage Pool Tier](docs/data-sources/storagepool_tier.md)
 
 ## List of Resources in Terraform Provider for Dell PowerScale
 * [Access Zone](docs/resources/accesszone.md)
@@ -146,6 +147,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * [NFS Alias](docs/resources/nfs_alias.md)
 * [SyncIQ Replication Job](docs/resources/synciq_replication_job.md)
 * [SyncIQ Rules](docs/resources/synciq_rules.md)
+* [Storage Pool Tier](docs/resources/storagepool_tier.md)
 
 ## Installation and execution of Terraform Provider for Dell PowerScale
 
@@ -158,7 +160,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerscale = { 
-      version = "1.6.0"
+      version = "1.7.0"
       source = "registry.terraform.io/dell/powerscale"
     }
   }

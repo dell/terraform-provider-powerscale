@@ -26,7 +26,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerscale = { 
-      version = "1.6.0"
+      version = "1.7.0"
       source = "registry.terraform.io/dell/powerscale"
     }
   }
