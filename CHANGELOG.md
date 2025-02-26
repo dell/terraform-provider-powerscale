@@ -35,7 +35,7 @@ N/A
 * All existing resources and datasources are qualified against PowerScale v9.10.
 
 ## Bug Fixes
-* resource/nfs_export: Fixes the ordering issue for clients
+* resource/nfs_export: Fixes the ordering issue for clients and case sensitivity issue for zone attribute
 * resource/snapshot_schedule: Fixes the import issue 
 
 
