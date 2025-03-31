@@ -20,6 +20,8 @@ package provider
 import (
 	"context"
 	"fmt"
+	"os"
+	"strconv"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 
@@ -74,43 +76,47 @@ func (p *PscaleProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 		Description:         "The Terraform provider for Dell PowerScale can be used to interact with a Dell PowerScale array in order to manage the array resources.",
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{
-				MarkdownDescription: "The API endpoint, ex. https://172.17.177.230:8080",
-				Description:         "The API endpoint, ex. https://172.17.177.230:8080",
-				Required:            true,
+				MarkdownDescription: "The API endpoint, ex. https://172.17.177.230:8080. This can also be set using the environment variable POWERSCALE_ENDPOINT",
+				Description:         "The API endpoint, ex. https://172.17.177.230:8080. This can also be set using the environment variable POWERSCALE_ENDPOINT",
+				// This should remain optional so user can use environment variables if they choose.
+				Optional: true,
 			},
 			"username": schema.StringAttribute{
-				MarkdownDescription: "The username",
-				Description:         "The username",
-				Required:            true,
+				MarkdownDescription: "The username. This can also be set using the environment variable POWERSCALE_USERNAME",
+				Description:         "The username. This can also be set using the environment variable POWERSCALE_USERNAME",
+				// This should remain optional so user can use environment variables if they choose.
+				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
 			"password": schema.StringAttribute{
-				MarkdownDescription: "The password",
-				Description:         "The password",
-				Required:            true,
-				Sensitive:           true,
+				MarkdownDescription: "The password. This can also be set using the environment variable POWERSCALE_PASSWORD",
+				Description:         "The password. This can also be set using the environment variable POWERSCALE_PASSWORD",
+				// This should remain optional so user can use environment variables if they choose.
+				Optional:  true,
+				Sensitive: true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
 			"insecure": schema.BoolAttribute{
-				MarkdownDescription: "whether to skip SSL validation",
-				Description:         "whether to skip SSL validation",
-				Required:            true,
+				MarkdownDescription: "whether to skip SSL validation. This can also be set using the environment variable POWERSCALE_INSECURE",
+				Description:         "whether to skip SSL validation. This can also be set using the environment variable POWERSCALE_INSECURE",
+				// This should remain optional so user can use environment variables if they choose.
+				Optional: true,
 			},
 			"auth_type": schema.Int64Attribute{
-				MarkdownDescription: "what should be the auth type, 0 for basic and 1 for session-based",
-				Description:         "what should be the auth type, 0 for basic and 1 for session-based",
+				MarkdownDescription: "what should be the auth type, 0 for basic and 1 for session-based. This can also be set using the environment variable POWERSCALE_AUTH_TYPE",
+				Description:         "what should be the auth type, 0 for basic and 1 for session-based. This can also be set using the environment variable POWERSCALE_AUTH_TYPE",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.OneOf(0, 1),
 				},
 			},
 			"timeout": schema.Int64Attribute{
-				MarkdownDescription: "specifies a time limit for requests",
-				Description:         "specifies a time limit for requests",
+				MarkdownDescription: "specifies a time limit for requests. This can also be set using the environment variable POWERSCALE_TIMEOUT",
+				Description:         "specifies a time limit for requests. This can also be set using the environment variable POWERSCALE_TIMEOUT",
 				Optional:            true,
 			},
 		},
@@ -126,6 +132,35 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	usernameEnv := os.Getenv("POWERSCALE_USERNAME")
+	if usernameEnv != "" {
+		data.Username = types.StringValue(usernameEnv)
+	}
+
+	passEnv := os.Getenv("POWERSCALE_PASSWORD")
+	if passEnv != "" {
+		data.Password = types.StringValue(passEnv)
+	}
+
+	endpointEnv := os.Getenv("POWERSCALE_ENDPOINT")
+	if endpointEnv != "" {
+		data.Endpoint = types.StringValue(endpointEnv)
+	}
+
+	insecureEnv, errInsecure := strconv.ParseBool(os.Getenv("POWERSCALE_INSECURE"))
+	if errInsecure == nil {
+		data.Insecure = types.BoolValue(insecureEnv)
+	}
+
+	timeoutEnv, errTimeout := strconv.ParseInt(os.Getenv("POWERSCALE_TIMEOUT"), 10, 64)
+	if errTimeout == nil {
+		data.Timeout = types.Int64Value(timeoutEnv)
+	}
+
+	authTypeEnv, errAuthType := strconv.ParseInt(os.Getenv("POWERSCALE_AUTH_TYPE"), 10, 64)
+	if errAuthType == nil {
+		data.AuthType = types.Int64Value(authTypeEnv)
+	}
 
 	// if timeout is not set. use default value 2000
 	if data.Timeout.IsNull() || data.Timeout.IsUnknown() {
@@ -135,6 +170,37 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	if data.AuthType.IsNull() || data.AuthType.IsUnknown() {
 		data.AuthType = types.Int64Value(1)
 	}
+	// If Insecure is not set, set to false by default
+	if data.Insecure.IsNull() || data.Insecure.IsUnknown() {
+		data.Insecure = types.BoolValue(false)
+	}
+
+	if data.Username.IsUnknown() || data.Username.ValueString() == "" {
+		resp.Diagnostics.AddError(
+			"Unable to find username",
+			"Username cannot be an empty/unknown string",
+		)
+		return
+	}
+
+	if data.Password.IsUnknown() || data.Password.ValueString() == "" {
+		// Cannot connect to client with an unknown value
+		resp.Diagnostics.AddWarning(
+			"Unable to create client",
+			"Password cannot be an empty/unknown string",
+		)
+		return
+	}
+
+	if data.Endpoint.IsUnknown() || data.Endpoint.ValueString() == "" {
+		// Cannot connect to client with an unknown value
+		resp.Diagnostics.AddWarning(
+			"Unable to create client",
+			"Password cannot be an empty/unknown string",
+		)
+		return
+	}
+
 	// Configuration values are now available.
 	pscaleClient, err := client.NewClient(
 		data.Endpoint.ValueString(),
