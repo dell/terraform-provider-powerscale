@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"errors"
+
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -43,6 +44,9 @@ func UpdateNamespaceACL(ctx context.Context, client *client.Client, model models
 	updateParam = updateParam.Acl(true)
 	if !model.Nsaccess.IsNull() {
 		updateParam = updateParam.Nsaccess(model.Nsaccess.ValueBool())
+	}
+	if !model.Zone.IsNull(){
+		updateParam = updateParam.Zone(model.Zone.ValueString())
 	}
 	namespaceACLToUpdate.Authoritative = &authoritative
 	_, _, err := updateParam.NamespaceAcl(namespaceACLToUpdate).Execute()

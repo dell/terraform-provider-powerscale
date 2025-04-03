@@ -29,6 +29,7 @@ type NamespaceACLResourceModel struct {
 	Mode          types.String `tfsdk:"mode"`
 	CustomACL     types.List   `tfsdk:"acl_custom"`
 	ACL           types.List   `tfsdk:"acl"`
+	Zone 		  types.String `tfsdk:"zone"`
 }
 
 // NamespaceACLDataSourceModel describes the data source data model.
