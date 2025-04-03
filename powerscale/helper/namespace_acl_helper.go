@@ -45,7 +45,7 @@ func UpdateNamespaceACL(ctx context.Context, client *client.Client, model models
 	if !model.Nsaccess.IsNull() {
 		updateParam = updateParam.Nsaccess(model.Nsaccess.ValueBool())
 	}
-	if !model.Zone.IsNull(){
+	if !model.Zone.IsNull() {
 		updateParam = updateParam.Zone(model.Zone.ValueString())
 	}
 	namespaceACLToUpdate.Authoritative = &authoritative
