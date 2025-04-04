@@ -110,12 +110,9 @@ resource "powerscale_role" "role_test" {
 <a id="nestedatt--members"></a>
 ### Nested Schema for `members`
 
-Required:
+Optional:
 
 - `id` (String) Specifies the serialized form of a persona, which can be 'UID:0'
-
-Read-Only:
-
 - `name` (String) Specifies the persona name, which must be combined with a type.
 - `type` (String) Specifies the type of persona, which must be combined with a name.
 
