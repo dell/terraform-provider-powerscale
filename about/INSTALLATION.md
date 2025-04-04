@@ -31,6 +31,23 @@ terraform {
     }
   }
 }
+
+provider "powerscale" {
+  username = "username"
+  password = "password"
+  endpoint = "https://yourhost.host.com:8080"
+  insecure = false
+
+  ## Provider can also be set using environment variables
+  ## If environment variables are set it will override this configuration
+  ## Example environment variables
+  # POWERSCALE_USERNAME="username"
+  # POWERSCALE_PASSWORD="password"
+  # POWERSCALE_ENDPOINT="https://yourhost.host.com:8080"
+  # POWERSCALE_INSECURE="false"
+  # POWERSCALE_TIMEOUT="2000"
+  # POWERSCALE_AUTH_TYPE="0"
+}
 ```
 Then, in that workspace, run
 ```
