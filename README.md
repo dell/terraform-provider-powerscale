@@ -219,3 +219,4 @@ For more detailed information, please refer to [Dell Terraform Providers Documen
 - Variables: https://developer.hashicorp.com/terraform/language/values/variables
 - Modules: https://developer.hashicorp.com/terraform/language/modules
 - State: https://developer.hashicorp.com/terraform/language/state
+- Environment Variables: https://developer.hashicorp.com/terraform/cli/config/environment-variables 
