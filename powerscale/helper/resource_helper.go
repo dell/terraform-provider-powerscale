@@ -406,7 +406,7 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 			continue
 		}
 		if destinationField.IsValid() && destinationField.CanSet() {
-			switch sourceValue.Field(i).Interface().(type) {
+			switch val := sourceValue.Field(i).Interface().(type) {
 			case basetypes.StringValue:
 				stringVal, ok := sourceValue.Field(i).Interface().(basetypes.StringValue)
 				if !ok || stringVal.IsNull() || stringVal.IsUnknown() {
@@ -515,6 +515,15 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 				} else {
 					destinationField.Set(list)
 				}
+			case basetypes.SetValue:
+				if val.IsNull() || val.IsUnknown() {
+					continue
+				}
+				list, err := getFieldListVal(ctx, val, destinationField.Interface())
+				if err != nil {
+					return err
+				}
+				destinationField.Set(list)
 			}
 		}
 	}
@@ -659,7 +668,15 @@ func assignObjectToField(ctx context.Context, source basetypes.ObjectValue, dest
 	return nil
 }
 
-func getFieldListVal(ctx context.Context, source basetypes.ListValue, destination interface{}) (reflect.Value, error) {
+type listOrsetValue interface {
+	basetypes.ListValue | basetypes.SetValue
+	// the functions need to be explicitly defined till today due to GoLang issue
+	// https://github.com/golang/go/issues/51183
+	ElementType(context.Context) attr.Type
+	Elements() []attr.Value
+}
+
+func getFieldListVal[T listOrsetValue](ctx context.Context, source T, destination interface{}) (reflect.Value, error) {
 	destType := reflect.TypeOf(destination)
 	if destType.Kind() == reflect.Ptr {
 		destType = destType.Elem()

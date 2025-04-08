@@ -101,7 +101,7 @@ func (r *NetworkPoolResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "Unique Pool ID.",
 				Computed:            true,
 			},
-			"ifaces": schema.ListNestedAttribute{
+			"ifaces": schema.SetNestedAttribute{
 				Description:         "List of interface members in this pool.",
 				MarkdownDescription: "List of interface members in this pool.",
 				Optional:            true,
@@ -134,7 +134,7 @@ func (r *NetworkPoolResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 			},
-			"ranges": schema.ListNestedAttribute{
+			"ranges": schema.SetNestedAttribute{
 				Description:         "List of IP address ranges in this pool.",
 				MarkdownDescription: "List of IP address ranges in this pool.",
 				Optional:            true,
@@ -186,7 +186,7 @@ func (r *NetworkPoolResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 			},
-			"sc_dns_zone_aliases": schema.ListAttribute{
+			"sc_dns_zone_aliases": schema.SetAttribute{
 				Description:         "List of SmartConnect zone aliases (DNS names) to the pool.",
 				MarkdownDescription: "List of SmartConnect zone aliases (DNS names) to the pool.",
 				Optional:            true,
@@ -217,7 +217,7 @@ func (r *NetworkPoolResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 			},
-			"static_routes": schema.ListNestedAttribute{
+			"static_routes": schema.SetNestedAttribute{
 				Description:         "List of interface members in this pool.",
 				MarkdownDescription: "List of interface members in this pool.",
 				Optional:            true,
@@ -287,14 +287,6 @@ func (r *NetworkPoolResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	var planBackup models.NetworkPoolResourceModel
-	diagsB := req.Plan.Get(ctx, &planBackup)
-
-	resp.Diagnostics.Append(diagsB...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
 	poolToCreate := powerscale.V12SubnetsSubnetPool{}
 	// Get param from tf input
 	err := helper.ReadFromState(ctx, plan, &poolToCreate)
@@ -353,7 +345,7 @@ func (r *NetworkPoolResource) Create(ctx context.Context, req resource.CreateReq
 		)
 		return
 	}
-	helper.NetworkPoolListsDiff(ctx, planBackup, &plan)
+
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -369,13 +361,6 @@ func (r *NetworkPoolResource) Read(ctx context.Context, req resource.ReadRequest
 	var poolState models.NetworkPoolResourceModel
 	diags := req.State.Get(ctx, &poolState)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	var poolStateBackup models.NetworkPoolResourceModel
-	diagsB := req.State.Get(ctx, &poolStateBackup)
-	resp.Diagnostics.Append(diagsB...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -416,7 +401,7 @@ func (r *NetworkPoolResource) Read(ctx context.Context, req resource.ReadRequest
 		)
 		return
 	}
-	helper.NetworkPoolListsDiff(ctx, poolStateBackup, &poolState)
+
 	diags = resp.State.Set(ctx, poolState)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -432,14 +417,6 @@ func (r *NetworkPoolResource) Update(ctx context.Context, req resource.UpdateReq
 	var poolPlan models.NetworkPoolResourceModel
 	diags := req.Plan.Get(ctx, &poolPlan)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	var planBackup models.NetworkPoolResourceModel
-	diagsB := req.Plan.Get(ctx, &planBackup)
-
-	resp.Diagnostics.Append(diagsB...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -513,7 +490,7 @@ func (r *NetworkPoolResource) Update(ctx context.Context, req resource.UpdateReq
 		)
 		return
 	}
-	helper.NetworkPoolListsDiff(ctx, planBackup, &poolPlan)
+
 	diags = resp.State.Set(ctx, poolPlan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
