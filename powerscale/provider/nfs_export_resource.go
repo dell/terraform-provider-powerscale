@@ -27,8 +27,10 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -756,6 +758,10 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: "Specifies the zone in which the export is valid. Cannot be changed once set",
 				Optional:            true,
 				Computed:            true,
+				CustomType:          models.CaseInsensitiveStringType{},
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 		},
 	}
@@ -891,6 +897,7 @@ func (r NfsExportResource) Read(ctx context.Context, request resource.ReadReques
 	helper.ResolvePersonaDiff(ctx, exportStateBackUp, &exportState)
 	helper.NFSExportListsDiff(ctx, exportStateBackUp, &exportState)
 	diags = response.State.Set(ctx, exportState)
+
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
@@ -920,13 +927,21 @@ func (r NfsExportResource) Update(ctx context.Context, request resource.UpdateRe
 		"exportState": exportState,
 	})
 
+	// prevent updates to the "zone" field
+	if (exportPlan.Zone.String() != "" && exportPlan.Zone.String() != exportState.Zone.String()) ||
+		(exportPlan.Zone.String() == "" && exportState.Zone.String() != "System") {
+		response.Diagnostics.AddError(
+			"Error updating nfs export.", fmt.Sprintf("Zone field cannot be updated. State %v Plan %v", exportState.Zone.String(), exportPlan.Zone.String()))
+		return
+	}
+
 	exportID := exportState.ID.ValueInt64()
 	exportPlan.ID = exportState.ID
 	err := helper.UpdateNFSExport(ctx, r.client, exportPlan)
 	if err != nil {
 		errStr := constants.UpdateNfsExportErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
-		response.Diagnostics.AddError("Error updating nfs export ",
+		response.Diagnostics.AddError("Error updating nfs export",
 			message)
 		return
 	}

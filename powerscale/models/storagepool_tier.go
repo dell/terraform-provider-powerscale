@@ -31,7 +31,7 @@ type StoragepoolTierModel struct {
 	Id                 types.String               `tfsdk:"id"`
 	Lnns               types.List                 `tfsdk:"lnns"`
 	Name               types.String               `tfsdk:"name"`
-	TransferLimitPct   types.Int64                `tfsdk:"transfer_limit_pct"`
+	TransferLimitPct   types.Int32                `tfsdk:"transfer_limit_pct"`
 	TransferLimitState types.String               `tfsdk:"transfer_limit_state"`
 	Usage              *StoragepoolTierUsageModel `tfsdk:"usage"`
 }
@@ -68,7 +68,7 @@ type StoragepoolTierResourceModel struct {
 	// The nodes that are part of this tier.
 	Name types.String `tfsdk:"name"`
 	// The tier name.
-	TransferLimitPct types.Int64 `tfsdk:"transfer_limit_pct"`
+	TransferLimitPct types.Int32 `tfsdk:"transfer_limit_pct"`
 	// Stop moving files to this tier when this limit is met.
 	TransferLimitState types.String `tfsdk:"transfer_limit_state"`
 	// How the transfer limit value is being applied.

@@ -20,7 +20,6 @@ package provider
 import (
 	"context"
 	"fmt"
-	"math"
 	"strconv"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
@@ -94,7 +93,7 @@ func (d StoragepoolTierDataSource) Schema(ctx context.Context, req datasource.Sc
 							MarkdownDescription: "Name of storagepool tier.",
 							Computed:            true,
 						},
-						"transfer_limit_pct": schema.Int64Attribute{
+						"transfer_limit_pct": schema.Int32Attribute{
 							Description:         "Stop moving files to this tier when this limit is met.",
 							MarkdownDescription: "Stop moving files to this tier when this limit is met.",
 							Computed:            true,
@@ -265,7 +264,7 @@ func (d StoragepoolTierDataSource) Read(ctx context.Context, req datasource.Read
 		}
 		allTiers[i].Id = types.StringValue(strconv.Itoa(int(storagepoolTiers[i].GetId())))
 		if storagepoolTiers[i].HasTransferLimitPct() {
-			allTiers[i].TransferLimitPct = types.Int64Value(int64(math.Round(storagepoolTiers[i].GetTransferLimitPct())))
+			allTiers[i].TransferLimitPct = types.Int32Value(int32(storagepoolTiers[i].GetTransferLimitPct()))
 		}
 	}
 	idValue := "storagepool_tier_"

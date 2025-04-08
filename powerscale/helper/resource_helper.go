@@ -27,6 +27,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -68,7 +69,6 @@ func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interfa
 			"sourceFieldTag":  sourceFieldTag,
 			"sourceFieldKind": sourceValue.Field(i).Kind().String(),
 		})
-
 		sourceField := sourceValue.Field(i)
 		if sourceField.Kind() == reflect.Ptr {
 			sourceField = sourceField.Elem()
@@ -78,6 +78,7 @@ func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interfa
 		if structType.Kind() == reflect.Ptr {
 			structType = structType.Elem()
 		}
+
 		// For zero value (nil), the object still need to pass type information into it
 		if !sourceField.IsValid() {
 			destinationField = getFieldByTfTag(destinationValue.Elem(), sourceFieldTag)
@@ -156,6 +157,11 @@ func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interfa
 			}
 			if destinationField.Type() == reflect.TypeOf(destinationFieldValue) {
 				destinationField.Set(reflect.ValueOf(destinationFieldValue))
+			} else if destinationField.Type().String() == "models.CaseInsensitiveStringValue" {
+				tflog.Debug(ctx, "setting destination field to case insensitive string", map[string]interface{}{
+					"sourceField": sourceField.String(),
+				})
+				destinationField.Set(reflect.ValueOf(models.CaseInsensitiveStringValue{StringValue: types.StringValue(sourceField.String())}))
 			}
 		}
 	}
@@ -449,6 +455,17 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 					}
 					val := int32(intVal.ValueInt64()) // #nosec G115 - Validated, Error returned if value is out of range
 					destinationField.Set(reflect.ValueOf(&val))
+				}
+			case basetypes.Int32Value:
+				intVal, ok := sourceValue.Field(i).Interface().(basetypes.Int32Value)
+				if !ok || intVal.IsNull() || intVal.IsUnknown() {
+					continue
+				}
+				if destinationField.Kind() == reflect.Int32 {
+					destinationField.Set(reflect.ValueOf(intVal.ValueInt32()))
+				}
+				if destinationField.Kind() == reflect.Ptr && destinationField.Type().Elem().Kind() == reflect.Int32 {
+					destinationField.Set(reflect.ValueOf(intVal.ValueInt32Pointer()))
 				}
 			case basetypes.BoolValue:
 				boolVal, ok := sourceValue.Field(i).Interface().(basetypes.BoolValue)

@@ -21,7 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"math"
+
 	"strconv"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
@@ -30,6 +30,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+type V16StoragepoolTierExtended struct {
+	// The names or IDs of the tier's children.
+	Children []string `json:"children,omitempty"`
+	// The system ID given to the tier.
+	Id int32 `json:"id"`
+	// The nodes that are part of this tier.
+	Lnns []int32 `json:"lnns"`
+	// The tier name.
+	Name string `json:"name"`
+	// Stop moving files to this tier when this limit is met
+	TransferLimitPct int32 `json:"transfer_limit_pct,omitempty"`
+	// How the transfer limit value is being applied
+	TransferLimitState *string `json:"transfer_limit_state,omitempty"`
+}
 
 // GetStoragepoolTier gets storage pool tier.
 func GetStoragepoolTier(ctx context.Context, client *client.Client, path string) (*powerscale.V16StoragepoolTiersExtended, error) {
@@ -66,7 +81,6 @@ func CreateStoragepoolTier(ctx context.Context, client *client.Client, plan mode
 		)
 		return diags
 	}
-
 	_, _, err2 := zoneParam.V16StoragepoolTier(toCreate).Execute()
 	if err2 != nil {
 		errStr := constants.CreateStoragepoolTierErrorMsg + "with error: "
@@ -90,20 +104,28 @@ func CreateStoragepoolTier(ctx context.Context, client *client.Client, plan mode
 		return diags
 	}
 
-	var storagepoolTier powerscale.V16StoragepoolTierExtended
+	var storagepoolTier V16StoragepoolTierExtended
 	for _, v := range storagepoolTiers.Tiers {
 		if v.Name == toCreate.Name {
-			storagepoolTier = v
+			var i int32
+			if v.TransferLimitPct != nil {
+				i = int32(*v.TransferLimitPct)
+			} else {
+				i = 100
+			}
+			storagepoolTier = V16StoragepoolTierExtended{
+				Name:               v.Name,
+				TransferLimitState: v.TransferLimitState,
+				TransferLimitPct:   i,
+				Children:           v.Children,
+				Id:                 v.Id,
+				Lnns:               v.Lnns,
+			}
 		}
 	}
 
 	err = CopyFields(ctx, storagepoolTier, state)
-	// Read Value from storagepoolTier and set into state
-	if storagepoolTier.TransferLimitPct != nil {
-		state.TransferLimitPct = types.Int64Value(int64(math.Round(*storagepoolTier.TransferLimitPct)))
-	} else {
-		state.TransferLimitPct = types.Int64Value(100)
-	}
+	state.TransferLimitPct = types.Int32Value(storagepoolTier.TransferLimitPct)
 	if err != nil {
 		diags.AddError(
 			"Error copying fields of storagepool tier resource",
@@ -111,7 +133,6 @@ func CreateStoragepoolTier(ctx context.Context, client *client.Client, plan mode
 		)
 		return diags
 	}
-
 	return diags
 }
 
@@ -151,14 +172,23 @@ func ReadStoragepoolTier(ctx context.Context, client *client.Client, state *mode
 		return diags
 	}
 
-	var storagepoolTier = storagepoolTiers.Tiers[0]
+	var v = storagepoolTiers.Tiers[0]
+	var i int32
+	if v.TransferLimitPct != nil {
+		i = int32(*v.TransferLimitPct)
+	} else {
+		i = 100
+	}
+	storagepoolTier := V16StoragepoolTierExtended{
+		Name:               v.Name,
+		TransferLimitState: v.TransferLimitState,
+		TransferLimitPct:   i,
+		Children:           v.Children,
+		Id:                 v.Id,
+		Lnns:               v.Lnns,
+	}
 
 	err = CopyFields(ctx, storagepoolTier, state)
-	if storagepoolTier.TransferLimitPct != nil {
-		state.TransferLimitPct = types.Int64Value(int64(math.Round(*storagepoolTier.TransferLimitPct)))
-	} else {
-		state.TransferLimitPct = types.Int64Value(100)
-	}
 	if err != nil {
 		diags.AddError(
 			"Error copying fields of storagepool Tier resource",
@@ -166,7 +196,7 @@ func ReadStoragepoolTier(ctx context.Context, client *client.Client, state *mode
 		)
 		return diags
 	}
-
+	state.TransferLimitPct = types.Int32Value(storagepoolTier.TransferLimitPct)
 	return diags
 }
 
@@ -186,14 +216,24 @@ func GetStoragepoolTierByID(ctx context.Context, client *client.Client, id strin
 		return diags
 	}
 
-	var storagepoolTier = storagepoolTiers.Tiers[0]
+	var v = storagepoolTiers.Tiers[0]
+	var i int32
+	if v.TransferLimitPct != nil {
+		i = int32(*v.TransferLimitPct)
+	} else {
+		i = 100
+	}
+	storagepoolTier := V16StoragepoolTierExtended{
+		Name:               v.Name,
+		TransferLimitState: v.TransferLimitState,
+		TransferLimitPct:   i,
+		Children:           v.Children,
+		Id:                 v.Id,
+		Lnns:               v.Lnns,
+	}
 
 	err = CopyFields(ctx, storagepoolTier, state)
-	if storagepoolTier.TransferLimitPct != nil {
-		state.TransferLimitPct = types.Int64Value(int64(math.Round(*storagepoolTier.TransferLimitPct)))
-	} else {
-		state.TransferLimitPct = types.Int64Value(100)
-	}
+	state.TransferLimitPct = types.Int32Value(storagepoolTier.TransferLimitPct)
 	if err != nil {
 		diags.AddError(
 			"Error copying fields of storagepool Tier resource",

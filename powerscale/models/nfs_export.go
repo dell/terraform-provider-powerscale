@@ -17,7 +17,9 @@ limitations under the License.
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
 // NfsExportResource Specifies configuration values for NFS exports.
 type NfsExportResource struct {
@@ -138,7 +140,7 @@ type NfsExportResource struct {
 	// Specifies the stability disposition returned when an NFSv3+ unstable write is processed.
 	WriteUnstableReply types.String `tfsdk:"write_unstable_reply"`
 	// Specifies the zone in which the export is valid.
-	Zone types.String `tfsdk:"zone"`
+	Zone CaseInsensitiveStringValue `tfsdk:"zone"`
 }
 
 // NfsExportDatasource holds nfs exports datasource schema attribute details.
