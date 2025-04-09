@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,15 +21,17 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
+
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -83,6 +85,7 @@ func (r *RoleResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"type": schema.StringAttribute{
+							Optional:            true,
 							Computed:            true,
 							Description:         "Specifies the type of persona, which must be combined with a name.",
 							MarkdownDescription: "Specifies the type of persona, which must be combined with a name.",
@@ -95,7 +98,8 @@ func (r *RoleResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							},
 						},
 						"id": schema.StringAttribute{
-							Required:            true,
+							Optional:            true,
+							Computed:            true,
 							Description:         "Specifies the serialized form of a persona, which can be 'UID:0'",
 							MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0'",
 							Validators: []validator.String{
@@ -103,11 +107,14 @@ func (r *RoleResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							},
 						},
 						"name": schema.StringAttribute{
+							Optional:            true,
 							Computed:            true,
 							Description:         "Specifies the persona name, which must be combined with a type.",
 							MarkdownDescription: "Specifies the persona name, which must be combined with a type.",
 							Validators: []validator.String{
 								stringvalidator.LengthBetween(0, 255),
+								stringvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("id")),
+								stringvalidator.AlsoRequires(path.MatchRelative().AtParent().AtName("type")),
 							},
 						},
 					},
