@@ -5,6 +5,7 @@
 #4. Go security
 #5. Generate
 #6. Malware Scanner
+#7. Verify client zip
 
 
 name: Terraform-main-CI
@@ -107,3 +108,18 @@ jobs:
         with:
           directories: .
           options: -ri
+
+  verify_client_zip:
+    name: Verify Client zip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+      - name: Install unzip
+        run: sudo apt-get install -y unzip
+      - name: Extract PR branch zip
+        run: make extract-client
+      - name: Generate client from JSON file
+        run: make build-client --client_folder=./powerscale-go-client1/
+      - name: Compare files
+        run: diff -rq ./powerscale-go-client1/ ./powerscale-go-client/
