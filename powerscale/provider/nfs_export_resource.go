@@ -132,7 +132,7 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 				Computed:            true,
 			},
-			"clients": schema.ListAttribute{
+			"clients": schema.SetAttribute{
 				Description:         "Specifies the clients with root access to the export.",
 				MarkdownDescription: "Specifies the clients with root access to the export.",
 				Optional:            true,
@@ -145,7 +145,7 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 				Computed:            true,
 			},
-			"conflicting_paths": schema.ListAttribute{
+			"conflicting_paths": schema.SetAttribute{
 				Description:         "Reports the paths that conflict with another export.",
 				MarkdownDescription: "Reports the paths that conflict with another export.",
 				Optional:            true,
@@ -592,7 +592,7 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 				Computed:            true,
 			},
-			"paths": schema.ListAttribute{
+			"paths": schema.SetAttribute{
 				Description:         "Specifies the paths under /ifs that are exported.",
 				MarkdownDescription: "Specifies the paths under /ifs that are exported.",
 				Required:            true,
@@ -604,7 +604,7 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 				Computed:            true,
 			},
-			"read_only_clients": schema.ListAttribute{
+			"read_only_clients": schema.SetAttribute{
 				Description:         "Specifies the clients with read-only access to the export.",
 				MarkdownDescription: "Specifies the clients with read-only access to the export.",
 				Optional:            true,
@@ -629,7 +629,7 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 				Computed:            true,
 			},
-			"read_write_clients": schema.ListAttribute{
+			"read_write_clients": schema.SetAttribute{
 				Description:         "Specifies the clients with both read and write access to the export, even when the export is set to read-only.",
 				MarkdownDescription: "Specifies the clients with both read and write access to the export, even when the export is set to read-only.",
 				Optional:            true,
@@ -654,14 +654,14 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 				Computed:            true,
 			},
-			"root_clients": schema.ListAttribute{
+			"root_clients": schema.SetAttribute{
 				Description:         "Clients that have root access to the export.",
 				MarkdownDescription: "Clients that have root access to the export.",
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
 			},
-			"security_flavors": schema.ListAttribute{
+			"security_flavors": schema.SetAttribute{
 				Description:         "Specifies the authentication types that are supported for this export.",
 				MarkdownDescription: "Specifies the authentication types that are supported for this export.",
 				Optional:            true,
@@ -692,7 +692,7 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 				Computed:            true,
 			},
-			"unresolved_clients": schema.ListAttribute{
+			"unresolved_clients": schema.SetAttribute{
 				Description:         "Reports clients that cannot be resolved.",
 				MarkdownDescription: "Reports clients that cannot be resolved.",
 				Optional:            true,
@@ -839,7 +839,6 @@ func (r NfsExportResource) Create(ctx context.Context, request resource.CreateRe
 	}
 
 	helper.ResolvePersonaDiff(ctx, exportPlanBackUp, &exportPlan)
-	helper.NFSExportListsDiff(ctx, exportPlanBackUp, &exportPlan)
 	diags = response.State.Set(ctx, exportPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -895,7 +894,6 @@ func (r NfsExportResource) Read(ctx context.Context, request resource.ReadReques
 	}
 
 	helper.ResolvePersonaDiff(ctx, exportStateBackUp, &exportState)
-	helper.NFSExportListsDiff(ctx, exportStateBackUp, &exportState)
 	diags = response.State.Set(ctx, exportState)
 
 	response.Diagnostics.Append(diags...)
@@ -976,7 +974,6 @@ func (r NfsExportResource) Update(ctx context.Context, request resource.UpdateRe
 		return
 	}
 	helper.ResolvePersonaDiff(ctx, exportPlan, &exportState)
-	helper.NFSExportListsDiff(ctx, exportPlan, &exportState)
 	diags = response.State.Set(ctx, exportState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
