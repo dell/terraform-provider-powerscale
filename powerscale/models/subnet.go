@@ -40,7 +40,7 @@ type V12GroupnetSubnetExtended struct {
 	// A description of the subnet.
 	Description types.String `tfsdk:"description"`
 	// List of Direct Server Return addresses.
-	DsrAddrs types.List `tfsdk:"dsr_addrs"`
+	DsrAddrs types.Set `tfsdk:"dsr_addrs"`
 	// Gateway IP address.
 	Gateway types.String `tfsdk:"gateway"`
 	// Gateway priority.
@@ -54,11 +54,11 @@ type V12GroupnetSubnetExtended struct {
 	// The name of the subnet.
 	Name types.String `tfsdk:"name"`
 	// Name of the pools in the subnet.
-	Pools types.List `tfsdk:"pools"`
+	Pools types.Set `tfsdk:"pools"`
 	// Subnet Prefix Length.
 	Prefixlen types.Int64 `tfsdk:"prefixlen"`
 	// List of IP addresses that SmartConnect listens for DNS requests.
-	ScServiceAddrs types.List `tfsdk:"sc_service_addrs"`
+	ScServiceAddrs types.Set `tfsdk:"sc_service_addrs"`
 	// Domain Name corresponding to the SmartConnect Service Address.
 	ScServiceName types.String `tfsdk:"sc_service_name"`
 	// VLAN tagging enabled or disabled.
