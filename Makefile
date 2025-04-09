@@ -19,9 +19,9 @@ NAME=powerscale
 BINARY=terraform-provider-${NAME}
 VERSION=1.0.0
 OS_ARCH=linux_amd64
-client_folder=./powerscale-go-client/
-modifiedFile1="model_v1_filepool_policy_file_matching_pattern_or_criteria_item_and_criteria_item.go"
-modifiedFile2="model_v1_filepool_default_policy_action.go" 
+CLIENT_PATH?=./powerscale-go-client/
+MODIFIEDFILE1="model_v1_filepool_policy_file_matching_pattern_or_criteria_item_and_criteria_item.go"
+MODIFIEDFILE2="model_v1_filepool_default_policy_action.go" 
 
 default: install
 
@@ -61,8 +61,8 @@ extract-client:
 
 build-client:
 	wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/6.5.0/openapi-generator-cli-6.5.0.jar -O openapi-generator-cli.jar
-	java -jar openapi-generator-cli.jar generate -i 'goClientZip/PowerScale_API_9.5.0.json' -g go --type-mappings integer+unsigned64=uint64 -o ${client_folder}
-	unzip -qq -o goClientZip/powerscale-go-client.zip   ${modifiedFile1} ${modifiedFile2} -d ${client_folder}
+	java -jar openapi-generator-cli.jar generate -i 'goClientZip/PowerScale_API_9.5.0.json' -g go --type-mappings integer+unsigned64=uint64 -o ${CLIENT_PATH}
+	unzip -qq -o goClientZip/powerscale-go-client.zip   ${MODIFIEDFILE1} ${MODIFIEDFILE2} -d ${CLIENT_PATH}
 
 compress-client:
 	zip -qq -o -r 'goClientZip/powerscale-go-client.zip'  ${client_folder}

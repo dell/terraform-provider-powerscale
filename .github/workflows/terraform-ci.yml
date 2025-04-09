@@ -120,6 +120,6 @@ jobs:
       - name: Extract PR branch zip
         run: make extract-client
       - name: Generate client from JSON file
-        run: make build-client --client_folder=./powerscale-go-client1/
+        run: CLIENT_PATH=./powerscale-go-client1/ make build-client
       - name: Compare files
         run: diff -rq ./powerscale-go-client1/ ./powerscale-go-client/
