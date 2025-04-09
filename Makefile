@@ -60,12 +60,12 @@ extract-client:
 	unzip --qq -o 'goClientZip/powerscale-go-client.zip' -d ./powerscale-go-client/
 
 build-client:
-	wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/6.5.0/openapi-generator-cli-6.5.0.jar -O openapi-generator-cli.jar
+	wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/6.6.0/openapi-generator-cli-6.6.0.jar -O openapi-generator-cli.jar
 	java -jar openapi-generator-cli.jar generate -i 'goClientZip/PowerScale_API_9.5.0.json' -g go --type-mappings integer+unsigned64=uint64 -o ${CLIENT_PATH}
 	unzip -qq -o goClientZip/powerscale-go-client.zip   ${MODIFIEDFILE1} ${MODIFIEDFILE2} -d ${CLIENT_PATH}
 
 compress-client:
-	zip -qq -o -r 'goClientZip/powerscale-go-client.zip'  ${client_folder}
+	zip -qq -o -r 'goClientZip/powerscale-go-client.zip'  ${CLIENT_PATH}
 
 no-extract-build: 
 	go mod download
