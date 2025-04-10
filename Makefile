@@ -65,7 +65,7 @@ build-client:
 	unzip -qq -o goClientZip/powerscale-go-client.zip   ${MODIFIEDFILE1} ${MODIFIEDFILE2} -d ${CLIENT_PATH}
 
 compress-client:
-	zip -qq -o -r 'goClientZip/powerscale-go-client.zip' ${CLIENT_PATH}
+	cd ${CLIENT_PATH} && zip -q -o -r '../goClientZip/powerscale-go-client.zip' .
 
 no-extract-build: 
 	go mod download
