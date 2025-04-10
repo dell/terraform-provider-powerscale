@@ -199,7 +199,7 @@ func (r *SubnetResource) Configure(ctx context.Context, req resource.ConfigureRe
 func (r SubnetResource) Create(ctx context.Context, request resource.CreateRequest, response *resource.CreateResponse) {
 	tflog.Info(ctx, "creating subnet")
 
-	var subnetPlan models.V12GroupnetSubnetExtended
+	var subnetPlan models.SubnetResource
 	diags := request.Plan.Get(ctx, &subnetPlan)
 
 	response.Diagnostics.Append(diags...)
@@ -261,7 +261,7 @@ func (r SubnetResource) Create(ctx context.Context, request resource.CreateReque
 // Read reads the resource state.
 func (r SubnetResource) Read(ctx context.Context, request resource.ReadRequest, response *resource.ReadResponse) {
 	tflog.Info(ctx, "reading subnet")
-	var subnetState models.V12GroupnetSubnetExtended
+	var subnetState models.SubnetResource
 	diags := request.State.Get(ctx, &subnetState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -306,14 +306,14 @@ func (r SubnetResource) Read(ctx context.Context, request resource.ReadRequest, 
 // Update updates the resource state.
 func (r SubnetResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
 	tflog.Info(ctx, "updating subnet")
-	var subnetPlan models.V12GroupnetSubnetExtended
+	var subnetPlan models.SubnetResource
 	diags := request.Plan.Get(ctx, &subnetPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
 	}
 
-	var subnetState models.V12GroupnetSubnetExtended
+	var subnetState models.SubnetResource
 	diags = response.State.Get(ctx, &subnetState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -381,7 +381,7 @@ func (r SubnetResource) Update(ctx context.Context, request resource.UpdateReque
 // Delete deletes the resource.
 func (r SubnetResource) Delete(ctx context.Context, request resource.DeleteRequest, response *resource.DeleteResponse) {
 	tflog.Info(ctx, "deleting subnet")
-	var subnetState models.V12GroupnetSubnetExtended
+	var subnetState models.SubnetResource
 	diags := request.State.Get(ctx, &subnetState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -415,7 +415,7 @@ func (r SubnetResource) ImportState(ctx context.Context, request resource.Import
 		)
 		return
 	}
-	var subnetState models.V12GroupnetSubnetExtended
+	var subnetState models.SubnetResource
 	subnet, err := helper.GetSubnet(ctx, r.client, idParts[1], idParts[0])
 	if err != nil {
 		errStr := constants.GetSubnetErrorMsg + "with error: "
