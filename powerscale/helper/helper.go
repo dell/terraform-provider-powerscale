@@ -132,6 +132,9 @@ func CopyFields(ctx context.Context, source, destination interface{}) error {
 						}
 					}
 					destinationField.Set(slice)
+				} else if /* check if destination is types.Set */ _, ok := destinationField.Interface().(types.Set); ok {
+					destinationFieldValue = copySliceToSetType(ctx, sourceField.Interface())
+
 				} else {
 					destinationFieldValue = copySliceToTargetField(ctx, sourceField.Interface())
 				}
@@ -187,7 +190,16 @@ func getFieldByTfTag(destinationValue reflect.Value, tagValue string) reflect.Va
 	return reflect.Value{}
 }
 
-func copySliceToTargetField(ctx context.Context, fields interface{}) attr.Value {
+func copySliceToSetType(ctx context.Context, fields any) types.Set {
+	listVal := copySliceToTargetField(ctx, fields)
+	if listVal.IsUnknown() {
+		return types.SetUnknown(listVal.ElementType(ctx))
+	}
+	setValue, _ := types.SetValue(listVal.ElementType(ctx), listVal.Elements())
+	return setValue
+}
+
+func copySliceToTargetField(ctx context.Context, fields interface{}) types.List {
 	var objects []attr.Value
 	attrTypeMap := make(map[string]attr.Type)
 
@@ -255,7 +267,7 @@ func copySliceToTargetField(ctx context.Context, fields interface{}) attr.Value 
 		listValue, _ := types.ListValue(types.ObjectType{AttrTypes: attrTypeMap}, objects)
 		return listValue
 	}
-	return nil
+	return types.ListUnknown(types.StringType)
 }
 
 // ParseBody parses the error message from an openApi error response.

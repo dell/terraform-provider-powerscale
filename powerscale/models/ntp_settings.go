@@ -34,7 +34,7 @@ type NtpSettingsResourceModel struct {
 	// Number of nodes that will contact the NTP servers.
 	Chimers types.Int64 `tfsdk:"chimers"`
 	// Node number (LNN) for nodes excluded from chimer duty.
-	Excluded types.List `tfsdk:"excluded"`
+	Excluded types.Set `tfsdk:"excluded"`
 	// Path to NTP key file within /ifs.
 	KeyFile types.String `tfsdk:"key_file"`
 }

@@ -55,5 +55,4 @@ func ResolveSettingsDiff(ctx context.Context, plan models.NfsexportsettingsModel
 	state.MapFailure = assignKnownObjectToUnknown(ctx, plan.MapFailure, state.MapFailure)
 	state.MapNonRoot = assignKnownObjectToUnknown(ctx, plan.MapNonRoot, state.MapNonRoot)
 	state.MapRoot = assignKnownObjectToUnknown(ctx, plan.MapRoot, state.MapRoot)
-	state.SecurityFlavors = ListCheck(plan.SecurityFlavors, plan.SecurityFlavors.ElementType(ctx))
 }

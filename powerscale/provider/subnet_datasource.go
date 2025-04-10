@@ -224,8 +224,8 @@ func (d *SubnetDataSource) Configure(ctx context.Context, req datasource.Configu
 // Read reads data from the data source.
 func (d *SubnetDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Info(ctx, "Reading Subnet data source ")
-	var subnetPlan models.V12GroupnetSubnets
-	var subnetState models.V12GroupnetSubnets
+	var subnetPlan models.SubnetDs
+	var subnetState models.SubnetDs
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &subnetPlan)...)
 
@@ -244,7 +244,7 @@ func (d *SubnetDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 
 	var validSubnets []string
 	for _, subnet := range *subnets {
-		entity := models.V12GroupnetSubnetExtended{}
+		entity := models.SubnetDsItem{}
 		err := helper.CopyFields(ctx, subnet, &entity)
 		if err != nil {
 			resp.Diagnostics.AddError("Error copying fields of subnet datasource",

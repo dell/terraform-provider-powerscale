@@ -29,8 +29,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -83,7 +83,7 @@ func (r *SubnetResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 			},
-			"dsr_addrs": schema.ListAttribute{
+			"dsr_addrs": schema.SetAttribute{
 				Description:         "List of Direct Server Return addresses.",
 				MarkdownDescription: "List of Direct Server Return addresses.",
 				Optional:            true,
@@ -123,7 +123,7 @@ func (r *SubnetResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				MarkdownDescription: "The name of the subnet.",
 				Required:            true,
 			},
-			"pools": schema.ListAttribute{
+			"pools": schema.SetAttribute{
 				Description:         "Name of the pools in the subnet.",
 				MarkdownDescription: "Name of the pools in the subnet.",
 				Computed:            true,
@@ -134,12 +134,12 @@ func (r *SubnetResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				MarkdownDescription: "Subnet Prefix Length.",
 				Required:            true,
 			},
-			"sc_service_addrs": schema.ListNestedAttribute{
+			"sc_service_addrs": schema.SetNestedAttribute{
 				Description:         "List of IP addresses that SmartConnect listens for DNS requests.",
 				MarkdownDescription: "List of IP addresses that SmartConnect listens for DNS requests.",
 				Computed:            true,
 				Optional:            true,
-				PlanModifiers:       []planmodifier.List{listplanmodifier.UseStateForUnknown()},
+				PlanModifiers:       []planmodifier.Set{setplanmodifier.UseStateForUnknown()},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"high": schema.StringAttribute{
@@ -199,18 +199,10 @@ func (r *SubnetResource) Configure(ctx context.Context, req resource.ConfigureRe
 func (r SubnetResource) Create(ctx context.Context, request resource.CreateRequest, response *resource.CreateResponse) {
 	tflog.Info(ctx, "creating subnet")
 
-	var subnetPlan models.V12GroupnetSubnetExtended
+	var subnetPlan models.SubnetResource
 	diags := request.Plan.Get(ctx, &subnetPlan)
 
 	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
-	var subnetPlanBackup models.V12GroupnetSubnetExtended
-	diagsB := request.Plan.Get(ctx, &subnetPlanBackup)
-
-	response.Diagnostics.Append(diagsB...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -258,7 +250,6 @@ func (r SubnetResource) Create(ctx context.Context, request resource.CreateReque
 	if subnetPlan.VlanID.IsUnknown() {
 		subnetPlan.VlanID = basetypes.NewInt64Null()
 	}
-	helper.SubnetListsDiff(ctx, subnetPlanBackup, &subnetPlan)
 	diags = response.State.Set(ctx, subnetPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -270,16 +261,9 @@ func (r SubnetResource) Create(ctx context.Context, request resource.CreateReque
 // Read reads the resource state.
 func (r SubnetResource) Read(ctx context.Context, request resource.ReadRequest, response *resource.ReadResponse) {
 	tflog.Info(ctx, "reading subnet")
-	var subnetState models.V12GroupnetSubnetExtended
+	var subnetState models.SubnetResource
 	diags := request.State.Get(ctx, &subnetState)
 	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
-	var subnetStateBackup models.V12GroupnetSubnetExtended
-	diagsB := request.State.Get(ctx, &subnetStateBackup)
-	response.Diagnostics.Append(diagsB...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -312,7 +296,6 @@ func (r SubnetResource) Read(ctx context.Context, request resource.ReadRequest, 
 	}
 
 	diags = response.State.Set(ctx, subnetState)
-	helper.SubnetListsDiff(ctx, subnetStateBackup, &subnetState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
@@ -323,21 +306,14 @@ func (r SubnetResource) Read(ctx context.Context, request resource.ReadRequest, 
 // Update updates the resource state.
 func (r SubnetResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
 	tflog.Info(ctx, "updating subnet")
-	var subnetPlan models.V12GroupnetSubnetExtended
+	var subnetPlan models.SubnetResource
 	diags := request.Plan.Get(ctx, &subnetPlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
 	}
 
-	var subnetPlanBackup models.V12GroupnetSubnetExtended
-	diagsB := request.Plan.Get(ctx, &subnetPlanBackup)
-	response.Diagnostics.Append(diagsB...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
-	var subnetState models.V12GroupnetSubnetExtended
+	var subnetState models.SubnetResource
 	diags = response.State.Get(ctx, &subnetState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -394,7 +370,6 @@ func (r SubnetResource) Update(ctx context.Context, request resource.UpdateReque
 	if subnetState.VlanID.IsUnknown() {
 		subnetState.VlanID = basetypes.NewInt64Null()
 	}
-	helper.SubnetListsDiff(ctx, subnetPlanBackup, &subnetState)
 	diags = response.State.Set(ctx, subnetState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -406,7 +381,7 @@ func (r SubnetResource) Update(ctx context.Context, request resource.UpdateReque
 // Delete deletes the resource.
 func (r SubnetResource) Delete(ctx context.Context, request resource.DeleteRequest, response *resource.DeleteResponse) {
 	tflog.Info(ctx, "deleting subnet")
-	var subnetState models.V12GroupnetSubnetExtended
+	var subnetState models.SubnetResource
 	diags := request.State.Get(ctx, &subnetState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -440,7 +415,7 @@ func (r SubnetResource) ImportState(ctx context.Context, request resource.Import
 		)
 		return
 	}
-	var subnetState models.V12GroupnetSubnetExtended
+	var subnetState models.SubnetResource
 	subnet, err := helper.GetSubnet(ctx, r.client, idParts[1], idParts[0])
 	if err != nil {
 		errStr := constants.GetSubnetErrorMsg + "with error: "

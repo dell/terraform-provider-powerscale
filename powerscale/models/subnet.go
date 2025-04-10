@@ -18,12 +18,14 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// V12GroupnetSubnets struct for V12GroupnetSubnets.
-type V12GroupnetSubnets struct {
-	ID           types.String                `tfsdk:"id"`
-	Subnets      []V12GroupnetSubnetExtended `tfsdk:"subnets"`
-	SubnetFilter *SubnetFilterType           `tfsdk:"filter"`
+// SubnetDs struct for SubnetDs.
+type SubnetDs struct {
+	ID           types.String      `tfsdk:"id"`
+	Subnets      []SubnetDsItem    `tfsdk:"subnets"`
+	SubnetFilter *SubnetFilterType `tfsdk:"filter"`
 }
+
+type SubnetDsItem v12GroupnetSubnetExtended[types.List]
 
 // SubnetFilterType describes the filter data model.
 type SubnetFilterType struct {
@@ -31,8 +33,10 @@ type SubnetFilterType struct {
 	GroupnetName types.String   `tfsdk:"groupnet_name"`
 }
 
-// V12GroupnetSubnetExtended struct for V12GroupnetSubnetExtended.
-type V12GroupnetSubnetExtended struct {
+type SubnetResource v12GroupnetSubnetExtended[types.Set]
+
+// v12GroupnetSubnetExtended struct for v12GroupnetSubnetExtended.
+type v12GroupnetSubnetExtended[T types.List | types.Set] struct {
 	// IP address format.
 	AddrFamily types.String `tfsdk:"addr_family"`
 	// The base IP address.
@@ -40,7 +44,7 @@ type V12GroupnetSubnetExtended struct {
 	// A description of the subnet.
 	Description types.String `tfsdk:"description"`
 	// List of Direct Server Return addresses.
-	DsrAddrs types.List `tfsdk:"dsr_addrs"`
+	DsrAddrs T `tfsdk:"dsr_addrs"`
 	// Gateway IP address.
 	Gateway types.String `tfsdk:"gateway"`
 	// Gateway priority.
@@ -54,11 +58,11 @@ type V12GroupnetSubnetExtended struct {
 	// The name of the subnet.
 	Name types.String `tfsdk:"name"`
 	// Name of the pools in the subnet.
-	Pools types.List `tfsdk:"pools"`
+	Pools T `tfsdk:"pools"`
 	// Subnet Prefix Length.
 	Prefixlen types.Int64 `tfsdk:"prefixlen"`
 	// List of IP addresses that SmartConnect listens for DNS requests.
-	ScServiceAddrs types.List `tfsdk:"sc_service_addrs"`
+	ScServiceAddrs T `tfsdk:"sc_service_addrs"`
 	// Domain Name corresponding to the SmartConnect Service Address.
 	ScServiceName types.String `tfsdk:"sc_service_name"`
 	// VLAN tagging enabled or disabled.

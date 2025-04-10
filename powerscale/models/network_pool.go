@@ -122,13 +122,13 @@ type NetworkPoolResourceModel struct {
 	// Unique Pool ID.
 	ID types.String `tfsdk:"id"`
 	// List of interface members in this pool.
-	Ifaces types.List `tfsdk:"ifaces"`
+	Ifaces types.Set `tfsdk:"ifaces"`
 	// The name of the pool. It must be unique throughout the given subnet.It's a required field with POST method.
 	Name types.String `tfsdk:"name"`
 	// Indicates that pool contains only RDMA RRoCE capable interfaces.
 	Nfsv3RroceOnly types.Bool `tfsdk:"nfsv3_rroce_only"`
 	// List of IP address ranges in this pool.
-	Ranges types.List `tfsdk:"ranges"`
+	Ranges types.Set `tfsdk:"ranges"`
 	// Rebalance policy..
 	RebalancePolicy types.String `tfsdk:"rebalance_policy"`
 	// Names of the rules in this pool.
@@ -140,7 +140,7 @@ type NetworkPoolResourceModel struct {
 	// SmartConnect zone name for the pool.
 	ScDNSZone types.String `tfsdk:"sc_dns_zone"`
 	// List of SmartConnect zone aliases (DNS names) to the pool.
-	ScDNSZoneAliases types.List `tfsdk:"sc_dns_zone_aliases"`
+	ScDNSZoneAliases types.Set `tfsdk:"sc_dns_zone_aliases"`
 	// SmartConnect IP failover policy.
 	ScFailoverPolicy types.String `tfsdk:"sc_failover_policy"`
 	// Name of SmartConnect service subnet for this pool.
@@ -150,7 +150,7 @@ type NetworkPoolResourceModel struct {
 	// Time to live value for SmartConnect DNS query responses in seconds.
 	ScTTL types.Int64 `tfsdk:"sc_ttl"`
 	// List of interface members in this pool.
-	StaticRoutes types.List `tfsdk:"static_routes"`
+	StaticRoutes types.Set `tfsdk:"static_routes"`
 	// The name of the subnet.
 	Subnet types.String `tfsdk:"subnet"`
 }

@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ resource "powerscale_ntpsettings" "example_ntp_settings" {
 ### Optional
 
 - `chimers` (Number) Number of nodes that will contact the NTP servers.
-- `excluded` (List of String) Node number (LNN) for nodes excluded from chimer duty.
+- `excluded` (Set of String) Node number (LNN) for nodes excluded from chimer duty.
 - `key_file` (String) Path to NTP key file within /ifs.
 
 Unless specified otherwise, all fields of this resource can be updated.

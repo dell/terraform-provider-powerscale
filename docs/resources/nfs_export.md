@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -144,7 +144,7 @@ resource "powerscale_nfs_export" "example_export" {
 
 ### Required
 
-- `paths` (List of String) Specifies the paths under /ifs that are exported.
+- `paths` (Set of String) Specifies the paths under /ifs that are exported.
 
 ### Optional
 
@@ -154,9 +154,9 @@ resource "powerscale_nfs_export" "example_export" {
 - `case_insensitive` (Boolean) True if the case is ignored for file names. This parameter does not affect server behavior, but is included to accommodate legacy client requirements.
 - `case_preserving` (Boolean) True if the case is preserved for file names. This parameter does not affect server behavior, but is included to accommodate legacy client requirements.
 - `chown_restricted` (Boolean) True if the superuser can change file ownership. This parameter does not affect server behavior, but is included to accommodate legacy client requirements.
-- `clients` (List of String) Specifies the clients with root access to the export.
+- `clients` (Set of String) Specifies the clients with root access to the export.
 - `commit_asynchronous` (Boolean) True if NFS  commit  requests execute asynchronously.
-- `conflicting_paths` (List of String) Reports the paths that conflict with another export.
+- `conflicting_paths` (Set of String) Reports the paths that conflict with another export.
 - `description` (String) Specifies the user-defined string that is used to identify the export.
 - `directory_transfer_size` (Number) Specifies the preferred size for directory read operations. This value is used to advise the client of optimal settings for the server, but is not enforced.
 - `encoding` (String) Specifies the default character set encoding of the clients connecting to the export, unless otherwise specified.
@@ -177,22 +177,22 @@ resource "powerscale_nfs_export" "example_export" {
 - `name_max_size` (Number) Specifies the reported maximum length of a file name. This parameter does not affect server behavior, but is included to accommodate legacy client requirements.
 - `no_truncate` (Boolean) True if long file names result in an error. This parameter does not affect server behavior, but is included to accommodate legacy client requirements.
 - `read_only` (Boolean) True if the export is set to read-only.
-- `read_only_clients` (List of String) Specifies the clients with read-only access to the export.
+- `read_only_clients` (Set of String) Specifies the clients with read-only access to the export.
 - `read_transfer_max_size` (Number) Specifies the maximum buffer size that clients should use on NFS read requests. This value is used to advise the client of optimal settings for the server, but is not enforced.
 - `read_transfer_multiple` (Number) Specifies the preferred multiple size for NFS read requests. This value is used to advise the client of optimal settings for the server, but is not enforced.
 - `read_transfer_size` (Number) Specifies the preferred size for NFS read requests. This value is used to advise the client of optimal settings for the server, but is not enforced.
-- `read_write_clients` (List of String) Specifies the clients with both read and write access to the export, even when the export is set to read-only.
+- `read_write_clients` (Set of String) Specifies the clients with both read and write access to the export, even when the export is set to read-only.
 - `readdirplus` (Boolean) True if 'readdirplus' requests are enabled. Enabling this property might improve network performance and is only available for NFSv3.
 - `readdirplus_prefetch` (Number) Sets the number of directory entries that are prefetched when a 'readdirplus' request is processed. (Deprecated.)
 - `return_32bit_file_ids` (Boolean) Limits the size of file identifiers returned by NFSv3+ to 32-bit values (may require remount).
-- `root_clients` (List of String) Clients that have root access to the export.
+- `root_clients` (Set of String) Clients that have root access to the export.
 - `scope` (String) When specified as 'effective', or not specified, all fields are returned. When specified as 'user', only fields with non-default values are shown. When specified as 'default', the original values are returned.
-- `security_flavors` (List of String) Specifies the authentication types that are supported for this export.
+- `security_flavors` (Set of String) Specifies the authentication types that are supported for this export.
 - `setattr_asynchronous` (Boolean) True if set attribute operations execute asynchronously.
 - `snapshot` (String) Specifies the snapshot for all mounts.
 - `symlinks` (Boolean) True if symlinks are supported. This value is used to advise the client of optimal settings for the server, but is not enforced.
 - `time_delta` (Number) Specifies the resolution of all time values that are returned to the clients
-- `unresolved_clients` (List of String) Reports clients that cannot be resolved.
+- `unresolved_clients` (Set of String) Reports clients that cannot be resolved.
 - `write_datasync_action` (String) Specifies the action to be taken when an NFSv3+ datasync write is requested.
 - `write_datasync_reply` (String) Specifies the stability disposition returned when an NFSv3+ datasync write is processed.
 - `write_filesync_action` (String) Specifies the action to be taken when an NFSv3+ filesync write is requested.

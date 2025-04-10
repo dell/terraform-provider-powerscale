@@ -118,12 +118,3 @@ func DeleteSubnet(ctx context.Context, client *client.Client, subnetName, groupn
 	_, err := client.PscaleOpenAPIClient.NetworkApi.DeleteNetworkv7GroupnetsGroupnetSubnet(ctx, subnetName, groupnet).Execute()
 	return err
 }
-
-// For List set explicitly from plan
-// This is to keep state in similar order to plan
-// Lists returned from the array are not always in the same order as they appear in the plan
-func SubnetListsDiff(ctx context.Context, plan models.V12GroupnetSubnetExtended, state *models.V12GroupnetSubnetExtended) {
-	state.Pools = ListCheck(plan.Pools, plan.Pools.ElementType(ctx))
-	state.ScServiceAddrs = ListCheck(plan.ScServiceAddrs, plan.ScServiceAddrs.ElementType(ctx))
-	state.DsrAddrs = ListCheck(plan.DsrAddrs, plan.DsrAddrs.ElementType(ctx))
-}

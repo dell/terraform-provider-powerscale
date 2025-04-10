@@ -82,7 +82,7 @@ func (r *SmbShareSettingsResource) Schema(ctx context.Context, req resource.Sche
 				Description:         "Allows users to execute files they have read rights for.",
 				MarkdownDescription: "Allows users to execute files they have read rights for.",
 			},
-			"host_acl": schema.ListAttribute{
+			"host_acl": schema.SetAttribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "An ACL expressing which hosts are allowed access. A deny clause must be the final entry.",
@@ -104,7 +104,7 @@ func (r *SmbShareSettingsResource) Schema(ctx context.Context, req resource.Sche
 					stringvalidator.LengthBetween(0, 511),
 				},
 			},
-			"file_filter_extensions": schema.ListAttribute{
+			"file_filter_extensions": schema.SetAttribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "Specifies the list of file extensions.",
@@ -211,7 +211,7 @@ func (r *SmbShareSettingsResource) Schema(ctx context.Context, req resource.Sche
 					),
 				},
 			},
-			"mangle_map": schema.ListAttribute{
+			"mangle_map": schema.SetAttribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "Character mangle map.",
@@ -344,14 +344,6 @@ func (r *SmbShareSettingsResource) Create(ctx context.Context, request resource.
 		return
 	}
 
-	var sharePlanBackup models.SmbShareSettingsResourceModel
-	diagsB := request.Plan.Get(ctx, &sharePlanBackup)
-
-	response.Diagnostics.Append(diagsB...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
 	zone := sharePlan.Zone.ValueString()
 	scope := sharePlan.Scope.ValueString()
 
@@ -394,7 +386,6 @@ func (r *SmbShareSettingsResource) Create(ctx context.Context, request resource.
 	}
 	state.Zone = sharePlan.Zone
 	state.ID = types.StringValue("smb_share_settings_" + sharePlan.Zone.ValueString())
-	helper.SMBShareSettingsListsDiff(ctx, sharePlanBackup, &state)
 	diags = response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -409,13 +400,6 @@ func (r SmbShareSettingsResource) Read(ctx context.Context, request resource.Rea
 	var shareState models.SmbShareSettingsResourceModel
 	diags := request.State.Get(ctx, &shareState)
 	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
-	var shareStateBackup models.SmbShareSettingsResourceModel
-	diagsB := request.State.Get(ctx, &shareStateBackup)
-	response.Diagnostics.Append(diagsB...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -442,7 +426,6 @@ func (r SmbShareSettingsResource) Read(ctx context.Context, request resource.Rea
 
 	shareState.Zone = types.StringValue(zone)
 	shareState.ID = types.StringValue("smb_share_settings_" + zone)
-	helper.SMBShareSettingsListsDiff(ctx, shareStateBackup, &shareState)
 	diags = response.State.Set(ctx, &shareState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -457,13 +440,6 @@ func (r SmbShareSettingsResource) Update(ctx context.Context, request resource.U
 	var sharePlan models.SmbShareSettingsResourceModel
 	diags := request.Plan.Get(ctx, &sharePlan)
 	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
-	var sharePlanBackup models.SmbShareSettingsResourceModel
-	diagsB := request.Plan.Get(ctx, &sharePlanBackup)
-	response.Diagnostics.Append(diagsB...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -512,7 +488,6 @@ func (r SmbShareSettingsResource) Update(ctx context.Context, request resource.U
 	// Zone need to be manually set
 	shareState.Zone = sharePlan.Zone
 	shareState.ID = types.StringValue("smb_share_settings_" + sharePlan.Zone.ValueString())
-	helper.SMBShareSettingsListsDiff(ctx, sharePlanBackup, &shareState)
 	diags = response.State.Set(ctx, shareState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {

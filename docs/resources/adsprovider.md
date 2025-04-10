@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -140,21 +140,21 @@ resource "powerscale_adsprovider" "ads_test" {
 - `dns_domain` (String) Specifies the DNS search domain. Set this parameter if the DNS search domain has a unique name or address.
 - `domain_controller` (String) Specifies the domain controller to which the authentication service should send requests
 - `domain_offline_alerts` (Boolean) Sends an alert if the domain goes offline.
-- `extra_expected_spns` (List of String) List of additional SPNs to expect beyond what automatic checking routines might find
-- `findable_groups` (List of String) Sets list of groups that can be resolved.
-- `findable_users` (List of String) Sets list of users that can be resolved.
+- `extra_expected_spns` (Set of String) List of additional SPNs to expect beyond what automatic checking routines might find
+- `findable_groups` (Set of String) Sets list of groups that can be resolved.
+- `findable_users` (Set of String) Sets list of users that can be resolved.
 - `groupnet` (String) Groupnet identifier.
 - `home_directory_template` (String) Specifies the path to the home directory template.
 - `id` (String) Specifies the ID of the Active Directory provider instance.
 - `ignore_all_trusts` (Boolean) If set to true, ignores all trusted domains.
-- `ignored_trusted_domains` (List of String) Includes trusted domains when 'ignore_all_trusts' is set to false.
+- `ignored_trusted_domains` (Set of String) Includes trusted domains when 'ignore_all_trusts' is set to false.
 - `include_trusted_domains` (List of String) Includes trusted domains when 'ignore_all_trusts' is set to true.
 - `instance` (String) Specifies Active Directory provider instance.
 - `kerberos_hdfs_spn` (Boolean) Determines if connecting through HDFS with Kerberos.
 - `kerberos_nfs_spn` (Boolean) Determines if connecting through NFS with Kerberos.
 - `ldap_sign_and_seal` (Boolean) Enables encryption and signing on LDAP requests.
 - `login_shell` (String) Specifies the login shell path.
-- `lookup_domains` (List of String) Limits user and group lookups to the specified domains.
+- `lookup_domains` (Set of String) Limits user and group lookups to the specified domains.
 - `lookup_groups` (Boolean) Looks up AD groups in other providers before allocating a group ID.
 - `lookup_normalize_groups` (Boolean) Normalizes AD group names to lowercase before look up.
 - `lookup_normalize_users` (Boolean) Normalize AD user names to lowercase before look up.
@@ -172,10 +172,10 @@ resource "powerscale_adsprovider" "ads_test" {
 - `scope` (String) When specified as 'effective', or not specified, all fields are returned. When specified as 'user', only fields with non-default values are shown. When specified as 'default', the original values are returned.
 - `server_retry_limit` (Number) The number of retries attempted when a call to Active Directory fails due to network error.
 - `sfu_support` (String) Specifies whether to support RFC 2307 attributes on ADS domain controllers.
-- `spns` (List of String) Currently configured SPNs.
+- `spns` (Set of String) Currently configured SPNs.
 - `store_sfu_mappings` (Boolean) Stores SFU mappings permanently in the ID mapper.
-- `unfindable_groups` (List of String) Specifies groups that cannot be resolved by the provider.
-- `unfindable_users` (List of String) Specifies users that cannot be resolved by the provider.
+- `unfindable_groups` (Set of String) Specifies groups that cannot be resolved by the provider.
+- `unfindable_users` (Set of String) Specifies users that cannot be resolved by the provider.
 
 ### Read-Only
 

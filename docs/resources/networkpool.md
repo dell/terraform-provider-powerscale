@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -112,18 +112,18 @@ resource "powerscale_networkpool" "pool_test" {
 - `aggregation_mode` (String) OneFS supports the following NIC aggregation modes.
 - `alloc_method` (String) Specifies how IP address allocation is done among pool members.
 - `description` (String) A description of the pool.
-- `ifaces` (Attributes List) List of interface members in this pool. (see [below for nested schema](#nestedatt--ifaces))
+- `ifaces` (Attributes Set) List of interface members in this pool. (see [below for nested schema](#nestedatt--ifaces))
 - `nfsv3_rroce_only` (Boolean) Indicates that pool contains only RDMA RRoCE capable interfaces.
-- `ranges` (Attributes List) List of IP address ranges in this pool. (see [below for nested schema](#nestedatt--ranges))
+- `ranges` (Attributes Set) List of IP address ranges in this pool. (see [below for nested schema](#nestedatt--ranges))
 - `rebalance_policy` (String) Rebalance policy..
 - `sc_auto_unsuspend_delay` (Number) Time delay in seconds before a node which has been automatically unsuspended becomes usable in SmartConnect responses for pool zones.
 - `sc_connect_policy` (String) SmartConnect client connection balancing policy.
 - `sc_dns_zone` (String) SmartConnect zone name for the pool.
-- `sc_dns_zone_aliases` (List of String) List of SmartConnect zone aliases (DNS names) to the pool.
+- `sc_dns_zone_aliases` (Set of String) List of SmartConnect zone aliases (DNS names) to the pool.
 - `sc_failover_policy` (String) SmartConnect IP failover policy.
 - `sc_subnet` (String) Name of SmartConnect service subnet for this pool.
 - `sc_ttl` (Number) Time to live value for SmartConnect DNS query responses in seconds.
-- `static_routes` (Attributes List) List of interface members in this pool. (see [below for nested schema](#nestedatt--static_routes))
+- `static_routes` (Attributes Set) List of interface members in this pool. (see [below for nested schema](#nestedatt--static_routes))
 
 ### Read-Only
 

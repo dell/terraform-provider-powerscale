@@ -62,7 +62,7 @@ type SmbShareResource struct {
 	// File create mode bits.
 	FileCreateMode types.Int64 `tfsdk:"file_create_mode"`
 	// Specifies the list of file extensions.
-	FileFilterExtensions types.List `tfsdk:"file_filter_extensions"`
+	FileFilterExtensions types.Set `tfsdk:"file_filter_extensions"`
 	// Specifies if filter list is for deny or allow. Default is deny.
 	FileFilterType types.String `tfsdk:"file_filter_type"`
 	// Enables file filtering on this zone.
@@ -70,7 +70,7 @@ type SmbShareResource struct {
 	// Hide files and directories that begin with a period '.'.
 	HideDotFiles types.Bool `tfsdk:"hide_dot_files"`
 	// An ACL expressing which hosts are allowed access. A deny clause must be the final entry.
-	HostACL types.List `tfsdk:"host_acl"`
+	HostACL types.Set `tfsdk:"host_acl"`
 	// Specify the condition in which user access is done as the guest account.
 	ImpersonateGuest types.String `tfsdk:"impersonate_guest"`
 	// User account to be used as guest account.
@@ -80,7 +80,7 @@ type SmbShareResource struct {
 	// Specifies the wchar_t starting point for automatic byte mangling.
 	MangleByteStart types.Int64 `tfsdk:"mangle_byte_start"`
 	// Character mangle map.
-	MangleMap types.List `tfsdk:"mangle_map"`
+	MangleMap types.Set `tfsdk:"mangle_map"`
 	// Share name.
 	Name types.String `tfsdk:"name"`
 	// Support NTFS ACLs on files and directories.
@@ -90,9 +90,9 @@ type SmbShareResource struct {
 	// Path of share within /ifs.
 	Path types.String `tfsdk:"path"`
 	// Specifies an ordered list of permission modifications.
-	Permissions types.List `tfsdk:"permissions"`
+	Permissions types.Set `tfsdk:"permissions"`
 	// Allow account to run as root.
-	RunAsRoot types.List `tfsdk:"run_as_root"`
+	RunAsRoot types.Set `tfsdk:"run_as_root"`
 	// Enables SMB3 encryption for the share.
 	Smb3EncryptionEnabled types.Bool `tfsdk:"smb3_encryption_enabled"`
 	// Enables sparse file.

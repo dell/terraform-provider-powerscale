@@ -27,12 +27,10 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -187,7 +185,7 @@ func (r *SmbShareResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:            true,
 				Computed:            true,
 			},
-			"file_filter_extensions": schema.ListAttribute{
+			"file_filter_extensions": schema.SetAttribute{
 				Description:         "Specifies the list of file extensions.",
 				MarkdownDescription: "Specifies the list of file extensions.",
 				Optional:            true,
@@ -212,7 +210,7 @@ func (r *SmbShareResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:            true,
 				Computed:            true,
 			},
-			"host_acl": schema.ListAttribute{
+			"host_acl": schema.SetAttribute{
 				Description:         "An ACL expressing which hosts are allowed access. A deny clause must be the final entry.",
 				MarkdownDescription: "An ACL expressing which hosts are allowed access. A deny clause must be the final entry.",
 				Optional:            true,
@@ -243,7 +241,7 @@ func (r *SmbShareResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:            true,
 				Computed:            true,
 			},
-			"mangle_map": schema.ListAttribute{
+			"mangle_map": schema.SetAttribute{
 				Description:         "Character mangle map.",
 				MarkdownDescription: "Character mangle map.",
 				Optional:            true,
@@ -272,11 +270,11 @@ func (r *SmbShareResource) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: "Path of share within /ifs.",
 				Required:            true,
 			},
-			"permissions": schema.ListNestedAttribute{
+			"permissions": schema.SetNestedAttribute{
 				Description:         "Specifies an ordered list of permission modifications.",
 				MarkdownDescription: "Specifies an ordered list of permission modifications.",
 				Required:            true,
-				PlanModifiers:       []planmodifier.List{listplanmodifier.UseStateForUnknown()},
+				PlanModifiers:       []planmodifier.Set{setplanmodifier.UseStateForUnknown()},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"permission": schema.StringAttribute{
@@ -317,13 +315,13 @@ func (r *SmbShareResource) Schema(ctx context.Context, req resource.SchemaReques
 					},
 				},
 			},
-			"run_as_root": schema.ListNestedAttribute{
+			"run_as_root": schema.SetNestedAttribute{
 				Description:         "Allow account to run as root.",
 				MarkdownDescription: "Allow account to run as root.",
 				Optional:            true,
 				Computed:            true,
-				Default: listdefault.StaticValue(types.ListNull(types.ObjectType{AttrTypes: map[string]attr.Type{
-					"id": types.StringType, "name": types.StringType, "type": types.StringType}})),
+				// Default: setdefault.StaticValue(types.SetNull(types.ObjectType{AttrTypes: map[string]attr.Type{
+				// 	"id": types.StringType, "name": types.StringType, "type": types.StringType}})),
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
@@ -420,14 +418,6 @@ func (r SmbShareResource) Create(ctx context.Context, request resource.CreateReq
 		return
 	}
 
-	var sharePlanBackup models.SmbShareResource
-	diagsB := request.Plan.Get(ctx, &sharePlanBackup)
-
-	response.Diagnostics.Append(diagsB...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
 	shareToCreate := powerscale.V7SmbShare{}
 	// Get param from tf input
 	err := helper.ReadFromState(ctx, sharePlan, &shareToCreate)
@@ -475,7 +465,6 @@ func (r SmbShareResource) Create(ctx context.Context, request resource.CreateReq
 		)
 		return
 	}
-	helper.SMBShareListsDiff(ctx, sharePlanBackup, &sharePlan)
 	diags = response.State.Set(ctx, sharePlan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -490,13 +479,6 @@ func (r SmbShareResource) Read(ctx context.Context, request resource.ReadRequest
 	var shareState models.SmbShareResource
 	diags := request.State.Get(ctx, &shareState)
 	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
-	var shareStateBackup models.SmbShareResource
-	diagsB := request.State.Get(ctx, &shareStateBackup)
-	response.Diagnostics.Append(diagsB...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -533,7 +515,6 @@ func (r SmbShareResource) Read(ctx context.Context, request resource.ReadRequest
 		)
 		return
 	}
-	helper.SMBShareListsDiff(ctx, shareStateBackup, &shareState)
 	diags = response.State.Set(ctx, shareState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
@@ -555,14 +536,6 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 	var shareState models.SmbShareResource
 	diags = response.State.Get(ctx, &shareState)
 	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
-	var sharePlanBackup models.SmbShareResource
-	diagsB := request.Plan.Get(ctx, &sharePlanBackup)
-
-	response.Diagnostics.Append(diagsB...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -636,7 +609,6 @@ func (r SmbShareResource) Update(ctx context.Context, request resource.UpdateReq
 	}
 	// Zone need to be manually set
 	shareState.Zone = sharePlan.Zone
-	helper.SMBShareListsDiff(ctx, sharePlanBackup, &shareState)
 	diags = response.State.Set(ctx, shareState)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {

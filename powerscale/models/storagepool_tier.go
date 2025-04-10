@@ -60,11 +60,11 @@ type StoragepoolTierUsageModel struct {
 }
 
 type StoragepoolTierResourceModel struct {
-	Children types.List `tfsdk:"children"`
+	Children types.Set `tfsdk:"children"`
 	// Nodepools. The names or IDs of the tier's children.
 	Id types.Int64 `tfsdk:"id"`
 	// The unique identifier of the storagepool tier.
-	Lnns types.List `tfsdk:"lnns"`
+	Lnns types.Set `tfsdk:"lnns"`
 	// The nodes that are part of this tier.
 	Name types.String `tfsdk:"name"`
 	// The tier name.

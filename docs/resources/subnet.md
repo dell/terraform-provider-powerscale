@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -99,11 +99,11 @@ resource "powerscale_subnet" "subnet" {
 ### Optional
 
 - `description` (String) A description of the subnet.
-- `dsr_addrs` (List of String) List of Direct Server Return addresses.
+- `dsr_addrs` (Set of String) List of Direct Server Return addresses.
 - `gateway` (String) Gateway IP address.
 - `gateway_priority` (Number) Gateway priority.
 - `mtu` (Number) MTU of the subnet.
-- `sc_service_addrs` (Attributes List) List of IP addresses that SmartConnect listens for DNS requests. (see [below for nested schema](#nestedatt--sc_service_addrs))
+- `sc_service_addrs` (Attributes Set) List of IP addresses that SmartConnect listens for DNS requests. (see [below for nested schema](#nestedatt--sc_service_addrs))
 - `sc_service_name` (String) Domain Name corresponding to the SmartConnect Service Address.
 - `vlan_enabled` (Boolean) VLAN tagging enabled or disabled.
 - `vlan_id` (Number) VLAN ID for all interfaces in the subnet.
@@ -112,7 +112,7 @@ resource "powerscale_subnet" "subnet" {
 
 - `base_addr` (String) The base IP address.
 - `id` (String) Unique Subnet ID.
-- `pools` (List of String) Name of the pools in the subnet.
+- `pools` (Set of String) Name of the pools in the subnet.
 
 <a id="nestedatt--sc_service_addrs"></a>
 ### Nested Schema for `sc_service_addrs`
