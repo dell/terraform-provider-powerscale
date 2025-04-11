@@ -28,6 +28,7 @@ resource "powerscale_namespace_acl" "example_namespace_acl" {
 
   #   # Optional query parameters
   #   nsaccess = true
+  #   zone = "system"
   #
   #   # Optional fields both for creating and updating
   #   # For owner and group, please provide either the UID/GID or the name+type
