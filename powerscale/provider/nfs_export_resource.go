@@ -695,7 +695,6 @@ func (r *NfsExportResource) Schema(ctx context.Context, req resource.SchemaReque
 			"unresolved_clients": schema.SetAttribute{
 				Description:         "Reports clients that cannot be resolved.",
 				MarkdownDescription: "Reports clients that cannot be resolved.",
-				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
 			},

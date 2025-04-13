@@ -192,7 +192,6 @@ resource "powerscale_nfs_export" "example_export" {
 - `snapshot` (String) Specifies the snapshot for all mounts.
 - `symlinks` (Boolean) True if symlinks are supported. This value is used to advise the client of optimal settings for the server, but is not enforced.
 - `time_delta` (Number) Specifies the resolution of all time values that are returned to the clients
-- `unresolved_clients` (Set of String) Reports clients that cannot be resolved.
 - `write_datasync_action` (String) Specifies the action to be taken when an NFSv3+ datasync write is requested.
 - `write_datasync_reply` (String) Specifies the stability disposition returned when an NFSv3+ datasync write is processed.
 - `write_filesync_action` (String) Specifies the action to be taken when an NFSv3+ filesync write is requested.
@@ -207,6 +206,7 @@ resource "powerscale_nfs_export" "example_export" {
 ### Read-Only
 
 - `id` (Number) Specifies the system-assigned ID for the export. This ID is returned when an export is created through the POST method.
+- `unresolved_clients` (Set of String) Reports clients that cannot be resolved.
 
 <a id="nestedatt--map_all"></a>
 ### Nested Schema for `map_all`
