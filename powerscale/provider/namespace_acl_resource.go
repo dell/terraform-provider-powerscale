@@ -21,18 +21,19 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
+
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
-
-	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -83,6 +84,11 @@ func (r *NamespaceACLResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				Description:         "Provides the POSIX mode.",
 				MarkdownDescription: "Provides the POSIX mode.",
+			},
+			"zone": schema.StringAttribute{
+				Optional:            true,
+				Description:         "Indicates the zone of the namespace.",
+				MarkdownDescription: "Indicates the zone of the namespace.",
 			},
 			"owner": schema.SingleNestedAttribute{
 				Optional:            true,
