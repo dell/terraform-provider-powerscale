@@ -28,6 +28,7 @@ website/node_modules
 *.iml
 
 website/vendor
+openapi-generator-cli.jar
 
 # Test exclusions
 !command/test-fixtures/**/*.tfstate
