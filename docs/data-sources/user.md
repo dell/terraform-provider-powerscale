@@ -59,6 +59,13 @@ data "powerscale_user" "test_user" {
       # {
       #   name = "admin"
       # },
+      #{
+      #     sid = "S-1-5-21-3219966720-1480896164-796802738-501"
+      #},
+      #{
+      #    name = "admin"
+      #    sid = "S-1-5-21-3219966720-1480896164-796802738-501"
+      #},
       {
         name = "tfaccUserDatasource"
         uid  = 10000
@@ -115,6 +122,7 @@ Optional:
 Optional:
 
 - `name` (String) Specifies a user name.
+- `sid` (String) Specifies a numeric security identifier.
 - `uid` (Number) Specifies a numeric user identifier.
 
 
