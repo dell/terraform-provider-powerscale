@@ -95,17 +95,3 @@ func IsGroupnetUpdated(groupnetInPlan string, groupnetInResp string) bool {
 	}
 	return groupnetInResp != groupnetInPlan
 }
-
-// For List set explicitly from plan
-// This is to keep state in similar order to plan
-// Lists returned from the array are not always in the same order as they appear in the plan
-func AdsListsDiff(ctx context.Context, plan models.AdsProviderResourceModel, state *models.AdsProviderResourceModel) {
-	state.ExtraExpectedSpns = ListCheck(plan.ExtraExpectedSpns, plan.ExtraExpectedSpns.ElementType(ctx))
-	state.FindableGroups = ListCheck(plan.FindableGroups, plan.FindableGroups.ElementType(ctx))
-	state.FindableUsers = ListCheck(plan.FindableUsers, plan.FindableUsers.ElementType(ctx))
-	state.IgnoredTrustedDomains = ListCheck(plan.IgnoredTrustedDomains, plan.IgnoredTrustedDomains.ElementType(ctx))
-	state.LookupDomains = ListCheck(plan.LookupDomains, plan.LookupDomains.ElementType(ctx))
-	state.UnfindableGroups = ListCheck(plan.UnfindableGroups, plan.UnfindableGroups.ElementType(ctx))
-	state.UnfindableUsers = ListCheck(plan.UnfindableUsers, plan.UnfindableUsers.ElementType(ctx))
-	state.Spns = ListCheck(plan.Spns, plan.Spns.ElementType(ctx))
-}

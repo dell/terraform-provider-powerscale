@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -125,15 +125,15 @@ resource "powerscale_smb_share_settings" "example" {
 - `directory_create_mode` (Number) Unix umask or mode bits.
 - `file_create_mask` (Number) Unix umask or mode bits.
 - `file_create_mode` (Number) Unix umask or mode bits.
-- `file_filter_extensions` (List of String) Specifies the list of file extensions.
+- `file_filter_extensions` (Set of String) Specifies the list of file extensions.
 - `file_filter_type` (String) Specifies if filter list is for deny or allow. Default is deny.
 - `file_filtering_enabled` (Boolean) Enables file filtering on the share.
 - `hide_dot_files` (Boolean) Hide files and directories that begin with a period '.'.
-- `host_acl` (List of String) An ACL expressing which hosts are allowed access. A deny clause must be the final entry.
+- `host_acl` (Set of String) An ACL expressing which hosts are allowed access. A deny clause must be the final entry.
 - `impersonate_guest` (String) Specify the condition in which user access is done as the guest account. Acceptable values: always, bad user, never
 - `impersonate_user` (String) User account to be used as guest account.
 - `mangle_byte_start` (Number) Specifies the wchar_t starting point for automatic byte mangling.
-- `mangle_map` (List of String) Character mangle map.
+- `mangle_map` (Set of String) Character mangle map.
 - `ntfs_acl_support` (Boolean) Support NTFS ACLs on files and directories.
 - `oplocks` (Boolean) Allow oplock requests.
 - `scope` (String) When specified as 'effective', or not specified, all fields are returned. When specified as 'user', only fields with non-default values are shown. When specified as 'default', the original values are returned.

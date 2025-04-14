@@ -52,11 +52,11 @@ type NfsExportResource struct {
 	// True if the superuser can change file ownership. This parameter does not affect server behavior, but is included to accommodate legacy client requirements.
 	ChownRestricted types.Bool `tfsdk:"chown_restricted"`
 	// Specifies the clients with root access to the export.
-	Clients types.List `tfsdk:"clients"`
+	Clients types.Set `tfsdk:"clients"`
 	// True if NFS  commit  requests execute asynchronously.
 	CommitAsynchronous types.Bool `tfsdk:"commit_asynchronous"`
 	// Reports the paths that conflict with another export.
-	ConflictingPaths types.List `tfsdk:"conflicting_paths"`
+	ConflictingPaths types.Set `tfsdk:"conflicting_paths"`
 	// Specifies the user-defined string that is used to identify the export.
 	Description types.String `tfsdk:"description"`
 	// Specifies the preferred size for directory read operations. This value is used to advise the client of optimal settings for the server, but is not enforced.
@@ -88,11 +88,11 @@ type NfsExportResource struct {
 	// True if long file names result in an error. This parameter does not affect server behavior, but is included to accommodate legacy client requirements.
 	NoTruncate types.Bool `tfsdk:"no_truncate"`
 	// Specifies the paths under /ifs that are exported.
-	Paths types.List `tfsdk:"paths"`
+	Paths types.Set `tfsdk:"paths"`
 	// True if the export is set to read-only.
 	ReadOnly types.Bool `tfsdk:"read_only"`
 	// Specifies the clients with read-only access to the export.
-	ReadOnlyClients types.List `tfsdk:"read_only_clients"`
+	ReadOnlyClients types.Set `tfsdk:"read_only_clients"`
 	// Specifies the maximum buffer size that clients should use on NFS read requests. This value is used to advise the client of optimal settings for the server, but is not enforced.
 	ReadTransferMaxSize types.Int64 `tfsdk:"read_transfer_max_size"`
 	// Specifies the preferred multiple size for NFS read requests. This value is used to advise the client of optimal settings for the server, but is not enforced.
@@ -100,7 +100,7 @@ type NfsExportResource struct {
 	// Specifies the preferred size for NFS read requests. This value is used to advise the client of optimal settings for the server, but is not enforced.
 	ReadTransferSize types.Int64 `tfsdk:"read_transfer_size"`
 	// Specifies the clients with both read and write access to the export, even when the export is set to read-only.
-	ReadWriteClients types.List `tfsdk:"read_write_clients"`
+	ReadWriteClients types.Set `tfsdk:"read_write_clients"`
 	// True if 'readdirplus' requests are enabled. Enabling this property might improve network performance and is only available for NFSv3.
 	Readdirplus types.Bool `tfsdk:"readdirplus"`
 	// Sets the number of directory entries that are prefetched when a 'readdirplus' request is processed. (Deprecated.)
@@ -108,9 +108,9 @@ type NfsExportResource struct {
 	// Limits the size of file identifiers returned by NFSv3+ to 32-bit values (may require remount).
 	Return32bitFileIds types.Bool `tfsdk:"return_32bit_file_ids"`
 	// Clients that have root access to the export.
-	RootClients types.List `tfsdk:"root_clients"`
+	RootClients types.Set `tfsdk:"root_clients"`
 	// Specifies the authentication types that are supported for this export.
-	SecurityFlavors types.List `tfsdk:"security_flavors"`
+	SecurityFlavors types.Set `tfsdk:"security_flavors"`
 	// True if set attribute operations execute asynchronously.
 	SetattrAsynchronous types.Bool `tfsdk:"setattr_asynchronous"`
 	// Specifies the snapshot for all mounts.
@@ -120,7 +120,7 @@ type NfsExportResource struct {
 	// Specifies the resolution of all time values that are returned to the clients
 	TimeDelta types.Number `tfsdk:"time_delta"`
 	// Reports clients that cannot be resolved.
-	UnresolvedClients types.List `tfsdk:"unresolved_clients"`
+	UnresolvedClients types.Set `tfsdk:"unresolved_clients"`
 	// Specifies the action to be taken when an NFSv3+ datasync write is requested.
 	WriteDatasyncAction types.String `tfsdk:"write_datasync_action"`
 	// Specifies the stability disposition returned when an NFSv3+ datasync write is processed.

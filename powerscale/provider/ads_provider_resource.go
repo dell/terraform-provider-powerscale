@@ -135,21 +135,21 @@ func (r *AdsProviderResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:            true,
 				ElementType:         types.StringType,
 			},
-			"extra_expected_spns": schema.ListAttribute{
+			"extra_expected_spns": schema.SetAttribute{
 				Description:         "List of additional SPNs to expect beyond what automatic checking routines might find",
 				MarkdownDescription: "List of additional SPNs to expect beyond what automatic checking routines might find",
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
 			},
-			"findable_groups": schema.ListAttribute{
+			"findable_groups": schema.SetAttribute{
 				Description:         "Sets list of groups that can be resolved.",
 				MarkdownDescription: "Sets list of groups that can be resolved.",
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
 			},
-			"findable_users": schema.ListAttribute{
+			"findable_users": schema.SetAttribute{
 				Description:         "Sets list of users that can be resolved.",
 				MarkdownDescription: "Sets list of users that can be resolved.",
 				Optional:            true,
@@ -190,7 +190,7 @@ func (r *AdsProviderResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 			},
-			"ignored_trusted_domains": schema.ListAttribute{
+			"ignored_trusted_domains": schema.SetAttribute{
 				Description:         "Includes trusted domains when 'ignore_all_trusts' is set to false.",
 				MarkdownDescription: "Includes trusted domains when 'ignore_all_trusts' is set to false.",
 				Optional:            true,
@@ -231,7 +231,7 @@ func (r *AdsProviderResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 			},
-			"lookup_domains": schema.ListAttribute{
+			"lookup_domains": schema.SetAttribute{
 				Description:         "Limits user and group lookups to the specified domains.",
 				MarkdownDescription: "Limits user and group lookups to the specified domains.",
 				Optional:            true,
@@ -374,14 +374,14 @@ func (r *AdsProviderResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "If set to true, indicates that this provider instance was created by OneFS and cannot be removed.",
 				Computed:            true,
 			},
-			"unfindable_groups": schema.ListAttribute{
+			"unfindable_groups": schema.SetAttribute{
 				Description:         "Specifies groups that cannot be resolved by the provider.",
 				MarkdownDescription: "Specifies groups that cannot be resolved by the provider.",
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
 			},
-			"unfindable_users": schema.ListAttribute{
+			"unfindable_users": schema.SetAttribute{
 				Description:         "Specifies users that cannot be resolved by the provider.",
 				MarkdownDescription: "Specifies users that cannot be resolved by the provider.",
 				Optional:            true,
@@ -404,7 +404,7 @@ func (r *AdsProviderResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:            true,
 				ElementType:         types.StringType,
 			},
-			"spns": schema.ListAttribute{
+			"spns": schema.SetAttribute{
 				Description:         "Currently configured SPNs.",
 				MarkdownDescription: "Currently configured SPNs.",
 				Optional:            true,
@@ -444,14 +444,6 @@ func (r *AdsProviderResource) Create(ctx context.Context, req resource.CreateReq
 	diags := req.Plan.Get(ctx, &plan)
 
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	var absBackupPlan models.AdsProviderResourceModel
-	diagsBackup := req.Plan.Get(ctx, &absBackupPlan)
-
-	resp.Diagnostics.Append(diagsBackup...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -521,8 +513,6 @@ func (r *AdsProviderResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	helper.AdsListsDiff(ctx, absBackupPlan, &plan)
-
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -538,13 +528,6 @@ func (r *AdsProviderResource) Read(ctx context.Context, req resource.ReadRequest
 	var adsState models.AdsProviderResourceModel
 	diags := req.State.Get(ctx, &adsState)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	var absBackupPlan models.AdsProviderResourceModel
-	diagsBack := req.State.Get(ctx, &absBackupPlan)
-	resp.Diagnostics.Append(diagsBack...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -585,8 +568,6 @@ func (r *AdsProviderResource) Read(ctx context.Context, req resource.ReadRequest
 		)
 		return
 	}
-
-	helper.AdsListsDiff(ctx, absBackupPlan, &adsState)
 	diags = resp.State.Set(ctx, adsState)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -602,14 +583,6 @@ func (r *AdsProviderResource) Update(ctx context.Context, req resource.UpdateReq
 	var adsPlan models.AdsProviderResourceModel
 	diags := req.Plan.Get(ctx, &adsPlan)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	var absBackupPlan models.AdsProviderResourceModel
-	diagsBackup := req.Plan.Get(ctx, &absBackupPlan)
-
-	resp.Diagnostics.Append(diagsBackup...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -699,7 +672,6 @@ func (r *AdsProviderResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	helper.AdsListsDiff(ctx, absBackupPlan, &adsState)
 	diags = resp.State.Set(ctx, adsPlan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {

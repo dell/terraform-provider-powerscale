@@ -68,7 +68,7 @@ func (r *NtpSettingsResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 			},
-			"excluded": schema.ListAttribute{
+			"excluded": schema.SetAttribute{
 				Description:         "Node number (LNN) for nodes excluded from chimer duty.",
 				MarkdownDescription: "Node number (LNN) for nodes excluded from chimer duty.",
 				Optional:            true,
@@ -154,8 +154,6 @@ func (r *NtpSettingsResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	createdNtpSettings := getNtpSettingsResponse.Settings
-	// Since excluded is a list, to keep consistent with state we set this explicity from the state file
-	excluded := helper.ListCheck(plan.Excluded, plan.Excluded.ElementType(ctx))
 	err = helper.CopyFields(ctx, createdNtpSettings, &plan)
 	if err != nil {
 		errStr := constants.ReadNtpSettingsErrorMsg + "with error: "
@@ -166,7 +164,6 @@ func (r *NtpSettingsResource) Create(ctx context.Context, req resource.CreateReq
 		)
 		return
 	}
-	plan.Excluded = excluded
 
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -186,8 +183,6 @@ func (r *NtpSettingsResource) Read(ctx context.Context, req resource.ReadRequest
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	// Since excluded is a list, to keep consistent with state we set this explicity from the state file
-	excluded := helper.ListCheck(ntpSettingsState.Excluded, ntpSettingsState.Excluded.ElementType(ctx))
 
 	tflog.Debug(ctx, "calling get ntp settings")
 	ntpSettingsResponse, err := helper.GetNtpSettings(ctx, r.client)
@@ -216,8 +211,6 @@ func (r *NtpSettingsResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
-	ntpSettingsState.Excluded = excluded
-
 	diags = resp.State.Set(ctx, ntpSettingsState)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -243,9 +236,6 @@ func (r *NtpSettingsResource) Update(ctx context.Context, req resource.UpdateReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	// Since excluded is a list, to keep consistent with state we set this explicity from the state file
-	excluded := helper.ListCheck(ntpSettingsPlan.Excluded, ntpSettingsPlan.Excluded.ElementType(ctx))
 
 	tflog.Debug(ctx, "calling update ntp settings", map[string]interface{}{
 		"ntpSettingsPlan":  ntpSettingsPlan,
@@ -297,7 +287,6 @@ func (r *NtpSettingsResource) Update(ctx context.Context, req resource.UpdateReq
 		)
 		return
 	}
-	ntpSettingsPlan.Excluded = excluded
 	diags = resp.State.Set(ctx, ntpSettingsPlan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {

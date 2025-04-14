@@ -24,10 +24,10 @@ type SmbShareSettingsResourceModel struct {
 	ID                             types.String `tfsdk:"id"`
 	HideDotFiles                   types.Bool   `tfsdk:"hide_dot_files"`
 	AllowExecuteAlways             types.Bool   `tfsdk:"allow_execute_always"`
-	HostACL                        types.List   `tfsdk:"host_acl"`
+	HostACL                        types.Set    `tfsdk:"host_acl"`
 	DirectoryCreateMask            types.Int64  `tfsdk:"directory_create_mask"`
 	ImpersonateUser                types.String `tfsdk:"impersonate_user"`
-	FileFilterExtensions           types.List   `tfsdk:"file_filter_extensions"`
+	FileFilterExtensions           types.Set    `tfsdk:"file_filter_extensions"`
 	FileCreateMode                 types.Int64  `tfsdk:"file_create_mode"`
 	NtfsACLSupport                 types.Bool   `tfsdk:"ntfs_acl_support"`
 	AccessBasedEnumerationRootOnly types.Bool   `tfsdk:"access_based_enumeration_root_only"`
@@ -42,7 +42,7 @@ type SmbShareSettingsResourceModel struct {
 	FileFilteringEnabled           types.Bool   `tfsdk:"file_filtering_enabled"`
 	SparseFile                     types.Bool   `tfsdk:"sparse_file"`
 	ChangeNotify                   types.String `tfsdk:"change_notify"`
-	MangleMap                      types.List   `tfsdk:"mangle_map"`
+	MangleMap                      types.Set    `tfsdk:"mangle_map"`
 	FileCreateMask                 types.Int64  `tfsdk:"file_create_mask"`
 	ImpersonateGuest               types.String `tfsdk:"impersonate_guest"`
 	StrictCaLockout                types.Bool   `tfsdk:"strict_ca_lockout"`
