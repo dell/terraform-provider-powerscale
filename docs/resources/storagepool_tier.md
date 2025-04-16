@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,14 +72,14 @@ resource "powerscale_storagepool_tier" "example" {
 
 ### Optional
 
-- `children` (List of String) An optional parameter which adds new nodepools to the storagepool tier.
+- `children` (Set of String) An optional parameter which adds new nodepools to the storagepool tier.
 - `transfer_limit_pct` (Number) Stop moving files to this tier when this limit is met
 - `transfer_limit_state` (String) How the transfer limit value is being applied
 
 ### Read-Only
 
 - `id` (Number) Specifies a string which represents the unique identifier of storagepool tier
-- `lnns` (List of Number) The nodes that are part of this tier.
+- `lnns` (Set of Number) The nodes that are part of this tier.
 
 Unless specified otherwise, all fields of this resource can be updated.
 

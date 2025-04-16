@@ -165,11 +165,11 @@ type AdsProviderResourceModel struct {
 	// Get duplicate SPNs in the provider domain
 	DupSpns types.List `tfsdk:"dup_spns"`
 	// List of additional SPNs to expect beyond what automatic checking routines might find
-	ExtraExpectedSpns types.List `tfsdk:"extra_expected_spns"`
+	ExtraExpectedSpns types.Set `tfsdk:"extra_expected_spns"`
 	// Sets list of groups that can be resolved.
-	FindableGroups types.List `tfsdk:"findable_groups"`
+	FindableGroups types.Set `tfsdk:"findable_groups"`
 	// Sets list of users that can be resolved.
-	FindableUsers types.List `tfsdk:"findable_users"`
+	FindableUsers types.Set `tfsdk:"findable_users"`
 	// Specifies the Active Directory forest.
 	Forest types.String `tfsdk:"forest"`
 	// Groupnet identifier.
@@ -183,7 +183,7 @@ type AdsProviderResourceModel struct {
 	// If set to true, ignores all trusted domains.
 	IgnoreAllTrusts types.Bool `tfsdk:"ignore_all_trusts"`
 	// Includes trusted domains when 'ignore_all_trusts' is set to false.
-	IgnoredTrustedDomains types.List `tfsdk:"ignored_trusted_domains"`
+	IgnoredTrustedDomains types.Set `tfsdk:"ignored_trusted_domains"`
 	// Includes trusted domains when 'ignore_all_trusts' is set to true.
 	IncludeTrustedDomains types.List `tfsdk:"include_trusted_domains"`
 	// Specifies Active Directory provider instance.
@@ -197,7 +197,7 @@ type AdsProviderResourceModel struct {
 	// Specifies the login shell path.
 	LoginShell types.String `tfsdk:"login_shell"`
 	// Limits user and group lookups to the specified domains.
-	LookupDomains types.List `tfsdk:"lookup_domains"`
+	LookupDomains types.Set `tfsdk:"lookup_domains"`
 	// Looks up AD groups in other providers before allocating a group ID.
 	LookupGroups types.Bool `tfsdk:"lookup_groups"`
 	// Normalizes AD group names to lowercase before look up.
@@ -247,9 +247,9 @@ type AdsProviderResourceModel struct {
 	// If set to true, indicates that this provider instance was created by OneFS and cannot be removed.
 	System types.Bool `tfsdk:"system"`
 	// Specifies groups that cannot be resolved by the provider.
-	UnfindableGroups types.List `tfsdk:"unfindable_groups"`
+	UnfindableGroups types.Set `tfsdk:"unfindable_groups"`
 	// Specifies users that cannot be resolved by the provider.
-	UnfindableUsers types.List `tfsdk:"unfindable_users"`
+	UnfindableUsers types.Set `tfsdk:"unfindable_users"`
 	// Specifies the user name that has permission to join a machine to the given domain.
 	User types.String `tfsdk:"user"`
 	// Specifies the name of the access zone in which this provider was created.
@@ -257,5 +257,5 @@ type AdsProviderResourceModel struct {
 	// Configuration recommended SPNs.
 	RecommendedSpns types.List `tfsdk:"recommended_spns"`
 	// Currently configured SPNs.
-	Spns types.List `tfsdk:"spns"`
+	Spns types.Set `tfsdk:"spns"`
 }

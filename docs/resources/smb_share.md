@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -128,7 +128,7 @@ resource "powerscale_smb_share" "share_example" {
 
 - `name` (String) Share name.
 - `path` (String) Path of share within /ifs.
-- `permissions` (Attributes List) Specifies an ordered list of permission modifications. (see [below for nested schema](#nestedatt--permissions))
+- `permissions` (Attributes Set) Specifies an ordered list of permission modifications. (see [below for nested schema](#nestedatt--permissions))
 
 ### Optional
 
@@ -150,19 +150,19 @@ resource "powerscale_smb_share" "share_example" {
 - `directory_create_mode` (Number) Directory create mode bits.
 - `file_create_mask` (Number) File create mask bits.
 - `file_create_mode` (Number) File create mode bits.
-- `file_filter_extensions` (List of String) Specifies the list of file extensions.
+- `file_filter_extensions` (Set of String) Specifies the list of file extensions.
 - `file_filter_type` (String) Specifies if filter list is for deny or allow. Default is deny.
 - `file_filtering_enabled` (Boolean) Enables file filtering on this zone.
 - `hide_dot_files` (Boolean) Hide files and directories that begin with a period '.'.
-- `host_acl` (List of String) An ACL expressing which hosts are allowed access. A deny clause must be the final entry.
+- `host_acl` (Set of String) An ACL expressing which hosts are allowed access. A deny clause must be the final entry.
 - `impersonate_guest` (String) Specify the condition in which user access is done as the guest account.
 - `impersonate_user` (String) User account to be used as guest account.
 - `inheritable_path_acl` (Boolean) Set the inheritable ACL on the share path.
 - `mangle_byte_start` (Number) Specifies the wchar_t starting point for automatic byte mangling.
-- `mangle_map` (List of String) Character mangle map.
+- `mangle_map` (Set of String) Character mangle map.
 - `ntfs_acl_support` (Boolean) Support NTFS ACLs on files and directories.
 - `oplocks` (Boolean) Support oplocks.
-- `run_as_root` (Attributes List) Allow account to run as root. (see [below for nested schema](#nestedatt--run_as_root))
+- `run_as_root` (Attributes Set) Allow account to run as root. (see [below for nested schema](#nestedatt--run_as_root))
 - `smb3_encryption_enabled` (Boolean) Enables SMB3 encryption for the share.
 - `sparse_file` (Boolean) Enables sparse file.
 - `strict_ca_lockout` (Boolean) Specifies if persistent opens would do strict lockout on the share.

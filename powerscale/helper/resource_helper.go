@@ -106,7 +106,12 @@ func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interfa
 				if err != nil {
 					return err
 				}
-				destinationField.Set(reflect.ValueOf(types.ListNull(mapType)))
+				switch destinationField.Interface().(type) {
+				case types.Set:
+					destinationField.Set(reflect.ValueOf(types.SetNull(mapType)))
+				default:
+					destinationField.Set(reflect.ValueOf(types.ListNull(mapType)))
+				}
 			case reflect.Struct:
 				mapType, err := getStructAttrTypeFromType(ctx, structType.Field(i).Type)
 				if err != nil {
@@ -140,7 +145,12 @@ func CopyFieldsToNonNestedModel(ctx context.Context, source, destination interfa
 			case reflect.Bool:
 				destinationFieldValue = types.BoolValue(sourceField.Bool())
 			case reflect.Array, reflect.Slice:
-				destinationFieldValue, err = getSliceAttrValue(ctx, sourceField.Interface())
+				switch destinationField.Interface().(type) {
+				case types.Set:
+					destinationFieldValue, err = getSetFromSlice(ctx, sourceField.Interface())
+				default:
+					destinationFieldValue, err = getSliceAttrValue(ctx, sourceField.Interface())
+				}
 				if err != nil {
 					return err
 				}
@@ -335,8 +345,18 @@ func getStructValue(ctx context.Context, structObj interface{}) (basetypes.Objec
 	return object, nil
 }
 
-func getSliceAttrValue(ctx context.Context, sliceObject interface{}) (attr.Value, error) {
+func getSetFromSlice(ctx context.Context, sliceObject interface{}) (types.Set, error) {
+	listValue, err := getSliceAttrValue(ctx, sliceObject)
+	if err != nil {
+		return types.SetNull(listValue.ElementType(ctx)), err
+	}
+	setVal, _ := types.SetValue(listValue.ElementType(ctx), listValue.Elements())
+	return setVal, nil
+}
+
+func getSliceAttrValue(ctx context.Context, sliceObject interface{}) (types.List, error) {
 	sliceValue := reflect.ValueOf(sliceObject)
+	tfType := types.StringType // default value to be shadowed on a case-by-case basis
 	switch sliceValue.Type().Elem().Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		listValue, _ := types.ListValueFrom(ctx, types.Int64Type, sliceObject)
@@ -354,40 +374,41 @@ func getSliceAttrValue(ctx context.Context, sliceObject interface{}) (attr.Value
 		var values []attr.Value
 		sliceElemType, err := getStructAttrTypeFromType(ctx, sliceValue.Type().Elem())
 		if err != nil {
-			return nil, err
+			return types.ListNull(tfType), err
 		}
+		tfType := types.ObjectType{AttrTypes: sliceElemType}
 		for index := 0; index < sliceValue.Len(); index++ {
 			sliceElemValue, err := getStructValue(ctx, sliceValue.Index(index).Interface())
 			if err != nil {
-				return nil, err
+				return types.ListNull(tfType), err
 			}
 			values = append(values, sliceElemValue)
 		}
 		if len(values) == 0 {
-			return types.ListNull(types.ObjectType{AttrTypes: sliceElemType}), nil
+			return types.ListNull(tfType), nil
 		}
-		returnListValue, _ := types.ListValue(types.ObjectType{AttrTypes: sliceElemType}, values)
+		returnListValue, _ := types.ListValue(tfType, values)
 		return returnListValue, nil
 	case reflect.Array, reflect.Slice:
 		var values []attr.Value
-		sliceAttrType, err := getSliceAttrTypeFromType(ctx, sliceValue.Type().Elem())
+		tfType, err := getSliceAttrTypeFromType(ctx, sliceValue.Type().Elem())
 		if err != nil {
-			return nil, err
+			return types.ListNull(tfType), err
 		}
 		for index := 0; index < sliceValue.Len(); index++ {
 			sliceElemValue, err := getSliceAttrValue(ctx, sliceValue.Index(index).Interface())
 			if err != nil {
-				return nil, err
+				return types.ListNull(tfType), err
 			}
 			values = append(values, sliceElemValue)
 		}
 		if len(values) == 0 {
-			return types.ListNull(sliceAttrType), nil
+			return types.ListNull(tfType), nil
 		}
-		returnListValue, _ := types.ListValue(sliceAttrType, values)
+		returnListValue, _ := types.ListValue(tfType, values)
 		return returnListValue, nil
 	default:
-		return nil, fmt.Errorf("unknown type")
+		return types.ListNull(tfType), fmt.Errorf("unknown type")
 	}
 }
 
@@ -412,7 +433,7 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 			continue
 		}
 		if destinationField.IsValid() && destinationField.CanSet() {
-			switch sourceValue.Field(i).Interface().(type) {
+			switch val := sourceValue.Field(i).Interface().(type) {
 			case basetypes.StringValue:
 				stringVal, ok := sourceValue.Field(i).Interface().(basetypes.StringValue)
 				if !ok || stringVal.IsNull() || stringVal.IsUnknown() {
@@ -532,6 +553,15 @@ func ReadFromState(ctx context.Context, source, destination interface{}) error {
 				} else {
 					destinationField.Set(list)
 				}
+			case basetypes.SetValue:
+				if val.IsNull() || val.IsUnknown() {
+					continue
+				}
+				list, err := getFieldListVal(ctx, val, destinationField.Interface())
+				if err != nil {
+					return err
+				}
+				destinationField.Set(list)
 			}
 		}
 	}
@@ -676,7 +706,15 @@ func assignObjectToField(ctx context.Context, source basetypes.ObjectValue, dest
 	return nil
 }
 
-func getFieldListVal(ctx context.Context, source basetypes.ListValue, destination interface{}) (reflect.Value, error) {
+type listOrsetValue interface {
+	basetypes.ListValue | basetypes.SetValue
+	// the functions need to be explicitly defined till today due to GoLang issue
+	// https://github.com/golang/go/issues/51183
+	ElementType(context.Context) attr.Type
+	Elements() []attr.Value
+}
+
+func getFieldListVal[T listOrsetValue](ctx context.Context, source T, destination interface{}) (reflect.Value, error) {
 	destType := reflect.TypeOf(destination)
 	if destType.Kind() == reflect.Ptr {
 		destType = destType.Elem()
