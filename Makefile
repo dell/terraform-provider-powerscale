@@ -80,13 +80,13 @@ test: check
 	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4                    
 
 check:
-	#terraform fmt -recursive examples/
-	#gofmt -s -w .
-	#golangci-lint run --fix --timeout 5m
-	#go vet
+	terraform fmt -recursive examples/
+	gofmt -s -w .
+	golangci-lint run --fix --timeout 5m
+	go vet
 
 gosec:
-	# gosec -quiet -log gosec.log -out=gosecresults.csv -fmt=csv -exclude=G104 ./...
+	gosec -quiet -log gosec.log -out=gosecresults.csv -fmt=csv -exclude=G104 ./...
 
 testacc:
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m   
