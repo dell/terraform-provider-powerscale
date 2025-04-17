@@ -37,6 +37,12 @@ type UserMappingRulesFilterType struct {
 	Zone types.String `tfsdk:"zone"`
 }
 
+// UserMemberItem holds identity attribute for a auth member.
+type UserMappingMemberItem struct {
+	Name types.String `tfsdk:"name"`
+	UID  types.Int32  `tfsdk:"uid"`
+}
+
 // UserMappingRulesResourceModel holds user mapping rules resource schema attribute details.
 type UserMappingRulesResourceModel struct {
 	ID         types.String `tfsdk:"id"`
@@ -45,8 +51,8 @@ type UserMappingRulesResourceModel struct {
 	// Specifies the list of user mapping rules.
 	Rules types.List `tfsdk:"rules"`
 	//additional attributes in terraform side
-	TestMappingUsers       []UserMemberItem `tfsdk:"test_mapping_users"`
-	TestMappingUserResults types.List       `tfsdk:"mapping_users"`
+	TestMappingUsers       []UserMappingMemberItem `tfsdk:"test_mapping_users"`
+	TestMappingUserResults types.List              `tfsdk:"mapping_users"`
 }
 
 // V1MappingUsersRulesRule struct for V1MappingUsersRulesRule.

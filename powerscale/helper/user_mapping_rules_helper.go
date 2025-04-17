@@ -302,7 +302,7 @@ func UpdateUserMappingRules(ctx context.Context, client *client.Client, state *m
 }
 
 // GetLookupMappingUsers return lookup mapping users detail.
-func GetLookupMappingUsers(ctx context.Context, client *client.Client, zone string, user models.UserMemberItem) ([]powerscale.V1MappingUsersLookupMappingItem, error) {
+func GetLookupMappingUsers(ctx context.Context, client *client.Client, zone string, user models.UserMappingMemberItem) ([]powerscale.V1MappingUsersLookupMappingItem, error) {
 	getParam := client.PscaleOpenAPIClient.AuthApi.GetAuthv1MappingUsersLookup(ctx)
 	if !user.Name.IsNull() && user.Name.ValueString() != "" {
 		getParam = getParam.User(user.Name.ValueString())
