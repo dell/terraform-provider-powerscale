@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ resource "powerscale_namespace_acl" "example_namespace_acl" {
 
   #   # Optional query parameters
   #   nsaccess = true
+  #   zone = "system"
   #
   #   # Optional fields both for creating and updating
   #   # For owner and group, please provide either the UID/GID or the name+type
@@ -129,6 +130,7 @@ resource "powerscale_namespace_acl" "example_namespace_acl" {
 - `group` (Attributes) Provides the JSON object for the group persona of the owner. (see [below for nested schema](#nestedatt--group))
 - `nsaccess` (Boolean) Indicates that the operation is on the access point instead of the store path.
 - `owner` (Attributes) Provides the JSON object for the group persona of the owner. (see [below for nested schema](#nestedatt--owner))
+- `zone` (String) Indicates the zone of the namespace.
 
 ### Read-Only
 

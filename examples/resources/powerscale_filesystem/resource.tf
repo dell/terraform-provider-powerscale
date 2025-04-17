@@ -55,3 +55,39 @@ resource "powerscale_filesystem" "file_system_test" {
   # access_control = "0777"
 }
 # After the execution of above resource block, a PowerScale FileSystem(Namespace directory) would have been created at PowerScale array. You can also verify the changes made in terraform state file.
+
+# Steps to create a file system using the SID.
+
+# First use the user datasource to get the UID using the SID.
+data "powerscale_user" "getUserWithSID" {
+  filter {
+    names = [
+      {
+        name = "Guest"
+        sid  = "S-1-5-21-3219966720-1480896164-796802738-501"
+      }
+    ]
+  }
+}
+
+# Once you get the UID using the datasource , use that UID while creating your fileystem.
+
+resource "powerscale_filesystem" "ifs_testdir" {
+  access_control = "0770"
+  directory_path = "/ifs"
+  full_path      = "/ifs/new-fs"
+  group = {
+    id   = "GID:1800"
+    name = "Isilon Users"
+    type = "group"
+  }
+  name      = "new-fs"
+  overwrite = false
+  owner = {
+    id   = data.powerscale_user.getUserWithSID.users[0].uid
+    name = "Guest"
+    type = "user"
+  }
+  recursive = true
+}
+

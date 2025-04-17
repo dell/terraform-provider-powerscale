@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -260,6 +261,14 @@ func (d *UserDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 									MarkdownDescription: "Specifies a numeric user identifier.",
 									Optional:            true,
 								},
+								"sid": schema.StringAttribute{
+									Description:         "Specifies a numeric security identifier.",
+									MarkdownDescription: "Specifies a numeric security identifier.",
+									Optional:            true,
+									Validators: []validator.String{
+										stringvalidator.ConflictsWith(path.MatchRoot("filter").AtName("names").AtAnyListIndex().AtName("uid")),
+									},
+								},
 							},
 						},
 						Validators: []validator.List{
@@ -379,9 +388,10 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		for _, user := range state.Users {
 			for _, name := range state.Filter.Names {
 				if (!name.Name.IsNull() && user.Name.Equal(name.Name)) ||
-					(!name.UID.IsNull() && fmt.Sprintf("UID:%d", name.UID.ValueInt32()) == user.UID.ValueString()) {
+					(!name.UID.IsNull() && fmt.Sprintf("UID:%d", name.UID.ValueInt32()) == user.UID.ValueString()) ||
+					(!name.SID.IsNull() && fmt.Sprintf("SID:%v", name.SID.ValueString()) == user.SID.ValueString()) {
 					filteredUsers = append(filteredUsers, user)
-					validUsers = append(validUsers, fmt.Sprintf("Name: %s, UID: %s", user.Name, user.UID))
+					validUsers = append(validUsers, fmt.Sprintf("Name: %s, UID: %s, SID: %s", user.Name, user.UID, user.SID))
 					break
 				}
 			}

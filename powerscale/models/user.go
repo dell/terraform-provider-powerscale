@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -79,6 +79,7 @@ type UserFilterType struct {
 type UserMemberItem struct {
 	Name types.String `tfsdk:"name"`
 	UID  types.Int32  `tfsdk:"uid"`
+	SID  types.String `tfsdk:"sid"`
 }
 
 // UserResourceModel describes the resource data model.
