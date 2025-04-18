@@ -227,6 +227,16 @@ func (r *RoleResource) Create(ctx context.Context, req resource.CreateRequest, r
 		return
 	}
 
+	if !plan.Members.IsNull() {
+		err := helper.ValidateMembers(ctx, r.client, plan.Zone.ValueString(), roleToCreate.Members)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error validating role members",
+				fmt.Sprintf("%s", err.Error()),
+			)
+			return
+		}
+	}
 	roleID, err := helper.CreateRole(ctx, r.client, roleToCreate, plan)
 	if err != nil {
 		errStr := constants.CreateRoleErrorMsg + "with error: "
@@ -424,6 +434,18 @@ func (r *RoleResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		)
 		return
 	}
+
+	if !rolePlan.Members.IsNull() {
+		err := helper.ValidateMembers(ctx, r.client, rolePlan.Zone.ValueString(), roleToUpdate.Members)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error validating role members",
+				fmt.Sprintf("%s", err.Error()),
+			)
+			return
+		}
+	}
+
 	err = helper.UpdateRole(ctx, r.client, rolePlan, roleToUpdate)
 	if err != nil {
 		errStr := constants.UpdateRoleErrorMsg + "with error: "
