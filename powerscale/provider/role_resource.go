@@ -232,7 +232,7 @@ func (r *RoleResource) Create(ctx context.Context, req resource.CreateRequest, r
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error validating role members",
-				fmt.Sprintf("%s", err.Error()),
+				fmt.Sprintf("Invalid user/group: %s", err.Error()),
 			)
 			return
 		}
@@ -440,7 +440,7 @@ func (r *RoleResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error validating role members",
-				fmt.Sprintf("%s", err.Error()),
+				fmt.Sprintf("Invalid user/group: %s", err.Error()),
 			)
 			return
 		}
