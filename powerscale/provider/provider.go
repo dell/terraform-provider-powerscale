@@ -132,73 +132,74 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	usernameEnv := os.Getenv("POWERSCALE_USERNAME")
-	if usernameEnv != "" {
-		data.Username = types.StringValue(usernameEnv)
-	}
-
-	passEnv := os.Getenv("POWERSCALE_PASSWORD")
-	if passEnv != "" {
-		data.Password = types.StringValue(passEnv)
-	}
-
-	endpointEnv := os.Getenv("POWERSCALE_ENDPOINT")
-	if endpointEnv != "" {
-		data.Endpoint = types.StringValue(endpointEnv)
-	}
-
-	insecureEnv, errInsecure := strconv.ParseBool(os.Getenv("POWERSCALE_INSECURE"))
-	if errInsecure == nil {
-		data.Insecure = types.BoolValue(insecureEnv)
-	}
-
-	timeoutEnv, errTimeout := strconv.ParseInt(os.Getenv("POWERSCALE_TIMEOUT"), 10, 64)
-	if errTimeout == nil {
-		data.Timeout = types.Int64Value(timeoutEnv)
-	}
-
-	authTypeEnv, errAuthType := strconv.ParseInt(os.Getenv("POWERSCALE_AUTH_TYPE"), 10, 64)
-	if errAuthType == nil {
-		data.AuthType = types.Int64Value(authTypeEnv)
-	}
 
 	// if timeout is not set. use default value 2000
 	if data.Timeout.IsNull() || data.Timeout.IsUnknown() {
-		data.Timeout = types.Int64Value(2000)
+		timeoutEnv, errTimeout := strconv.ParseInt(os.Getenv("POWERSCALE_TIMEOUT"), 10, 64)
+		if errTimeout == nil {
+			data.Timeout = types.Int64Value(timeoutEnv)
+		} else {
+			data.Timeout = types.Int64Value(2000)
+		}
 	}
 	// If auth type is not set, use session based auth by default
 	if data.AuthType.IsNull() || data.AuthType.IsUnknown() {
-		data.AuthType = types.Int64Value(1)
+		authTypeEnv, errAuthType := strconv.ParseInt(os.Getenv("POWERSCALE_AUTH_TYPE"), 10, 64)
+		if errAuthType == nil {
+			data.AuthType = types.Int64Value(authTypeEnv)
+		} else {
+			data.AuthType = types.Int64Value(1)
+		}
 	}
 	// If Insecure is not set, set to false by default
 	if data.Insecure.IsNull() || data.Insecure.IsUnknown() {
-		data.Insecure = types.BoolValue(false)
+		insecureEnv, errInsecure := strconv.ParseBool(os.Getenv("POWERSCALE_INSECURE"))
+		if errInsecure == nil {
+			data.Insecure = types.BoolValue(insecureEnv)
+		} else {
+			data.Insecure = types.BoolValue(false)
+		}
 	}
 
 	if data.Username.IsUnknown() || data.Username.ValueString() == "" {
-		resp.Diagnostics.AddError(
-			"Unable to find username",
-			"Username cannot be an empty/unknown string",
-		)
+		usernameEnv := os.Getenv("POWERSCALE_USERNAME")
+		if usernameEnv != "" {
+			data.Username = types.StringValue(usernameEnv)
+		} else {
+			resp.Diagnostics.AddError(
+				"Unable to find username",
+				"Username cannot be an empty/unknown string",
+			)
+		}
 		return
 	}
 
 	if data.Password.IsUnknown() || data.Password.ValueString() == "" {
-		// Cannot connect to client with an unknown value
-		resp.Diagnostics.AddWarning(
-			"Unable to create client",
-			"Password cannot be an empty/unknown string",
-		)
-		return
+		passEnv := os.Getenv("POWERSCALE_PASSWORD")
+		if passEnv != "" {
+			data.Password = types.StringValue(passEnv)
+		} else {
+			// Cannot connect to client with an unknown value
+			resp.Diagnostics.AddWarning(
+				"Unable to create client",
+				"Password cannot be an empty/unknown string",
+			)
+			return
+		}
 	}
 
 	if data.Endpoint.IsUnknown() || data.Endpoint.ValueString() == "" {
-		// Cannot connect to client with an unknown value
-		resp.Diagnostics.AddWarning(
-			"Unable to create client",
-			"Password cannot be an empty/unknown string",
-		)
-		return
+		endpointEnv := os.Getenv("POWERSCALE_ENDPOINT")
+		if endpointEnv != "" {
+			data.Endpoint = types.StringValue(endpointEnv)
+		} else {
+			// Cannot connect to client with an unknown value
+			resp.Diagnostics.AddWarning(
+				"Unable to create client",
+				"Password cannot be an empty/unknown string",
+			)
+			return
+		}
 	}
 
 	// Configuration values are now available.
