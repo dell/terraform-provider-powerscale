@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"errors"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 
@@ -193,4 +194,36 @@ func ReorderRolePrivileges(localPrivileges types.List, remotePrivileges types.Li
 
 	orderedPrivilegeList, _ := types.ListValue(types.ObjectType{AttrTypes: rolePrivilegesType}, orderedPrivileges)
 	return orderedPrivilegeList, nil
+}
+
+// ValidateMembers validates members to be added to role
+func ValidateMembers(ctx context.Context, r *client.Client, zone string, members []powerscale.V1AuthAccessAccessItemFileGroup) error {
+	for _, member := range members {
+		// Check if user or group exists using ID
+		if member.Id != nil {
+			if strings.Contains(*member.Id, "UID:") {
+				_, err := GetUserWithZone(ctx, r, *member.Id, zone)
+				if err != nil {
+					return err
+				}
+			} else if strings.Contains(*member.Id, "GID:") {
+				_, err := GetUserGroupWithZone(ctx, r, *member.Id, zone)
+				if err != nil {
+					return err
+				}
+			}
+		} else if member.Type != nil && *member.Type == "user" {
+			// Check if user or group exists using name and type
+			_, err := GetUserWithZone(ctx, r, *member.Name, zone)
+			if err != nil {
+				return err
+			}
+		} else if member.Type != nil && *member.Type == "group" {
+			_, err := GetUserGroupWithZone(ctx, r, *member.Name, zone)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
