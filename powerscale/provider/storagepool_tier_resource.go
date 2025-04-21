@@ -21,7 +21,6 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	"reflect"
 	"strconv"
 
 	"terraform-provider-powerscale/client"
@@ -188,7 +187,7 @@ func (r *StoragepoolTierResource) Update(ctx context.Context, req resource.Updat
 		editValues.Name = plan.Name.ValueStringPointer()
 	}
 
-	if !reflect.DeepEqual(state.Children, plan.Children) {
+	if !plan.Children.IsUnknown() && !state.Children.Equal(plan.Children) {
 		var ChildrenList []string
 		if len(plan.Children.Elements()) > 0 {
 			diags := plan.Children.ElementsAs(ctx, &ChildrenList, false)
