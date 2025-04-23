@@ -15,6 +15,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
+# v1.7.1 (Apr 29, 2025)
+## Release Summary
+This release addresses bug fixes to improve stability and user experience for Dell PowerScale.
+
+## Bug Fixes
+* [Stabilizing the user addition to the role resource.](https://github.com/dell/dell-terraform-providers/issues/24)
+* [Reading addition field from networkpool resource.](https://github.com/dell/dell-terraform-providers/issues/23)
+* [Handling user present in non-system zone while using namespaceacl resource.](https://github.com/dell/dell-terraform-providers/issues/18)
+
 # v1.7.0 (Feb 28, 2025)
 ## Release Summary
 The release supports resources and data sources mentioned in the Features section for Dell PowerScale.
@@ -36,7 +45,7 @@ N/A
 
 ## Bug Fixes
 * resource/nfs_export: Fixes the ordering issue for clients and case sensitivity issue for zone attribute
-* resource/snapshot_schedule: Fixes the import issue 
+* resource/snapshot_schedule: Fixes the import issue
 
 
 # v1.6.0 (Nov 29, 2024)
