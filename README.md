@@ -55,99 +55,147 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 | v1.7.1                 | 9.5 <br> 9.7 <br> 9.8 <br> 9.10  | ubuntu22.04 <br>  rhel9.x |    1.9.x <br> 1.10.x         | 1.23       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
+
+### Cluster and System Settings
+
 * [Cluster](docs/data-sources/cluster.md)
-* [Access Zone](docs/data-sources/accesszone.md)
-* [ACL Settings](docs/data-sources/aclsettings.md)
-* [Active Directory Service Provider](docs/data-sources/adsprovider.md)
 * [Cluster Email Settings](docs/data-sources/cluster_email.md)
-* [File Pool Policy](docs/data-sources/filepool_policy.md)
+* [NTP Server](docs/data-sources/ntpserver.md)
+* [NTP Settings](docs/data-sources/ntpsettings.md)
+
+### Storage and Filesystem Management
+
 * [File System](docs/data-sources/filesystem.md)
+* [Quota](docs/data-sources/quota.md)
+* [Snapshot](docs/data-sources/snapshot.md)
+* [Snapshot Schedule](docs/data-sources/snapshot_schedule.md)
+* [Writeable Snapshot](docs/data-sources/writable_snapshot.md)
+* [S3 Bucket](docs/data-sources/s3_bucket.md)
+
+### Networking and Access
+
+* [Access Zone](docs/data-sources/accesszone.md)
 * [Groupnet](docs/data-sources/groupnet.md)
-* [LDAP Provider](docs/data-sources/ldap_provider.md)
-* [Namespace ACL](docs/data-sources/namespace_acl.md)
-* [Network Pool](docs/data-sources/networkpool.md)
 * [Network Rule](docs/data-sources/network_rule.md)
 * [Network Settings](docs/data-sources/network_settings.md)
+* [Network Pool](docs/data-sources/networkpool.md)
+* [Subnet](docs/data-sources/subnet.md)
+* [NFS Alias](docs/data-sources/nfs_alias.md)
 * [NFS Export](docs/data-sources/nfs_export.md)
 * [NFS Export Settings](docs/data-sources/nfs_export_settings.md)
 * [NFS Global Settings](docs/data-sources/nfs_global_settings.md)
 * [NFS Zone Settings](docs/data-sources/nfs_zone_settings.md)
-* [NTP Server](docs/data-sources/ntpserver.md)
-* [NTP Settings](docs/data-sources/ntpsettings.md)
-* [Quota](docs/data-sources/quota.md)
-* [Role](docs/data-sources/role.md)
-* [Role Privilege](docs/data-sources/roleprivilege.md)
-* [S3 Bucket](docs/data-sources/s3_bucket.md)
-* [Smart Pool Settings](docs/data-sources/smartpool_settings.md)
 * [SMB Server Settings](docs/data-sources/smb_server_settings.md)
 * [SMB Share](docs/data-sources/smb_share.md)
 * [SMB Share Settings](docs/data-sources/smb_share_settings.md)
-* [Snapshot](docs/data-sources/snapshot.md)
-* [Snapshot Schedule](docs/data-sources/snapshot_schedule.md)
-* [Subnet](docs/data-sources/subnet.md)
-* [User](docs/data-sources/user.md)
-* [User Group](docs/data-sources/user_group.md)
-* [User Mapping Rules](docs/data-sources/user_mapping_rules.md)
+
+### Data Protection and Replication
+
 * [SyncIQ Policy](docs/data-sources/synciq_policy.md)
 * [SyncIQ Global Settings](docs/data-sources/synciq_global_settings.md)
 * [SyncIQ Rule](docs/data-sources/synciq_rule.md)
 * [SyncIQ Peer Certificate](docs/data-sources/synciq_peer_certificate.md)
 * [SyncIQ Replication Report](docs/data-sources/synciq_replication_report.md)
-* [NFS Alias](docs/data-sources/nfs_alias.md)
-* [Writeable Snapshot](docs/data-sources/writable_snapshot.md)
 * [SyncIQ Replication Job](docs/data-sources/synciq_replication_job.md)
+
+### User and Role Management
+
+* [User](docs/data-sources/user.md)
+* [User Group](docs/data-sources/user_group.md)
+* [User Mapping Rules](docs/data-sources/user_mapping_rules.md)
+* [Role](docs/data-sources/role.md)
+* [Role Privilege](docs/data-sources/roleprivilege.md)
+
+### Authentication and Directory Services
+
+* [Active Directory Service Provider](docs/data-sources/adsprovider.md)
+* [LDAP Provider](docs/data-sources/ldap_provider.md)
+
+### File Pool and Storage Tiering
+
+* [File Pool Policy](docs/data-sources/filepool_policy.md)
+* [Smart Pool Settings](docs/data-sources/smartpool_settings.md)
 * [Storage Pool Tier](docs/data-sources/storagepool_tier.md)
 
+### Namespace and ACL Management
+
+* [Namespace ACL](docs/data-sources/namespace_acl.md)
+* [ACL Settings](docs/data-sources/aclsettings.md)
+
 ## List of Resources in Terraform Provider for Dell PowerScale
-* [Access Zone](docs/resources/accesszone.md)
-* [ACL Settings](docs/resources/aclsettings.md)
-* [Active Directory Service Provider](docs/resources/adsprovider.md)
+
+###  Cluster and System Settings
+
 * [Cluster Email Settings](docs/resources/cluster_email.md)
-* [File Pool Policy](docs/resources/filepool_policy.md)
+* [Cluster Identity](docs/resources/cluster_identity.md)
+* [Cluster SNMP](docs/resources/cluster_snmp.md)
+* [Cluster Owner](docs/resources/cluster_owner.md)
+* [Cluster Time](docs/resources/cluster_time.md)
+* [Support Assist](docs/resources/support_assist.md)
+
+### Storage and Filesystem Management
+
 * [File System](docs/resources/filesystem.md)
+* [Quota](docs/resources/quota.md)
+* [Snapshot](docs/resources/snapshot.md)
+* [Snapshot Restore](docs/resources/snapshot_restore.md)
+* [Snapshot Schedule](docs/resources/snapshot_schedule.md)
+* [Writeable Snapshot](docs/resources/writable_snapshot.md)
+* [S3 Bucket](docs/resources/s3_bucket.md)
+
+### Networking and Access
+
+* [Access Zone](docs/resources/accesszone.md)
 * [Groupnet](docs/resources/groupnet.md)
-* [LDAP Provider](docs/resources/ldap_provider.md)
-* [Namespace ACL](docs/resources/namespace_acl.md)
-* [Network Pool](docs/resources/networkpool.md)
 * [Network Rule](docs/resources/network_rule.md)
 * [Network Settings](docs/resources/network_settings.md)
+* [Network Pool](docs/resources/networkpool.md)
+* [Subnet](docs/resources/subnet.md)
+* [NFS Alias](docs/resources/nfs_alias.md)
 * [NFS Export](docs/resources/nfs_export.md)
 * [NFS Export Settings](docs/resources/nfs_export_settings.md)
 * [NFS Global Settings](docs/resources/nfs_global_settings.md)
 * [NFS Zone Settings](docs/resources/nfs_zone_settings.md)
 * [NTP Server](docs/resources/ntpserver.md)
 * [NTP Settings](docs/resources/ntpsettings.md)
-* [Quota](docs/resources/quota.md)
-* [Role](docs/resources/role.md)
-* [S3 Bucket](docs/resources/s3_bucket.md)
-* [Smart Pool Settings](docs/resources/smartpool_settings.md)
 * [SMB Server Settings](docs/resources/smb_server_settings.md)
 * [SMB Share](docs/resources/smb_share.md)
 * [SMB Share Settings](docs/resources/smb_share_settings.md)
-* [Snapshot](docs/resources/snapshot.md)
-* [Snapshot Schedule](docs/resources/snapshot_schedule.md)
-* [Subnet](docs/resources/subnet.md)
+* [S3 Global Settings](docs/resources/s3_global_settings.md)
+* [S3 Key](docs/resources/s3_key.md)
+* [S3 Zone Settings](docs/resources/s3_zone_settings.md)
+
+###  Data Protection and Replication
+
+* [SyncIQ Global Settings](docs/resources/synciq_global_settings.md)
+* [SyncIQ Peer Certificate](docs/resources/synciq_peer_certificate.md)
+* [SyncIQ Policy](docs/resources/synciq_policy.md)
+* [SyncIQ Replication Job](docs/resources/synciq_replication_job.md)
+* [SyncIQ Rules](docs/resources/synciq_rules.md)
+
+### User and Role Management
+
 * [User](docs/resources/user.md)
 * [User Group](docs/resources/user_group.md)
 * [User Mapping Rules](docs/resources/user_mapping_rules.md)
-* [Cluster Identity](docs/resources/cluster_identity.md)
-* [Cluster SNMP](docs/resources/cluster_snmp.md)
-* [Cluster Owner](docs/resources/cluster_owner.md)
-* [Cluster Time](docs/resources/cluster_time.md)
-* [Support Assist](docs/resources/support_assist.md)
-* [S3 Key](docs/resources/s3_key.md)
-* [S3 Zone Settings](docs/resources/s3_zone_settings.md)
-* [S3 Global Settings](docs/resources/s3_global_settings.md)
-* [SyncIQ Policy](docs/resources/synciq_policy.md)
-* [SyncIQ Global Settings](docs/resources/synciq_global_settings.md)
-* [SyncIQ Peer Certificate](docs/resources/synciq_peer_certificate.md)
-* [Support Assist](docs/resources/support_assist.md)
-* [Writeable Snapshot](docs/resources/writable_snapshot.md)
-* [Snapshot Restore](docs/resources/snapshot_restore.md)
-* [NFS Alias](docs/resources/nfs_alias.md)
-* [SyncIQ Replication Job](docs/resources/synciq_replication_job.md)
-* [SyncIQ Rules](docs/resources/synciq_rules.md)
+* [Role](docs/resources/role.md)
+
+### Authentication and Directory Services
+
+* [Active Directory Service Provider](docs/resources/adsprovider.md)
+* [LDAP Provider](docs/resources/ldap_provider.md)
+
+### File Pool and Storage Tiering
+
+* [File Pool Policy](docs/resources/filepool_policy.md)
+* [Smart Pool Settings](docs/resources/smartpool_settings.md)
 * [Storage Pool Tier](docs/resources/storagepool_tier.md)
+
+### Namespace and ACL Management
+
+* [Namespace ACL](docs/resources/namespace_acl.md)
+* [ACL Settings](docs/resources/aclsettings.md)
+
 
 ## Installation and execution of Terraform Provider for Dell PowerScale
 
