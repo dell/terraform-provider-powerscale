@@ -80,6 +80,9 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * [Network Settings](docs/data-sources/network_settings.md)
 * [Network Pool](docs/data-sources/networkpool.md)
 * [Subnet](docs/data-sources/subnet.md)
+
+### File Sharing
+
 * [NFS Alias](docs/data-sources/nfs_alias.md)
 * [NFS Export](docs/data-sources/nfs_export.md)
 * [NFS Export Settings](docs/data-sources/nfs_export_settings.md)
@@ -151,19 +154,22 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 * [Network Settings](docs/resources/network_settings.md)
 * [Network Pool](docs/resources/networkpool.md)
 * [Subnet](docs/resources/subnet.md)
+* [NTP Server](docs/resources/ntpserver.md)
+* [NTP Settings](docs/resources/ntpsettings.md)
+* [S3 Global Settings](docs/resources/s3_global_settings.md)
+* [S3 Key](docs/resources/s3_key.md)
+* [S3 Zone Settings](docs/resources/s3_zone_settings.md)
+
+### File Sharing
+
 * [NFS Alias](docs/resources/nfs_alias.md)
 * [NFS Export](docs/resources/nfs_export.md)
 * [NFS Export Settings](docs/resources/nfs_export_settings.md)
 * [NFS Global Settings](docs/resources/nfs_global_settings.md)
 * [NFS Zone Settings](docs/resources/nfs_zone_settings.md)
-* [NTP Server](docs/resources/ntpserver.md)
-* [NTP Settings](docs/resources/ntpsettings.md)
 * [SMB Server Settings](docs/resources/smb_server_settings.md)
 * [SMB Share](docs/resources/smb_share.md)
 * [SMB Share Settings](docs/resources/smb_share_settings.md)
-* [S3 Global Settings](docs/resources/s3_global_settings.md)
-* [S3 Key](docs/resources/s3_key.md)
-* [S3 Zone Settings](docs/resources/s3_zone_settings.md)
 
 ###  Data Protection and Replication
 
