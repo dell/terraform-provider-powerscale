@@ -23,6 +23,7 @@ This release addresses bug fixes to improve stability and user experience for De
 * [Stabilizing the user addition to the role resource.](https://github.com/dell/dell-terraform-providers/issues/24)
 * [Reading addition field from networkpool resource.](https://github.com/dell/dell-terraform-providers/issues/23)
 * [Handling user present in non-system zone while using namespaceacl resource.](https://github.com/dell/dell-terraform-providers/issues/18)
+* [Added support for SID in filters for user data-source.](https://github.com/dell/dell-terraform-providers/issues/21)
 
 # v1.7.0 (Feb 28, 2025)
 ## Release Summary
