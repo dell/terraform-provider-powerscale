@@ -53,7 +53,7 @@ terraform {
   required_providers {
     powerscale = {
       source  = "registry.terraform.io/dell/powerscale"
-      version = "1.7.0"
+      version = "1.7.1"
     }
   }
 }
