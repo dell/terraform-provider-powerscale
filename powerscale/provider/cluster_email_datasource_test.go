@@ -51,6 +51,7 @@ func TestAccClusterEmailDataSource(t *testing.T) {
 }
 
 func TestAccClusterEmailDatasourceErrorGetAll(t *testing.T) {
+	var FunctionMocker2 *Mocker
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -58,6 +59,7 @@ func TestAccClusterEmailDatasourceErrorGetAll(t *testing.T) {
 			{
 				PreConfig: func() {
 					FunctionMocker = Mock(helper.GetClusterEmail).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker2 = Mock(helper.GetClusterVersion).Return("", fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + clusterEmailDataSourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
@@ -67,13 +69,18 @@ func TestAccClusterEmailDatasourceErrorGetAll(t *testing.T) {
 					if FunctionMocker != nil {
 						FunctionMocker.Release()
 					}
+					if FunctionMocker2 != nil {
+						FunctionMocker2.Release()
+					}
 					FunctionMocker = Mock(helper.GetClusterVersion).Return("", fmt.Errorf("mock error")).Build()
+					FunctionMocker2 = Mock(helper.GetClusterEmail).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + clusterEmailDataSourceConfig,
 				ExpectError: regexp.MustCompile("mock error"),
 			},
 		},
 	})
+	FunctionMocker2.Release()
 }
 
 var clusterEmailDataSourceConfig = `

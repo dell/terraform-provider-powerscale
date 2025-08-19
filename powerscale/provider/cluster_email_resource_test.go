@@ -19,10 +19,11 @@ package provider
 
 import (
 	"fmt"
-	"github.com/bytedance/mockey"
 	"regexp"
 	"terraform-provider-powerscale/powerscale/helper"
 	"testing"
+
+	"github.com/bytedance/mockey"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
@@ -108,6 +109,7 @@ func TestAccClusterEmailResourceUpdate(t *testing.T) {
 }
 
 func TestAccClusterEmailResourceCreateMockErr(t *testing.T) {
+	var FunctionMocker2 *mockey.Mocker
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -118,6 +120,7 @@ func TestAccClusterEmailResourceCreateMockErr(t *testing.T) {
 			{
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.GetClusterEmail).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker2 = mockey.Mock(helper.GetV21ClusterEmail).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + clusterEmailUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -127,7 +130,11 @@ func TestAccClusterEmailResourceCreateMockErr(t *testing.T) {
 					if FunctionMocker != nil {
 						FunctionMocker.Release()
 					}
+					if FunctionMocker2 != nil {
+						FunctionMocker2.Release()
+					}
 					FunctionMocker = mockey.Mock(helper.UpdateClusterEmail).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker2 = mockey.Mock(helper.UpdateV21ClusterEmail).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + clusterEmailUpdateResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -154,9 +161,11 @@ func TestAccClusterEmailResourceCreateMockErr(t *testing.T) {
 			},
 		},
 	})
+	FunctionMocker2.Release()
 }
 
 func TestAccClusterEmailResourceUpdateMockErr(t *testing.T) {
+	var FunctionMocker2 *mockey.Mocker
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -164,6 +173,7 @@ func TestAccClusterEmailResourceUpdateMockErr(t *testing.T) {
 			{
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.GetClusterEmail).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker2 = mockey.Mock(helper.GetV21ClusterEmail).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + clusterEmailResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -173,7 +183,11 @@ func TestAccClusterEmailResourceUpdateMockErr(t *testing.T) {
 					if FunctionMocker != nil {
 						FunctionMocker.Release()
 					}
+					if FunctionMocker2 != nil {
+						FunctionMocker2.Release()
+					}
 					FunctionMocker = mockey.Mock(helper.UpdateClusterEmail).Return(fmt.Errorf("mock error")).Build()
+					FunctionMocker2 = mockey.Mock(helper.UpdateV21ClusterEmail).Return(fmt.Errorf("mock error")).Build()
 				},
 				Config:      ProviderConfig + clusterEmailResourceConfig,
 				ExpectError: regexp.MustCompile(`.*mock error*.`),
@@ -200,9 +214,11 @@ func TestAccClusterEmailResourceUpdateMockErr(t *testing.T) {
 			},
 		},
 	})
+	FunctionMocker2.Release()
 }
 
 func TestAccClusterEmailResourceImportMockErr(t *testing.T) {
+	var FunctionMocker2 *mockey.Mocker
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -216,7 +232,11 @@ func TestAccClusterEmailResourceImportMockErr(t *testing.T) {
 					if FunctionMocker != nil {
 						FunctionMocker.Release()
 					}
+					if FunctionMocker2 != nil {
+						FunctionMocker2.Release()
+					}
 					FunctionMocker = mockey.Mock(helper.GetClusterEmail).Return(nil, fmt.Errorf("mock error")).Build()
+					FunctionMocker2 = mockey.Mock(helper.GetV21ClusterEmail).Return(nil, fmt.Errorf("mock error")).Build()
 				},
 				Config:            ProviderConfig + clusterEmailResourceConfig,
 				ResourceName:      "powerscale_cluster_email.test",
@@ -226,6 +246,7 @@ func TestAccClusterEmailResourceImportMockErr(t *testing.T) {
 			},
 		},
 	})
+	FunctionMocker2.Release()
 }
 
 var clusterEmailResourceConfig = `
