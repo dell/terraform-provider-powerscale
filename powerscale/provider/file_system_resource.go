@@ -112,10 +112,11 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 						Description:         "Owner identifier",
 						MarkdownDescription: "Owner identifier",
 						Optional:            true,
-						Computed:            true,
-						Validators: []validator.String{stringvalidator.RegexMatches(
-							regexp.MustCompile(`^UID:`), "must start with 'UID:'",
-						)},
+						Computed:            true, Validators: []validator.String{
+							stringvalidator.RegexMatches(
+								regexp.MustCompile(`^(UID|SID):`), "must start with 'UID:' or 'SID:'",
+							),
+						},
 					},
 					"name": schema.StringAttribute{
 						Description:         "Owner name",
@@ -149,9 +150,11 @@ func (r *FileSystemResource) Schema(ctx context.Context, req resource.SchemaRequ
 						MarkdownDescription: "group identifier",
 						Optional:            true,
 						Computed:            true,
-						Validators: []validator.String{stringvalidator.RegexMatches(
-							regexp.MustCompile(`^GID:`), "must start with 'GID:'",
-						)},
+						Validators: []validator.String{
+							stringvalidator.RegexMatches(
+								regexp.MustCompile(`^(GID|SID):`), "must start with 'GID:' or 'SID:'",
+							),
+						},
 					},
 					"name": schema.StringAttribute{
 						Description:         "group name",
@@ -294,7 +297,11 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	// Update resource state
-	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta); diags.WarningsCount() > 0 {
+	resolveUID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
+		plan.Owner.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Owner.Type.ValueString(), "user"))
+	resolveGID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
+		plan.Group.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Group.Type.ValueString(), "group"))
+	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta, resolveUID, resolveGID); diags.WarningsCount() > 0 {
 		resp.Diagnostics.Append(diags...)
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
@@ -333,7 +340,11 @@ func (r *FileSystemResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta); diags.WarningsCount() > 0 {
+	resolveUID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
+		plan.Owner.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Owner.Type.ValueString(), "user"))
+	resolveGID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
+		plan.Group.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Group.Type.ValueString(), "group"))
+	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta, resolveUID, resolveGID); diags.WarningsCount() > 0 {
 		resp.Diagnostics.Append(diags...)
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
@@ -411,7 +422,11 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	// copy to model
-	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta); diags.WarningsCount() > 0 {
+	resolveUID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
+		plan.Owner.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Owner.Type.ValueString(), "user"))
+	resolveGID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
+		plan.Group.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Group.Type.ValueString(), "group"))
+	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta, resolveUID, resolveGID); diags.WarningsCount() > 0 {
 		resp.Diagnostics.Append(diags...)
 	}
 

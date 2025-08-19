@@ -375,3 +375,10 @@ func ListCheck(list types.List, elementType attr.Type) types.List {
 	}
 	return list
 }
+
+func DefaultIfEmpty(val, def string) string {
+	if val == "" {
+		return def
+	}
+	return val
+}

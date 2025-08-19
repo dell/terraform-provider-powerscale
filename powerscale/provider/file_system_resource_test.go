@@ -499,6 +499,36 @@ func TestAccFileSystemResourceDeleteMockErr(t *testing.T) {
 	})
 }
 
+func TestAccFileSystemResourceCreateAclSID(t *testing.T) {
+	var fileSystemResourceName = "powerscale_filesystem.file_system_test"
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfig + FileSystemResourceConfigWithUserSID,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(fileSystemResourceName, "name", "tfaccDirTf"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "id", "ifs/tfaccDirTf"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "owner.name", "tfaccUserCreation"),
+				),
+			},
+			{
+				Config: ProviderConfig + FileSystemResourceConfigWithUserSID,
+			},
+			{
+				Config: ProviderConfig + FileSystemResourceConfigWithUserSIDUpdate,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(fileSystemResourceName, "name", "tfaccDirTf"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "id", "ifs/tfaccDirTf"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "owner.name", "root"),
+					resource.TestCheckResourceAttr(fileSystemResourceName, "group.name", "wheel"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccFileSystemResourceReleaseMock(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -641,6 +671,59 @@ resource "powerscale_filesystem" "file_system_test" {
   }
 `
 
+var FileSystemResourceConfigWithUserSID = `
+resource "powerscale_user" "test" {
+	uid = 20000
+	name = "tfaccUserCreation"
+	email = "test@dell.com"
+	primary_group = "Administrators"
+	roles = ["SystemAdmin"]
+}
+
+resource "powerscale_filesystem" "file_system_test" {
+	depends_on = [powerscale_user.test]
+
+	name = "tfaccDirTf"
+  
+	recursive = true
+	overwrite = true
+	group = {
+	  id   = powerscale_user.test.primary_group_sid.id
+	}
+	owner = {
+	  id   = powerscale_user.test.sid
+	}
+  }
+`
+
+var FileSystemResourceConfigWithUserSIDUpdate = `
+resource "powerscale_user" "test" {
+	uid = 20000
+	name = "tfaccUserCreation"
+	email = "test@dell.com"
+	primary_group = "Administrators"
+	roles = ["SystemAdmin"]
+}
+
+resource "powerscale_filesystem" "file_system_test" {
+	depends_on = [powerscale_user.test]
+
+	name = "tfaccDirTf"
+  
+	recursive = true
+	overwrite = true
+
+	group = {
+		name = "wheel"
+		type = "group"
+	}
+	owner = {
+		name = "root"
+		type = "user"
+	}
+  }
+`
+
 var FileSystemResourceConfigWithUserChange = `
 resource "powerscale_user" "test" {
 	name = "tfaccUserCreation"
@@ -676,7 +759,7 @@ resource "powerscale_user" "test" {
 	enabled = true
 	email = "newTest@dell.com"
 	primary_group = "Administrators"
-	roles = ["tfaccUserRole"]
+	roles = ["BackupAdmin"]
   }
 
 resource "powerscale_user_group" "testDep" {
