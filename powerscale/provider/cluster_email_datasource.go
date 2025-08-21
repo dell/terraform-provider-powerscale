@@ -170,7 +170,7 @@ func (d *ClusterEmailDataSource) Read(ctx context.Context, req datasource.ReadRe
 	}
 
 	var clusterEmail *powerscale.V1ClusterEmail
-	if clusterVersion == "9.10.0.0" {
+	if helper.VersionGTE(clusterVersion, "9.10.0.0") {
 		clusterEmail, err = helper.GetV21ClusterEmail(ctx, d.client)
 	} else {
 		clusterEmail, err = helper.GetClusterEmail(ctx, d.client)

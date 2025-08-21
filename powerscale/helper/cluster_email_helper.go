@@ -89,7 +89,7 @@ func ManageClusterEmail(ctx context.Context, client *client.Client, plan models.
 		return state, resp
 	}
 
-	if clusterVersion == "9.10.0.0" {
+	if VersionGTE(clusterVersion, "9.10.0.0") {
 		err = UpdateV21ClusterEmail(ctx, client, toUpdate)
 	} else {
 		err = UpdateClusterEmail(ctx, client, toUpdate)
@@ -106,7 +106,7 @@ func ManageClusterEmail(ctx context.Context, client *client.Client, plan models.
 	}
 
 	var clusterEmail *powerscale.V1ClusterEmail
-	if clusterVersion == "9.10.0.0" {
+	if VersionGTE(clusterVersion, "9.10.0.0") {
 		clusterEmail, err = GetV21ClusterEmail(ctx, client)
 	} else {
 		clusterEmail, err = GetClusterEmail(ctx, client)
@@ -152,7 +152,7 @@ func ReadClusterEmail(ctx context.Context, client *client.Client, state *models.
 	}
 
 	var clusterEmail *powerscale.V1ClusterEmail
-	if clusterVersion == "9.10.0.0" {
+	if VersionGTE(clusterVersion, "9.10.0.0") {
 		clusterEmail, err = GetV21ClusterEmail(ctx, client)
 	} else {
 		clusterEmail, err = GetClusterEmail(ctx, client)
