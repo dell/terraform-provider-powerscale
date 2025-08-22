@@ -27,6 +27,7 @@ import (
 	"math/big"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 	"terraform-provider-powerscale/client"
 
@@ -376,9 +377,34 @@ func ListCheck(list types.List, elementType attr.Type) types.List {
 	return list
 }
 
+// DefaultIfEmpty returns the default value if the input value is empty
 func DefaultIfEmpty(val, def string) string {
 	if val == "" {
 		return def
 	}
 	return val
+}
+
+// VersionGTE returns true if v1 is greater than or equal to v2
+func VersionGTE(v1, v2 string) bool {
+	parts1 := strings.Split(v1, ".")
+	parts2 := strings.Split(v2, ".")
+	for len(parts1) < len(parts2) {
+		parts1 = append(parts1, "0")
+	}
+	for len(parts2) < len(parts1) {
+		parts2 = append(parts2, "0")
+	}
+
+	for i := 0; i < len(parts1); i++ {
+		n1, _ := strconv.Atoi(parts1[i])
+		n2, _ := strconv.Atoi(parts2[i])
+		if n1 > n2 {
+			return true
+		}
+		if n1 < n2 {
+			return false
+		}
+	}
+	return true // equal
 }
