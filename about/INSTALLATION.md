@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerscale = { 
-      version = "1.7.0"
+      version = "1.8.0"
       source = "registry.terraform.io/dell/powerscale"
     }
   }
