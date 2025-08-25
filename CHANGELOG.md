@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,6 +14,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+
+# v1.8.0 (Aug 29, 2025)
+## Release Summary
+This release enhances .
+
+## Bug Fixes
+* `powerscale_cluster_email`: fix version check for correct url call
+
+## Enhancements
+* [Added support for configuring Security Identifiers (SIDs) in the PowerScale filesystem resource.](https://github.com/dell/dell-terraform-providers/issues/21)
 
 # v1.7.1 (Apr 29, 2025)
 ## Release Summary

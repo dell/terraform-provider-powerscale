@@ -33,7 +33,7 @@ The following abridged example demonstrates the usage of the provider to create 
 
 ```terraform
 /*
-Copyright (c) 2023-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ terraform {
   required_providers {
     powerscale = {
       source  = "registry.terraform.io/dell/powerscale"
-      version = "1.7.1"
+      version = "1.8.0"
     }
   }
 }
