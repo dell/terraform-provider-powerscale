@@ -93,6 +93,10 @@ func TestAccNfsAliasResourceModifyErr(t *testing.T) {
 				ExpectError: regexp.MustCompile(`.*Error updating nfs alias*.`),
 			},
 			{
+				Config:      ProviderConfig + NfsAliasResourceConfigUpdatePathErr,
+				ExpectError: regexp.MustCompile(`.*Error updating nfs alias*.`),
+			},
+			{
 				PreConfig: func() {
 					if FunctionMocker != nil {
 						FunctionMocker.Release()
@@ -246,11 +250,18 @@ resource "powerscale_nfs_alias" "example" {
    zone = "Update"
   }
 `
+var NfsAliasResourceConfigUpdatePathErr = `
+resource "powerscale_nfs_alias" "example" {
+   name = "/NfsAlias"
+   path = "/ifs"
+   zone = "dev-tcz"
+  }
+`
 
 var NfsAliasResourceConfigUpdateErr2 = `
 resource "powerscale_nfs_alias" "example" {
-   name = "/NfsAlias"
-   path = "/Invalid"
+   name = "/NfsAlias2"
+   path = "/ifs/data"
    zone = "dev-tcz"
   }
 `

@@ -182,11 +182,15 @@ func (r *NfsAliasResource) Update(ctx context.Context, req resource.UpdateReques
 		)
 		return
 	}
+	if state.Path != plan.Path {
+		resp.Diagnostics.AddError(
+			"Error updating nfs alias",
+			"Path can't be updated",
+		)
+		return
+	}
 	if state.Name != plan.Name {
 		editValues.Name = plan.Name.ValueStringPointer()
-	}
-	if state.Path != plan.Path {
-		editValues.Path = plan.Path.ValueStringPointer()
 	}
 
 	diags := helper.UpdateNfsAlias(ctx, r.client, editValues, state)
