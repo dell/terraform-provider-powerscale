@@ -20,6 +20,7 @@ package helper
 import (
 	"context"
 	powerscale "dell/powerscale-go-client"
+	"sync"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 )
@@ -34,8 +35,14 @@ func DeleteSmbShare(ctx context.Context, client *client.Client, shareID string, 
 	return err
 }
 
+// Since concurrent calls to CREATE or UPDATE might lead to 409 conflict error
+// we need to lock the mutex here
+var smbShare sync.Mutex
+
 // CreateSmbShare create smb share.
 func CreateSmbShare(ctx context.Context, client *client.Client, share powerscale.V7SmbShare) (*powerscale.Createv12SmbShareResponse, error) {
+	smbShare.Lock()
+	defer smbShare.Unlock()
 	param := client.PscaleOpenAPIClient.ProtocolsApi.CreateProtocolsv7SmbShare(ctx).V7SmbShare(share)
 	if share.Zone != nil {
 		param = param.Zone(*(share.Zone))
@@ -56,6 +63,9 @@ func GetSmbShare(ctx context.Context, client *client.Client, shareID string, zon
 
 // UpdateSmbShare update smb share.
 func UpdateSmbShare(ctx context.Context, client *client.Client, shareID string, zone *string, shareToUpdate powerscale.V7SmbShareExtendedExtended) error {
+	smbShare.Lock()
+	defer smbShare.Unlock()
+
 	updateParam := client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv7SmbShare(ctx, shareID).V7SmbShare(shareToUpdate)
 	if shareToUpdate.Zone != nil {
 		updateParam = updateParam.Zone(*zone)
