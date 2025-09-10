@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsA
 	zoneParam := client.PscaleOpenAPIClient.ProtocolsApi.CreateProtocolsv2NfsAlias(ctx)
 	err := ReadFromState(ctx, &plan, &toCreate)
 	if err != nil {
-		errStr := constants.CreateNfsAliasErrorMsg + "with error: "
+		errStr := constants.CreateNfsAliasErrorMsg + " with error: "
 		message := GetErrorString(err, errStr)
 		diags.AddError(
 			"Error creating nfs alias",
@@ -54,7 +54,7 @@ func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsA
 
 	_, _, err2 := zoneParam.V2NfsAlias(toCreate).Execute()
 	if err2 != nil {
-		errStr := constants.CreateNfsAliasErrorMsg + "with error: "
+		errStr := constants.CreateNfsAliasErrorMsg + " with error: "
 		message := GetErrorString(err2, errStr)
 		diags.AddError(
 			"Error creating nfs alias",
@@ -65,9 +65,12 @@ func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsA
 
 	checkParam := client.PscaleOpenAPIClient.ProtocolsApi.ListProtocolsv2NfsAliases(ctx)
 	checkParam = checkParam.Check(true)
+	if !plan.Zone.IsNull() {
+		checkParam = checkParam.Zone(plan.Zone.ValueString())
+	}
 	nfsAliases, _, err := checkParam.Execute()
 	if err != nil {
-		errStr := constants.ReadNfsAliasErrorMsg + "with error: "
+		errStr := constants.ReadNfsAliasErrorMsg + " with error: "
 		message := GetErrorString(err, errStr)
 		diags.AddError(
 			"Error reading nfs alias",
@@ -101,10 +104,12 @@ func UpdateNfsAlias(ctx context.Context, client *client.Client, editValues power
 
 	editParam := client.PscaleOpenAPIClient.ProtocolsApi.UpdateProtocolsv2NfsAlias(ctx, state.ID.ValueString())
 	editParam = editParam.V2NfsAlias(editValues)
-
+	if !state.Zone.IsNull() {
+		editParam = editParam.Zone(state.Zone.ValueString())
+	}
 	_, err := editParam.Execute()
 	if err != nil {
-		errStr := constants.UpdateNfsAliasErrorMsg + "with error: "
+		errStr := constants.UpdateNfsAliasErrorMsg + " with error: "
 		message := GetErrorString(err, errStr)
 		diags.AddError(
 			"Error updating nfs alias",
@@ -121,9 +126,12 @@ func ReadNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAli
 
 	checkParam := client.PscaleOpenAPIClient.ProtocolsApi.GetProtocolsv2NfsAlias(ctx, plan.Name.ValueString())
 	checkParam = checkParam.Check(true)
+	if !plan.Zone.IsNull() {
+		checkParam = checkParam.Zone(plan.Zone.ValueString())
+	}
 	nfsAliases, _, err := checkParam.Execute()
 	if err != nil {
-		errStr := constants.ReadNfsAliasErrorMsg + "with error: "
+		errStr := constants.ReadNfsAliasErrorMsg + " with error: "
 		message := GetErrorString(err, errStr)
 		diags.AddError(
 			"Error reading nfs alias",

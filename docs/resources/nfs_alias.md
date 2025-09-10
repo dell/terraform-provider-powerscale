@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -53,11 +53,11 @@ limitations under the License.
 
 resource "powerscale_nfs_alias" "example" {
   # Required field both for creating and updating
-  name = "/exampleNfs"
-  path = "/ifs"
+  name = "/testNfs"
+  path = "/ifs/data"
 
   # Optional attribute for creating and updating
-  zone = "System"
+  zone = "dev-tcz"
 }
 ```
 
@@ -101,9 +101,11 @@ Import is supported using the following syntax:
 # limitations under the License.
 
 # The command is
-#terraform import powerscale_nfs_alias.example global_setting name_of_nfs_alias
-# Example:
-terraform import powerscale_nfs_alias.example global_setting "alias"
+# terraform import powerscale_nfs_alias.example [<zoneID>]:<name>
+# Example 1:  <zoneID> is Optional, defaults to System:
+terraform import powerscale_nfs_alias.example "alias"
+# Example 2:
+terraform import powerscale_nfs_alias.example zoneID:alias
 # after running this command, populate parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource.
 ```

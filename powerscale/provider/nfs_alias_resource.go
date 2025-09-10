@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,14 +21,15 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
+	"strings"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/constants"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -181,11 +182,15 @@ func (r *NfsAliasResource) Update(ctx context.Context, req resource.UpdateReques
 		)
 		return
 	}
+	if state.Path != plan.Path {
+		resp.Diagnostics.AddError(
+			"Error updating nfs alias",
+			"Path can't be updated",
+		)
+		return
+	}
 	if state.Name != plan.Name {
 		editValues.Name = plan.Name.ValueStringPointer()
-	}
-	if state.Path != plan.Path {
-		editValues.Path = plan.Path.ValueStringPointer()
 	}
 
 	diags := helper.UpdateNfsAlias(ctx, r.client, editValues, state)
@@ -216,6 +221,9 @@ func (r *NfsAliasResource) Delete(ctx context.Context, req resource.DeleteReques
 		return
 	}
 	deleteParam := r.client.PscaleOpenAPIClient.ProtocolsApi.DeleteProtocolsv2NfsAlias(ctx, data.ID.ValueString())
+	if !data.Zone.IsNull() {
+		deleteParam = deleteParam.Zone(data.Zone.ValueString())
+	}
 	_, err := deleteParam.Execute()
 	if err != nil {
 		errStr := constants.DeleteNfsAliasErrorMsg + "with error: "
@@ -234,5 +242,29 @@ func (r *NfsAliasResource) ImportState(ctx context.Context, req resource.ImportS
 		resp.Diagnostics.AddError("Please provide valid nfs alias ID", "Please provide valid nfs alias ID")
 		return
 	}
-	resource.ImportStatePassthroughID(ctx, path.Root("name"), req, resp)
+	var plan models.NfsAliasResourceModel
+	var state models.NfsAliasResourceModel
+
+	var zoneName string
+	aliasName := req.ID
+	// req.ID is form of zoneName:aliasName
+	if strings.Contains(req.ID, ":") {
+		params := strings.Split(req.ID, ":")
+		aliasName = strings.Trim(params[1], " ")
+		zoneName = strings.Trim(params[0], " ")
+	}
+
+	if zoneName != "" {
+		plan.Zone = types.StringValue(zoneName)
+	}
+	plan.Name = types.StringValue("/" + aliasName)
+
+	diags := helper.ReadNfsAlias(ctx, r.client, plan, &state)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	tflog.Info(ctx, "Done with Import NFS Alias")
 }

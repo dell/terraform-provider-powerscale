@@ -21,9 +21,9 @@ limitations under the License.
 
 resource "powerscale_nfs_alias" "example" {
   # Required field both for creating and updating
-  name = "/exampleNfs"
-  path = "/ifs"
+  name = "/testNfs"
+  path = "/ifs/data"
 
   # Optional attribute for creating and updating
-  zone = "System"
+  zone = "dev-tcz"
 }

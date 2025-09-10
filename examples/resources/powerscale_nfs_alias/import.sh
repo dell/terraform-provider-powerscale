@@ -14,9 +14,11 @@
 # limitations under the License.
 
 # The command is
-#terraform import powerscale_nfs_alias.example global_setting name_of_nfs_alias
-# Example:
-terraform import powerscale_nfs_alias.example global_setting "alias"
+# terraform import powerscale_nfs_alias.example [<zoneID>]:<name>
+# Example 1:  <zoneID> is Optional, defaults to System:
+terraform import powerscale_nfs_alias.example "alias"
+# Example 2:
+terraform import powerscale_nfs_alias.example zoneID:alias
 # after running this command, populate parameters in the config file to start managing this resource.
 # Note: running "terraform show" after importing shows the current config/state of the resource.
 
