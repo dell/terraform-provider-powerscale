@@ -170,8 +170,8 @@ func (p *PscaleProvider) Configure(ctx context.Context, req provider.ConfigureRe
 				"Unable to find username",
 				"Username cannot be an empty/unknown string",
 			)
+			return
 		}
-		return
 	}
 
 	if data.Password.IsUnknown() || data.Password.ValueString() == "" {
