@@ -59,12 +59,14 @@ uninstall:
 extract-client: 
 	unzip --qq -o 'goClientZip/powerscale-go-client.zip' -d ./powerscale-go-client/
 
-build-client:
+openapi-generator-cli.jar:
 	wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/6.6.0/openapi-generator-cli-6.6.0.jar -O openapi-generator-cli.jar
+
+build-client: openapi-generator-cli.jar
 	java -jar openapi-generator-cli.jar generate -i 'goClientZip/PowerScale_API_9.5.0.json' -g go --type-mappings integer+unsigned64=uint64 -o ${CLIENT_PATH}
 	unzip -qq -o goClientZip/powerscale-go-client.zip   ${MODIFIEDFILE1} ${MODIFIEDFILE2} -d ${CLIENT_PATH}
 
-compress-client:
+compress-client: build-client
 	cd ${CLIENT_PATH} && zip -q -o -r '../goClientZip/powerscale-go-client.zip' .
 
 no-extract-build: 
