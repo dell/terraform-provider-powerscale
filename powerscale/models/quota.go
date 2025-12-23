@@ -57,7 +57,7 @@ type QuotaResource struct {
 
 	// ReadOnly Attributes
 	// Represents the ratio of logical space provided to physical space used. This accounts for protection overhead, metadata, and compression ratios for the data.
-	EfficiencyRatio types.Number `tfsdk:"efficiency_ratio"`
+	EfficiencyRatio types.Float32 `tfsdk:"efficiency_ratio"`
 	// The system ID given to the quota.
 	ID types.String `tfsdk:"id"`
 	// Summary of notifications: 'custom' indicates one or more notification rules available from the notifications sub-resource; 'default' indicates system default rules are used; 'disabled' indicates that no notifications will be used for this quota.; 'badmap' indicates that notification rule has problem in rule map.
@@ -65,7 +65,7 @@ type QuotaResource struct {
 	// True if the default resource accounting is accurate on the quota. If false, this quota is waiting on completion of a QuotaScan job.
 	Ready types.Bool `tfsdk:"ready"`
 	// Represents the ratio of logical space provided to physical data space used. This accounts for compression and data deduplication effects.
-	ReductionRatio types.Number `tfsdk:"reduction_ratio"`
+	ReductionRatio types.Float32 `tfsdk:"reduction_ratio"`
 	// The usage of quota
 	Usage types.Object `tfsdk:"usage"`
 }
@@ -143,6 +143,34 @@ type QuotaThreshold struct {
 	PercentAdvisory types.Number `tfsdk:"percent_advisory"`
 	// Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started.
 	PercentSoft types.Number `tfsdk:"percent_soft"`
+	// Usage bytes at which notifications will be sent and soft grace time will be started.
+	Soft types.Int64 `tfsdk:"soft"`
+	// True if the soft threshold has been hit.
+	SoftExceeded types.Bool `tfsdk:"soft_exceeded"`
+	// Time in seconds after which the soft threshold has been hit before writes will be denied.
+	SoftGrace types.Int64 `tfsdk:"soft_grace"`
+	// Time at which soft threshold was hit
+	SoftLastExceeded types.Int64 `tfsdk:"soft_last_exceeded"`
+}
+
+// QuotaThresholdRs struct for Quota threshold for the Quota Resource.
+type QuotaThresholdRs struct {
+	// Usage bytes at which notifications will be sent but writes will not be denied.
+	Advisory types.Int64 `tfsdk:"advisory"`
+	// True if the advisory threshold has been hit.
+	AdvisoryExceeded types.Bool `tfsdk:"advisory_exceeded"`
+	// Time at which advisory threshold was hit.
+	AdvisoryLastExceeded types.Int64 `tfsdk:"advisory_last_exceeded"`
+	// Usage bytes at which further writes will be denied.
+	Hard types.Int64 `tfsdk:"hard"`
+	// True if the hard threshold has been hit.
+	HardExceeded types.Bool `tfsdk:"hard_exceeded"`
+	// Time at which hard threshold was hit.
+	HardLastExceeded types.Int64 `tfsdk:"hard_last_exceeded"`
+	// Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied.
+	PercentAdvisory types.Float32 `tfsdk:"percent_advisory"`
+	// Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started.
+	PercentSoft types.Float32 `tfsdk:"percent_soft"`
 	// Usage bytes at which notifications will be sent and soft grace time will be started.
 	Soft types.Int64 `tfsdk:"soft"`
 	// True if the soft threshold has been hit.

@@ -28,7 +28,9 @@ import (
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -38,8 +40,9 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource                = &QuotaResource{}
-	_ resource.ResourceWithImportState = &QuotaResource{}
+	_ resource.Resource                     = &QuotaResource{}
+	_ resource.ResourceWithImportState      = &QuotaResource{}
+	_ resource.ResourceWithConfigValidators = &QuotaResource{}
 )
 
 // NewQuotaResource returns the Quota resource object.
@@ -89,7 +92,7 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				MarkdownDescription: "The system ID given to the quota.",
 				Computed:            true,
 			},
-			"efficiency_ratio": schema.NumberAttribute{
+			"efficiency_ratio": schema.Float32Attribute{
 				Description:         "Represents the ratio of logical space provided to physical space used. This accounts for protection overhead, metadata, and compression ratios for the data.",
 				MarkdownDescription: "Represents the ratio of logical space provided to physical space used. This accounts for protection overhead, metadata, and compression ratios for the data.",
 				Computed:            true,
@@ -104,7 +107,7 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				MarkdownDescription: "True if the default resource accounting is accurate on the quota. If false, this quota is waiting on completion of a QuotaScan job.",
 				Computed:            true,
 			},
-			"reduction_ratio": schema.NumberAttribute{
+			"reduction_ratio": schema.Float32Attribute{
 				Description:         "Represents the ratio of logical space provided to physical data space used. This accounts for compression and data deduplication effects.",
 				MarkdownDescription: "Represents the ratio of logical space provided to physical data space used. This accounts for compression and data deduplication effects.",
 				Computed:            true,
@@ -281,8 +284,8 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 			},
 			"thresholds": schema.SingleNestedAttribute{
-				Description:         "The thresholds of quota",
-				MarkdownDescription: "The thresholds of quota",
+				Description:         "The thresholds of quota. To clear any threshold, set it to `0`.",
+				MarkdownDescription: "The thresholds of quota. To clear any threshold, set it to `0`.",
 				Optional:            true,
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{
@@ -318,15 +321,17 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						MarkdownDescription: "Time at which hard threshold was hit.",
 						Computed:            true,
 					},
-					"percent_advisory": schema.NumberAttribute{
+					"percent_advisory": schema.Float32Attribute{
 						Description:         "Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied.",
 						MarkdownDescription: "Advisory threshold as percent of hard threshold. Usage bytes at which notifications will be sent but writes will not be denied.",
 						Optional:            true,
+						Computed:            true,
 					},
-					"percent_soft": schema.NumberAttribute{
+					"percent_soft": schema.Float32Attribute{
 						Description:         "Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started.",
 						MarkdownDescription: "Soft threshold as percent of hard threshold. Usage bytes at which notifications will be sent and soft grace time will be started.",
 						Optional:            true,
+						Computed:            true,
 					},
 					"soft": schema.Int64Attribute{
 						Description:         "Usage bytes at which notifications will be sent and soft grace time will be started.",
@@ -363,19 +368,28 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 
 }
 
+func (r *QuotaResource) ConfigValidators(ctx context.Context) []resource.ConfigValidator {
+	return []resource.ConfigValidator{
+		// Prevent thresholds.soft and thresholds.percent_soft being set together
+		resourcevalidator.Conflicting(
+			path.MatchRoot("thresholds").AtName("soft"),
+			path.MatchRoot("thresholds").AtName("percent_soft"),
+		),
+
+		// Prevent thresholds.advisory and thresholds.percent_advisory being set together
+		resourcevalidator.Conflicting(
+			path.MatchRoot("thresholds").AtName("advisory"),
+			path.MatchRoot("thresholds").AtName("percent_advisory"),
+		),
+	}
+}
+
 // Create allocates the resource.
 func (r *QuotaResource) Create(ctx context.Context, request resource.CreateRequest, response *resource.CreateResponse) {
 	tflog.Info(ctx, "Creating quota")
 
 	var quotaPlan models.QuotaResource
 	diags := request.Plan.Get(ctx, &quotaPlan)
-	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-	var quotaPlanBackup models.QuotaResource
-	diags = request.Plan.Get(ctx, &quotaPlanBackup)
-
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
@@ -389,14 +403,24 @@ func (r *QuotaResource) Create(ctx context.Context, request resource.CreateReque
 		response.Diagnostics.AddError("Error creating quota", err.Error())
 		return
 	}
-	quotaToCreate := powerscale.V12QuotaQuota{}
-	// Get param from tf input
-	err := helper.ReadFromState(ctx, quotaPlan, &quotaToCreate)
-	if err != nil {
-		response.Diagnostics.AddError("Error creating quota",
-			fmt.Sprintf("Could not read quota param of Path: %s with error: %s", quotaPlan.Path.ValueString(), err.Error()),
-		)
-		return
+	quotaToCreate := powerscale.V12QuotaQuota{
+		Container:         helper.ValueToPointer[bool](quotaPlan.Container),
+		Enforced:          helper.ValueToPointer[bool](quotaPlan.Enforced),
+		Force:             helper.ValueToPointer[bool](quotaPlan.Force),
+		IgnoreLimitChecks: helper.ValueToPointer[bool](quotaPlan.IgnoreLimitChecks),
+		IncludeSnapshots:  quotaPlan.IncludeSnapshots.ValueBool(),
+		Path:              quotaPlan.Path.ValueString(),
+		Persona: helper.ValueToObject(quotaPlan.Persona,
+			func(in models.V1AuthAccessAccessItemFileGroup) *powerscale.V1AuthAccessAccessItemFileGroup {
+				return &powerscale.V1AuthAccessAccessItemFileGroup{
+					Id:   helper.ValueToPointer[string](in.ID),
+					Name: helper.ValueToPointer[string](in.Name),
+					Type: helper.ValueToPointer[string](in.Type),
+				}
+			}),
+		Thresholds:   helper.ValueToObject(quotaPlan.Thresholds, r.thresholdJson),
+		ThresholdsOn: helper.ValueToPointer[string](quotaPlan.ThresholdsOn),
+		Type:         quotaPlan.Type.ValueString(),
 	}
 	quotaID, err := helper.CreateQuota(ctx, r.client, quotaToCreate, quotaPlan.Zone.ValueString())
 	if err != nil {
@@ -427,45 +451,83 @@ func (r *QuotaResource) Create(ctx context.Context, request resource.CreateReque
 		return
 	}
 	createdQuota := getQuotaResponse.Quotas[0]
+	quotaState := r.model(createdQuota, quotaPlan)
 
-	err = helper.CopyFieldsToNonNestedModel(ctx, createdQuota, &quotaPlan)
-	if err != nil {
-		response.Diagnostics.AddError(
-			"Error creating quota",
-			fmt.Sprintf("Could not read quota %s with error: %s", quotaID, err.Error()),
-		)
-		return
-	}
-
-	quotaPlan.IgnoreLimitChecks = quotaPlanBackup.IgnoreLimitChecks
-	quotaPlan.Force = quotaPlanBackup.Force
-	if quotaPlanBackup.Persona.IsNull() || createdQuota.Type == "directory" {
-		quotaPlan.Persona = types.ObjectNull(quotaPlan.Persona.AttributeTypes(ctx))
-	}
-	quotaPlan.Thresholds, diags = helper.RemovePercentThreshold(ctx, quotaPlanBackup.Thresholds, quotaPlan.Thresholds)
+	diags = response.State.Set(ctx, quotaState)
 	response.Diagnostics.Append(diags...)
-
-	diags = response.State.Set(ctx, quotaPlan)
-	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
 	tflog.Info(ctx, "create quota completed")
+}
+
+func (r *QuotaResource) model(createdQuota powerscale.V12QuotaQuotaExtended,
+	quotaPlan models.QuotaResource) models.QuotaResource {
+	ret := models.QuotaResource{
+		Container:        types.BoolValue(createdQuota.Container),
+		EfficiencyRatio:  helper.TfFloat32NN(createdQuota.EfficiencyRatio),
+		Enforced:         types.BoolValue(createdQuota.Enforced),
+		ID:               types.StringValue(createdQuota.Id),
+		IncludeSnapshots: types.BoolValue(createdQuota.IncludeSnapshots),
+		Linked:           types.BoolValue(createdQuota.Linked),
+		Notifications:    types.StringValue(createdQuota.Notifications),
+		Path:             types.StringValue(createdQuota.Path),
+		Persona: helper.Object(models.V1AuthAccessAccessItemFileGroup{
+			ID:   helper.TfString(createdQuota.Persona.Id),
+			Name: helper.TfString(createdQuota.Persona.Name),
+			Type: helper.TfString(createdQuota.Persona.Type),
+		}),
+		Ready:          types.BoolValue(createdQuota.Ready),
+		ReductionRatio: helper.TfFloat32NN(createdQuota.ReductionRatio),
+		Thresholds: helper.Object(models.QuotaThresholdRs{
+			Advisory:             helper.TfInt64NN(&createdQuota.Thresholds.Advisory),
+			AdvisoryExceeded:     helper.TfBoolNN(&createdQuota.Thresholds.AdvisoryExceeded),
+			AdvisoryLastExceeded: helper.TfInt64NN(&createdQuota.Thresholds.AdvisoryLastExceeded),
+			Hard:                 helper.TfInt64NN(&createdQuota.Thresholds.Hard),
+			HardExceeded:         helper.TfBoolNN(&createdQuota.Thresholds.HardExceeded),
+			HardLastExceeded:     helper.TfInt64NN(&createdQuota.Thresholds.HardLastExceeded),
+			PercentAdvisory:      helper.TfFloat32NN(createdQuota.Thresholds.PercentAdvisory),
+			PercentSoft:          helper.TfFloat32NN(createdQuota.Thresholds.PercentSoft),
+			Soft:                 helper.TfInt64NN(&createdQuota.Thresholds.Soft),
+			SoftExceeded:         helper.TfBool(&createdQuota.Thresholds.SoftExceeded),
+			SoftGrace:            helper.TfInt64(&createdQuota.Thresholds.SoftGrace),
+			SoftLastExceeded:     helper.TfInt64(&createdQuota.Thresholds.SoftLastExceeded),
+		}),
+		ThresholdsOn: helper.TfStringNN(createdQuota.ThresholdsOn),
+		Type:         types.StringValue(createdQuota.Type),
+		Usage: helper.Object(models.QuotaUsage{
+			Applogical:              types.Int64Value(createdQuota.Usage.Applogical),
+			ApplogicalReady:         types.BoolValue(createdQuota.Usage.ApplogicalReady),
+			Fslogical:               types.Int64Value(createdQuota.Usage.Fslogical),
+			FslogicalReady:          types.BoolValue(createdQuota.Usage.FslogicalReady),
+			Fsphysical:              helper.TfInt64(createdQuota.Usage.Fsphysical),
+			FsphysicalReady:         types.BoolValue(createdQuota.Usage.FslogicalReady),
+			Inodes:                  types.Int64Value(createdQuota.Usage.Inodes),
+			InodesReady:             types.BoolValue(createdQuota.Usage.InodesReady),
+			Physical:                types.Int64Value(createdQuota.Usage.Physical),
+			PhysicalData:            types.Int64Value(createdQuota.Usage.PhysicalData),
+			PhysicalDataReady:       types.BoolValue(createdQuota.Usage.PhysicalDataReady),
+			PhysicalProtection:      types.Int64Value(createdQuota.Usage.PhysicalProtection),
+			PhysicalProtectionReady: types.BoolValue(createdQuota.Usage.PhysicalProtectionReady),
+			PhysicalReady:           types.BoolValue(createdQuota.Usage.PhysicalReady),
+			ShadowRefs:              types.Int64Value(createdQuota.Usage.ShadowRefs),
+			ShadowRefsReady:         types.BoolValue(createdQuota.Usage.ShadowRefsReady),
+		}),
+		// from state
+		IgnoreLimitChecks: quotaPlan.IgnoreLimitChecks,
+		Force:             quotaPlan.Force,
+		Zone:              quotaPlan.Zone,
+	}
+
+	if quotaPlan.Persona.IsNull() || createdQuota.Type == "directory" {
+		ret.Persona = helper.ObjectNull(models.V1AuthAccessAccessItemFileGroup{})
+	}
+	return ret
 }
 
 // Update updates the resource state.
 func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
 	tflog.Info(ctx, "updating quota")
-	var quotaPlan models.QuotaResource
-	diags := request.Plan.Get(ctx, &quotaPlan)
-	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
-	var quotaState models.QuotaResource
-	diags = response.State.Get(ctx, &quotaState)
-	response.Diagnostics.Append(diags...)
+	var quotaPlan, quotaState models.QuotaResource
+	response.Diagnostics.Append(request.Plan.Get(ctx, &quotaPlan)...)
+	response.Diagnostics.Append(response.State.Get(ctx, &quotaState)...)
 	if response.Diagnostics.HasError() {
 		return
 	}
@@ -486,18 +548,17 @@ func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateReque
 		return
 	}
 
-	var quotaToUpdate powerscale.V12QuotaQuotaExtendedExtended
-	// Get param from tf input
-	err := helper.ReadFromState(ctx, quotaPlan, &quotaToUpdate)
-	if err != nil {
-		response.Diagnostics.AddError(
-			"Error updating quota",
-			fmt.Sprintf("Could not read quota struct %s with error: %s", quotaID, err.Error()),
-		)
-		return
+	quotaToUpdate := powerscale.V12QuotaQuotaExtendedExtended{
+		Container:         helper.ValueToPointer[bool](quotaPlan.Container),
+		Enforced:          helper.ValueToPointer[bool](quotaPlan.Enforced),
+		Force:             helper.ValueToPointer[bool](quotaPlan.Force),
+		IgnoreLimitChecks: helper.ValueToPointer[bool](quotaPlan.IgnoreLimitChecks),
+		Linked:            helper.ValueToPointer[bool](quotaPlan.Linked),
+		Thresholds:        helper.ValueToObject(quotaPlan.Thresholds, r.thresholdJson),
+		ThresholdsOn:      helper.ValueToPointer[string](quotaPlan.ThresholdsOn),
 	}
 
-	err = helper.UpdateQuota(ctx, r.client, quotaID, quotaToUpdate, quotaState.Linked.ValueBool())
+	err := helper.UpdateQuota(ctx, r.client, quotaID, quotaToUpdate, quotaState.Linked.ValueBool())
 	if err != nil {
 		errStr := constants.UpdateQuotaErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -526,31 +587,33 @@ func (r *QuotaResource) Update(ctx context.Context, request resource.UpdateReque
 		return
 	}
 
-	err = helper.CopyFieldsToNonNestedModel(ctx, updatedQuota.Quotas[0], &quotaState)
-	if err != nil {
-		response.Diagnostics.AddError(
-			"Error reading quota",
-			fmt.Sprintf("Could not read quota struct %s with error: %s", quotaID, err.Error()),
-		)
-		return
-	}
-	quotaState.IgnoreLimitChecks = quotaPlan.IgnoreLimitChecks
-	quotaState.Force = quotaPlan.Force
-	if quotaPlan.Zone.ValueString() != "" {
-		quotaState.Zone = quotaPlan.Zone
-	}
-	if quotaPlan.Persona.IsNull() || quotaPlan.Type.ValueString() == "directory" {
-		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
-	}
-	quotaState.Thresholds, diags = helper.RemovePercentThreshold(ctx, quotaPlan.Thresholds, quotaState.Thresholds)
-	response.Diagnostics.Append(diags...)
-
-	diags = response.State.Set(ctx, quotaState)
-	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
+	quotaUpdateState := r.model(updatedQuota.Quotas[0], quotaPlan)
+	response.Diagnostics.Append(response.State.Set(ctx, quotaUpdateState)...)
 	tflog.Info(ctx, "update quota completed")
+}
+
+func (r *QuotaResource) thresholdJson(in models.QuotaThresholdRs) *powerscale.V12QuotaQuotaThresholds {
+	// for thresholds, if the user sets 0, we need to send null
+	int64Threshold := func(in types.Int64) powerscale.NullableInt64 {
+		if !(in.IsNull() || in.IsUnknown()) && in.ValueInt64() == 0 {
+			return *powerscale.NewNullableInt64(nil)
+		}
+		return *powerscale.NewNullableInt64(helper.ValueToPointer[int64](in))
+	}
+	float32Threshold := func(in types.Float32) powerscale.NullableFloat32 {
+		if !(in.IsNull() || in.IsUnknown()) && in.ValueFloat32() == 0 {
+			return *powerscale.NewNullableFloat32(nil)
+		}
+		return *powerscale.NewNullableFloat32(helper.ValueToPointer[float32](in))
+	}
+	return &powerscale.V12QuotaQuotaThresholds{
+		Advisory:        int64Threshold(in.Advisory),
+		Hard:            int64Threshold(in.Hard),
+		PercentAdvisory: float32Threshold(in.PercentAdvisory),
+		PercentSoft:     float32Threshold(in.PercentSoft),
+		Soft:            int64Threshold(in.Soft),
+		SoftGrace:       int64Threshold(in.SoftGrace),
+	}
 }
 
 // Read reads data from the resource.
@@ -558,9 +621,6 @@ func (r *QuotaResource) Read(ctx context.Context, request resource.ReadRequest, 
 	tflog.Info(ctx, "Reading Quota resource")
 	var quotaState models.QuotaResource
 	diags := request.State.Get(ctx, &quotaState)
-	response.Diagnostics.Append(diags...)
-	var quotaStateBackup models.QuotaResource
-	diags = request.State.Get(ctx, &quotaStateBackup)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
@@ -592,27 +652,8 @@ func (r *QuotaResource) Read(ctx context.Context, request resource.ReadRequest, 
 		"QuotaResponse": quotaResponse,
 		"QuotaState":    quotaState,
 	})
-	err = helper.CopyFieldsToNonNestedModel(ctx, quotaResponse.Quotas[0], &quotaState)
-	if err != nil {
-		response.Diagnostics.AddError(
-			"Error read quota",
-			fmt.Sprintf("Could not read quota struct %s with error: %s", quotaID, err.Error()),
-		)
-		return
-	}
-	quotaState.IgnoreLimitChecks = quotaStateBackup.IgnoreLimitChecks
-	quotaState.Force = quotaStateBackup.Force
-	if quotaStateBackup.Persona.IsNull() || quotaStateBackup.Type.ValueString() == "directory" {
-		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
-	}
-	quotaState.Thresholds, diags = helper.RemovePercentThreshold(ctx, quotaStateBackup.Thresholds, quotaState.Thresholds)
-	response.Diagnostics.Append(diags...)
-
-	diags = response.State.Set(ctx, quotaState)
-	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
+	quotaUpdateState := r.model(quotaResponse.Quotas[0], quotaState)
+	response.Diagnostics.Append(response.State.Set(ctx, quotaUpdateState)...)
 	tflog.Info(ctx, "read quota completed")
 }
 
@@ -678,30 +719,12 @@ func (r QuotaResource) ImportState(ctx context.Context, request resource.ImportS
 		)
 		return
 	}
-	var quotaState models.QuotaResource
 	tflog.Debug(ctx, "updating read quota state", map[string]interface{}{
 		"QuotaResponse": quotaResponse,
-		"QuotaState":    quotaState,
 	})
-	err = helper.CopyFieldsToNonNestedModel(ctx, quotaResponse.Quotas[0], &quotaState)
-	if err != nil {
-		response.Diagnostics.AddError(
-			"Error importing quota",
-			fmt.Sprintf("Could not read quota struct %s with error: %s", quotaID, err.Error()),
-		)
-		return
-	}
-	if quotaState.Type.ValueString() == "directory" {
-		quotaState.Persona = types.ObjectNull(quotaState.Persona.AttributeTypes(ctx))
-	}
-	quotaState.Zone = types.StringNull()
-	if zoneName != "" {
-		quotaState.Zone = types.StringValue(zoneName)
-	}
-	diags := response.State.Set(ctx, quotaState)
-	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
+	quotaState := r.model(quotaResponse.Quotas[0], models.QuotaResource{
+		Zone: types.StringValue(zoneName),
+	})
+	response.Diagnostics.Append(response.State.Set(ctx, quotaState)...)
 	tflog.Info(ctx, "importing quota completed")
 }
