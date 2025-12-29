@@ -213,7 +213,7 @@ func (r *QuotaResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Description:         "The type of quota.",
 				MarkdownDescription: "The type of quota.",
 				Required:            true,
-				Validators: []validator.String{stringvalidator.OneOf("directory", "user", "group", "default-directory", "default-user", "default-group")},
+				Validators:          []validator.String{stringvalidator.OneOf("directory", "user", "group", "default-directory", "default-user", "default-group")},
 			},
 			"include_snapshots": schema.BoolAttribute{
 				Description:         "If true, quota governs snapshot data as well as head data.",
