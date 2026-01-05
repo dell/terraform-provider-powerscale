@@ -171,6 +171,8 @@ func IsQuotaParamInvalid(plan models.QuotaResource) error {
 		if !plan.Zone.IsNull() {
 			return fmt.Errorf("\"zone\" is not needed for %s type", quotaType)
 		}
+	case "default-directory", "default-user", "default-group":
+		return nil
 	default:
 		return fmt.Errorf("unsupported type: %s", quotaType)
 	}
