@@ -124,6 +124,39 @@ func CopyFields(ctx context.Context, source, destination interface{}) error {
 							}
 							slice.Index(index).Set(reflect.ValueOf(newDes))
 						case reflect.Struct:
+							// Check if destination is a Terraform primitive type wrapper
+							destTypeName := v.Type().String()
+							srcKind := value.Kind()
+							if srcKind == reflect.Ptr {
+								if value.IsNil() {
+									continue
+								}
+								srcKind = value.Elem().Kind()
+								value = value.Elem()
+							}
+							// Handle primitive source to Terraform type destination
+							if srcKind == reflect.Int || srcKind == reflect.Int8 || srcKind == reflect.Int16 || srcKind == reflect.Int32 || srcKind == reflect.Int64 {
+								if strings.Contains(destTypeName, "Int64") {
+									slice.Index(index).Set(reflect.ValueOf(types.Int64Value(value.Int())))
+									continue
+								}
+							} else if srcKind == reflect.Uint || srcKind == reflect.Uint8 || srcKind == reflect.Uint16 || srcKind == reflect.Uint32 || srcKind == reflect.Uint64 {
+								if strings.Contains(destTypeName, "Int64") {
+									slice.Index(index).Set(reflect.ValueOf(types.Int64Value(int64(value.Uint()))))
+									continue
+								}
+							} else if srcKind == reflect.String {
+								if strings.Contains(destTypeName, "String") {
+									slice.Index(index).Set(reflect.ValueOf(types.StringValue(value.String())))
+									continue
+								}
+							} else if srcKind == reflect.Bool {
+								if strings.Contains(destTypeName, "Bool") {
+									slice.Index(index).Set(reflect.ValueOf(types.BoolValue(value.Bool())))
+									continue
+								}
+							}
+							// Default: struct-to-struct copy
 							newDes := reflect.New(v.Type()).Interface()
 							err := CopyFields(ctx, value.Interface(), newDes)
 							if err != nil {
