@@ -226,10 +226,6 @@ func (d *S3BucketDataSource) Read(ctx context.Context, req datasource.ReadReques
 		filteredBuckets = append(filteredBuckets, entity)
 	}
 
-	if filteredBuckets == nil {
-		resp.Diagnostics.AddError("Error reading s3 buckets", "No buckets found with the specified filter(s)")
-	}
-
 	state.ID = types.StringValue("s3_bucket_datasource")
 	state.S3BucketFilter = plan.S3BucketFilter
 	state.S3Buckets = filteredBuckets
