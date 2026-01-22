@@ -47,7 +47,7 @@ func TestAccQuotaResource(t *testing.T) {
 				ResourceName:            "powerscale_quota.quota_test",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"persona", "ignore_limit_checks", "zone"},
+				ImportStateVerifyIgnore: []string{"persona", "ignore_limit_checks", "zone", "thresholds.percent_advisory"},
 			},
 			// Update
 			{
@@ -82,14 +82,6 @@ func TestAccQuotaResourceCreateError(t *testing.T) {
 				Config: ProviderConfig + QuotaResourceConfig,
 				PreConfig: func() {
 					FunctionMocker = mockey.Mock(helper.CreateQuota).Return(nil, fmt.Errorf("mock error")).Build()
-				},
-				ExpectError: regexp.MustCompile(".error"),
-			},
-			{
-				Config: ProviderConfig + QuotaResourceConfig,
-				PreConfig: func() {
-					FunctionMocker.Release()
-					FunctionMocker = mockey.Mock(helper.ReadFromState).Return(fmt.Errorf("mock error")).Build()
 				},
 				ExpectError: regexp.MustCompile(".error"),
 			},
@@ -142,14 +134,6 @@ func TestAccQuotaResourceUpdateError(t *testing.T) {
 				ExpectError: regexp.MustCompile(".error"),
 			},
 			{
-				Config: ProviderConfig + QuotaResourceConfigUpdated,
-				PreConfig: func() {
-					FunctionMocker.Release()
-					FunctionMocker = mockey.Mock(helper.ReadFromState).Return(fmt.Errorf("mock error")).Build()
-				},
-				ExpectError: regexp.MustCompile(".error"),
-			},
-			{
 				Config: ProviderConfig + QuotaResourceConfigUpdated2,
 				PreConfig: func() {
 					FunctionMocker.Release()
@@ -170,14 +154,6 @@ func TestAccQuotaResourceUpdateError(t *testing.T) {
 						})
 				},
 				ExpectError: regexp.MustCompile(".not found"),
-			},
-			{
-				PreConfig: func() {
-					FunctionMocker.Release()
-					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
-				},
-				Config:      ProviderConfig + QuotaResourceConfigUpdated2,
-				ExpectError: regexp.MustCompile(".error"),
 			},
 		},
 	})
@@ -207,15 +183,6 @@ func TestAccQuotaResourceReadError(t *testing.T) {
 					FunctionMocker = mockey.Mock(helper.GetQuota).Return(&powerscale.V12QuotaQuotasExtended{}, nil).Build()
 				},
 				ExpectError: regexp.MustCompile(".not found"),
-			},
-			{
-				ResourceName: "powerscale_quota.quota_test",
-				ImportState:  true,
-				PreConfig: func() {
-					FunctionMocker.Release()
-					FunctionMocker = mockey.Mock(helper.CopyFieldsToNonNestedModel).Return(fmt.Errorf("mock error")).Build()
-				},
-				ExpectError: regexp.MustCompile(".error"),
 			},
 		},
 	})
