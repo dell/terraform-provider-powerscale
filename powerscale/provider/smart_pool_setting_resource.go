@@ -104,7 +104,6 @@ Note that, SmartPools Settings is the native functionality of PowerScale. When c
 				Description:         "Whether or not namespace operation optimizations are currently in effect.",
 				MarkdownDescription: "Whether or not namespace operation optimizations are currently in effect.",
 				Computed:            true,
-				Optional:            true,
 			},
 			"protect_directories_one_level_higher": schema.BoolAttribute{
 				Description:         "Increase directory protection to a higher requested protection than its contents.",
