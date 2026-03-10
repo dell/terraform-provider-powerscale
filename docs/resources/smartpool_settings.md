@@ -93,7 +93,6 @@ resource "powerscale_smartpool_settings" "settings" {
 - `default_transfer_limit_pct` (Number) Applies to all storagepools that fall back on the default transfer limit. Stop moving files to this pool when this limit is met. The value must be between 0 and 100. Only available for PowerScale 9.5 and above.
 - `default_transfer_limit_state` (String) How the default transfer limit value is applied. Only available for PowerScale 9.5 and above.
 - `global_namespace_acceleration_enabled` (Boolean) Enable global namespace acceleration.
-- `global_namespace_acceleration_state` (String) Whether or not namespace operation optimizations are currently in effect.
 - `manage_io_optimization` (Boolean) Manage I/O optimization settings.
 - `manage_io_optimization_apply_to_files` (Boolean) Apply to files with manually-managed I/O optimization settings.
 - `manage_protection` (Boolean) Manage protection settings.
@@ -112,6 +111,7 @@ resource "powerscale_smartpool_settings" "settings" {
 
 ### Read-Only
 
+- `global_namespace_acceleration_state` (String) Whether or not namespace operation optimizations are currently in effect.
 - `id` (String) Id of SmartPools settings. Readonly. Fixed value of "smartpools_settings"
 
 <a id="nestedatt--spillover_target"></a>
