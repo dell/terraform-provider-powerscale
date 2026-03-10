@@ -67,7 +67,7 @@ build-client: openapi-generator-cli.jar
 	unzip -qq -o goClientZip/powerscale-go-client.zip   ${MODIFIEDFILE1} ${MODIFIEDFILE2} -d ${CLIENT_PATH}
 
 compress-client:
-	cd ${CLIENT_PATH} && zip -q -o -r '../goClientZip/powerscale-go-client.zip' . -x "*.git*" -x "powerscale-go-client/*"
+	cd ${CLIENT_PATH} && zip -q -o -r '../goClientZip/powerscale-go-client.zip' . -x ".git/*" -x "powerscale-go-client/*"
 
 no-extract-build: 
 	go mod download
