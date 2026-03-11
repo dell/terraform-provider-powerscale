@@ -122,4 +122,4 @@ jobs:
       - name: Generate client from JSON file
         run: CLIENT_PATH=./powerscale-go-client1/ make build-client
       - name: Compare files
-        run: diff -rq ./powerscale-go-client1/ ./powerscale-go-client/
+        run: diff -ur ./powerscale-go-client1/ ./powerscale-go-client/
