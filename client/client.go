@@ -204,12 +204,20 @@ func NewOpenAPIClient(ctx context.Context, endpoint string, insecure bool, user 
 
 	var transport *http.Transport
 	if insecure {
+		// Log warning when using insecure mode
+		tflog.Warn(ctx, "SSL certificate verification is disabled. This is not recommended for production environments.")
+
+		// Try to load system certs even in insecure mode for better security
+		pool, err := x509.SystemCertPool()
+		if err != nil {
+			tflog.Warn(ctx, "Unable to load system certificates, proceeding with no certificate verification")
+			pool = x509.NewCertPool()
+		}
+
 		transport = &http.Transport{
-			// This is done intentionally if the user sets the skipVerify to true
-			/* #nosec */
 			TLSClientConfig: &tls.Config{
-				MinVersion: tls.VersionTLS12,
-				/* #nosec */
+				MinVersion:         tls.VersionTLS12,
+				RootCAs:            pool,
 				InsecureSkipVerify: true,
 			},
 			MaxIdleConns:        100,

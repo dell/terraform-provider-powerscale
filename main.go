@@ -21,6 +21,7 @@ import (
 	"context"
 	"flag"
 	"log"
+	"os"
 
 	"terraform-provider-powerscale/powerscale/provider"
 
@@ -63,6 +64,8 @@ func main() {
 	err := providerserver.Serve(context.Background(), provider.New(version), opts)
 
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Printf("Failed to serve provider: %s", err.Error())
+		// Exit with non-zero status code to indicate failure
+		os.Exit(1)
 	}
 }
