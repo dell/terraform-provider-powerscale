@@ -283,7 +283,7 @@ func TestSessionRefresh(t *testing.T) {
 	transport := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			MinVersion:         tls.VersionTLS12,
-			InsecureSkipVerify: true,
+			InsecureSkipVerify: powerscaleInsecure,
 		},
 	}
 	httpclient.Transport = &client.TokenTransport{Ctx: ctx, Username: username, Password: password, RoundTripper: transport}

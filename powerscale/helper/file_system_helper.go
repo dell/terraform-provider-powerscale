@@ -56,7 +56,8 @@ func GetDirectoryMetadata(ctx context.Context, client *client.Client, directory 
 		message := GetErrorString(err, "")
 		if strings.HasPrefix(message, "json: cannot unmarshal") {
 			var unmarshaledJSONResponse NamespaceMetadata
-			localVarBody, err := io.ReadAll(code.Body)
+			const maxResponseSize = 100 * 1024 * 1024 // 100MB limit to prevent resource exhaustion
+			localVarBody, err := io.ReadAll(io.LimitReader(code.Body, maxResponseSize))
 			if err != nil {
 				return result, err
 			}

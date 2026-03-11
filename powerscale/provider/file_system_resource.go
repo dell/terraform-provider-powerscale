@@ -297,10 +297,18 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	// Update resource state
-	resolveUID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
+	resolveUID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
 		plan.Owner.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Owner.Type.ValueString(), "user"))
-	resolveGID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
+	if err != nil {
+		resp.Diagnostics.AddError("Error resolving owner identity for filesystem", helper.GetErrorString(err, ""))
+		return
+	}
+	resolveGID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
 		plan.Group.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Group.Type.ValueString(), "group"))
+	if err != nil {
+		resp.Diagnostics.AddError("Error resolving group identity for filesystem", helper.GetErrorString(err, ""))
+		return
+	}
 	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta, resolveUID, resolveGID); diags.WarningsCount() > 0 {
 		resp.Diagnostics.Append(diags...)
 	}
@@ -340,10 +348,18 @@ func (r *FileSystemResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	resolveUID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
+	resolveUID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
 		plan.Owner.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Owner.Type.ValueString(), "user"))
-	resolveGID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
+	if err != nil {
+		resp.Diagnostics.AddError("Error resolving owner identity for filesystem", helper.GetErrorString(err, ""))
+		return
+	}
+	resolveGID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
 		plan.Group.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Group.Type.ValueString(), "group"))
+	if err != nil {
+		resp.Diagnostics.AddError("Error resolving group identity for filesystem", helper.GetErrorString(err, ""))
+		return
+	}
 	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta, resolveUID, resolveGID); diags.WarningsCount() > 0 {
 		resp.Diagnostics.Append(diags...)
 	}
@@ -422,10 +438,18 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	// copy to model
-	resolveUID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
+	resolveUID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
 		plan.Owner.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Owner.Type.ValueString(), "user"))
-	resolveGID, _ := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
+	if err != nil {
+		resp.Diagnostics.AddError("Error resolving owner identity for filesystem", helper.GetErrorString(err, ""))
+		return
+	}
+	resolveGID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
 		plan.Group.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Group.Type.ValueString(), "group"))
+	if err != nil {
+		resp.Diagnostics.AddError("Error resolving group identity for filesystem", helper.GetErrorString(err, ""))
+		return
+	}
 	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta, resolveUID, resolveGID); diags.WarningsCount() > 0 {
 		resp.Diagnostics.Append(diags...)
 	}
