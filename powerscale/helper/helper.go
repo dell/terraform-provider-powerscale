@@ -397,8 +397,14 @@ func VersionGTE(v1, v2 string) bool {
 	}
 
 	for i := 0; i < len(parts1); i++ {
-		n1, _ := strconv.Atoi(parts1[i])
-		n2, _ := strconv.Atoi(parts2[i])
+		n1, err := strconv.Atoi(parts1[i])
+		if err != nil {
+			return false
+		}
+		n2, err := strconv.Atoi(parts2[i])
+		if err != nil {
+			return false
+		}
 		if n1 > n2 {
 			return true
 		}

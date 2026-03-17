@@ -214,6 +214,10 @@ func GetAllRolesWithZone(ctx context.Context, client *client.Client, zone string
 	roles = make([]powerscale.V1AuthRoleExtended, 0)
 	emptyRoles := make([]powerscale.V1AuthRoleExtended, 0)
 
+	// Add safety limits to prevent resource exhaustion
+	const maxIterations = 1000
+	iterations := 0
+
 	roleParams := client.PscaleOpenAPIClient.AuthApi.ListAuthv7AuthRoles(ctx)
 	if zone != "" {
 		roleParams = roleParams.Zone(zone)
@@ -227,9 +231,21 @@ func GetAllRolesWithZone(ctx context.Context, client *client.Client, zone string
 	}
 
 	for {
+		iterations++
+		if iterations > maxIterations {
+			return emptyRoles, fmt.Errorf("too many role pages retrieved (max %d), possible resource exhaustion attack", maxIterations)
+		}
+
 		roles = append(roles, result.Roles...)
 		if result.Resume == nil || *result.Resume == "" {
 			break
+		}
+
+		// Check context for timeout/cancellation
+		select {
+		case <-ctx.Done():
+			return emptyRoles, fmt.Errorf("operation cancelled due to timeout or context cancellation")
+		default:
 		}
 
 		roleParams = client.PscaleOpenAPIClient.AuthApi.ListAuthv7AuthRoles(ctx).Resume(*result.Resume)

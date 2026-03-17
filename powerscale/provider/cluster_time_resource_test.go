@@ -65,7 +65,7 @@ func TestAccClusterTimeResource(t *testing.T) {
 	// Define the desired location (Asia/Kolkata)
 	loc, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
-		panic(err)
+		t.Fatalf("Failed to load location Asia/Kolkata: %s", err.Error())
 	}
 
 	// Get the current time in UTC
@@ -140,7 +140,7 @@ func TestAccClusterTimeResourceMock(t *testing.T) {
 	// Define the desired location (Asia/Kolkata)
 	loc, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
-		panic(err)
+		t.Fatalf("Failed to load location Asia/Kolkata: %s", err.Error())
 	}
 
 	// Get the current time in GMT

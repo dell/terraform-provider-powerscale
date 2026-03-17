@@ -76,8 +76,8 @@ var FunctionMocker2 *mockey.Mocker
 func init() {
 	_, err := loadEnvFile("powerscale.env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
-		return
+		log.Printf("Warning: Error loading .env file: %s", err.Error())
+		// Continue with default values for testing
 	}
 
 	powerscaleUsername = os.Getenv("POWERSCALE_USERNAME")
@@ -99,10 +99,13 @@ func init() {
 
 	u, err := url.Parse(powerscaleEndpoint)
 	if err != nil {
-		log.Fatal("Error parsing POWERSCALE_ENDPOINT value")
-		return
+		log.Printf("Warning: Error parsing POWERSCALE_ENDPOINT value: %s", err.Error())
+		// Use a default endpoint for testing
+		powerscaleEndpoint = "https://localhost:8080"
+		powerScaleSSHIP = "localhost"
+	} else {
+		powerScaleSSHIP = u.Hostname()
 	}
-	powerScaleSSHIP = u.Hostname()
 
 	// ads provider config
 	powerscaleAdsproviderName = os.Getenv("POWERSCALE_ADS_PROVIDER_NAME")
@@ -280,7 +283,7 @@ func TestSessionRefresh(t *testing.T) {
 	transport := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			MinVersion:         tls.VersionTLS12,
-			InsecureSkipVerify: true,
+			InsecureSkipVerify: powerscaleInsecure,
 		},
 	}
 	httpclient.Transport = &client.TokenTransport{Ctx: ctx, Username: username, Password: password, RoundTripper: transport}
