@@ -1,0 +1,129 @@
+title = "PowerScale Terraform Provider - Gitleaks Config"
+
+[extend]
+useDefault = true
+
+# ---------------------------------------------------------------------------
+# Project-specific rules
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "credential-must-be-dummy"
+description = "Credential fields (username, user, password, passwd, pwd) must use 'dummy' as the placeholder value"
+regex = '''(?i)(username|user|password|passwd|pwd)\s*[:=]\s*['"][^'"]+['"]'''
+keywords = ["username", "user", "password", "passwd", "pwd"]
+
+[rules.allowlist]
+description = "Allow 'dummy' as the only accepted placeholder value"
+regexes = [
+'''(?i)(username|user|password|passwd|pwd)\s*[:=]\s*['"]dummy['"]''',
+]
+
+[[rules]]
+id = "terraform-provider-credentials"
+description = "Hardcoded Terraform provider credentials block"
+regex = '''(?i)(endpoint|host|username|password|token)\s*=\s*"([^"]{4,})"'''
+entropy = 3.5
+keywords = ["endpoint", "username", "password", "token"]
+
+[[rules]]
+id = "generic-secret-assignment"
+description = "Generic secret or token assignment"
+regex = '''(?i)(secret|token|api_key|apikey|auth_key|access_key)\s*[:=]\s*['"]([A-Za-z0-9+/=_\-]{16,})['"]'''
+entropy = 3.5
+keywords = ["secret", "token", "api_key", "apikey", "auth_key", "access_key"]
+
+[[rules]]
+id = "private-key-header"
+description = "PEM private key block"
+regex = '''-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----'''
+keywords = ["BEGIN", "PRIVATE KEY"]
+
+[[rules]]
+id = "bearer-token"
+description = "Authorization Bearer token"
+regex = '''(?i)authorization\s*[:=]\s*['"]?bearer\s+([A-Za-z0-9\-._~+/]+=*)['"]?'''
+keywords = ["authorization", "bearer"]
+
+[[rules]]
+id = "basic-auth-url"
+description = "Credentials embedded in a URL"
+regex = '''[a-zA-Z]{3,10}://[^/\s:@]{3,20}:[^/\s:@]{3,20}@[a-zA-Z0-9.\-]+'''
+keywords = ["://"]
+
+[[rules]]
+id = "connection-string-with-password"
+description = "Database or service connection string with embedded password"
+regex = '''(?i)(password|pwd)=([^;'"\s]{4,})'''
+keywords = ["password=", "pwd="]
+
+[[rules]]
+id = "aws-access-key"
+description = "AWS Access Key ID"
+regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+keywords = ["AKIA", "AGPA", "AROA"]
+
+[[rules]]
+id = "aws-secret-key"
+description = "AWS Secret Access Key"
+regex = '''(?i)aws(.{0,20})?['"][0-9a-zA-Z/+]{40}['"]'''
+entropy = 4.0
+keywords = ["aws"]
+
+[[rules]]
+id = "github-token"
+description = "GitHub Personal Access Token"
+regex = '''ghp_[0-9a-zA-Z]{36}'''
+keywords = ["ghp_"]
+
+[[rules]]
+id = "github-oauth"
+description = "GitHub OAuth Token"
+regex = '''gho_[0-9a-zA-Z]{36}'''
+keywords = ["gho_"]
+
+[[rules]]
+id = "github-app-token"
+description = "GitHub App Token"
+regex = '''(ghu|ghs)_[0-9a-zA-Z]{36}'''
+keywords = ["ghu_", "ghs_"]
+
+[[rules]]
+id = "ssh-private-key"
+description = "SSH private key"
+regex = '''-----BEGIN OPENSSH PRIVATE KEY-----'''
+keywords = ["OPENSSH PRIVATE KEY"]
+
+# ---------------------------------------------------------------------------
+# Global allowlist — paths and patterns that should never trigger
+# ---------------------------------------------------------------------------
+
+[allowlist]
+description = "Global allowlist for test fixtures, examples, and generated files"
+
+paths = [
+    '''go\.sum''',
+    '''CHANGELOG\.md''',
+    '''about/ATTRIBUTION\.md''',
+    '''\.goreleaser\.yml''',
+    '''openapi-generator-cli\.jar''',
+    '''(^|/)examples/.*''',
+    '''(^|/)docs/.*''',
+    '''(^|/)templates/.*''',
+    '''(^|/)powerscale-go-client/.*''',
+    '''(^|/)goClientZip/.*''',
+    '''.*_test\.go$''',
+    '''(^|/)\.github/.*''',
+]
+
+regexes = [
+    '''XXXXXXXX''',
+    '''example\.com''',
+    '''your[_-]?(password|token|key|secret)''',
+    '''<(password|token|key|secret)>''',
+    '''placeholder''',
+    '''changeme''',
+    '''dummy''',
+    '''test(123|1234|password)?''',
+    '''fake''',
+]

@@ -103,3 +103,6 @@ cover:
 
 sweep :
 	go test -v ./powerscale/provider -timeout 20m -sweep=all
+
+install-hooks:
+	pre-commit install
