@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,6 +14,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+
+# v1.8.1 (Apr 01,2026)
+## Release Summary
+This release enhances.
+
+## Bug Fixes
+* NA
+
+## Enhancements
+* Added support for the PowerScale 9.13
 
 # v1.8.0 (Aug 29, 2025)
 ## Release Summary
