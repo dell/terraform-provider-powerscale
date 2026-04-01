@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2023-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 | **Terraform Provider** | **PowerScale Version** | **OS**                    | **Terraform**               | **Golang** |
 |------------------------|:-----------------------|:--------------------------|-----------------------------|------------|
-| v1.8.0                 | 9.5 <br> 9.7 <br> 9.8 <br> 9.10  | ubuntu22.04 <br>  rhel9.x |    1.9.x <br> 1.10.x         | 1.24       |
+| v1.8.1                 |  9.8 <br> 9.10 <br> 9.13  | ubuntu22.04 <br>  rhel9.x |    1.13.x <br> 1.14.x         | 1.25       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
 
