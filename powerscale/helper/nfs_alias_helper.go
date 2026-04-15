@@ -21,6 +21,7 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"strconv"
+	"strings"
 
 	"fmt"
 	"terraform-provider-powerscale/client"
@@ -95,6 +96,10 @@ func CreateNfsAlias(ctx context.Context, client *client.Client, plan models.NfsA
 		return diags
 	}
 
+	if !plan.Zone.IsNull() && strings.EqualFold(state.Zone.ValueString(), plan.Zone.ValueString()) {
+		state.Zone = plan.Zone
+	}
+
 	return diags
 }
 
@@ -165,6 +170,10 @@ func ReadNfsAlias(ctx context.Context, client *client.Client, plan models.NfsAli
 			err.Error(),
 		)
 		return diags
+	}
+
+	if !plan.Zone.IsNull() && strings.EqualFold(state.Zone.ValueString(), plan.Zone.ValueString()) {
+		state.Zone = plan.Zone
 	}
 
 	return diags
