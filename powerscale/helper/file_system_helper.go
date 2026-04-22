@@ -106,10 +106,13 @@ func GetDirectoryMetadata(ctx context.Context, client *client.Client, directory 
 }
 
 // GetDirectoryACL returns the filesystem acl.
-func GetDirectoryACL(ctx context.Context, client *client.Client, directory string) (*powerscale.NamespaceAcl, error) {
+func GetDirectoryACL(ctx context.Context, client *client.Client, directory string, zone string) (*powerscale.NamespaceAcl, error) {
 	aclParam := client.PscaleOpenAPIClient.NamespaceApi.GetAcl(ctx, directory)
 	aclParam = aclParam.Acl(true)
 	aclParam = aclParam.Nsaccess(true)
+	if zone != "" {
+		aclParam = aclParam.Zone(zone)
+	}
 	result, _, err := aclParam.Execute()
 	return result, err
 }
