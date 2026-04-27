@@ -672,7 +672,7 @@ func UpdateFileSystemOwnerAndGroup(ctx context.Context,
 			return *m, err
 		}
 		m.Id = &resolved
-		
+
 		// If identity was resolved from name (id is empty), fetch the actual name from API response
 		if id == "" && name != "" {
 			if typeVal == "user" {
