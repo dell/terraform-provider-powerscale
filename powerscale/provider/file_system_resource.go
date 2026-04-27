@@ -300,14 +300,14 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	resolveUID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
 		plan.Owner.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Owner.Type.ValueString(), "user"))
 	if err != nil {
-		tflog.Warn(ctx, fmt.Sprintf("Could not resolve owner identity for state reconciliation, proceeding with empty resolved ID: %s", err))
-		resolveUID = ""
+		resp.Diagnostics.AddError("Error resolving owner identity for filesystem", helper.GetErrorString(err, ""))
+		return
 	}
 	resolveGID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
 		plan.Group.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Group.Type.ValueString(), "group"))
 	if err != nil {
-		tflog.Warn(ctx, fmt.Sprintf("Could not resolve group identity for state reconciliation, proceeding with empty resolved ID: %s", err))
-		resolveGID = ""
+		resp.Diagnostics.AddError("Error resolving group identity for filesystem", helper.GetErrorString(err, ""))
+		return
 	}
 	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta, resolveUID, resolveGID); diags.WarningsCount() > 0 {
 		resp.Diagnostics.Append(diags...)
@@ -351,14 +351,14 @@ func (r *FileSystemResource) Read(ctx context.Context, req resource.ReadRequest,
 	resolveUID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
 		plan.Owner.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Owner.Type.ValueString(), "user"))
 	if err != nil {
-		tflog.Warn(ctx, fmt.Sprintf("Could not resolve owner identity for state reconciliation, proceeding with empty resolved ID: %s", err))
-		resolveUID = ""
+		resp.Diagnostics.AddError("Error resolving owner identity for filesystem", helper.GetErrorString(err, ""))
+		return
 	}
 	resolveGID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
 		plan.Group.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Group.Type.ValueString(), "group"))
 	if err != nil {
-		tflog.Warn(ctx, fmt.Sprintf("Could not resolve group identity for state reconciliation, proceeding with empty resolved ID: %s", err))
-		resolveGID = ""
+		resp.Diagnostics.AddError("Error resolving group identity for filesystem", helper.GetErrorString(err, ""))
+		return
 	}
 	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta, resolveUID, resolveGID); diags.WarningsCount() > 0 {
 		resp.Diagnostics.Append(diags...)
@@ -441,14 +441,14 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 	resolveUID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Owner.ID.ValueString(),
 		plan.Owner.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Owner.Type.ValueString(), "user"))
 	if err != nil {
-		tflog.Warn(ctx, fmt.Sprintf("Could not resolve owner identity for state reconciliation, proceeding with empty resolved ID: %s", err))
-		resolveUID = ""
+		resp.Diagnostics.AddError("Error resolving owner identity for filesystem", helper.GetErrorString(err, ""))
+		return
 	}
 	resolveGID, err := helper.ResolveOwnerGroupIdentity(ctx, r.client, plan.Group.ID.ValueString(),
 		plan.Group.Name.ValueString(), plan.QueryZone.ValueString(), helper.DefaultIfEmpty(plan.Group.Type.ValueString(), "group"))
 	if err != nil {
-		tflog.Warn(ctx, fmt.Sprintf("Could not resolve group identity for state reconciliation, proceeding with empty resolved ID: %s", err))
-		resolveGID = ""
+		resp.Diagnostics.AddError("Error resolving group identity for filesystem", helper.GetErrorString(err, ""))
+		return
 	}
 	if diags := helper.UpdateFileSystemResourceState(ctx, &plan, acl, meta, resolveUID, resolveGID); diags.WarningsCount() > 0 {
 		resp.Diagnostics.Append(diags...)
