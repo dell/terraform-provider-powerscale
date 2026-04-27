@@ -380,11 +380,25 @@ func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemR
 				} else {
 					if resolvedUID != owner.GetId() {
 						plan.Owner.ID = ownerResID
-						plan.Owner.Name = types.StringValue(owner.GetName())
+					}
+					// If API returns empty name but we have resolved UID, keep the plan name
+					ownerResName := types.StringValue(owner.GetName())
+					if ownerResName.ValueString() == "" && !plan.Owner.Name.IsUnknown() {
+						// Keep plan name when API returns empty but resolved ID matches
+					} else {
+						plan.Owner.Name = ownerResName
 					}
 				}
 				if ownerTypeUnknown {
 					plan.Owner.Type = types.StringNull()
+				}
+			} else {
+				// IDs match, check if API returned empty name
+				ownerResName := types.StringValue(owner.GetName())
+				if ownerResName.ValueString() == "" && !plan.Owner.Name.IsUnknown() {
+					// Keep plan name when API returns empty but ID matches
+				} else {
+					plan.Owner.Name = ownerResName
 				}
 			}
 		}
@@ -467,11 +481,25 @@ func UpdateFileSystemResourceState(ctx context.Context, plan *models.FileSystemR
 				} else {
 					if resolvedGID != group.GetId() {
 						plan.Group.ID = groupResID
-						plan.Group.Name = types.StringValue(group.GetName())
+					}
+					// If API returns empty name but we have resolved GID, keep the plan name
+					groupResName := types.StringValue(group.GetName())
+					if groupResName.ValueString() == "" && !plan.Group.Name.IsUnknown() {
+						// Keep plan name when API returns empty but resolved ID matches
+					} else {
+						plan.Group.Name = groupResName
 					}
 				}
 				if groupTypeUnknown {
 					plan.Group.Type = types.StringNull()
+				}
+			} else {
+				// IDs match, check if API returned empty name
+				groupResName := types.StringValue(group.GetName())
+				if groupResName.ValueString() == "" && !plan.Group.Name.IsUnknown() {
+					// Keep plan name when API returns empty but ID matches
+				} else {
+					plan.Group.Name = groupResName
 				}
 			}
 		}
@@ -644,7 +672,39 @@ func UpdateFileSystemOwnerAndGroup(ctx context.Context,
 			return *m, err
 		}
 		m.Id = &resolved
-		m.Name = &name
+		
+		// If identity was resolved from name (id is empty), fetch the actual name from API response
+		if id == "" && name != "" {
+			if typeVal == "user" {
+				req := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthUser(ctx, "USER:"+name)
+				if zone != "" {
+					req = req.Zone(zone)
+				}
+				resp, _, err := req.Execute()
+				if err == nil && len(resp.Users) > 0 {
+					actualName := resp.Users[0].GetName()
+					m.Name = &actualName
+				} else {
+					m.Name = &name
+				}
+			} else if typeVal == "group" {
+				req := client.PscaleOpenAPIClient.AuthApi.GetAuthv1AuthGroup(ctx, "GROUP:"+name)
+				if zone != "" {
+					req = req.Zone(zone)
+				}
+				resp, _, err := req.Execute()
+				if err == nil && len(resp.Groups) > 0 {
+					actualName := resp.Groups[0].GetName()
+					m.Name = &actualName
+				} else {
+					m.Name = &name
+				}
+			} else {
+				m.Name = &name
+			}
+		} else {
+			m.Name = &name
+		}
 		m.Type = &typeVal
 		return *m, nil
 	}

@@ -473,7 +473,7 @@ func (r *FileSystemResource) ImportState(ctx context.Context, req resource.Impor
 		return
 	}
 
-	// GetAcl
+	// GetAcl - use empty zone for import as the zone is not known at import time
 	acl, err := helper.GetDirectoryACL(ctx, r.client, id, "")
 	if err != nil {
 		errStr := constants.ReadFileSystemErrorMsg + "with error: "
