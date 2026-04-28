@@ -540,7 +540,7 @@ func (d *FileSystemDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 
-	acl, err := helper.GetDirectoryACL(ctx, d.client, usablePath)
+	acl, err := helper.GetDirectoryACL(ctx, d.client, usablePath, "")
 	if err != nil {
 		errStr := constants.ReadFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)

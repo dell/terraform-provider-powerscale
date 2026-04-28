@@ -284,7 +284,7 @@ func (r *FileSystemResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	// Get Acl
-	acl, err := helper.GetDirectoryACL(ctx, r.client, dirPath)
+	acl, err := helper.GetDirectoryACL(ctx, r.client, dirPath, plan.QueryZone.ValueString())
 	if err != nil {
 		errStr := constants.CreateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -340,7 +340,7 @@ func (r *FileSystemResource) Read(ctx context.Context, req resource.ReadRequest,
 	}
 
 	// GetAcl
-	acl, err := helper.GetDirectoryACL(ctx, r.client, dirPath)
+	acl, err := helper.GetDirectoryACL(ctx, r.client, dirPath, plan.QueryZone.ValueString())
 	if err != nil {
 		errStr := constants.ReadFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -429,7 +429,7 @@ func (r *FileSystemResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	// GetAcl
-	acl, err := helper.GetDirectoryACL(ctx, r.client, planDirName)
+	acl, err := helper.GetDirectoryACL(ctx, r.client, planDirName, plan.QueryZone.ValueString())
 	if err != nil {
 		errStr := constants.UpdateFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
@@ -473,8 +473,8 @@ func (r *FileSystemResource) ImportState(ctx context.Context, req resource.Impor
 		return
 	}
 
-	// GetAcl
-	acl, err := helper.GetDirectoryACL(ctx, r.client, id)
+	// GetAcl - use empty zone for import as the zone is not known at import time
+	acl, err := helper.GetDirectoryACL(ctx, r.client, id, "")
 	if err != nil {
 		errStr := constants.ReadFileSystemErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)

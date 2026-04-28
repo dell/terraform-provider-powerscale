@@ -33,6 +33,9 @@ func GetNamespaceACL(ctx context.Context, client *client.Client, model models.Na
 	if !model.Nsaccess.IsNull() {
 		queryParam = queryParam.Nsaccess(model.Nsaccess.ValueBool())
 	}
+	if !model.Zone.IsNull() {
+		queryParam = queryParam.Zone(model.Zone.ValueString())
+	}
 	aclSettingsRes, _, err := queryParam.Execute()
 	return aclSettingsRes, err
 }
