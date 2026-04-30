@@ -82,3 +82,5 @@ require (
 )
 
 replace dell/powerscale-go-client => ./powerscale-go-client
+
+replace github.com/go-jose/go-jose/v4 => github.com/go-jose/go-jose/v4 v4.1.4
