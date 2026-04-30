@@ -81,6 +81,8 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
 
+exclude github.com/hashicorp/terraform-plugin-sdk/v2 v2.40.0
+
 replace dell/powerscale-go-client => ./powerscale-go-client
 
 replace github.com/go-jose/go-jose/v4 => github.com/go-jose/go-jose/v4 v4.1.4
