@@ -104,7 +104,6 @@ func (r *AdsProviderResource) Schema(ctx context.Context, req resource.SchemaReq
 			"controller_time": schema.Int64Attribute{
 				Description:         "Specifies the current time for the domain controllers.",
 				MarkdownDescription: "Specifies the current time for the domain controllers.",
-				Optional:            true,
 				Computed:            true,
 			},
 			"create_home_directory": schema.BoolAttribute{
