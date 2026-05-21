@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -135,7 +135,6 @@ resource "powerscale_adsprovider" "ads_test" {
 - `authentication` (Boolean) Enables authentication and identity management through the authentication provider.
 - `check_duplicates` (Boolean) Check for duplicate SPNs registered in Active Directory.
 - `check_online_interval` (Number) Specifies the time in seconds between provider online checks.
-- `controller_time` (Number) Specifies the current time for the domain controllers.
 - `create_home_directory` (Boolean) Automatically creates a home directory on the first login.
 - `dns_domain` (String) Specifies the DNS search domain. Set this parameter if the DNS search domain has a unique name or address.
 - `domain_controller` (String) Specifies the domain controller to which the authentication service should send requests
@@ -179,6 +178,7 @@ resource "powerscale_adsprovider" "ads_test" {
 
 ### Read-Only
 
+- `controller_time` (Number) Specifies the current time for the domain controllers.
 - `dup_spns` (List of String) Get duplicate SPNs in the provider domain
 - `forest` (String) Specifies the Active Directory forest.
 - `hostname` (String) Specifies the fully qualified hostname stored in the machine account.
