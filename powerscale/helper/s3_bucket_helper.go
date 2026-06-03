@@ -114,5 +114,11 @@ func ValidateS3BucketUpdate(plan models.S3BucketResource, state models.S3BucketR
 		return fmt.Errorf("do not update field Path")
 	}
 
+	if !plan.Owner.IsNull() && !plan.Owner.IsUnknown() &&
+		!state.Owner.IsNull() && !state.Owner.IsUnknown() &&
+		!plan.Owner.Equal(state.Owner) {
+		return fmt.Errorf("do not update field Owner")
+	}
+
 	return nil
 }
