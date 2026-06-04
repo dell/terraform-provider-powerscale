@@ -192,6 +192,7 @@ func (r *S3BucketResource) Create(ctx context.Context, request resource.CreateRe
 	})
 
 	zone := bucketPlan.Zone
+	owner := bucketPlan.Owner
 	bucket, err := helper.CreateS3Bucket(ctx, r.client, bucketeToCreate, zone.ValueString())
 	if err != nil {
 		errStr := constants.CreateS3BucketErrorMsg + "with error: "
@@ -246,6 +247,9 @@ func (r *S3BucketResource) Create(ctx context.Context, request resource.CreateRe
 		bucketPlan.ACL, _ = types.ListValue(types.ObjectType{AttrTypes: aclType}, aclObjects)
 	}
 	bucketPlan.Zone = zone
+	if !owner.IsNull() && !owner.IsUnknown() {
+		bucketPlan.Owner = owner
+	}
 
 	diags = response.State.Set(ctx, bucketPlan)
 	response.Diagnostics.Append(diags...)
@@ -352,6 +356,7 @@ func (r *S3BucketResource) Update(ctx context.Context, request resource.UpdateRe
 		return
 	}
 	zone := bucketPlan.Zone
+	owner := bucketPlan.Owner
 	err = helper.UpdateS3Bucket(ctx, r.client, bucketID, zone.ValueString(), bucketToUpdate)
 	if err != nil {
 		errStr := constants.UpdateS3BucketErrorMsg + "with error: "
@@ -405,6 +410,10 @@ func (r *S3BucketResource) Update(ctx context.Context, request resource.UpdateRe
 		}
 		var aclObjects []attr.Value
 		bucketPlan.ACL, _ = types.ListValue(types.ObjectType{AttrTypes: aclType}, aclObjects)
+	}
+	bucketPlan.Zone = zone
+	if !owner.IsNull() && !owner.IsUnknown() {
+		bucketPlan.Owner = owner
 	}
 
 	diags = response.State.Set(ctx, bucketPlan)

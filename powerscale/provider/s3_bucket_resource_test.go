@@ -170,6 +170,10 @@ func TestAccS3BucketResourceErrorUpdate(t *testing.T) {
 				Config:      ProviderConfig + S3BucketResourceConfigUpdatePath,
 				ExpectError: regexp.MustCompile(".Path"),
 			},
+			{
+				Config:      ProviderConfig + S3BucketResourceConfigUpdateOwner,
+				ExpectError: regexp.MustCompile(".Owner"),
+			},
 			// Update get error
 			{
 				Config: ProviderConfig + S3BucketUpdatedResourceConfig,
@@ -214,7 +218,7 @@ func TestAccS3BucketResourceErrorCreate(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfig + S3BucketInvalidResourceConfig,
-				ExpectError: regexp.MustCompile(".*Bad Request*."),
+				ExpectError: regexp.MustCompile(".*does not match any valid enum choices"),
 			},
 			{
 				Config: ProviderConfig + S3BucketResourceConfig,
@@ -280,22 +284,48 @@ func TestAccS3BucketResourceErrorReadState(t *testing.T) {
 	FunctionMocker.UnPatch()
 }
 
+func TestAccS3BucketOwnerPreservation(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create S3 bucket with explicit owner
+			{
+				Config: ProviderConfig + S3BucketResourceConfigWithOwner,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerscale_s3_bucket.bucket_test", "name", bucketName),
+					resource.TestCheckResourceAttr("powerscale_s3_bucket.bucket_test", "owner", "root"),
+				),
+			},
+			// Update description (non-owner field) — owner must remain preserved
+			{
+				Config: ProviderConfig + S3BucketResourceConfigWithOwnerUpdateDesc,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerscale_s3_bucket.bucket_test", "name", bucketName),
+					resource.TestCheckResourceAttr("powerscale_s3_bucket.bucket_test", "owner", "root"),
+					resource.TestCheckResourceAttr("powerscale_s3_bucket.bucket_test", "description", "Updated desc"),
+				),
+			},
+		},
+	})
+}
+
 var bucketName = "tfacc-test-s3-bucket"
 
 var FileSystemResourceConfigCommon6 = fmt.Sprintf(`
 resource "powerscale_filesystem" "file_system_test" {
-	directory_path         = "/ifs"	
-	name = "%s"	
+	directory_path         = "/ifs/data"
+	name = "%s"
 	  recursive = true
 	  overwrite = true
 	  group = {
-		id   = "GID:0"
-		name = "wheel"
+		id   = "GID:10"
+		name = "admin"
 		type = "group"
 	  }
 	  owner = {
-		  id   = "UID:0",
-		 name = "root",
+		  id   = "UID:10",
+		 name = "admin",
 		 type = "user"
 	   }
 	}
@@ -303,9 +333,9 @@ resource "powerscale_filesystem" "file_system_test" {
 
 var S3BucketResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
 resource "powerscale_s3_bucket" "bucket_test" {
-	depends_on = [powerscale_filesystem.file_system_test]	
+	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s"
-	path = "/ifs/%s"
+	path = "/ifs/data/%s"
 	create_path = true
 	zone = "System"
 	acl = [{
@@ -322,7 +352,7 @@ var S3BucketInvalidResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprint
 resource "powerscale_s3_bucket" "bucket_test" {
 	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s"
-	path = "/ifs/%s"
+	path = "/ifs/data/%s"
 	create_path = true
 	zone = "System"
 	acl = [{
@@ -339,7 +369,7 @@ var S3BucketUpdatedResourceConfig = FileSystemResourceConfigCommon6 + fmt.Sprint
 resource "powerscale_s3_bucket" "bucket_test" {
 	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s"
-	path = "/ifs/%s"
+	path = "/ifs/data/%s"
 	create_path = true
 	zone = "System"
 	description = "Updated Description"
@@ -351,7 +381,7 @@ var S3BucketResourceConfigUpdateName = FileSystemResourceConfigCommon6 + fmt.Spr
 resource "powerscale_s3_bucket" "bucket_test" {
 	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s-update"
-	path = "/ifs/%s"
+	path = "/ifs/data/%s"
 	create_path = true
 	zone = "System"
 	acl = [{
@@ -366,24 +396,24 @@ resource "powerscale_s3_bucket" "bucket_test" {
 
 var S3BucketResourceConfigUpdatePath = fmt.Sprintf(`
 resource "powerscale_filesystem" "file_system_test" {
-	directory_path         = "/ifs"	
-	name = "%s-update"	
+	directory_path         = "/ifs/data"
+	name = "%s-update"
 	  recursive = true
 	  overwrite = true
 	  group = {
-		id   = "GID:0"
-		name = "wheel"
+		id   = "GID:10"
+		name = "admin"
 		type = "group"
 	  }
 	  owner = {
-		  id   = "UID:0",
-		 name = "root",
+		  id   = "UID:10",
+		 name = "admin",
 		 type = "user"
 	   }
 }
 resource "powerscale_s3_bucket" "bucket_test" {
 	name = "%s"
-	path = "/ifs/%s-update"
+	path = "/ifs/data/%s-update"
 	create_path = true
 	zone = "System"
 	acl = [{
@@ -400,9 +430,64 @@ var S3BucketResourceConfigUpdateZone = FileSystemResourceConfigCommon6 + fmt.Spr
 resource "powerscale_s3_bucket" "bucket_test" {
 	depends_on = [powerscale_filesystem.file_system_test]
 	name = "%s"
-	path = "/ifs/%s"
+	path = "/ifs/data/%s"
 	create_path = true
 	zone = "System-update"
+	acl = [{
+		grantee = {
+			name = "Everyone"
+			type = "wellknown"
+		}
+		permission = "FULL_CONTROL"
+	}]
+}
+`, bucketName, bucketName)
+
+var S3BucketResourceConfigUpdateOwner = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
+resource "powerscale_s3_bucket" "bucket_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
+	name = "%s"
+	path = "/ifs/data/%s"
+	create_path = true
+	zone = "System"
+	owner = "updated-owner"
+	acl = [{
+		grantee = {
+			name = "Everyone"
+			type = "wellknown"
+		}
+		permission = "FULL_CONTROL"
+	}]
+}
+`, bucketName, bucketName)
+
+var S3BucketResourceConfigWithOwner = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
+resource "powerscale_s3_bucket" "bucket_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
+	name = "%s"
+	path = "/ifs/data/%s"
+	create_path = true
+	zone = "System"
+	owner = "root"
+	acl = [{
+		grantee = {
+			name = "Everyone"
+			type = "wellknown"
+		}
+		permission = "FULL_CONTROL"
+	}]
+}
+`, bucketName, bucketName)
+
+var S3BucketResourceConfigWithOwnerUpdateDesc = FileSystemResourceConfigCommon6 + fmt.Sprintf(`
+resource "powerscale_s3_bucket" "bucket_test" {
+	depends_on = [powerscale_filesystem.file_system_test]
+	name = "%s"
+	path = "/ifs/data/%s"
+	create_path = true
+	zone = "System"
+	owner = "root"
+	description = "Updated desc"
 	acl = [{
 		grantee = {
 			name = "Everyone"
