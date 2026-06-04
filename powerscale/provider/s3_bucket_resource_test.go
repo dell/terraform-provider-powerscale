@@ -218,7 +218,7 @@ func TestAccS3BucketResourceErrorCreate(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfig + S3BucketInvalidResourceConfig,
-				ExpectError: regexp.MustCompile(".*Bad Request*."),
+				ExpectError: regexp.MustCompile(".*does not match any valid enum choices"),
 			},
 			{
 				Config: ProviderConfig + S3BucketResourceConfig,
