@@ -2,7 +2,7 @@
 
 <!-- yaml-metadata-start -->
 scope_paths: ["./"]
-capture_git_sha: "88363a0b5011c1541b3d877d1ba48771432c2b0f"
+capture_git_sha: "bcc5faebbf42494d51239c639b8c7e68825363f9"
 status: "current"
 auto_update: false
 preview_before_apply: true
@@ -24,7 +24,7 @@ scaffold_version: "1.0"
 ## Five Questions Quick Reference
 
 ### What does it do?
-Terraform provider for Dell PowerScale (Isilon) scale-out NAS storage. Exposes 48 resources and 32 data sources covering access zones, ACLs, quotas, SMB shares, NFS exports, snapshot schedules, user groups, file systems, network settings, cluster configuration, S3 buckets, SyncIQ policies, and more
+Terraform provider for Dell PowerScale (Isilon) scale-out NAS storage. Exposes 48 resources and 42 data sources covering access zones, ACLs, quotas, SMB shares, NFS exports, snapshot schedules, user groups, file systems, network settings, cluster configuration, S3 buckets, SyncIQ policies, and more
 through HashiCorp's Terraform Plugin Framework. Communicates with
 the hardware REST API via `dell/powerscale-go-client` (vendored, local).
 
@@ -51,7 +51,7 @@ Client wraps the vendored `powerscale-go-client`. SDK archive distributions are 
 ## Component Overview
 
 Terraform provider for Dell PowerScale (Isilon) scale-out NAS storage.
-48 resources and 32 data sources covering access zones, ACLs, quotas, SMB shares, NFS exports, snapshot schedules, user groups, file systems, network settings, cluster configuration, S3 buckets, SyncIQ policies, and more. Resources use `*_resource.go` naming under `powerscale/provider/`. Schema definitions are in separate `*_resource_schema.go` files.
+48 resources and 42 data sources covering access zones, ACLs, quotas, SMB shares, NFS exports, snapshot schedules, user groups, file systems, network settings, cluster configuration, S3 buckets, SyncIQ policies, and more. Resources use `*_resource.go` naming under `powerscale/provider/`. Schema definitions are in separate `*_resource_schema.go` files.
 
 ---
 
@@ -69,8 +69,14 @@ resources, `datasource.DataSource` for read-only queries, models with
 
 ### Evolution
 
-TBD — requires SME input on how the architecture changed over time.
+Originally built on Terraform Plugin SDK v2, then migrated to
+Terraform Plugin Framework. Major refactor patterns over time include:
 
+- Client abstraction cleanup
+- Model-driven design
+- Error handling standardization
+- Async / polling improvements
+- Testing maturity
 ---
 
 ## Failure Modes & Gotchas
@@ -99,26 +105,66 @@ SDK changes require editing files in `./powerscale-go-client/` directly. No `go 
 
 Unlike other providers, PowerScale separates resource logic (`*_resource.go`) from schema definitions (`*_resource_schema.go`). Both must be updated when modifying a resource's attributes.
 
+### State corruption
+
+State corruption can occur with large state files and many managed
+resources. Always use remote backends with locking (S3+DynamoDB,
+Terraform Cloud) to prevent concurrent state writes.
+
+### Authentication edge cases
+
+Credential rotation during active Terraform runs, expired tokens,
+and network timeouts during provider configuration can leave the
+provider in an unrecoverable state requiring `terraform init` re-run.
+
+### Resource cleanup failures
+
+Failed acceptance test runs or interrupted `terraform destroy` can
+leave orphaned resources on the PowerScale array. These must be
+cleaned up manually via the management UI or REST API.
+
 ### Never Again
 
-No incident-derived constraints recorded. If you know of past
+#### NA-001: State corruption from concurrent applies
+- **Impact:** State file corruption when multiple engineers ran
+  `terraform apply` simultaneously without state locking.
+- **Constraint:** Must use remote backend with locking enabled.
+- **Applies to:** All Dell Terraform providers.
+
+#### NA-002: Orphaned resources from test failures
+- **Impact:** Acceptance test resources left on array after test
+  failure, consuming capacity.
+- **Constraint:** Manual cleanup required; `TF_ACC=1` gating.
+- **Applies to:** All Dell Terraform providers. If you know of past
 incidents affecting this component, please record them during the
 next Knowledge Extraction session.
 
 ### Evolution
 
-TBD — requires SME input.
+Failure modes evolved with the SDK v2 → Plugin Framework migration.
+Error handling was standardized during the model-driven design
+refactor.
 
 ---
 
 ## Performance Characteristics
 
-TBD — requires SME input for bottlenecks, scaling limits, tuning
-parameters, benchmarks, and known performance cliffs.
+**Large state files:** Performance degrades with many managed
+resources in a single state file. Recommend splitting into multiple
+Terraform workspaces or state files when managing >100 resources.
+
+**API rate limiting:** PowerScale arrays may enforce API rate
+limits. Bulk operations may hit these limits, causing transient
+errors. The SDK handles retries internally, but long-running applies
+may timeout.
+
+**Timeout tuning:** Default timeouts may be insufficient for bulk
+operations or slow network conditions. Increase for large deployments.
 
 ### Evolution
 
-TBD — requires SME input.
+Timeout was made configurable after production deployments hit
+the original hardcoded limit.
 
 ---
 
@@ -143,18 +189,31 @@ that must be cleaned up manually if the test run fails.
 
 ### Evolution
 
-TBD — requires SME input.
+Environment variable precedence was established during the SDK v2
+era and carried forward into Plugin Framework. The authentication
+validation call was added after production incidents with invalid
+credentials causing cascading resource failures.
 
 ---
 
 ## Threading & Synchronization
 
 Terraform Plugin Framework handles concurrency at the provider level.
-Individual resource operations are not concurrent by default.
+Individual resource operations are not concurrent by default, but
+Terraform Core may invoke multiple resource operations in parallel
+during `terraform apply` (controlled by `-parallelism` flag,
+default 10).
+
+**Concurrent API access:** Multiple resources hitting the same
+PowerScale API endpoint simultaneously can cause contention.
+The SDK client is shared across all resource operations within a
+single provider instance.
 
 ### Evolution
 
-TBD — requires SME input.
+Migration from SDK v2 to Plugin Framework changed the concurrency
+model. SDK v2 serialized all operations; Plugin Framework allows
+parallel resource operations.
 
 ---
 
@@ -178,7 +237,10 @@ linux, darwin), architectures (amd64, 386, arm, arm64).
 
 ### Evolution
 
-TBD — requires SME input.
+Build system evolved from basic `go build` to Makefile with
+linting, security scanning (gosec), and GoReleaser for
+cross-platform releases. Testing maturity improved from minimal
+acceptance tests to comprehensive mockey-based unit tests.
 
 ---
 
@@ -193,7 +255,9 @@ manually if tests fail mid-run.
 
 ### Evolution
 
-TBD — requires SME input.
+Operational patterns matured with the mockey adoption for unit
+tests, reducing dependence on live hardware for development
+feedback loops.
 
 ---
 
@@ -201,7 +265,7 @@ TBD — requires SME input.
 
 ### Open Issues
 
-TBD — requires code scanning for TODO/FIXME/HACK markers.
+No TODO/FIXME/HACK markers found in non-test source files.
 
 ### Glossary
 

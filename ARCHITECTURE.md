@@ -4,7 +4,7 @@
 
 <!-- yaml-metadata-start -->
 scope_paths: ["./"]
-capture_git_sha: "88363a0b5011c1541b3d877d1ba48771432c2b0f"
+capture_git_sha: "bcc5faebbf42494d51239c639b8c7e68825363f9"
 status: "current"
 auto_update: false
 preview_before_apply: true
@@ -16,7 +16,7 @@ scaffold_version: "1.0"
 ## Purpose and Structure
 
 Terraform provider for Dell PowerScale (Isilon) scale-out NAS storage.
-Implements 48 managed resources and 32 data sources
+Implements 48 managed resources and 42 data sources
 using HashiCorp's Terraform Plugin Framework, enabling
 infrastructure-as-code management via REST API.
 
@@ -34,7 +34,7 @@ Core over gRPC (go-plugin protocol).
 | Entry point | `main.go` | `providerserver.Serve` — starts gRPC server |
 | Provider | `powerscale/provider/provider.go` | Schema, Configure, resource/datasource registration |
 | Resources | `powerscale/provider/*_resource.go` | CRUD lifecycle for 48 managed resources |
-| Data sources | `powerscale/provider/*_datasource.go` | Read-only queries for 32 data sources |
+| Data sources | `powerscale/provider/*_datasource.go` | Read-only queries for 42 data sources |
 | Vendored SDK | `powerscale-go-client/` | Local PowerScale Go SDK |
 | SDK archives | `goClientZip/` | SDK distribution archives |
 | Client wrapper | `client/` | Wraps vendored SDK |
