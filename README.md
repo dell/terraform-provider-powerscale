@@ -52,7 +52,7 @@ The Terraform Provider for Dell PowerScale is released and licensed under the MP
 
 | **Terraform Provider** | **PowerScale Version** | **OS**                    | **Terraform**               | **Golang** |
 |------------------------|:-----------------------|:--------------------------|-----------------------------|------------|
-| v1.8.1                 |  9.8 <br> 9.10 <br> 9.13  | ubuntu22.04 <br>  rhel9.x |    1.13.x <br> 1.14.x         | 1.25       |
+| v1.8.2                 |  9.8 <br> 9.10 <br> 9.13  | ubuntu22.04 <br>  rhel9.x |    1.14.x <br> 1.15.x         | 1.25       |
 
 ## List of DataSources in Terraform Provider for Dell PowerScale
 
@@ -214,7 +214,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerscale = { 
-      version = "1.8.0"
+      version = "1.8.2"
       source = "registry.terraform.io/dell/powerscale"
     }
   }
