@@ -197,7 +197,7 @@ resource "powerscale_synciq_policy" "policy_when_source_modified" {
 - `log_removed_files` (Boolean) If true, the system will log any files or directories that are deleted due to a sync.
 - `ocsp_address` (String) The address of the OCSP responder to which to connect. Set to empty string to disable OCSP.
 - `ocsp_issuer_certificate_id` (String) The ID of the certificate authority that issued the certificate whose revocation status is being checked. Set to empty string to disable certificate verification.
-- `password` (String) The password for the target cluster. This field is not readable.
+- `password` (String, Sensitive) The password for the target cluster. This field is not readable.
 - `priority` (Number) Determines the priority level of a policy. Policies with higher priority will have precedence to run over lower priority policies. Valid range is [0, 1]. Default is 0.
 - `report_max_age` (Number) Length of time (in seconds) a policy report will be stored.
 - `report_max_count` (Number) Maximum number of policy reports that will be stored on the system.

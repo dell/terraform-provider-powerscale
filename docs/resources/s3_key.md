@@ -81,8 +81,8 @@ output "key" {
 - `access_id` (String) Unique identifier of the S3 key.
 - `old_key_expiry` (Number) The expiry of the old key. Computed.
 - `old_key_timestamp` (Number) The timestamp of the old key. Computed.
-- `old_secret_key` (String) The secret key of the old key. Computed.
-- `secret_key` (String) The secret key of the key. Computed.
+- `old_secret_key` (String, Sensitive) The secret key of the old key. Computed.
+- `secret_key` (String, Sensitive) The secret key of the key. Computed.
 - `secret_key_timestamp` (Number) The timestamp of the secret key. Computed.
 
 Unless specified otherwise, all fields of this resource can be updated.
