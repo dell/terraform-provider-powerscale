@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -82,8 +82,8 @@ resource "powerscale_cluster_snmp" "example_snmp_settings" {
 - `snmp_v1_v2c_access` (Boolean) The SNMPv1/v2c access for the Cluster SNMP. Also requires `read_only_community`.
 - `snmp_v3_access` (Boolean) The SNMPv3 access for the Cluster SNMP. Also requires snmp_v3_password.
 - `snmp_v3_auth_protocol` (String) The SNMPv3 authentication protocol for the Cluster SNMP. Accepted values are `MD5`and `SHA`.
-- `snmp_v3_password` (String) The SNMPv3 authentication password for the Cluster SNMP.
-- `snmp_v3_priv_password` (String) The SNMPv3 privacy protocol password for the Cluster SNMP.
+- `snmp_v3_password` (String, Sensitive) The SNMPv3 authentication password for the Cluster SNMP.
+- `snmp_v3_priv_password` (String, Sensitive) The SNMPv3 privacy protocol password for the Cluster SNMP.
 - `snmp_v3_priv_protocol` (String) The SNMPv3 privacy protocol for the Cluster SNMP.
 - `snmp_v3_read_only_user` (String) The SNMPv3 read-only user for the Cluster SNMP.
 - `snmp_v3_security_level` (String) The SNMPv3 security level for the Cluster SNMP.

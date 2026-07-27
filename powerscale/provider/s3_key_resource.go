@@ -127,6 +127,7 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 		},
 		"secret_key": schema.StringAttribute{
 			Computed:            true,
+			Sensitive:           true,
 			MarkdownDescription: "The secret key of the key. Computed.",
 			Description:         "The secret key of the key. Computed.",
 		},
@@ -137,6 +138,7 @@ func S3KeyResourceSchema() map[string]schema.Attribute {
 		},
 		"old_secret_key": schema.StringAttribute{
 			Computed:            true,
+			Sensitive:           true,
 			MarkdownDescription: "The secret key of the old key. Computed.",
 			Description:         "The secret key of the old key. Computed.",
 		},

@@ -15,6 +15,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
+# v1.8.2 (Jun 01, 2026)
+## Release Summary
+This release addresses bug fixes and security vulnerabilities to improve stability and user experience for Dell PowerScale.
+
+## Bug Fixes
+* Fixed S3 bucket owner field inconsistency causing provider crash
+* Fixed controller time computed only for ADS provider resource
+* Updated vulnerable dependencies to resolve security issues
+* Fixed AD user resolution tests
+
+## Enhancements
+N/A
+
 # v1.8.1 (Apr 01,2026)
 ## Release Summary
 This release enhances.
