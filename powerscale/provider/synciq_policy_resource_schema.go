@@ -347,6 +347,7 @@ func (s *synciqPolicyResource) Schema(ctx context.Context, res resource.SchemaRe
 			},
 			"password": schema.StringAttribute{
 				Optional:            true,
+				Sensitive:           true,
 				Description:         "The password for the target cluster. This field is not readable.",
 				MarkdownDescription: "The password for the target cluster. This field is not readable.",
 				Validators: []validator.String{

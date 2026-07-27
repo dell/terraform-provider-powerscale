@@ -111,6 +111,7 @@ func (r *ClusterSnmpResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "The SNMPv3 authentication password for the Cluster SNMP.",
 				Computed:            true,
 				Optional:            true,
+				Sensitive:           true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(8),
 				},
@@ -140,6 +141,7 @@ func (r *ClusterSnmpResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "The SNMPv3 privacy protocol password for the Cluster SNMP.",
 				Computed:            true,
 				Optional:            true,
+				Sensitive:           true,
 			},
 			"snmp_v3_read_only_user": schema.StringAttribute{
 				Description:         "The SNMPv3 read-only user for the Cluster SNMP.",
