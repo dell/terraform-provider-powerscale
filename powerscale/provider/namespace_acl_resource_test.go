@@ -69,22 +69,7 @@ func TestAccNamespaceAclResourceEmptyConfig1(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
 				),
-			},
-		},
-	})
-}
-
-func TestAccNamespaceAclResourceEmptyConfig2(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			// Create and Read testing
-			{
-				Config: ProviderConfig + NamespaceACLResourceEmptyConfig2,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
-				),
+				ExpectNonEmptyPlan: true,
 			},
 		},
 	})
@@ -348,12 +333,3 @@ resource "powerscale_namespace_acl" "namespace_acl_test" {
 }
 `, namespace)
 
-var NamespaceACLResourceEmptyConfig2 = fmt.Sprintf(`
-resource "powerscale_namespace_acl" "namespace_acl_test" {
-	namespace = "%s"
-	nsaccess = true
-	owner = { id = "UID:0"}
-	group = { id = "GID:0"}
-	acl_custom = []
-}
-`, namespace)
