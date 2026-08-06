@@ -144,6 +144,7 @@ func (r *NamespaceACLResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"acl_custom": schema.ListNestedAttribute{
 				Optional:            true,
+				Computed:            true,
 				Description:         "Customer's raw configuration of the JSON array of access rights.",
 				MarkdownDescription: "Customer's raw configuration of the JSON array of access rights.",
 				NestedObject: schema.NestedAttributeObject{
@@ -366,7 +367,6 @@ func (r *NamespaceACLResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	originalPlan := plan
 	err = helper.CopyFieldsToNonNestedModel(ctx, getNamespaceACLResponse, &plan)
 	if err != nil {
 		errStr := constants.ReadNamespaceACLErrorMsg + "with error: "
@@ -378,7 +378,7 @@ func (r *NamespaceACLResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	plan.CustomACL = originalPlan.CustomACL
+	plan.CustomACL = plan.ACL
 
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -416,7 +416,6 @@ func (r *NamespaceACLResource) Read(ctx context.Context, req resource.ReadReques
 		"namespaceACLState":    namespaceACLState,
 	})
 
-	originalState := namespaceACLState
 	err = helper.CopyFieldsToNonNestedModel(ctx, namespaceACLResponse, &namespaceACLState)
 	if err != nil {
 		errStr := constants.ReadNamespaceACLErrorMsg + "with error: "
@@ -428,7 +427,7 @@ func (r *NamespaceACLResource) Read(ctx context.Context, req resource.ReadReques
 		return
 	}
 
-	namespaceACLState.CustomACL = originalState.CustomACL
+	namespaceACLState.CustomACL = namespaceACLState.ACL
 
 	diags = resp.State.Set(ctx, namespaceACLState)
 	resp.Diagnostics.Append(diags...)
@@ -507,7 +506,6 @@ func (r *NamespaceACLResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	originalPlan := namespaceACLPlan
 	err = helper.CopyFieldsToNonNestedModel(ctx, updatedNamespaceACL, &namespaceACLPlan)
 	if err != nil {
 		errStr := constants.ReadNamespaceACLErrorMsg + "with error: "
@@ -519,7 +517,7 @@ func (r *NamespaceACLResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	namespaceACLPlan.CustomACL = originalPlan.CustomACL
+	namespaceACLPlan.CustomACL = namespaceACLPlan.ACL
 
 	diags = resp.State.Set(ctx, namespaceACLPlan)
 	resp.Diagnostics.Append(diags...)
