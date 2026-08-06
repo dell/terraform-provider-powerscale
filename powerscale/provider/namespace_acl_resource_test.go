@@ -332,4 +332,3 @@ resource "powerscale_namespace_acl" "namespace_acl_test" {
 	namespace = "%s"
 }
 `, namespace)
-
