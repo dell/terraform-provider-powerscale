@@ -162,11 +162,13 @@ func (r *NamespaceACLResource) Schema(ctx context.Context, req resource.SchemaRe
 						},
 						"op": schema.StringAttribute{
 							Optional:            true,
+							Computed:            true,
 							Description:         "Operations for updating access control permissions. Unnecessary for access right replacing scenario",
 							MarkdownDescription: "Operations for updating access control permissions. Unnecessary for access right replacing scenario",
 						},
 						"inherit_flags": schema.ListAttribute{
 							Optional:            true,
+							Computed:            true,
 							Description:         "Grants or denies access control permissions. Options: object_inherit, container_inherit, inherit_only, no_prop_inherit, inherited_ace",
 							MarkdownDescription: "Grants or denies access control permissions. Options: object_inherit, container_inherit, inherit_only, no_prop_inherit, inherited_ace",
 							ElementType:         types.StringType,
@@ -190,16 +192,19 @@ func (r *NamespaceACLResource) Schema(ctx context.Context, req resource.SchemaRe
 							Attributes: map[string]schema.Attribute{
 								"type": schema.StringAttribute{
 									Optional:            true,
+									Computed:            true,
 									Description:         "Specifies the type of persona, which must be combined with a name.",
 									MarkdownDescription: "Specifies the type of persona, which must be combined with a name.",
 								},
 								"id": schema.StringAttribute{
 									Optional:            true,
+									Computed:            true,
 									Description:         "Specifies the serialized form of a persona, which can be 'UID:0' or 'GID:0'",
 									MarkdownDescription: "Specifies the serialized form of a persona, which can be 'UID:0' or 'GID:0'",
 								},
 								"name": schema.StringAttribute{
 									Optional:            true,
+									Computed:            true,
 									Description:         "Specifies the persona name, which must be combined with a type.",
 									MarkdownDescription: "Specifies the persona name, which must be combined with a type.",
 								},
@@ -207,6 +212,7 @@ func (r *NamespaceACLResource) Schema(ctx context.Context, req resource.SchemaRe
 						},
 						"accessrights": schema.ListAttribute{
 							Optional:            true,
+							Computed:            true,
 							Description:         "Specifies the access control permissions for a specific user or group. Options: std_delete, std_read_dac, std_write_dac, std_write_owner, std_synchronize, std_required, generic_all, generic_read, generic_write, generic_exec, dir_gen_all, dir_gen_read, dir_gen_write, dir_gen_execute, file_gen_all, file_gen_read, file_gen_write, file_gen_execute, modify, file_read, file_write, append, execute, file_read_attr, file_write_attr, file_read_ext_attr, file_write_ext_attr, delete_child, list, add_file, add_subdir, traverse, dir_read_attr, dir_write_attr, dir_read_ext_attr, dir_write_ext_attr",
 							MarkdownDescription: "Specifies the access control permissions for a specific user or group. Options: std_delete, std_read_dac, std_write_dac, std_write_owner, std_synchronize, std_required, generic_all, generic_read, generic_write, generic_exec, dir_gen_all, dir_gen_read, dir_gen_write, dir_gen_execute, file_gen_all, file_gen_read, file_gen_write, file_gen_execute, modify, file_read, file_write, append, execute, file_read_attr, file_write_attr, file_read_ext_attr, file_write_ext_attr, delete_child, list, add_file, add_subdir, traverse, dir_read_attr, dir_write_attr, dir_read_ext_attr, dir_write_ext_attr",
 							ElementType:         types.StringType,
