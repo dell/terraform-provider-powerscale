@@ -24,11 +24,16 @@ import (
 	"math"
 	"strconv"
 	"strings"
+	"sync"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+// Since concurrent calls to CREATE or UPDATE might lead to duplicate IDs or 409 conflict error
+// we need to lock the mutex here
+var snapshotSchedule sync.Mutex
 
 // ListSnapshotSchedules lists the snapshot schedules.
 func ListSnapshotSchedules(ctx context.Context, client *client.Client, ssFilter *models.SnapshotScheduleFilter) ([]powerscale.V1SnapshotScheduleExtended, error) {
@@ -137,8 +142,10 @@ func ParseTimeStringToSeconds(timeString string) (*int32, error) {
 	return &seconds, nil
 }
 
-// CreateSnapshotSchedule lists the snapshot schedules.
+// CreateSnapshotSchedule creates a snapshot schedule.
 func CreateSnapshotSchedule(ctx context.Context, client *client.Client, plan *models.SnapshotScheduleResource) (*powerscale.Createv1SnapshotScheduleResponse, error) {
+	snapshotSchedule.Lock()
+	defer snapshotSchedule.Unlock()
 
 	ssBody := powerscale.V1SnapshotSchedule{
 		Path:     plan.Path.ValueString(),
@@ -182,6 +189,9 @@ func SnapshotScheduleMapper(ctx context.Context, snapshotSchedule powerscale.V1S
 
 // UpdateSnapshotSchedule updates the Snapshot Schedule.
 func UpdateSnapshotSchedule(ctx context.Context, client *client.Client, plan *models.SnapshotScheduleResource, state *models.SnapshotScheduleResource) error {
+	snapshotSchedule.Lock()
+	defer snapshotSchedule.Unlock()
+
 	ss := *powerscale.NewV1SnapshotScheduleExtendedExtended()
 
 	if plan.Name.ValueString() != state.Name.ValueString() {
