@@ -423,19 +423,50 @@ func (r *RoleResource) Update(ctx context.Context, req resource.UpdateRequest, r
 	roleID := roleState.ID.ValueString()
 	rolePlan.ID = roleState.ID
 	var roleToUpdate powerscale.V14AuthRoleExtendedExtended
-	// Get param from tf input
-	err := helper.ReadFromState(ctx, rolePlan, &roleToUpdate)
-	if err != nil {
-		errStr := constants.UpdateRoleErrorMsg + "with error: "
-		message := helper.GetErrorString(err, errStr)
-		resp.Diagnostics.AddError(
-			"Error updating role",
-			fmt.Sprintf("Could not read role param with error: %s", message),
-		)
-		return
+
+	// Build update request with only changed attributes to avoid sending
+	// unchanged fields (e.g. privileges) that the API may reject for built-in roles.
+	if !rolePlan.Name.IsNull() && !rolePlan.Name.Equal(roleState.Name) {
+		name := rolePlan.Name.ValueString()
+		roleToUpdate.Name = &name
 	}
 
-	if !rolePlan.Members.IsNull() {
+	if !rolePlan.Description.IsNull() && !rolePlan.Description.Equal(roleState.Description) {
+		desc := rolePlan.Description.ValueString()
+		roleToUpdate.Description = &desc
+	}
+
+	if !rolePlan.Members.IsNull() && !rolePlan.Members.Equal(roleState.Members) {
+		err := helper.ReadFromState(ctx, struct {
+			Members types.List `tfsdk:"members"`
+		}{Members: rolePlan.Members}, &roleToUpdate)
+		if err != nil {
+			errStr := constants.UpdateRoleErrorMsg + "with error: "
+			message := helper.GetErrorString(err, errStr)
+			resp.Diagnostics.AddError(
+				"Error updating role",
+				fmt.Sprintf("Could not read role param with error: %s", message),
+			)
+			return
+		}
+	}
+
+	if !rolePlan.Privileges.IsNull() && !rolePlan.Privileges.Equal(roleState.Privileges) {
+		err := helper.ReadFromState(ctx, struct {
+			Privileges types.List `tfsdk:"privileges"`
+		}{Privileges: rolePlan.Privileges}, &roleToUpdate)
+		if err != nil {
+			errStr := constants.UpdateRoleErrorMsg + "with error: "
+			message := helper.GetErrorString(err, errStr)
+			resp.Diagnostics.AddError(
+				"Error updating role",
+				fmt.Sprintf("Could not read role param with error: %s", message),
+			)
+			return
+		}
+	}
+
+	if !rolePlan.Members.IsNull() && !rolePlan.Members.Equal(roleState.Members) && roleToUpdate.Members != nil {
 		err := helper.ValidateMembers(ctx, r.client, rolePlan.Zone.ValueString(), roleToUpdate.Members)
 		if err != nil {
 			resp.Diagnostics.AddError(
@@ -446,7 +477,7 @@ func (r *RoleResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		}
 	}
 
-	err = helper.UpdateRole(ctx, r.client, rolePlan, roleToUpdate)
+	err := helper.UpdateRole(ctx, r.client, rolePlan, roleToUpdate)
 	if err != nil {
 		errStr := constants.UpdateRoleErrorMsg + "with error: "
 		message := helper.GetErrorString(err, errStr)
