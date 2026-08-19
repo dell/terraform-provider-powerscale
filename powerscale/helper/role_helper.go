@@ -196,6 +196,113 @@ func ReorderRolePrivileges(localPrivileges types.List, remotePrivileges types.Li
 	return orderedPrivilegeList, nil
 }
 
+// getRoleListElementIdentity returns a string key for an element of a role list
+// that can be used to match plan and state items. It prefers the ID field,
+// then falls back to name+type for members.
+func getRoleListElementIdentity(attrs map[string]attr.Value, fallback []string) string {
+	id, ok := attrs["id"].(types.String)
+	if ok && !id.IsNull() && !id.IsUnknown() && id.ValueString() != "" {
+		return "id:" + id.ValueString()
+	}
+	var parts []string
+	for _, key := range fallback {
+		val, ok := attrs[key].(types.String)
+		if ok && !val.IsNull() && !val.IsUnknown() {
+			parts = append(parts, key+":"+val.ValueString())
+		}
+	}
+	return strings.Join(parts, ";")
+}
+
+// IsRoleMembersChanged compares plan and state members, ignoring computed fields.
+// It returns true if the user-configurable fields of members differ.
+func IsRoleMembersChanged(planMembers, stateMembers types.List) bool {
+	if planMembers.IsNull() || planMembers.IsUnknown() || stateMembers.IsNull() || stateMembers.IsUnknown() {
+		return !(planMembers.IsNull() && stateMembers.IsNull())
+	}
+	planElems := planMembers.Elements()
+	stateElems := stateMembers.Elements()
+	if len(planElems) != len(stateElems) {
+		return true
+	}
+	stateByID := make(map[string]map[string]attr.Value, len(stateElems))
+	for _, stateElem := range stateElems {
+		stateObj, ok := stateElem.(basetypes.ObjectValue)
+		if !ok || stateObj.IsNull() || stateObj.IsUnknown() {
+			return true
+		}
+		attrs := stateObj.Attributes()
+		stateByID[getRoleListElementIdentity(attrs, []string{"name", "type"})] = attrs
+	}
+	for _, planElem := range planElems {
+		planObj, ok := planElem.(basetypes.ObjectValue)
+		if !ok || planObj.IsNull() || planObj.IsUnknown() {
+			return true
+		}
+		planAttrs := planObj.Attributes()
+		stateAttrs, found := stateByID[getRoleListElementIdentity(planAttrs, []string{"name", "type"})]
+		if !found {
+			return true
+		}
+		// Compare only user-configurable fields that are known in the plan.
+		for _, key := range []string{"id", "name", "type"} {
+			planVal, planOK := planAttrs[key].(types.String)
+			stateVal, stateOK := stateAttrs[key].(types.String)
+			if !planOK || !stateOK || planVal.IsUnknown() || planVal.IsNull() {
+				continue
+			}
+			if !planVal.Equal(stateVal) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// IsRolePrivilegesChanged compares plan and state privileges, ignoring the computed name field.
+// It returns true if the user-configurable fields (id, permission) differ.
+func IsRolePrivilegesChanged(planPrivileges, statePrivileges types.List) bool {
+	if planPrivileges.IsNull() || planPrivileges.IsUnknown() || statePrivileges.IsNull() || statePrivileges.IsUnknown() {
+		return !(planPrivileges.IsNull() && statePrivileges.IsNull())
+	}
+	planElems := planPrivileges.Elements()
+	stateElems := statePrivileges.Elements()
+	if len(planElems) != len(stateElems) {
+		return true
+	}
+	stateByID := make(map[string]map[string]attr.Value, len(stateElems))
+	for _, stateElem := range stateElems {
+		stateObj, ok := stateElem.(basetypes.ObjectValue)
+		if !ok || stateObj.IsNull() || stateObj.IsUnknown() {
+			return true
+		}
+		attrs := stateObj.Attributes()
+		stateByID[getRoleListElementIdentity(attrs, []string{})] = attrs
+	}
+	for _, planElem := range planElems {
+		planObj, ok := planElem.(basetypes.ObjectValue)
+		if !ok || planObj.IsNull() || planObj.IsUnknown() {
+			return true
+		}
+		planAttrs := planObj.Attributes()
+		stateAttrs, found := stateByID[getRoleListElementIdentity(planAttrs, []string{})]
+		if !found {
+			return true
+		}
+		for _, key := range []string{"id", "permission"} {
+			planVal, planOK := planAttrs[key].(types.String)
+			stateVal, stateOK := stateAttrs[key].(types.String)
+			if !planOK || !stateOK || planVal.IsUnknown() || planVal.IsNull() {
+				continue
+			}
+			if !planVal.Equal(stateVal) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // ValidateMembers validates members to be added to role
 func ValidateMembers(ctx context.Context, r *client.Client, zone string, members []powerscale.V1AuthAccessAccessItemFileGroup) error {
 	for _, member := range members {

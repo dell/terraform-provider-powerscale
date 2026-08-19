@@ -436,7 +436,7 @@ func (r *RoleResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		roleToUpdate.Description = &desc
 	}
 
-	if !rolePlan.Members.IsNull() && !rolePlan.Members.Equal(roleState.Members) {
+	if !rolePlan.Members.IsNull() && helper.IsRoleMembersChanged(rolePlan.Members, roleState.Members) {
 		err := helper.ReadFromState(ctx, struct {
 			Members types.List `tfsdk:"members"`
 		}{Members: rolePlan.Members}, &roleToUpdate)
@@ -451,7 +451,7 @@ func (r *RoleResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		}
 	}
 
-	if !rolePlan.Privileges.IsNull() && !rolePlan.Privileges.Equal(roleState.Privileges) {
+	if !rolePlan.Privileges.IsNull() && helper.IsRolePrivilegesChanged(rolePlan.Privileges, roleState.Privileges) {
 		err := helper.ReadFromState(ctx, struct {
 			Privileges types.List `tfsdk:"privileges"`
 		}{Privileges: rolePlan.Privileges}, &roleToUpdate)
@@ -466,7 +466,7 @@ func (r *RoleResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		}
 	}
 
-	if !rolePlan.Members.IsNull() && !rolePlan.Members.Equal(roleState.Members) && roleToUpdate.Members != nil {
+	if !rolePlan.Members.IsNull() && helper.IsRoleMembersChanged(rolePlan.Members, roleState.Members) && roleToUpdate.Members != nil {
 		err := helper.ValidateMembers(ctx, r.client, rolePlan.Zone.ValueString(), roleToUpdate.Members)
 		if err != nil {
 			resp.Diagnostics.AddError(
