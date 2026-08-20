@@ -18,16 +18,17 @@ import (
 	"context"
 	powerscale "dell/powerscale-go-client"
 	"fmt"
-	. "github.com/bytedance/mockey"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	"github.com/stretchr/testify/assert"
 	"regexp"
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/helper"
 	"terraform-provider-powerscale/powerscale/models"
 	"testing"
+
+	. "github.com/bytedance/mockey"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAccRoleResource(t *testing.T) {
@@ -138,6 +139,72 @@ func TestAccRoleResourceErrorRead(t *testing.T) {
 			},
 		},
 	})
+}
+
+func TestAccRoleResourceMembersOnlyUpdate(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create role with members and privileges
+			{
+				Config: ProviderConfig + RoleResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerscale_role.role_test", "name", roleName),
+					resource.TestCheckResourceAttr("powerscale_role.role_test", "members.#", "2"),
+					resource.TestCheckResourceAttr("powerscale_role.role_test", "privileges.#", "1"),
+				),
+			},
+			// Update only members, keeping privileges unchanged.
+			// This verifies that the provider does NOT send unchanged
+			// privileges in the update request (which would cause a 400
+			// error for built-in roles).
+			{
+				Config: ProviderConfig + RoleMembersOnlyUpdateConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerscale_role.role_test", "name", roleName),
+					resource.TestCheckResourceAttr("powerscale_role.role_test", "members.#", "1"),
+					resource.TestCheckResourceAttr("powerscale_role.role_test", "privileges.#", "1"),
+					resource.TestCheckResourceAttr("powerscale_role.role_test", "privileges.0.permission", "r"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccRoleResourceSelectiveUpdateVerify(t *testing.T) {
+	var capturedRoleToUpdate powerscale.V14AuthRoleExtendedExtended
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create role with members and privileges
+			{
+				Config: ProviderConfig + RoleResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerscale_role.role_test", "name", roleName),
+					resource.TestCheckResourceAttr("powerscale_role.role_test", "members.#", "2"),
+					resource.TestCheckResourceAttr("powerscale_role.role_test", "privileges.#", "1"),
+				),
+			},
+			// Update only members, mock UpdateRole to capture the request and verify
+			// that privileges are NOT included in the update struct.
+			{
+				Config: ProviderConfig + RoleMembersOnlyUpdateConfig,
+				PreConfig: func() {
+					FunctionMocker = Mock(helper.UpdateRole).To(func(ctx context.Context, client *client.Client, roleModel models.RoleResourceModel, roleToUpdate powerscale.V14AuthRoleExtendedExtended) error {
+						capturedRoleToUpdate = roleToUpdate
+						// Verify privileges are NOT sent when only members changed
+						assert.Nil(t, roleToUpdate.Privileges, "privileges should not be sent when only members changed")
+						assert.NotNil(t, roleToUpdate.Members, "members should be sent when members changed")
+						return fmt.Errorf("mock update to verify selective fields")
+					}).Build()
+				},
+				ExpectError: regexp.MustCompile("mock update to verify selective fields"),
+			},
+		},
+	})
+	_ = capturedRoleToUpdate
 }
 
 func TestAccRoleResourceErrorCreate(t *testing.T) {
@@ -435,3 +502,23 @@ resource "powerscale_role" "role_test" {
 	]
 }
 `, roleName, roleDescription+"_modified")
+
+// RoleMembersOnlyUpdateConfig changes only members while keeping privileges the same as RoleResourceConfig.
+// This verifies that unchanged privileges are NOT sent to the API (fix for built-in role update issue).
+var RoleMembersOnlyUpdateConfig = fmt.Sprintf(`
+resource "powerscale_role" "role_test" {
+	name = "%s"
+	description = "%s"
+	members = [
+		{
+			id = "UID:0"
+		}
+	]
+	privileges = [
+		{
+			id = "ISI_PRIV_SYS_SUPPORT",
+			permission = "r"
+		}
+	]
+}
+`, roleName, roleDescription)
