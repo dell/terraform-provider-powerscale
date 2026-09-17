@@ -20,6 +20,10 @@ BINARY=terraform-provider-${NAME}
 VERSION=1.0.0
 OS_ARCH=linux_amd64
 CLIENT_PATH?=./powerscale-go-client/
+
+# Allow Go toolchain auto-download through corporate proxies that block sum DB lookups
+export GONOSUMCHECK := $(GONOSUMCHECK) golang.org/toolchain
+export GONOSUMDB := $(GONOSUMDB) golang.org/toolchain
 MODIFIEDFILE1="model_v1_filepool_policy_file_matching_pattern_or_criteria_item_and_criteria_item.go"
 MODIFIEDFILE2="model_v1_filepool_default_policy_action.go" 
 
