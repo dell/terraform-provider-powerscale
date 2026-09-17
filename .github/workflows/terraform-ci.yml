@@ -39,12 +39,23 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
       - name: Extract go client
         run: make clean extract-client
-      - name: Run the formatter and vetter
-        uses: dell/common-github-actions/go-code-formatter-vetter@main
-        with:
-          directories: ./powerscale/...
+      - name: Check formatting
+        run: |
+          unformatted=$(gofmt -l ./powerscale/)
+          if [ -n "$unformatted" ]; then
+            echo "The following files are not formatted:"
+            echo "$unformatted"
+            exit 1
+          fi
+          echo "Formatting check passed."
+      - name: Run vetting
+        run: go vet ./powerscale/...
 
   sanitize:
     name: Check for forbidden words
