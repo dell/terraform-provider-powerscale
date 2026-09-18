@@ -15,6 +15,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
+# v1.8.3 (Sep 18, 2026)
+## Release Summary
+This release addresses bug fixes and security vulnerabilities to improve stability and user experience for Dell PowerScale.
+
+## Bug Fixes
+* Fixed role update to send only changed attributes, preventing 400 errors for built-in roles
+* Added mutex protection to snapshot schedule create/update to prevent duplicate schedule IDs
+* Fixed powerscale_namespace_acl out-of-band ACL changes not being detected or corrected
+* Marked sensitive credential fields (cluster SNMP, S3 key, SyncIQ policy) as Sensitive
+* Fixed BlackDuck security vulnerabilities by updating Go dependencies
+
+## Enhancements
+N/A
+
 # v1.8.2 (Jun 01, 2026)
 ## Release Summary
 This release addresses bug fixes and security vulnerabilities to improve stability and user experience for Dell PowerScale.
