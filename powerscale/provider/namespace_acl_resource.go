@@ -373,6 +373,9 @@ func (r *NamespaceACLResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
+	// Save the user's original acl_custom before CopyFieldsToNonNestedModel
+	originalCustomACL := plan.CustomACL
+
 	err = helper.CopyFieldsToNonNestedModel(ctx, getNamespaceACLResponse, &plan)
 	if err != nil {
 		errStr := constants.ReadNamespaceACLErrorMsg + "with error: "
@@ -384,7 +387,18 @@ func (r *NamespaceACLResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	plan.CustomACL = plan.ACL
+	// Merge the user's original acl_custom with the server response to fill in
+	// computed fields (op, trustee.name, trustee.type) while preserving the user's
+	// specified values (accessrights, inherit_flags, etc.). This avoids Terraform's
+	// plan/apply consistency check failure when OneFS canonicalizes ACL values.
+	plan.CustomACL, err = helper.MergeCustomACLWithServerACL(originalCustomACL, plan.ACL)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error creating namespace acl",
+			fmt.Sprintf("Could not merge acl_custom with server response: %s", err.Error()),
+		)
+		return
+	}
 
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -422,6 +436,9 @@ func (r *NamespaceACLResource) Read(ctx context.Context, req resource.ReadReques
 		"namespaceACLState":    namespaceACLState,
 	})
 
+	// Save the existing acl_custom from state
+	existingCustomACL := namespaceACLState.CustomACL
+
 	err = helper.CopyFieldsToNonNestedModel(ctx, namespaceACLResponse, &namespaceACLState)
 	if err != nil {
 		errStr := constants.ReadNamespaceACLErrorMsg + "with error: "
@@ -433,7 +450,17 @@ func (r *NamespaceACLResource) Read(ctx context.Context, req resource.ReadReques
 		return
 	}
 
-	namespaceACLState.CustomACL = namespaceACLState.ACL
+	// Merge the existing acl_custom with the server response to keep user-specified
+	// values while filling in computed fields from the server. If there was no
+	// prior acl_custom in state (e.g. after migration), fall back to the server ACL.
+	namespaceACLState.CustomACL, err = helper.MergeCustomACLWithServerACL(existingCustomACL, namespaceACLState.ACL)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error reading namespace acl",
+			fmt.Sprintf("Could not merge acl_custom with server response: %s", err.Error()),
+		)
+		return
+	}
 
 	diags = resp.State.Set(ctx, namespaceACLState)
 	resp.Diagnostics.Append(diags...)
@@ -512,6 +539,9 @@ func (r *NamespaceACLResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
+	// Save the user's original acl_custom before CopyFieldsToNonNestedModel
+	originalCustomACL := namespaceACLPlan.CustomACL
+
 	err = helper.CopyFieldsToNonNestedModel(ctx, updatedNamespaceACL, &namespaceACLPlan)
 	if err != nil {
 		errStr := constants.ReadNamespaceACLErrorMsg + "with error: "
@@ -523,7 +553,16 @@ func (r *NamespaceACLResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	namespaceACLPlan.CustomACL = namespaceACLPlan.ACL
+	// Merge the user's original acl_custom with the server response.
+	// See Create method comment for full explanation.
+	namespaceACLPlan.CustomACL, err = helper.MergeCustomACLWithServerACL(originalCustomACL, namespaceACLPlan.ACL)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating namespace acl",
+			fmt.Sprintf("Could not merge acl_custom with server response: %s", err.Error()),
+		)
+		return
+	}
 
 	diags = resp.State.Set(ctx, namespaceACLPlan)
 	resp.Diagnostics.Append(diags...)

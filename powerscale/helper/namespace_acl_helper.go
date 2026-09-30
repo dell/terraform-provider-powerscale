@@ -24,6 +24,10 @@ import (
 
 	"terraform-provider-powerscale/client"
 	"terraform-provider-powerscale/powerscale/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 // GetNamespaceACL retrieve Namespace ACL information.
@@ -117,4 +121,139 @@ func GetNamespaceACLDatasource(ctx context.Context, client *client.Client, model
 	}
 	namespaceACLResp, _, err := queryParam.Execute()
 	return namespaceACLResp, err
+}
+
+// aclTrusteeAttrTypes defines the attr.Type map for ACL trustee objects.
+var aclTrusteeAttrTypes = map[string]attr.Type{
+	"id":   types.StringType,
+	"name": types.StringType,
+	"type": types.StringType,
+}
+
+// aclEntryAttrTypes defines the attr.Type map for ACL entry objects.
+var aclEntryAttrTypes = map[string]attr.Type{
+	"accesstype":    types.StringType,
+	"accessrights":  types.ListType{ElemType: types.StringType},
+	"inherit_flags": types.ListType{ElemType: types.StringType},
+	"op":            types.StringType,
+	"trustee":       types.ObjectType{AttrTypes: aclTrusteeAttrTypes},
+}
+
+// MergeCustomACLWithServerACL merges the user's original acl_custom configuration
+// with the server's canonical ACL response. For each ACE, user-specified values
+// are preserved (accessrights, inherit_flags, accesstype) while computed-only
+// fields that were left unset by the user (op, trustee.name, trustee.type, etc.)
+// are filled in from the server response. This avoids Terraform's plan/apply
+// consistency check failure when OneFS canonicalizes ACL values.
+func MergeCustomACLWithServerACL(userCustomACL, serverACL types.List) (types.List, error) {
+	if userCustomACL.IsNull() || userCustomACL.IsUnknown() {
+		return serverACL, nil
+	}
+
+	userElements := userCustomACL.Elements()
+	serverElements := serverACL.Elements()
+
+	mergedElements := make([]attr.Value, len(userElements))
+
+	for i, userElem := range userElements {
+		userObj, ok := userElem.(basetypes.ObjectValue)
+		if !ok || userObj.IsNull() || userObj.IsUnknown() {
+			mergedElements[i] = userElem
+			continue
+		}
+
+		// If we have a corresponding server ACE at this index, use it to fill unknowns
+		var serverObj basetypes.ObjectValue
+		hasServerObj := false
+		if i < len(serverElements) {
+			if sObj, ok := serverElements[i].(basetypes.ObjectValue); ok && !sObj.IsNull() && !sObj.IsUnknown() {
+				serverObj = sObj
+				hasServerObj = true
+			}
+		}
+
+		userAttrs := userObj.Attributes()
+		mergedAttrs := make(map[string]attr.Value)
+
+		// Copy all user attributes first
+		for k, v := range userAttrs {
+			mergedAttrs[k] = v
+		}
+
+		if hasServerObj {
+			serverAttrs := serverObj.Attributes()
+
+			// Fill in unknown scalar fields from server
+			for _, field := range []string{"op", "accesstype"} {
+				if val, exists := mergedAttrs[field]; exists {
+					if strVal, ok := val.(basetypes.StringValue); ok && strVal.IsUnknown() {
+						if serverVal, sExists := serverAttrs[field]; sExists {
+							mergedAttrs[field] = serverVal
+						}
+					}
+				}
+			}
+
+			// Fill in unknown list fields from server
+			for _, field := range []string{"accessrights", "inherit_flags"} {
+				if val, exists := mergedAttrs[field]; exists {
+					if listVal, ok := val.(basetypes.ListValue); ok && listVal.IsUnknown() {
+						if serverVal, sExists := serverAttrs[field]; sExists {
+							mergedAttrs[field] = serverVal
+						}
+					}
+				}
+			}
+
+			// Merge trustee: fill in unknown trustee fields from server
+			mergedAttrs["trustee"] = mergeTrustee(mergedAttrs["trustee"], serverAttrs["trustee"])
+		}
+
+		mergedObj, diags := types.ObjectValue(aclEntryAttrTypes, mergedAttrs)
+		if diags.HasError() {
+			return types.ListNull(types.ObjectType{AttrTypes: aclEntryAttrTypes}),
+				errors.New("failed to merge acl_custom entry with server ACL response")
+		}
+		mergedElements[i] = mergedObj
+	}
+
+	mergedList, diags := types.ListValue(types.ObjectType{AttrTypes: aclEntryAttrTypes}, mergedElements)
+	if diags.HasError() {
+		return types.ListNull(types.ObjectType{AttrTypes: aclEntryAttrTypes}),
+			errors.New("failed to build merged acl_custom list")
+	}
+	return mergedList, nil
+}
+
+// mergeTrustee merges user-specified trustee attributes with server trustee values,
+// filling in unknown fields from the server response.
+func mergeTrustee(userTrustee, serverTrustee attr.Value) attr.Value {
+	userObj, ok := userTrustee.(basetypes.ObjectValue)
+	if !ok || userObj.IsNull() || userObj.IsUnknown() {
+		return serverTrustee
+	}
+
+	serverObj, ok := serverTrustee.(basetypes.ObjectValue)
+	if !ok || serverObj.IsNull() || serverObj.IsUnknown() {
+		return userTrustee
+	}
+
+	userAttrs := userObj.Attributes()
+	serverAttrs := serverObj.Attributes()
+	mergedAttrs := make(map[string]attr.Value)
+
+	for _, field := range []string{"id", "name", "type"} {
+		userVal := userAttrs[field]
+		if strVal, ok := userVal.(basetypes.StringValue); ok && (strVal.IsUnknown() || strVal.IsNull()) {
+			mergedAttrs[field] = serverAttrs[field]
+		} else {
+			mergedAttrs[field] = userVal
+		}
+	}
+
+	mergedObj, diags := types.ObjectValue(aclTrusteeAttrTypes, mergedAttrs)
+	if diags.HasError() {
+		return userTrustee
+	}
+	return mergedObj
 }
