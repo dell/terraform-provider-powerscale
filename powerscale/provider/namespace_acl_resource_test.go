@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2024-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -48,6 +48,36 @@ func TestAccNamespaceAclResource(t *testing.T) {
 				ImportStateVerifyIgnore:              []string{"acl_custom", "nsaccess"},
 			},
 			// Update
+			{
+				Config: ProviderConfig + NamespaceACLUpdatedResourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
+				),
+			},
+		},
+	})
+}
+
+// TestAccNamespaceAclResourceAliasAccessRights verifies that using alias access
+// right names (e.g. "list", "traverse") and non-canonical inherit_flags ordering
+// does not cause "Provider produced inconsistent result after apply" errors.
+func TestAccNamespaceAclResourceAliasAccessRights(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Step 1: Create with alias access rights - should not fail
+			{
+				Config: ProviderConfig + NamespaceACLAliasAccessRightsConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "namespace", namespace),
+					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl_custom.0.accessrights.0", "list"),
+					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl_custom.0.accessrights.2", "traverse"),
+					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl_custom.0.inherit_flags.0", "container_inherit"),
+					resource.TestCheckResourceAttr("powerscale_namespace_acl.namespace_acl_test", "acl_custom.0.inherit_flags.1", "object_inherit"),
+				),
+			},
+			// Step 2: Update from alias config to canonical config - should not fail
 			{
 				Config: ProviderConfig + NamespaceACLUpdatedResourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -330,5 +360,34 @@ resource "powerscale_namespace_acl" "namespace_acl_test" {
 var NamespaceACLResourceEmptyConfig1 = fmt.Sprintf(`
 resource "powerscale_namespace_acl" "namespace_acl_test" {
 	namespace = "%s"
+}
+`, namespace)
+
+// NamespaceACLAliasAccessRightsConfig uses alias access right names (e.g. "list")
+// and non-canonical inherit_flags ordering that OneFS will canonicalize on read-back.
+var NamespaceACLAliasAccessRightsConfig = fmt.Sprintf(`
+resource "powerscale_namespace_acl" "namespace_acl_test" {
+	namespace = "%s"
+	nsaccess = true
+	owner = { id = "UID:0"}
+	group = { id = "GID:0"}
+	acl_custom = [
+	{
+		accessrights = ["list","dir_gen_write","traverse"]
+		accesstype = "allow"
+		inherit_flags = ["container_inherit","object_inherit"]
+		trustee = {
+			id = "UID:0"
+		}
+	},
+	{
+		accessrights = ["dir_gen_read","dir_gen_execute"]
+		accesstype = "allow"
+		inherit_flags = []
+		"trustee": {
+			"id": "SID:S-1-1-0"
+		}
+	},
+	]
 }
 `, namespace)
